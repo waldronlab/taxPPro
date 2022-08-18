@@ -1,0 +1,28 @@
+---
+title: "taxPPro"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{taxPPro}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+An R package to propagate annotations for bugphyzz
+
+```{r setup}
+library(taxPPro)
+```
+
+
+```{r}
+sessionInfo()
+```
+
+
