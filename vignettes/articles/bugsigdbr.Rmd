@@ -60,6 +60,11 @@ meta <- x$`MetaPhlAn taxon names`
 DT::datatable(arrange(data.frame(taxa = meta[[1]])))
 ```
 
+# Session info
+
+```{r}
+sessionInfo()
+```
 
 
 
