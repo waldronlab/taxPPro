@@ -16,6 +16,9 @@
     <loc>https://sdgamboa.github.io/taxPPro/articles/index.html</loc>
   </url>
   <url>
+    <loc>https://sdgamboa.github.io/taxPPro/articles/spore_shape.html</loc>
+  </url>
+  <url>
     <loc>https://sdgamboa.github.io/taxPPro/articles/taxPPro.html</loc>
   </url>
   <url>
@@ -25,9 +28,27 @@
     <loc>https://sdgamboa.github.io/taxPPro/index.html</loc>
   </url>
   <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/ci_to_scores.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/filter_dataset_for_propagation.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/get_duplicates.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/get_parents.html</loc>
+  </url>
+  <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/hello.html</loc>
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/remove_taxa_duplicates.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/upstream.html</loc>
   </url>
 </urlset>
