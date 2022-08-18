@@ -1,6 +1,6 @@
 Package: taxPPro
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Taxonomic and phylogenetic propagation
 Version: 0.1.0
 Author: Samuel Gamboa
 Maintainer: Samuel Gamboa <Samuel.Gamboa.Tuz@gmail.com>
@@ -14,8 +14,11 @@ Remotes:
 Suggests: 
     bugphyzz,
     bugsigdbr,
-    dplyr,
+    DT,
     knitr,
     rmarkdown
+Imports:
+    dplyr,
+    magrittr
 VignetteBuilder: knitr
 URL: https://sdgamboa.github.io/taxPPro/

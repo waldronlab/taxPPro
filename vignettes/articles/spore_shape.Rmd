@@ -1,0 +1,54 @@
+---
+title: "Example of upstream with aerophilicity"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  warning = FALSE
+)
+```
+
+```{r setup}
+library(taxPPro)
+library(bugphyzz)
+library(dplyr)
+```
+
+```{r}
+aer <- as_tibble(physiologies('aerophilicity')[[1]])
+```
+
+```{r}
+filtered_aer <- aer |> 
+    filter_dataset_for_propagation() |> 
+    remove_taxa_duplicates() |> 
+    ci_to_scores() |> 
+    distinct()
+```
+
+# Upstream
+
+```{r}
+xx <- upstream(df = filtered_aer, rank1 = 'strain', rank2  = 'species')
+xx2 <- upstream(df = filtered_aer, rank1 = 'species', rank2  = 'genus')
+```
+
+```{r}
+new_taxa <- bind_rows(list(filtered_aer, xx, xx2)) |> 
+    distinct()
+```
+
+
+```{r}
+aer2 <- aer |> 
+    filter(Rank %in% c('strain', 'species', 'genus'))
+table(aer2$Rank)
+```
+
+```{r}
+table(new_taxa$Rank)
+```
+
