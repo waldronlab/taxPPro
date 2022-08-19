@@ -236,7 +236,7 @@ get_parents <- function(x) {
 #'
 upstream <- function(df, rank1, rank2) {
 
-    rank1_df <- dplyr::filter(df, Rank == rank1) ## TODO Recalculate Frequency
+    rank1_df <- dplyr::filter(df, Rank == rank1) ## TODO Recalculate Frequency with mean
     rank2_df <- dplyr::filter(df, Rank == rank2)
 
     if (nrow(rank2_df) > 0) {
