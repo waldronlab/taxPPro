@@ -2,21 +2,16 @@
 % Please edit documentation in R/utils.R
 \name{upstream}
 \alias{upstream}
-\title{Upstream}
+\title{Code used to annotate parent nodes according to the NCBI taxonomy}
 \usage{
-upstream(df, rank1, rank2)
+upstream(df)
 }
 \arguments{
-\item{df}{A dataframe from bugphyzz.}
-
-\item{rank1}{Source rank. A character string.}
-
-\item{rank2}{Target rank. A character string}
+\item{df}{A data frame from bugphyzz}
 }
 \value{
-A dataframe
+A datta frame with parent nodes annotations
 }
 \description{
-\code{upstream} propagates annotations upstream in the taxonomy
-classification according to the NCBI.
+Code used to annotate parent nodes according to the NCBI taxonomy
 }

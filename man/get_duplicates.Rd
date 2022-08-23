@@ -4,7 +4,7 @@
 \alias{get_duplicates}
 \title{Get duplicates}
 \usage{
-get_duplicates(df, cols = c("Taxon_name", "NCBI_ID"), verbpse = FALSE)
+get_duplicates(df, cols = c("Taxon_name", "NCBI_ID"), verbose = FALSE)
 }
 \arguments{
 \item{df}{A dataframe.}
