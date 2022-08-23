@@ -28,7 +28,8 @@
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
     <a class="dropdown-item" href="../articles/bugsigdbr.html">signatures in bugsigdbr</a>
-    <a class="dropdown-item" href="../articles/spore_shape.html">Example of upstream with aerophilicity</a>
+    <a class="dropdown-item" href="../articles/get_ncbi_taxonomy.html">Completeness</a>
+    <a class="dropdown-item" href="../articles/spore_shape.html">Example of upstream and downstream with aerophilicity</a>
   </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
@@ -57,9 +58,19 @@
 
       <dl><dt>
           
+          <code><a href="calcParentScore.html">calcParentScore()</a></code> 
+        </dt>
+        <dd>Calculate parent scores</dd>
+      </dl><dl><dt>
+          
           <code><a href="ci_to_scores.html">ci_to_scores()</a></code> 
         </dt>
         <dd>Convert confidence intervals to numeric scores</dd>
+      </dl><dl><dt>
+          
+          <code><a href="downstream.html">downstream()</a></code> 
+        </dt>
+        <dd>Get annotations for children node (downstream)</dd>
       </dl><dl><dt>
           
           <code><a href="filter_dataset_for_propagation.html">filter_dataset_for_propagation()</a></code> 
@@ -67,9 +78,19 @@
         <dd>Filter datset for phylogenetic propagation</dd>
       </dl><dl><dt>
           
+          <code><a href="get_children.html">get_children()</a></code> 
+        </dt>
+        <dd>Get children taxa</dd>
+      </dl><dl><dt>
+          
           <code><a href="get_duplicates.html">get_duplicates()</a></code> 
         </dt>
         <dd>Get duplicates</dd>
+      </dl><dl><dt>
+          
+          <code><a href="get_ncbi_taxonomy.html">get_ncbi_taxonomy()</a></code> 
+        </dt>
+        <dd>get_ncbi_taxonomy</dd>
       </dl><dl><dt>
           
           <code><a href="get_parents.html">get_parents()</a></code> 
@@ -83,6 +104,11 @@
 <code>hello</code> prints "Hello, world!"</dd>
       </dl><dl><dt>
           
+          <code><a href="propagate.html">propagate()</a></code> 
+        </dt>
+        <dd>Propagate annotations</dd>
+      </dl><dl><dt>
+          
           <code><a href="remove_taxa_duplicates.html">remove_taxa_duplicates()</a></code> 
         </dt>
         <dd>Remove taxa duplicates
@@ -91,7 +117,7 @@
           
           <code><a href="upstream.html">upstream()</a></code> 
         </dt>
-        <dd>Upstream</dd>
+        <dd>Code used to annotate parent nodes according to the NCBI taxonomy</dd>
       </dl></div>
   </main></div>
 
