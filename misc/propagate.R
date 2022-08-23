@@ -5,11 +5,11 @@ library(taxPPro)
 # library(purrr)
 # library(tidyr)
 
-aer <- tibble::as_tibble(physiologies('aerophilicity')[[1]])
-aer_extended <- propagate(aer)
+# aer <- tibble::as_tibble(physiologies('aerophilicity')[[1]])
+# aer_extended <- propagate(aer)
 
-ph <- physiologies('optimal ph')[[1]]
-ph_extended <- propagate(ph)
+# ph <- physiologies('optimal ph')[[1]]
+# ph_extended <- propagate(ph)
 
 # filtered_ph <- ph |>
 #     filter_dataset_for_propagation() |>
@@ -23,6 +23,24 @@ ph_extended <- propagate(ph)
 #     upstream()
 
 # k -----------------------------------------------------------------------
+
+
+calcScore <- function(df, wt = TRUE) {
+
+    attr <- val <- NULL
+    colnames(df) <- c('attr', 'val')
+
+    if (wt) {
+        df |> mutate(
+            total = sum(val),
+            prop = val / total
+        ) |>
+            dplyr::count(attr, wt = prop, name = 'Score') |>
+            dplyr::mutate(Score = round(Score, 1)) |>
+            dplyr::filter(Score >= 0.5)
+    }
+}
+
 
 x <- c(A = 1, A = 1, A = 1, B = 0.5)
 
@@ -43,29 +61,3 @@ df2 |>
 
 
 
-try |>
-    mutate(
-        total = sum(z),
-        prop = z / total
-    ) |>
-    count(y, wt = prop, name = 'Score')
-
-
-calcScore <- function(df, wt = TRUE) {
-
-    attr <- val <- NULL
-    colnames(df) <- c('attr', 'val')
-
-    if (wt) {
-        df |> mutate(
-            total = sum(val),
-            prop = val / total
-        ) |>
-            dplyr::count(attr, wt = prop, name = 'Score') |>
-            dplyr::mutate(Score = round(Score, 1)) |>
-            dplyr::filter(Score >= 0.5)
-    }
-}
-
-
-calcScore(try)

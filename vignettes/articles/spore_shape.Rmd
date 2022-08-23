@@ -17,14 +17,23 @@ knitr::opts_chunk$set(
 library(taxPPro)
 library(bugphyzz)
 library(dplyr)
+library(purrr)
+library(tidyr)
+library(ggplot2)
 ```
 
 # Attribute with discrete characters
 
 ```{r}
 aer <- as_tibble(physiologies('aerophilicity')[[1]])
+dim(aer)
+```
+
+
+```{r, message=TRUE}
 aer_extended <- propagate(aer)
 ```
+
 
 ```{r}
 table(aer$Evidence)
@@ -40,6 +49,9 @@ table(aer_extended$Evidence)
 
 ```{r}
 ph <- as_tibble(physiologies('optimal ph')[[1]])
+```
+
+```{r, message=TRUE}
 ph_extended <- propagate(ph)
 ```
 
@@ -50,5 +62,99 @@ table(ph$Evidence)
 
 ```{r}
 table(ph_extended$Evidence)
+```
+
+# Completeness
+
+```{r}
+ncbi_taxonomy <- get_ncbi_taxonomy() |> 
+    mutate(strain = ifelse(rank == 'strain', tax_name, NA))
+## mutate call above is just for creating a strain column
+## for counts
+
+dim(ncbi_taxonomy)
+```
+
+```{r}
+head(ncbi_taxonomy)
+```
+
+## Get counts
+
+```{r}
+ranks <- c(
+    'strain', 'species', 'genus', 'family', 'order', 'class', 'phyum', 'kingdom'
+)
+
+ncbi_counts <- ncbi_taxonomy |> 
+    dplyr::filter(rank %in% ranks) |> 
+    count(rank) |> 
+    set_names(c('Rank', 'n_ncbi'))
+
+ncbi_counts |> 
+    mutate(Rank = factor(Rank, levels = ranks)) |> 
+    ggplot(aes(reorder(Rank, n_ncbi), n_ncbi)) +
+    geom_col() +
+    geom_label(aes(label = n_ncbi)) +
+    labs(
+        title = 'NCBI totals',
+        x = 'rank'
+    )
+    
+```
+
+
+```{r}
+aer_counts <- aer |> 
+    count(Rank) |> 
+    set_names(c('Rank', 'n_aer'))
+aer_counts
+```
+
+```{r}
+aer_extended_counts <- aer_extended |> 
+    count(Rank) |> 
+    set_names(c('Rank', 'n_aer_extended'))
+aer_extended_counts 
+```
+
+# Calculate completeness
+
+```{r,message=FALSE}
+completeness <- reduce(
+    list(ncbi_counts, aer_counts, aer_extended_counts),
+    .f = left_join
+    ) |> 
+    mutate(
+        aer_completness = n_aer / n_ncbi * 100,
+        aer_extended_completeness = n_aer_extended / n_ncbi * 100
+    ) |> 
+    filter(Rank %in% c('strain', 'species', 'genus')) |> 
+    select(Rank, aer_completness, aer_extended_completeness) |> 
+    pivot_longer(
+        cols = 2:last_col(), names_to = 'type', values_to = 'completeness'
+    )
+completeness
+```
+
+# Plot completeness
+
+```{r}
+completeness |> 
+    ggplot(aes(Rank, completeness)) + 
+    geom_col(aes(fill = type), alpha = 0.5, position = 'dodge') +
+    labs(
+        title = "Completness before and after propagation of annotaions",
+        subtitle = 'Completeness was calculated based on the NNCBI',
+        y = 'Completeness (%)'
+    ) +
+    theme_bw() +
+    theme(
+        panel.grid.major.x = element_blank()
+    ) +
+    scale_fill_manual(
+        values = c('dodgerblue3', 'firebrick3'),
+        labels = c('Before propagation', 'After propagation')
+    )
 ```
 
