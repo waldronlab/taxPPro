@@ -107,16 +107,43 @@ ncbi_counts |>
 ```{r}
 aer_counts <- aer |> 
     count(Rank) |> 
-    set_names(c('Rank', 'n_aer'))
+    set_names(c('Rank', 'n_aer')) |> 
+    filter(Rank %in% c('genus', 'species', 'strain'))
 aer_counts
 ```
 
 ```{r}
 aer_extended_counts <- aer_extended |> 
     count(Rank) |> 
-    set_names(c('Rank', 'n_aer_extended'))
+    set_names(c('Rank', 'n_aer_extended')) |> 
+    filter(Rank %in% c('genus', 'species', 'strain'))
 aer_extended_counts 
 ```
+
+
+```{r}
+extended_data <- list(aer = aer_counts, aer_extended = aer_extended_counts) |> 
+    bind_rows(.id = 'type') |> 
+    tidyr::unite(n_aer, n_aer_extended, col = 'n') |> 
+    mutate(n = sub('_NA', '', n)) |> 
+    mutate(n = as.integer(sub('NA_', '', n)))
+```
+
+```{r}
+extended_data |> 
+    ggplot(aes(Rank, n)) + 
+    geom_col(aes(fill = type), position = 'dodge') +
+    labs(tilte = 'Numbers in aerophilicity before and after propagation.') +
+    theme_bw() +
+    theme(
+        panel.grid.major.x = element_blank()
+    ) +
+    scale_fill_manual(
+        values = c('dodgerblue3', 'firebrick3'),
+        labels = c('Before propagation', 'After propagation')
+    )
+```
+
 
 # Calculate completeness
 
@@ -142,10 +169,10 @@ completeness
 ```{r}
 completeness |> 
     ggplot(aes(Rank, completeness)) + 
-    geom_col(aes(fill = type), alpha = 0.5, position = 'dodge') +
+    geom_col(aes(fill = type), position = 'dodge') +
     labs(
-        title = "Completness before and after propagation of annotaions",
-        subtitle = 'Completeness was calculated based on the NNCBI',
+        title = "Completness aerophilicity",
+        subtitle = 'Number in bugphyz / number in NCBI per rank',
         y = 'Completeness (%)'
     ) +
     theme_bw() +

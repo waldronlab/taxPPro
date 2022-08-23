@@ -24,7 +24,6 @@ library(taxPPro)
 
 # k -----------------------------------------------------------------------
 
-
 calcScore <- function(df, wt = TRUE) {
 
     attr <- val <- NULL
