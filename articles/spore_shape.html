@@ -184,45 +184,53 @@
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">aer_counts</span> <span class="op">&lt;-</span> <span class="va">aer</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">Rank</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>    <span class="fu"><a href="https://rlang.r-lib.org/reference/set_names.html" class="external-link">set_names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Rank'</span>, <span class="st">'n_aer'</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rlang.r-lib.org/reference/set_names.html" class="external-link">set_names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Rank'</span>, <span class="st">'n_aer'</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Rank</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'genus'</span>, <span class="st">'species'</span>, <span class="st">'strain'</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">aer_counts</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 2</span></span></span>
-<span><span class="co">#&gt;    Rank       n_aer</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> biotype        4</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> genus       <span style="text-decoration: underline;">1</span>240</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> isolate        3</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> no rank       18</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> serogroup      6</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> serotype       9</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> species     <span style="text-decoration: underline;">3</span>851</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> strain      <span style="text-decoration: underline;">1</span>195</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> subspecies    35</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> <span style="color: #BB0000;">NA</span>            37</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 2</span></span></span>
+<span><span class="co">#&gt;   Rank    n_aer</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> genus    <span style="text-decoration: underline;">1</span>240</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> species  <span style="text-decoration: underline;">3</span>851</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> strain   <span style="text-decoration: underline;">1</span>195</span></span></code></pre></div>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">aer_extended_counts</span> <span class="op">&lt;-</span> <span class="va">aer_extended</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">Rank</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>    <span class="fu"><a href="https://rlang.r-lib.org/reference/set_names.html" class="external-link">set_names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Rank'</span>, <span class="st">'n_aer_extended'</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rlang.r-lib.org/reference/set_names.html" class="external-link">set_names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Rank'</span>, <span class="st">'n_aer_extended'</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Rank</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'genus'</span>, <span class="st">'species'</span>, <span class="st">'strain'</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">aer_extended_counts</span> </span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 10 × 2</span></span></span>
-<span><span class="co">#&gt;    Rank       n_aer_extended</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> biotype                 4</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> genus                <span style="text-decoration: underline;">1</span>665</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> isolate                 3</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> no rank                18</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> serogroup               6</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> serotype                9</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> species             <span style="text-decoration: underline;">18</span>170</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> strain              <span style="text-decoration: underline;">24</span>295</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> subspecies             35</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> <span style="color: #BB0000;">NA</span>                     37</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 2</span></span></span>
+<span><span class="co">#&gt;   Rank    n_aer_extended</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> genus             <span style="text-decoration: underline;">1</span>665</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> species          <span style="text-decoration: underline;">18</span>170</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> strain           <span style="text-decoration: underline;">24</span>295</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">extended_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>aer <span class="op">=</span> <span class="va">aer_counts</span>, aer_extended <span class="op">=</span> <span class="va">aer_extended_counts</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html" class="external-link">bind_rows</a></span><span class="op">(</span>.id <span class="op">=</span> <span class="st">'type'</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/unite.html" class="external-link">unite</a></span><span class="op">(</span><span class="va">n_aer</span>, <span class="va">n_aer_extended</span>, col <span class="op">=</span> <span class="st">'n'</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span><span class="st">'_NA'</span>, <span class="st">''</span>, <span class="va">n</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span><span class="st">'NA_'</span>, <span class="st">''</span>, <span class="va">n</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">extended_data</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">Rank</span>, <span class="va">n</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">type</span><span class="op">)</span>, position <span class="op">=</span> <span class="st">'dodge'</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">'Numbers in aerophilicity before and after propagation.'</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
+<span>        panel.grid.major.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_fill_manual</a></span><span class="op">(</span></span>
+<span>        values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'dodgerblue3'</span>, <span class="st">'firebrick3'</span><span class="op">)</span>,</span>
+<span>        labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Before propagation'</span>, <span class="st">'After propagation'</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span></code></pre></div>
+<p><img src="spore_shape_files/figure-html/unnamed-chunk-16-1.png" width="700"></p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="calculate-completeness">Calculate completeness<a class="anchor" aria-label="anchor" href="#calculate-completeness"></a>
 </h2>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">completeness</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/reduce.html" class="external-link">reduce</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">ncbi_counts</span>, <span class="va">aer_counts</span>, <span class="va">aer_extended_counts</span><span class="op">)</span>,</span>
 <span>    .f <span class="op">=</span> <span class="va">left_join</span></span>
@@ -250,13 +258,13 @@
 <div class="section level2">
 <h2 id="plot-completeness">Plot completeness<a class="anchor" aria-label="anchor" href="#plot-completeness"></a>
 </h2>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">completeness</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">Rank</span>, <span class="va">completeness</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">type</span><span class="op">)</span>, alpha <span class="op">=</span> <span class="fl">0.5</span>, position <span class="op">=</span> <span class="st">'dodge'</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">type</span><span class="op">)</span>, position <span class="op">=</span> <span class="st">'dodge'</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
-<span>        title <span class="op">=</span> <span class="st">"Completness before and after propagation of annotaions"</span>,</span>
-<span>        subtitle <span class="op">=</span> <span class="st">'Completeness was calculated based on the NNCBI'</span>,</span>
+<span>        title <span class="op">=</span> <span class="st">"Completness aerophilicity"</span>,</span>
+<span>        subtitle <span class="op">=</span> <span class="st">'Number in bugphyz / number in NCBI per rank'</span>,</span>
 <span>        y <span class="op">=</span> <span class="st">'Completeness (%)'</span></span>
 <span>    <span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -267,56 +275,7 @@
 <span>        values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'dodgerblue3'</span>, <span class="st">'firebrick3'</span><span class="op">)</span>,</span>
 <span>        labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'Before propagation'</span>, <span class="st">'After propagation'</span><span class="op">)</span></span>
 <span>    <span class="op">)</span></span></code></pre></div>
-<p><img src="spore_shape_files/figure-html/unnamed-chunk-16-1.png" width="700"></p>
-<p>Completeness</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">phys</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/bugphyzz/man/physiologies.html" class="external-link">physiologies</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">as_tibble</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">phys_no_dup</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">phys</span>, <span class="op">~</span> <span class="op">{</span></span>
-<span>    <span class="va">.x</span> <span class="op">|&gt;</span> <span class="fu"><a href="../reference/filter_dataset_for_propagation.html">filter_dataset_for_propagation</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>        <span class="co"># remove_taxa_duplicates() |&gt; </span></span>
-<span>        <span class="fu"><a href="../reference/ci_to_scores.html">ci_to_scores</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>        <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>    <span class="fu"><a href="https://purrr.tidyverse.org/reference/keep.html" class="external-link">keep</a></span><span class="op">(</span><span class="op">~</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">.x</span><span class="op">)</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">phys_filtered_counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">phys_no_dup</span>, <span class="op">~</span> <span class="op">{</span></span>
-<span>    <span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">.x</span><span class="op">$</span><span class="va">Rank</span><span class="op">)</span></span>
-<span>    <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>rank <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span>, n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html" class="external-link">bind_rows</a></span><span class="op">(</span>.id <span class="op">=</span> <span class="st">'dataset'</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">phys_filtered_counts</span> <span class="op">|&gt;</span> </span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">dataset</span>, <span class="va">n</span><span class="op">)</span>, <span class="va">n</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">rank</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
-<span>        title <span class="op">=</span> <span class="st">'Totals across bugphyzz datasets'</span>,</span>
-<span>        x <span class="op">=</span> <span class="st">'dataset'</span></span>
-<span>    <span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
-<span>        axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">45</span>, hjust <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span>    <span class="op">)</span></span></code></pre></div>
 <p><img src="spore_shape_files/figure-html/unnamed-chunk-18-1.png" width="700"></p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">phys_counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">phys</span>, <span class="op">~</span> <span class="op">{</span></span>
-<span>    <span class="va">.x</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">.x</span>, <span class="va">Rank</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">ranks</span><span class="op">)</span></span>
-<span>    <span class="va">counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">.x</span><span class="op">$</span><span class="va">Rank</span><span class="op">)</span></span>
-<span>    <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span>rank <span class="op">=</span>  <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span>, n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">counts</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html" class="external-link">bind_rows</a></span><span class="op">(</span>.id <span class="op">=</span> <span class="st">'dataset'</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">phys_counts</span> <span class="op">|&gt;</span> </span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html" class="external-link">reorder</a></span><span class="op">(</span><span class="va">dataset</span>, <span class="va">n</span><span class="op">)</span>, <span class="va">n</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">rank</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
-<span>        title <span class="op">=</span> <span class="st">'Totals across bugphyzz datasets'</span>,</span>
-<span>        x <span class="op">=</span> <span class="st">'dataset'</span></span>
-<span>    <span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
-<span>        axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">45</span>, hjust <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span>    <span class="op">)</span></span></code></pre></div>
-<p><img src="spore_shape_files/figure-html/unnamed-chunk-19-1.png" width="700"></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

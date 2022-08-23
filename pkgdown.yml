@@ -6,7 +6,7 @@ articles:
   get_ncbi_taxonomy: get_ncbi_taxonomy.html
   spore_shape: spore_shape.html
   taxPPro: taxPPro.html
-last_built: 2022-08-23T12:51Z
+last_built: 2022-08-23T15:33Z
 urls:
   reference: https://sdgamboa.github.io/taxPPro/reference
   article: https://sdgamboa.github.io/taxPPro/articles
