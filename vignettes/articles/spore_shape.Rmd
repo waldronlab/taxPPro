@@ -133,7 +133,7 @@ extended_data <- list(aer = aer_counts, aer_extended = aer_extended_counts) |>
 extended_data |> 
     ggplot(aes(Rank, n)) + 
     geom_col(aes(fill = type), position = 'dodge') +
-    labs(tilte = 'Numbers in aerophilicity before and after propagation.') +
+    labs(title = 'Numbers in aerophilicity before and after propagation.') +
     theme_bw() +
     theme(
         panel.grid.major.x = element_blank()
