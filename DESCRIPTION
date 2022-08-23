@@ -15,10 +15,20 @@ Suggests:
     bugphyzz,
     bugsigdbr,
     DT,
+    ggplot2,
     knitr,
-    rmarkdown
+    rmarkdown,
+    tibble
 Imports:
+    BiocFileCache,
     dplyr,
-    magrittr
+    magrittr,
+    purrr,
+    readr,
+    stringr,
+    tools,
+    utils,
+    vroom
 VignetteBuilder: knitr
-URL: https://sdgamboa.github.io/taxPPro/
+URL: https://github.com/sdgamboa/taxPPro
+BugReports: https://github.com/sdgamboa/taxPPro/issues/
