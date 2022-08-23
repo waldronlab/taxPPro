@@ -1,5 +1,5 @@
 ---
-title: "Example of upstream with aerophilicity"
+title: "Example of upstream and downstream with aerophilicity"
 output: html_document
 date: "2022-08-18"
 ---
@@ -19,38 +19,36 @@ library(bugphyzz)
 library(dplyr)
 ```
 
+# Attribute with discrete characters
+
 ```{r}
 aer <- as_tibble(physiologies('aerophilicity')[[1]])
+aer_extended <- propagate(aer)
 ```
 
 ```{r}
-filtered_aer <- aer |> 
-    filter_dataset_for_propagation() |> 
-    remove_taxa_duplicates() |> 
-    ci_to_scores() |> 
-    distinct()
-```
-
-# Upstream
-
-```{r}
-xx <- upstream(df = filtered_aer, rank1 = 'strain', rank2  = 'species')
-xx2 <- upstream(df = filtered_aer, rank1 = 'species', rank2  = 'genus')
-```
-
-```{r}
-new_taxa <- bind_rows(list(filtered_aer, xx, xx2)) |> 
-    distinct()
+table(aer$Evidence)
 ```
 
 
 ```{r}
-aer2 <- aer |> 
-    filter(Rank %in% c('strain', 'species', 'genus'))
-table(aer2$Rank)
+table(aer_extended$Evidence)
+```
+
+
+# Attribute with continuous characters
+
+```{r}
+ph <- as_tibble(physiologies('optimal ph')[[1]])
+ph_extended <- propagate(ph)
+```
+
+
+```{r}
+table(ph$Evidence)
 ```
 
 ```{r}
-table(new_taxa$Rank)
+table(ph_extended$Evidence)
 ```
 
