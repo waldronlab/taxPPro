@@ -10,11 +10,23 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  message = FALSE,
+  warning = FALSE
 )
 ```
 
 An R package to propagate annotations for bugphyzz
+
+
+Package installation:
+
+```{r, eval=FALSE}
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install('sdgamboa/taxPPro')
+```
 
 ```{r setup}
 library(taxPPro)
