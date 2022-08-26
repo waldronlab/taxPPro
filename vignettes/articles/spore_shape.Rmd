@@ -1,6 +1,8 @@
 ---
 title: "Example of upstream and downstream with aerophilicity"
-output: html_document
+output: 
+    html_document:
+        toc: true
 date: "2022-08-18"
 ---
 
@@ -184,4 +186,65 @@ completeness |>
         labels = c('Before propagation', 'After propagation')
     )
 ```
+
+
+>NOTE: The completness at the species level is much lower than the rest
+because there are several bacterial species annotated in the NCBI that
+are unclassiifed (over 400, 000). See this stats withouht cheking any box and 
+clicking the update button: https://www.ncbi.nlm.nih.gov/Taxonomy/taxonomyhome.html/index.cgi?chapter=statistics&period=&from=&to=
+
+
+# Case 1 - Actinobacillus
+
+This needs more work
+
+Input: 
+
+```{r}
+aer |> 
+    filter(Parent_name == 'Actinobacillus' | Taxon_name == 'Actinobacillus') |> 
+    DT::datatable(filter = 'top')
+```
+
+
+Output:
+
+```{r}
+aer_extended |> 
+    filter(Parent_name == 'Actinobacillus' | Taxon_name == 'Actinobacillus') |> 
+    DT::datatable(filter = 'top')
+```
+
+
+
+# Case 2 - Actinomyces
+
+Input: 
+
+```{r}
+aer |> 
+    filter(grepl('Actinomyces', Taxon_name) | Parent_name == 'Actinomyces') |> 
+    DT::datatable(filter = 'top')
+```
+Output:
+
+```{r}
+aer_extended |> 
+    filter(grepl('Actinomyces', Taxon_name) | Parent_name == 'Actinomyces') |> 
+    DT::datatable(filter = 'top')
+```
+
+
+
+# Case 3 -
+
+
+
+
+
+
+
+
+
+
 
