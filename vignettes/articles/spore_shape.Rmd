@@ -1,5 +1,5 @@
 ---
-title: "Example of upstream and downstream with aerophilicity"
+title: "Example of upstream and downstream with aerophilicity and ph"
 output: 
     html_document:
         toc: true
