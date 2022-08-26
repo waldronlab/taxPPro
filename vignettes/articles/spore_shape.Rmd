@@ -203,7 +203,7 @@ Input:
 ```{r}
 aer |> 
     filter(Parent_name == 'Actinobacillus' | Taxon_name == 'Actinobacillus') |> 
-    DT::datatable(filter = 'top')
+    DT::datatable(filter = 'top', options = list(scrollX = T))
 ```
 
 
@@ -212,7 +212,7 @@ Output:
 ```{r}
 aer_extended |> 
     filter(Parent_name == 'Actinobacillus' | Taxon_name == 'Actinobacillus') |> 
-    DT::datatable(filter = 'top')
+    DT::datatable(filter = 'top', options = list(scrollX = T))
 ```
 
 
@@ -224,27 +224,13 @@ Input:
 ```{r}
 aer |> 
     filter(grepl('Actinomyces', Taxon_name) | Parent_name == 'Actinomyces') |> 
-    DT::datatable(filter = 'top')
+    DT::datatable(filter = 'top', options = list(scrollX = T))
 ```
 Output:
 
 ```{r}
 aer_extended |> 
     filter(grepl('Actinomyces', Taxon_name) | Parent_name == 'Actinomyces') |> 
-    DT::datatable(filter = 'top')
+    DT::datatable(filter = 'top', options = list(scrollX = T))
 ```
-
-
-
-# Case 3 -
-
-
-
-
-
-
-
-
-
-
 
