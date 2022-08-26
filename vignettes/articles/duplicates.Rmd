@@ -1,0 +1,101 @@
+---
+title: "duplicates"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, message=FALSE}
+library(taxPPro)
+library(bugphyzz)
+library(dplyr)
+library(purrr)
+library(ggplot2)
+```
+
+# Import data from bugphyzz
+
+```{r, message=FALSE}
+phys <- map(physiologies(), as_tibble)
+```
+
+# Get all duplicates
+
+This duplicates mean the same taxa is annotated twice. Annotations, sources, or
+both could be different.
+
+```{r}
+duplicates <- map(phys, get_duplicates) |> 
+    discard(~all(is.null(.x)))
+length(duplicates)
+```
+
+Number of rows with duplicates
+
+```{r}
+map_int(duplicates, nrow)
+```
+
+Number of unique taxa with duplicates
+
+```{r}
+map_int(duplicates, ~length(unique(.x$Taxon_name)))
+```
+
+
+# Get conflicts in attribute source
+
+```{r}
+conflicts <- duplicates |> 
+    map(~ {
+        split <- split(.x, factor(.x$Taxon_name))
+        n_sources <- map_int(split, ~ length(unique(.x$Attribute_source)))
+        n_attributes <- map_int(split, ~ {
+            if (is.logical(.x$Attribute_value)) {
+                length(unique(.x$Attribute))
+            } else {
+                length(unique(.x$Attribute_value))
+            }
+        })
+        split[n_sources > 1 & n_attributes > 1] 
+    }) |> 
+    discard(~!length(.x)) |> 
+    map(~ bind_rows(.x))
+```
+ 
+
+Plot number of rows with conflicts
+
+```{r}
+n_rows <- map_int(conflicts, nrow) |> 
+    as.data.frame() |> 
+    tibble::rownames_to_column('dataset') |> 
+    as_tibble() |> 
+    magrittr::set_colnames(c('dataset', 'n_rows'))
+
+n_rows |> 
+    ggplot(aes(dataset, n_rows)) + 
+    geom_col() +
+    geom_label(aes(label = n_rows)) +
+    labs(
+        title = 'Datasets with conflicting attribute sources',
+        subtitle = 'sdfsad'
+    )
+```
+
+# Print table with conflicts
+
+```{r}
+bind_rows(conflicts, .id = 'dataset') |> 
+    DT::datatable(filter = 'top', options = list(scrollx = 'X'))
+```
+
+
+
+
+
+
