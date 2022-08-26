@@ -23,7 +23,7 @@ get_duplicates <- function(
 
     index1 <- which(duplicated(df[, cols]))
     index2 <- which(duplicated(df[, cols], fromLast = TRUE))
-    index <- sort(c(index1, index2))
+    index <- unique(sort(c(index1, index2)))
 
     duplicated_df <- dplyr::arrange(df[index,], Taxon_name)
 
