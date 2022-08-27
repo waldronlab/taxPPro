@@ -497,6 +497,120 @@ propagate <- function(df) {
 
 }
 
+#' Get conflicts
+#'
+#' @param df A data frame from bugphzz
+#'
+#' @return a dataframe or NULL
+#' @export
+#'
+get_conflicts <- function(df) {
+    df <- get_duplicates(df)
+    if (is.null(df)) {
+        message('No duplicates or conflictes here.')
+        return(NULL)
+    }
+    split <- split(df, factor(df$Taxon_name))
+    n_sources <- purrr::map_int(split, ~ length(unique(.x$Attribute_source)))
+    n_attributes <- purrr::map_int(split, ~ {
+        if (is.logical(.x$Attribute_value)) {
+            length(unique(.x$Attribute))
+        } else {
+            length(unique(.x$Attribute_value))
+        }
+    })
+
+    output <- split[n_sources > 1 & n_attributes > 1]
+
+    if(!length(output)) {
+        message('No duplicates here.')
+        return(NULL)
+    }
+
+    output <- output |>
+        purrr::discard(is.null) |>
+        purrr::map(bind_rows) |>
+        dplyr::bind_rows()
+
+    return(output)
+}
+
+
+#' Resolve conflicts in a bugphyzz dataset
+#'
+#' @param df  A dataframe imported with bugphyzz
+#'
+#' @return A dataframe with resolved conflicts
+#' @export
+#'
+resolve_conflicts <- function(df) {
+
+    conflicts <- get_conflicts(df)
+
+    ## if there are no conflicts, return the same dataset
+    if (is.null(conflicts))
+        return(df)
+
+    ## Resolve conflicts for character/numerical values only
+    if (is.logical(df$Attribute_value)) { ## Maybe change here with data type
+
+        conflicts$Confidence_in_curation <- factor(
+            x = conflicts$Confidence_in_curation,
+            levels = c('Low', 'Medium', 'High'),
+            ordered = TRUE
+        )
+
+        conflict_names <- unique(conflicts$Taxon_name)
+        df_no_conflicts <- df |>
+            dplyr::filter(!Taxon_name %in% conflict_names)
+
+        resolved_conflicts <- conflicts |>
+            dplyr::group_by(Taxon_name) |>
+            dplyr::slice_max(Confidence_in_curation, with_ties = TRUE)
+
+        conf_split <-
+            split(resolved_conflicts, factor(resolved_conflicts$Taxon_name))
+
+        n_rows <- map_int(conf_split, nrow)
+
+        if (all(n_rows >= 2)) {
+            msg <- paste0(
+                'There were conflicts but none could be solved.',
+                'Dropping ', length(n_rows), ' taxa.'
+            )
+            warning(msg, call. = FALSE)
+            return(no_conflicts)
+        }
+
+        if (any(n_rows >= 2)) {
+            remaining_conflicts <- sum(n_rows >= 2)
+            msg <- paste0(
+                remaining_conflicts,
+                " conflicts couldn't be solved. Dropping them."
+            )
+            warning(msg, call. = FALSE)
+        }
+
+        resolved_conflicts <- conf_split[!n_rows >= 2] |>
+            dplyr::bind_rows()
+
+        output <-
+            dplyr::bind_rows(df_no_conflicts, resolved_conflicts) |>
+            dplyr::mutate(
+                Confidence_in_curation = as.character(Confidence_in_curation)
+            )
+
+        return(output)
+
+    } else {
+
+        warning(
+            'Cannot resolve conflicts of numerics and ranges yet.',
+            ' No action taken.', call. = FALSE
+        )
+        return(df)
+    }
+}
 
 # upstream <- function(df, rank1, rank2) {
 #
