@@ -49,6 +49,9 @@
     <loc>https://sdgamboa.github.io/taxPPro/reference/get_children.html</loc>
   </url>
   <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/get_conflicts.html</loc>
+  </url>
+  <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/get_duplicates.html</loc>
   </url>
   <url>
@@ -68,6 +71,9 @@
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/remove_taxa_duplicates.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/resolve_conflicts.html</loc>
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/upstream.html</loc>
