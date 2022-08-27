@@ -26,6 +26,39 @@ library(ggplot2)
 phys <- map(physiologies(), as_tibble)
 ```
 
+# Get duplicates
+
+These are not necessarily conflicts, just taxa annotated more than once in the
+same spreadsheet.
+
+
+```{r, message=FALSE}
+duplicates <- map(phys, get_duplicates) |> 
+    discard(is.null)
+
+nrows_duplicates <- duplicates |> 
+    map_int(nrow) |> 
+    as.data.frame() |> 
+    tibble::rownames_to_column(var = 'dataset') |> 
+    magrittr::set_colnames(c('dataset', 'n_rows'))
+
+nrows_duplicates |> 
+    ggplot(aes(reorder(dataset, n_rows), n_rows)) + 
+    geom_col() + 
+    geom_label(aes(label = n_rows)) +
+    labs(
+        title = 'Number of rows with duplicates across spreadsheets',
+        x = 'dataset'
+    ) +
+    theme(
+        axis.text.x = element_text(angle = 45, hjust = 1)
+    )
+```
+
+> Sitll need to know what is going on with habitat and antimicrobila resistance
+Which have lots of duplicates. This needs manual inpsection per
+spreadsheet/dataset
+
 # Get conflicts in attribute source
 
 ```{r, message=FALSE}
