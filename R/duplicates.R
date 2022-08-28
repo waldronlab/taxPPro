@@ -59,7 +59,17 @@ remove_taxa_duplicates <- function(df) {
     return(dplyr::filter(df, !Taxon_name %in% no_select_taxa))
 }
 
+get_double_annotations <- function() {
 
+}
+
+get_agreements <- function() {
+
+}
+
+resolve_agreements <- function() {
+
+}
 
 #' Get conflicts
 #'
@@ -98,7 +108,6 @@ get_conflicts <- function(df) {
 
     return(output)
 }
-
 
 #' Resolve conflicts in a bugphyzz dataset
 #'
