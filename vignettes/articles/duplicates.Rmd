@@ -1,5 +1,5 @@
 ---
-title: "Duplicates and conflicting annotations"
+title: "Duplicates and conflicting annotations in bugphyzz"
 output:
     html_document:
         toc: true
@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup, message=FALSE}
-library(taxPPro)
+# library(taxPPro)
 library(bugphyzz)
 library(dplyr)
 library(purrr)
@@ -28,9 +28,7 @@ phys <- map(physiologies(), as_tibble)
 
 # Get duplicates
 
-These are not necessarily conflicts, just taxa annotated more than once in the
-same spreadsheet.
-
+Duplicates are taxa annotated two or more times in the same spreadsheet.
 
 ```{r, message=FALSE}
 duplicates <- map(phys, get_duplicates) |> 
@@ -55,18 +53,14 @@ nrows_duplicates |>
     )
 ```
 
-> Sitll need to know what is going on with habitat and antimicrobila resistance
-Which have lots of duplicates. This needs manual inpsection per
-spreadsheet/dataset
-
-# Get conflicts in attribute source
+# Get conflicts
 
 ```{r, message=FALSE}
 conflicts <- map(phys, get_conflicts) |> 
     discard(is.null)
 ```
 
-# Plot number of rows with conflicts
+# Plot number of rows with conflicts per dataset
 
 ```{r}
 n_rows <- map_int(conflicts, nrow) |> 
@@ -84,11 +78,10 @@ n_rows |>
     )
 ```
 
-# Print table with conflicts
+# flicts
 
 ```{r}
-bind_rows(conflicts, .id = 'dataset') |> 
-    DT::datatable(filter = 'top', options = list(scrollX = TRUE))
+conflicts_df <- bind_rows(conflicts, .id = 'dataset') 
 ```
 
 # Resolve conflicts (only character/logical for now)
