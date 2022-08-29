@@ -441,6 +441,14 @@ ci_to_scores <- function(x) {
 }
 
 scores_to_ci <- function(x) {
+    Score <- NULL
+    x |>
+        dplyr::mutate(
+            Frequency = dplyr::case_when(
+                Score ~ "always"
+
+            )
+        )
     ## TODO
 }
 

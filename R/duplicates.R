@@ -150,8 +150,38 @@ get_agreements <- function(df) {
         dplyr::filter(Taxon_name %in% real_agree_taxa)
 }
 
-resolve_agreements <- function() {
-    ## TODO
+#' Resolve conflicts
+#'
+#' \code{resolve_agreements} resolves agreements, returning only one
+#' (the highest).
+#'
+#' @param df A data frame imported from bugphuyzz.
+#'
+#' @return A data frame
+#' @export
+#'
+resolve_agreements <- function(df) {
+
+    agree_df <- get_agreements(df)
+
+    if (is.null(agree_df)) {
+        message('No agreements to solve')
+        return(df)
+    }
+
+    agree_names <- unique(agree_df$Taxon_name)
+    df_no_agreements <- df |>
+        dplyr::filter(!Taxon_name %in% agree_names)
+
+    resolved_agreements <- agree_df |>
+        dplyr::group_by(Taxon_name) |>
+        dplyr::slice_max(Confidence_in_curation, with_ties = FALSE)
+
+    dplyr::bind_rows(df_no_agreements, resolved_agreements) |>
+        dplyr::mutate(
+            Confidence_in_curation = as.character(Confidence_in_curation)
+        )
+
 }
 
 #' Get conflicts

@@ -78,14 +78,17 @@ dups <- map(phys, ~ {
 
 ```{r}
 taxa_double_annotation <- dups |> 
-    filter(Duplicate_type == 'double_annotation') |> 
+    filter(
+        Duplicate_type == 'double_annotation', dataset == 'aerophilicity'
+    ) |> 
     pull(Taxon_name) |> 
     unique()
 
 dups |> 
     filter(
         Taxon_name == taxa_double_annotation[1],
-        Duplicate_type == 'double_annotation'
+        Duplicate_type == 'double_annotation',
+        dataset == 'aerophilicity'
     ) |> 
     knitr::kable()
 ```
@@ -94,12 +97,18 @@ dups |>
 
 ```{r}
 taxa_agreements <- dups |> 
-    filter(Duplicate_type == 'agreement') |> 
+    filter(
+        Duplicate_type == 'agreement', dataset == 'aerophilicity'
+    ) |> 
     pull(Taxon_name) |> 
     unique()
 
 dups |> 
-    filter(Taxon_name == taxa_agreements[1], Duplicate_type == 'agreement') |> 
+    filter(
+        Taxon_name == taxa_agreements[1], 
+        Duplicate_type == 'agreement',
+        dataset == 'aerophilicity'
+    ) |> 
     knitr::kable()
 ```
 
@@ -107,12 +116,19 @@ dups |>
 
 ```{r}
 taxa_conflicts <- dups |> 
-    filter(Duplicate_type == 'conflict') |> 
+    filter(
+        Duplicate_type == 'conflict',
+        dataset == 'aerophilicity'
+    ) |> 
     pull(Taxon_name) |> 
     unique()
 
 dups |> 
-    filter(Taxon_name == taxa_conflicts[1], Duplicate_type == 'conflict') |> 
+    filter(
+        Taxon_name == 'Herminiimonas arsenicoxydans', 
+        # Duplicate_type == 'conflict',
+        dataset == 'aerophilicity'
+    ) |> 
     knitr::kable()
 ```
 
@@ -230,9 +246,62 @@ dups_taxa_counts |>
     )
 ```
 
-# Resolved agreements 
+# Resolved agreements (an example)
+
+```{r}
+resolved_agreements <- phys |> 
+    map(resolve_agreements) |>
+    map(~ {
+        .x |> 
+        mutate(
+            Genome_ID = as.character(Genome_ID),
+            Attribute_value = as.character(Attribute_value)
+        )
+    }) |> 
+    discard(is.null) |> 
+    bind_rows(.id = 'dataset')
+
+resolved_agreements |> 
+    filter(
+        Taxon_name == taxa_agreements[1], dataset == 'aerophilicity'
+    )
+```
 
 
 # Resolved conflicts
+
+```{r, message=FALSE, warning=TRUE}
+resolved_conflicts <- phys |> 
+    map(~resolve_conflicts(.x)) |> 
+    map(~ {
+        .x |> 
+            mutate(
+                Genome_ID = as.character(Genome_ID),
+                Attribute_value = as.character(Attribute_value)
+            )
+    }) |> 
+    bind_rows(.id = 'dataset')
+```
+
+
+# An example of resolved conflict (compare above)
+
+```{r}
+resolved_conflicts |> 
+    filter(
+        Taxon_name == 'Herminiimonas arsenicoxydans',
+        dataset == 'aerophilicity'
+    )
+```
+
+Remaining conflicts:
+
+```{r}
+resolved_conflicts <- map(phys, resolve_conflicts)
+remaining_conflicts <- map(resolved_conflicts, get_conflicts) |> 
+    discard(is.null)
+remaining_conflicts$`growth temperature` |>
+    nrow()
+```
 
 
