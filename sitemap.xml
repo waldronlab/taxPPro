@@ -46,10 +46,16 @@
     <loc>https://sdgamboa.github.io/taxPPro/reference/filter_dataset_for_propagation.html</loc>
   </url>
   <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/get_agreements.html</loc>
+  </url>
+  <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/get_children.html</loc>
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/get_conflicts.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/get_double_annotations.html</loc>
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/get_duplicates.html</loc>
@@ -61,9 +67,6 @@
     <loc>https://sdgamboa.github.io/taxPPro/reference/get_parents.html</loc>
   </url>
   <url>
-    <loc>https://sdgamboa.github.io/taxPPro/reference/hello.html</loc>
-  </url>
-  <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/index.html</loc>
   </url>
   <url>
@@ -71,6 +74,9 @@
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/remove_taxa_duplicates.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/resolve_agreements.html</loc>
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/resolve_conflicts.html</loc>

@@ -38,7 +38,7 @@
       <a href="../articles/bugsigdbr.html">signatures in bugsigdbr</a>
     </li>
     <li>
-      <a href="../articles/duplicates.html">Duplicates and conflicting annotations</a>
+      <a href="../articles/duplicates.html">Duplicates and conflicting annotations in bugphyzz</a>
     </li>
     <li>
       <a href="../articles/example1.html">Example of upstream and downstream with aerophilicity and ph</a>
@@ -72,7 +72,7 @@
       </tr></tbody><tbody><tr><td>
           <p><code><a href="calcParentScore.html">calcParentScore()</a></code> </p>
         </td>
-        <td><p>Calculate parent scores</p></td>
+        <td><p>Calculate parent score</p></td>
       </tr><tr><td>
           <p><code><a href="ci_to_scores.html">ci_to_scores()</a></code> </p>
         </td>
@@ -80,19 +80,27 @@
       </tr><tr><td>
           <p><code><a href="downstream.html">downstream()</a></code> </p>
         </td>
-        <td><p>Get annotations for children node (downstream)</p></td>
+        <td><p>Get annotations for descendants (downstream)</p></td>
       </tr><tr><td>
           <p><code><a href="filter_dataset_for_propagation.html">filter_dataset_for_propagation()</a></code> </p>
         </td>
-        <td><p>Filter datset for phylogenetic propagation</p></td>
+        <td><p>Filter dataset propagation</p></td>
+      </tr><tr><td>
+          <p><code><a href="get_agreements.html">get_agreements()</a></code> </p>
+        </td>
+        <td><p>Get agreements</p></td>
       </tr><tr><td>
           <p><code><a href="get_children.html">get_children()</a></code> </p>
         </td>
-        <td><p>Get children taxa</p></td>
+        <td><p>Get children</p></td>
       </tr><tr><td>
           <p><code><a href="get_conflicts.html">get_conflicts()</a></code> </p>
         </td>
         <td><p>Get conflicts</p></td>
+      </tr><tr><td>
+          <p><code><a href="get_double_annotations.html">get_double_annotations()</a></code> </p>
+        </td>
+        <td><p>Get taxa with double annotations</p></td>
       </tr><tr><td>
           <p><code><a href="get_duplicates.html">get_duplicates()</a></code> </p>
         </td>
@@ -106,19 +114,18 @@
         </td>
         <td><p>Get parents</p></td>
       </tr><tr><td>
-          <p><code><a href="hello.html">hello()</a></code> </p>
-        </td>
-        <td><p>Hello world
-<code>hello</code> prints "Hello, world!"</p></td>
-      </tr><tr><td>
           <p><code><a href="propagate.html">propagate()</a></code> </p>
         </td>
-        <td><p>Propagate annotations</p></td>
+        <td><p>Propagate annotations based on custom ASR</p></td>
       </tr><tr><td>
           <p><code><a href="remove_taxa_duplicates.html">remove_taxa_duplicates()</a></code> </p>
         </td>
         <td><p>Remove taxa duplicates
 <code>remove_taxa_duplicates</code> remove taxa that are duplicated</p></td>
+      </tr><tr><td>
+          <p><code><a href="resolve_agreements.html">resolve_agreements()</a></code> </p>
+        </td>
+        <td><p>Resolve conflicts</p></td>
       </tr><tr><td>
           <p><code><a href="resolve_conflicts.html">resolve_conflicts()</a></code> </p>
         </td>
@@ -126,7 +133,7 @@
       </tr><tr><td>
           <p><code><a href="upstream.html">upstream()</a></code> </p>
         </td>
-        <td><p>Code used to annotate parent nodes according to the NCBI taxonomy</p></td>
+        <td><p>Annotate parent nodes (upstream)</p></td>
       </tr></tbody></table></div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
