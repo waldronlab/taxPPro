@@ -7,7 +7,7 @@
 get_duplicates(df, cols = c("Taxon_name", "NCBI_ID"), verbose = FALSE)
 }
 \arguments{
-\item{df}{A dataframe.}
+\item{df}{A data frame.}
 
 \item{cols}{Columns to look for duplicates.}
 }

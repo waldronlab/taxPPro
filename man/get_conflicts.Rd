@@ -10,8 +10,9 @@ get_conflicts(df)
 \item{df}{A data frame from bugphzz}
 }
 \value{
-a dataframe or NULL
+a data frame or NULL
 }
 \description{
-Get conflicts
+\code{get_conflicts} gets taxa with two or more annotations from different
+sources.
 }

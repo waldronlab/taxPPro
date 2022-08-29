@@ -5,7 +5,7 @@
 #' This information could be useful for identifying conflicts of annotations
 #' between different sources.
 #'
-#' @param df A dataframe.
+#' @param df A data frame.
 #' @param cols Columns to look for duplicates.
 #'
 #' @return A dataframe with duplicated rows. If no duplicates are found, this
@@ -19,12 +19,14 @@ get_duplicates <- function(
 
     Taxon_name <- Attribute <- NULL
 
+    df <- df[!is.na(df$Taxon_name) | df$Taxon_name != 'unknown',]
+
     df <- df |>
-        dplyr::filter(Attribute != "")
+        dplyr::filter(Attribute != "", Attribute_value != FALSE)
 
     index1 <- which(duplicated(df[, cols]))
     index2 <- which(duplicated(df[, cols], fromLast = TRUE))
-    index <- unique(sort(c(index1, index2)))
+    index <- sort(unique(c(index1, index2)))
 
     duplicated_df <- dplyr::arrange(df[index,], Taxon_name)
 
@@ -38,52 +40,139 @@ get_duplicates <- function(
     }
 }
 
-#' Remove taxa duplicates
-#' \code{remove_taxa_duplicates} remove taxa that are duplicated
+#' Get taxa with double annotations
 #'
-#' @param df A dataframe imported from bugphyzz
+#' \code{get_double_annotations} gets taxa annotated twice from the same source.
 #'
-#' @return A dataframe without duplicated taxa
+#' @param df A data frame.
+#'
+#' @return A data frame.
 #' @export
 #'
-remove_taxa_duplicates <- function(df) {
+get_double_annotations <- function(df) {
 
-    dup <- get_duplicates(df)
+    dups <- get_duplicates(df)
 
-    if (is.null(dup))
-        return(df)
+    if (is.null(dups)) {
+        message('No duplicates or conflictes here.')
+        return(NULL)
+    }
 
-    no_select_taxa <- dup |>
-        dplyr::pull(Taxon_name) |>
-        unique()
-    return(dplyr::filter(df, !Taxon_name %in% no_select_taxa))
+    Attribute_source <- Taxon_name <- NULL
+
+    taxa_counts <- dups |>
+        dplyr::count(Attribute_source, Taxon_name) |>
+        dplyr::arrange(Taxon_name, Attribute_source) |>
+        dplyr::filter(n > 1)
+
+    if (!nrow(taxa_counts)) {
+        message('No double annotations in this data frame.')
+        return(NULL)
+    }
+
+    taxa <- unique(taxa_counts$Taxon_name)
+    double_annotations_all <- dplyr::filter(dups, Taxon_name %in% taxa)
+
+    ## Remove conflicts and agreements
+    conflicts <- get_conflicts(df)
+    if (!is.null(conflicts)) {
+        conflict_taxa <- unique(conflicts$Taxon_name)
+    } else {
+        conflict_taxa <- NULL
+    }
+
+    agree <- get_agreements(df)
+    if (is.null(conflicts)) {
+        agree_taxa <- unique(agree$Taxon_name)
+    } else {
+        agree_taxa <- NULL
+    }
+
+    remove_taxa <- c(conflict_taxa, agree_taxa)
+
+    double_annotations_all |>
+        dplyr::filter(!Taxon_name %in% remove_taxa)
 }
 
-get_double_annotations <- function() {
-
-}
-
-get_agreements <- function() {
-
-}
-
-resolve_agreements <- function() {
-
-}
-
-#' Get conflicts
+#' Get agreements
 #'
-#' @param df A data frame from bugphzz
+#' \code{get_agreements} gets taxa annotated two or more times from different
+#' sources.
 #'
-#' @return a dataframe or NULL
+#' @param df A data frame.
+#'
+#' @return A data frame.
 #' @export
 #'
-get_conflicts <- function(df) {
+get_agreements <- function(df) {
+
     df <- get_duplicates(df)
+
     if (is.null(df)) {
         message('No duplicates or conflictes here.')
         return(NULL)
     }
+
+    if(is.logical(df$Attribute_value)) {
+        attr_col <- 'Attribute'
+    } else if (is.numeric(df$Attribute_value)) {
+        attr_col <- 'Attribute_value'
+    }
+
+    split <- split(df, df$Taxon_name)
+
+    select_lgl <- split |>
+        purrr::map_lgl(~ {
+             attrs <- unique(.x[[attr_col]])
+             sources <- unique(.x[['Attribute_source']])
+             lgl_value <- length(attrs) == 1 & length(sources) > 1
+             lgl_value
+        })
+
+    if (!any(select_lgl)) {
+        message("No agreements.")
+        return(NULL)
+    }
+
+    agreements_df <- split[select_lgl] |>
+        dplyr::bind_rows()
+
+    conflicts_df <- get_conflicts(df)
+
+    if (is.null(conflicts_df))
+        return(agreements_df)
+
+    agree_taxa <- unique(agreements_df$Taxon_name)
+    conflict_taxa <- unique(conflicts_df$Taxon_name)
+
+    real_agree_taxa <- agree_taxa[!agree_taxa %in% conflict_taxa]
+    agreements_df |>
+        dplyr::filter(Taxon_name %in% real_agree_taxa)
+}
+
+resolve_agreements <- function() {
+    ## TODO
+}
+
+#' Get conflicts
+#'
+#' \code{get_conflicts} gets taxa with two or more annotations from different
+#' sources.
+#'
+#' @param df A data frame from bugphzz
+#'
+#' @return a data frame or NULL
+#' @export
+#'
+get_conflicts <- function(df) {
+
+    df <- get_duplicates(df)
+
+    if (is.null(df)) {
+        message('No duplicates or conflictes here.')
+        return(NULL)
+    }
+
     split <- split(df, factor(df$Taxon_name))
     n_sources <- purrr::map_int(split, ~ length(unique(.x$Attribute_source)))
     n_attributes <- purrr::map_int(split, ~ {
@@ -97,7 +186,7 @@ get_conflicts <- function(df) {
     output <- split[n_sources > 1 & n_attributes > 1]
 
     if(!length(output)) {
-        message('No duplicates here.')
+        message('No conflicts here.')
         return(NULL)
     }
 
@@ -183,4 +272,25 @@ resolve_conflicts <- function(df) {
         )
         return(df)
     }
+}
+
+#' Remove taxa duplicates
+#' \code{remove_taxa_duplicates} remove taxa that are duplicated
+#'
+#' @param df A dataframe imported from bugphyzz
+#'
+#' @return A dataframe without duplicated taxa
+#' @export
+#'
+remove_taxa_duplicates <- function(df) {
+
+    dup <- get_duplicates(df)
+
+    if (is.null(dup))
+        return(df)
+
+    no_select_taxa <- dup |>
+        dplyr::pull(Taxon_name) |>
+        unique()
+    return(dplyr::filter(df, !Taxon_name %in% no_select_taxa))
 }
