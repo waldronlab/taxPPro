@@ -8,179 +8,231 @@ output:
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  message = FALSE,
+  warning = FALSE
 )
 ```
 
 ```{r setup, message=FALSE}
-# library(taxPPro)
+library(taxPPro)
 library(bugphyzz)
 library(dplyr)
 library(purrr)
 library(ggplot2)
 ```
 
+
+# Definitions of different types of duplicates
+
++ **Duplicates**. Taxa annotated more than once in a single spreadsheet. The
+types of duplicates are: double annotations, agreements, conflicts.
++ **Double annotations**. Taxa with two or more annotations from a single
+attribute source.
++ **Agreements**. Taxa with the same annotation from two or more attribute
+sources.
++ **Conflicts**. Taxa with two or more annotations from different attribute
+sources.
+
 # Import data from bugphyzz
 
 ```{r, message=FALSE}
 phys <- map(physiologies(), as_tibble)
+subtitle_msg <- 
+    'In the case of character/logical values, only TRUE values are included'
 ```
 
 # Get duplicates
 
-Duplicates are taxa annotated two or more times in the same spreadsheet.
-
 ```{r, message=FALSE}
-duplicates <- map(phys, get_duplicates) |> 
-    discard(is.null)
+## Define a function to get the different types of duplicates
+get_dups <- function(df) {
+    double_annotations <- get_double_annotations(df)
+    agreements <- get_agreements(df)
+    conflicts <- get_conflicts(df)
+    all_dups <- list(
+        double_annotation = double_annotations,
+        agreement = agreements,
+        conflict = conflicts
+    ) |>
+        dplyr::bind_rows(.id = 'Duplicate_type')
+    if (!nrow(all_dups)) {
+        return(NULL)
+    } else {
+        return(all_dups)
+    }
+}
 
-nrows_duplicates <- duplicates |> 
-    map_int(nrow) |> 
-    as.data.frame() |> 
-    tibble::rownames_to_column(var = 'dataset') |> 
-    magrittr::set_colnames(c('dataset', 'n_rows'))
+dups <- map(phys, ~ {
+    df <- get_dups(.x)
+    df$Genome_ID <- as.character(df$Genome_ID)
+    df
+}) |> 
+    discard(is.null) |> 
+    bind_rows(.id = 'dataset')
+```
 
-nrows_duplicates |> 
-    ggplot(aes(reorder(dataset, n_rows), n_rows)) + 
-    geom_col() + 
-    geom_label(aes(label = n_rows)) +
+# Individual examples
+
+## Example of double annotation
+
+```{r}
+taxa_double_annotation <- dups |> 
+    filter(Duplicate_type == 'double_annotation') |> 
+    pull(Taxon_name) |> 
+    unique()
+
+dups |> 
+    filter(
+        Taxon_name == taxa_double_annotation[1],
+        Duplicate_type == 'double_annotation'
+    ) |> 
+    knitr::kable()
+```
+
+## Example of agreement
+
+```{r}
+taxa_agreements <- dups |> 
+    filter(Duplicate_type == 'agreement') |> 
+    pull(Taxon_name) |> 
+    unique()
+
+dups |> 
+    filter(Taxon_name == taxa_agreements[1], Duplicate_type == 'agreement') |> 
+    knitr::kable()
+```
+
+## Example of conflict
+
+```{r}
+taxa_conflicts <- dups |> 
+    filter(Duplicate_type == 'conflict') |> 
+    pull(Taxon_name) |> 
+    unique()
+
+dups |> 
+    filter(Taxon_name == taxa_conflicts[1], Duplicate_type == 'conflict') |> 
+    knitr::kable()
+```
+
+
+
+
+
+# Plot number of rows with diffrent types of duplicates
+
+```{r}
+dups_row_counts <- dups |> 
+    count(dataset, Duplicate_type)
+
+dups_row_counts |> 
+    ggplot(aes(dataset, n)) + 
+    geom_col(aes(fill = Duplicate_type)) +
     labs(
-        title = 'Number of rows with duplicates across spreadsheets',
-        x = 'dataset'
+        title = 'Number of rows with different types of duplicates',
+        subtitle = subtitle_msg
     ) +
     theme(
         axis.text.x = element_text(angle = 45, hjust = 1)
     )
 ```
 
-# Get conflicts
-
-```{r, message=FALSE}
-conflicts <- map(phys, get_conflicts) |> 
-    discard(is.null)
-```
-
-# Plot number of rows with conflicts per dataset
+# Plot proportions of rows with diffferent types of duplicates
 
 ```{r}
-n_rows <- map_int(conflicts, nrow) |> 
-    as.data.frame() |> 
-    tibble::rownames_to_column('dataset') |> 
-    as_tibble() |> 
-    magrittr::set_colnames(c('dataset', 'n_rows'))
-
-n_rows |> 
-    ggplot(aes(dataset, n_rows)) + 
-    geom_col() +
-    geom_label(aes(label = n_rows)) +
+dups_row_counts |> 
+    group_by(dataset) |> 
+    mutate(prop = round(prop.table(n) * 100, digits = 2)) |> 
+    ungroup() |> 
+    ggplot(aes(dataset, prop)) + 
+    geom_col(aes(fill = Duplicate_type)) +
     labs(
-        title = 'Datasets with conflicting attribute sources',
+        title = 'Number of rows with different types of duplicates',
+        subtitle = subtitle_msg
+    ) +
+    theme(
+        axis.text.x = element_text(angle = 45, hjust = 1)
+    ) + 
+    scale_y_continuous(labels = scales::percent_format())
+```
+
+# Plot number of rows with conflicts
+
+```{r}
+dups_row_counts |>
+    filter(Duplicate_type == 'conflict') |> 
+    ggplot(aes(dataset, n)) +
+    geom_col() +
+    geom_label(aes(label = n)) +
+    labs(
+        title = 'Number of rows with conflicts per dataset',
+        subtitle = subtitle_msg
+    ) +
+    theme(
+        axis.text.x = element_text(angle = 45, hjust = 1)
     )
 ```
 
-# flicts
+# Plot number of unique taxa with different types of duplicates
 
 ```{r}
-conflicts_df <- bind_rows(conflicts, .id = 'dataset') 
-```
+dups_taxa_counts <- dups |> 
+    select(dataset, Duplicate_type, Taxon_name) |> 
+    distinct() |> 
+    count(dataset, Duplicate_type)
 
-# Resolve conflicts (only character/logical for now)
-
-```{r, message=FALSE}
-resolved <- map(phys, resolve_conflicts)
-new_conflicts <- map(resolved, get_conflicts) |> 
-    discard(is.null)
-```
-
-# Plot remaining number of rows with conflicts
-
-Only "growth temperature" apppears because all conflicts have been solved or
-dropped.
-
-```{r}
-n_rows_new <- map_int(new_conflicts, nrow) |> 
-    as.data.frame() |> 
-    tibble::rownames_to_column('dataset') |> 
-    as_tibble() |> 
-    magrittr::set_colnames(c('dataset', 'n_rows'))
-
-n_rows_new |> 
-    ggplot(aes(dataset, n_rows)) + 
-    geom_col() +
-    geom_label(aes(label = n_rows)) +
+dups_taxa_counts |> 
+    ggplot(aes(dataset, n)) +
+    geom_col(aes(fill = Duplicate_type)) +
     labs(
-        title = 'Datasets with remianing conflicting attribute sources'
+        title = 'Number of unique taxa with dupicates per dataset',
+        subtitle = subtitle_msg
+    ) +
+    theme(
+        axis.text.x = element_text(angle = 45, hjust = 1)
     )
 ```
 
-# Print table with the taxa that were resolved
-
-Aerophilicity
+# Plot proportions of unique taxa with duplicates per dataset
 
 ```{r}
-tax_names <- unique(conflicts$aerophilicity$Taxon_name)
-resolved$aerophilicity |> 
-    filter(Taxon_name %in% tax_names) |> 
-    DT::datatable(filter = 'top', options = list(scrollX = TRUE))
+dups_taxa_counts |> 
+    group_by(dataset) |> 
+    mutate(prop = round(prop.table(n) * 100, digits = 2)) |> 
+    ungroup() |> 
+    ggplot(aes(dataset, prop)) +
+    geom_col(aes(fill = Duplicate_type)) +
+    labs(
+        title = 'Proportion of unique taxa per duplicate type per dataset',
+        subtitle = subtitle_msg
+    ) +
+    theme(
+        axis.text.x = element_text(angle = 45, hjust = 1)
+    )
 
 ```
 
-
-Gram strain
-
-```{r}
-tax_names <- unique(conflicts$`gram stain`$Taxon_name)
-resolved$`gram stain` |> 
-    filter(Taxon_name %in% tax_names) |> 
-    DT::datatable(filter = 'top', options = list(scrollX = TRUE))
-```
-
-Isolation site
+# Plot number of unique taxa with conflicts
 
 ```{r}
-tax_names <- unique(conflicts$`isolation site`$Taxon_name)
-resolved$`isolation site` |> 
-    filter(Taxon_name %in% tax_names) |> 
-    DT::datatable(filter = 'top', options = list(scrollX = TRUE))
+dups_taxa_counts |> 
+    filter(Duplicate_type == 'conflict') |> 
+    ggplot(aes(dataset, n)) +
+    geom_col() +
+    geom_label(aes(label = n)) +
+    labs(
+        title = 'Number of unique taxa with conflicts per dataset',
+        subtitle = subtitle_msg
+    ) +
+    theme(
+        axis.text.x = element_text(angle = 45, hjust = 1)
+    )
 ```
 
-Habitat
-Only conflicts that were solved are displayed
-
-```{r}
-tax_names <- unique(conflicts$habitat$Taxon_name)
-resolved$habitat |> 
-    filter(Taxon_name %in% tax_names) |> 
-    DT::datatable(filter = 'top', options = list(scrollX = TRUE))
-```
+# Resolved agreements 
 
 
-# Print table of conflicts that were not resolved (in habitat)
-
-```{r}
-conflicting_tax_names <- unique(conflicts$habitat$Taxon_name)
-resolved_tax_names <- resolved$habitat |> 
-    filter(Taxon_name %in% tax_names) |> 
-    pull(Taxon_name) |> 
-    unique()
-remaining_conflicting_tax_names <- 
-    conflicting_tax_names[!conflicting_tax_names %in% resolved_tax_names]
-
-conflicts$habitat |> 
-    filter(Taxon_name %in% remaining_conflicting_tax_names) |> 
-    DT::datatable(filter = 'top', options = list(scrollX = TRUE))
-
-```
-
-
-
-
-
-
-
-
-
-
-
+# Resolved conflicts
 
 
