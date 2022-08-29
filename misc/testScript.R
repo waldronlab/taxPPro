@@ -3,31 +3,35 @@ library(bugphyzz)
 library(dplyr)
 library(purrr)
 
-phys = map(physiologies(), as_tibble)
+phys <- map(physiologies(), as_tibble)
 
-aer = phys$aerophilicity
+get_dups <- function(df) {
+    double_annotations <- get_double_annotations(df)
+    agreements <- get_agreements(df)
+    conflicts <- get_conflicts(df)
+    all_dups <- list(
+        double_annotation = double_annotations,
+        agreement = agreements,
+        conflict = conflicts
+    ) |>
+        dplyr::bind_rows(.id = 'Duplicate_type')
+    if (!nrow(all_dups)) {
+        return(NULL)
+    } else {
+        return(all_dups)
+    }
+}
 
-aer_conflicts <- get_conflicts(aer)
+dups_1 <- map(phys, get_duplicates) |>
+    discard(is.null)
 
-aer_conflicts$Confidence_in_curation <- factor(
-    x = aer_conflicts$Confidence_in_curation,
-    levels = c('Low', 'Medium', 'High'),
-    # labels = c(1, 2, 3),
-    ordered = TRUE
-)
+dups <- map(phys, get_dups) |>
+    discard(is.null)
 
 
-aer_conflicts |>
-    dplyr::group_by(Taxon_name) |>
-    dplyr::slice_max(Confidence_in_curation)
+sum(!map_int(dups_1, nrow) == map_int(dups, nrow))
 
 
 
-aer |>
-    resolve_conflicts()
-
-h <- phys$habitat
-x <- resolve_conflicts(h)
-x
 
 
