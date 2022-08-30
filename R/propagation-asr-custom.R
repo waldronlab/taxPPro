@@ -19,7 +19,7 @@ filter_dataset_for_propagation <- function(df, df_name = NULL) {
     columns_for_propagation <- c(
         'Taxon_name', 'NCBI_ID', 'Rank',
         'Attribute', 'Attribute_value', 'Attribute_source',
-        'Evidence', 'Frequency', 'Confidence_in_source',
+        'Evidence', 'Frequency', 'Confidence_in_curation',
         'Parent_NCBI_ID', 'Parent_name', 'Parent_rank'
     )
 

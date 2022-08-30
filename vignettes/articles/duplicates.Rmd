@@ -90,7 +90,7 @@ dups |>
         Duplicate_type == 'double_annotation',
         dataset == 'aerophilicity'
     ) |> 
-    knitr::kable()
+    DT::datatable(filter = 'top', options = list(scrollX = TRUE))
 ```
 
 ## Example of agreement
@@ -109,7 +109,7 @@ dups |>
         Duplicate_type == 'agreement',
         dataset == 'aerophilicity'
     ) |> 
-    knitr::kable()
+    DT::datatable(filter = 'top', options = list(scrollX = TRUE))
 ```
 
 ## Example of conflict
@@ -129,7 +129,7 @@ dups |>
         # Duplicate_type == 'conflict',
         dataset == 'aerophilicity'
     ) |> 
-    knitr::kable()
+    DT::datatable(filter = 'top', options = list(scrollX = TRUE))
 ```
 
 
@@ -264,7 +264,8 @@ resolved_agreements <- phys |>
 resolved_agreements |> 
     filter(
         Taxon_name == taxa_agreements[1], dataset == 'aerophilicity'
-    )
+    ) |> 
+     DT::datatable(filter = 'top', options = list(scrollX = TRUE))
 ```
 
 
@@ -291,7 +292,8 @@ resolved_conflicts |>
     filter(
         Taxon_name == 'Herminiimonas arsenicoxydans',
         dataset == 'aerophilicity'
-    )
+    ) |> 
+    knitr::kable()
 ```
 
 Remaining conflicts:
