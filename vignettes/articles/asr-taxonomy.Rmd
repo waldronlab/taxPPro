@@ -1,10 +1,9 @@
 ---
-title: "asr-taxonomy"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{asr-taxonomy}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+title: "ASR with a taxonomy tree"
+subtitle: "All branch lengths are a unit"
+output: 
+    html_vignette:
+        toc: yes
 ---
 
 ```{r, include = FALSE}
