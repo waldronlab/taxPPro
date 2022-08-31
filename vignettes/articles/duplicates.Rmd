@@ -79,14 +79,16 @@ dups <- map(phys, ~ {
 ```{r}
 taxa_double_annotation <- dups |> 
     filter(
-        Duplicate_type == 'double_annotation', dataset == 'aerophilicity'
+        Duplicate_type == 'double_annotation', dataset == 'aerophilicity',
+        Attribute_source == "Bergey's Manual", 
+        Taxon_name == 'Streptobacillus'
     ) |> 
     pull(Taxon_name) |> 
     unique()
 
 dups |> 
     filter(
-        Taxon_name == taxa_double_annotation[1],
+        Taxon_name == sample(taxa_double_annotation, 1),
         Duplicate_type == 'double_annotation',
         dataset == 'aerophilicity'
     ) |> 
@@ -98,7 +100,8 @@ dups |>
 ```{r}
 taxa_agreements <- dups |> 
     filter(
-        Duplicate_type == 'agreement', dataset == 'aerophilicity'
+        Duplicate_type == 'agreement', dataset == 'aerophilicity',
+        Taxon_name == 'Campylobacter coli'
     ) |> 
     pull(Taxon_name) |> 
     unique()
@@ -305,5 +308,30 @@ remaining_conflicts <- map(resolved_conflicts, get_conflicts) |>
 remaining_conflicts$`growth temperature` |>
     nrow()
 ```
+
+# Double annotations by source
+
+
+```{r}
+dups_source_counts <- dups |> 
+    filter(Duplicate_type == 'double_annotation') |>
+    count(dataset, Attribute_source) |> 
+    mutate(
+        Attribute_source = ifelse(
+            grepl('http', Attribute_source), 'Madin', Attribute_source
+        )
+    )
+
+dups_source_counts |> 
+    ggplot(aes(dataset, n)) + 
+    geom_col(aes(fill = Attribute_source)) + 
+    labs(
+        title = 'Counts of rows with double annotations per dataset per source'
+    ) +
+    theme(
+        axis.text.x = element_text(angle = 45, hjust = 1)
+    )
+```
+
 
 

@@ -1,0 +1,155 @@
+---
+title: "asr-taxonomy"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{asr-taxonomy}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+# library(taxPPro)
+library(bugphyzz)
+library(ete3r) # https://github.com/sdgamboa/ete3r
+library(phytools)
+library(ape)
+library(dplyr)
+library(tidytree)
+library(ggtree)
+```
+
+Step 1. Import a dataset with bugphyzz
+An attribute with discrete values (aerophilicity):
+
+```{r}
+oxygen <- physiologies("aerophilicity")[[1]]
+```
+
+
+```{r}
+select_cols <- c(
+    "NCBI_ID", "Attribute", "Evidence", "Frequency", "Rank", 
+    "Taxon_name"
+)
+oxygen <- oxygen[!is.na(oxygen$NCBI_ID) & !is.na(oxygen$Rank), select_cols]
+glimpse(oxygen)
+```
+
+Step 2. Filter by rank
+In this case, I’ll use strain
+
+```{r}
+oxygen_sp <- oxygen[oxygen$Rank == "strain",]
+head(oxygen_sp)
+```
+
+Step 3. Get a taxonomy tree
+Using the ete3r package: https://github.com/sdgamboa/ete3r
+
+
+```{r}
+my_tree_data <- getTree(unique(oxygen_sp$NCBI_ID))
+my_tree <- my_tree_data@phylo
+my_tree
+```
+
+The metadata of the nodes is also present:
+
+```{r}
+my_tree_metadata <- my_tree_data %>% 
+    as_tibble()
+head(my_tree_metadata)
+```
+
+The tree must be rooted and fully solved (dicotomies only):
+
+```{r}
+is.rooted(my_tree)
+
+```
+
+```{r}
+is.binary(my_tree)
+```
+
+# Step 4. Create a 1-0 matrix for each attribute (discrete)
+
+```{r}
+attribute_matrix <- attributeMatrix(oxygen_sp, "NCBI_ID", "Attribute")
+```
+
+```{r}
+head(attribute_matrix)
+```
+
+# Step 5. Divide the 1-0 matrix into character vectors (1 vector per attribute)
+
+```{r}
+states <- vector("list", ncol(attribute_matrix))
+names(states) <- colnames(attribute_matrix)
+for (i in seq_along(states)) {
+    states[[i]] <- attribute_matrix[,i]
+}
+states <- states[vapply(states, \(y) sum(y) > 1, logical(1))]
+states <- lapply(states, function(x) {
+    output <- as.character(x)
+    names(output) <- names(x)
+    output
+    })
+
+statesc <- states[vapply(states, \(y) length(y) > 1 , logical(1))]
+lapply(states, head)
+```
+
+# Step 6-7. Estimate ASR and convert likelihoods in entries
+
+```{r}
+x = createEntriesASR(x = states, phy = my_tree, df = my_tree_metadata)
+head(x)
+```
+
+# Step 8. Expand dataset and use makeSignatures
+
+Appending entries with appendASR:
+
+```{r}
+oxygen$Evidence <- "EXP" # some are empty
+new_oxygen <- appendASR(oxygen, x)
+```
+
+```{r}
+table(oxygen$Rank)
+```
+
+```{r}
+table(new_oxygen$Rank)
+```
+
+```{r}
+a = makeSignatures(
+    df = oxygen, tax.id.type = "taxname", tax.level = "species",
+    Confidence_interval = 0.7, min.size = 10
+)
+b = makeSignatures(
+    df = new_oxygen, tax.id.type = "taxname", tax.level = "species",
+    Confidence_interval = 0.7, min.size = 10
+)
+```
+
+```{r}
+lapply(a, length) %>% 
+    data.frame()
+```
+
+```{r}
+lapply(b, length) %>% 
+    data.frame()
+```
+
