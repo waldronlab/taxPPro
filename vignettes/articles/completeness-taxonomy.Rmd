@@ -1,13 +1,11 @@
 ---
-title: "Completeness"
+title: "NCBI taxonomy and completeness"
 ---
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  message = FALSE,
-  warning = FALSE
 )
 ```
 
@@ -20,14 +18,8 @@ library(purrr)
 ```
 
 ```{r}
-ncbi_taxonomy <- get_ncbi_taxonomy() |> 
-    mutate(strain = ifelse(rank == 'strain', tax_name, NA))
-
-dim(ncbi_taxonomy)
-```
-
-```{r}
-head(ncbi_taxonomy)
+ncbi_taxonomy <- get_ncbi_taxonomy()
+ncbi_taxonomy
 ```
 
 ```{r}
@@ -36,78 +28,20 @@ ranks <- c(
 )
 
 ncbi_counts <- ncbi_taxonomy |> 
-    dplyr::filter(rank %in% ranks) |> 
-    vapply(function(x) length(unique(x)), integer(1))
+    dplyr::filter(Rank %in% ranks) |> 
+    count(Rank)
 
-ncbi_counts_tbl <- tibble::tibble(
-    rank = names(ncbi_counts), n = ncbi_counts
-)
-
-ncbi_counts_tbl |> 
-    filter(rank %in% ranks) |> 
-    mutate(rank = factor(rank, levels = ranks)) |> 
-    ggplot(aes(reorder(rank, n), n)) +
+rank_levles <- ranks[ranks %in% ncbi_counts]
+    
+ncbi_counts |> 
+    mutate(Rank = factor(Rank, levels = rank_levels)) |> 
+    ggplot(aes(Rank, n)) +
     geom_col() +
-    geom_label(aes(label = n)) +
-    labs(
-        title = 'NCBI totals',
-        x = 'rank'
-    )
+    geom_label(aes(label = n))
     
 ```
 
-Completeness
+# 
 
-```{r, message=FALSE}
-phys = physiologies() |> 
-    lapply(as_tibble)
-```
-
-
-```{r}
-phys_no_dup <- map(phys, ~ {
-    .x |> filter_dataset_for_propagation() |> 
-        # remove_taxa_duplicates() |> 
-        ci_to_scores() |> 
-        distinct()
-}) |> 
-    keep(~!nrow(.x) == 0)
-
-phys_filtered_counts <- map(phys_no_dup, ~ {
-    counts <- table(.x$Rank)
-    tibble::tibble(rank =  names(counts), n = as.integer(counts))
-}) |> 
-    bind_rows(.id = 'dataset')
-
-phys_filtered_counts |> 
-    ggplot(aes(reorder(dataset, n), n)) +
-    geom_col(aes(fill = rank)) +
-    labs(
-        title = 'Totals across bugphyzz datasets',
-        x = 'dataset'
-    ) +
-    theme(
-        axis.text.x = element_text(angle = 45, hjust = 1)
-    )
-```
-```{r}
-phys_counts <- map(phys, ~ {
-    .x <- dplyr::filter(.x, Rank %in% ranks)
-    counts <- table(.x$Rank)
-    tibble::tibble(rank =  names(counts), n = as.integer(counts))
-}) |> 
-    bind_rows(.id = 'dataset')
-
-phys_counts |> 
-    ggplot(aes(reorder(dataset, n), n)) +
-    geom_col(aes(fill = rank)) +
-    labs(
-        title = 'Totals across bugphyzz datasets',
-        x = 'dataset'
-    ) +
-    theme(
-        axis.text.x = element_text(angle = 45, hjust = 1)
-    )
-```
 
 
