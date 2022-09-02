@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, message = FALSE}
 # library(taxPPro)
 library(bugphyzz)
 library(ete3r) # https://github.com/sdgamboa/ete3r
@@ -22,41 +22,41 @@ library(ape)
 library(dplyr)
 library(tidytree)
 library(ggtree)
+library(tidyr)
 ```
 
-Step 1. Import a dataset with bugphyzz
-An attribute with discrete values (aerophilicity):
+# Attribute with categorical/logical values
 
-```{r}
-oxygen <- physiologies("aerophilicity")[[1]]
-```
-
+## Import data
 
 ```{r}
 select_cols <- c(
     "NCBI_ID", "Attribute", "Evidence", "Frequency", "Rank", 
     "Taxon_name"
 )
-oxygen <- oxygen[!is.na(oxygen$NCBI_ID) & !is.na(oxygen$Rank), select_cols]
+
+oxygen <- physiologies("aerophilicity")[[1]] |> 
+    resolve_agreements() |> 
+    resolve_conflicts() |> 
+    select(all_of(select_cols)) |> 
+    filter(!is.na(NCBI_ID), !is.na(Rank))
+
 glimpse(oxygen)
 ```
 
-Step 2. Filter by rank
-In this case, I’ll use strain
+## Filter by rank
 
 ```{r}
-oxygen_sp <- oxygen[oxygen$Rank == "strain",]
-head(oxygen_sp)
+oxygen_strain <- oxygen[oxygen$Rank == "strain",]
+head(oxygen_strain)
 ```
 
-Step 3. Get a taxonomy tree
-Using the ete3r package: https://github.com/sdgamboa/ete3r
-
+## Get taxonomy tree for selected NCBI_IDs
 
 ```{r}
-my_tree_data <- getTree(unique(oxygen_sp$NCBI_ID))
-my_tree <- my_tree_data@phylo
-my_tree
+tree_ox_strain <- getTree(unique(oxygen_strain$NCBI_ID))
+tree_ox_strain <- tree_ox_strain@phylo
+tree_ox_strain
 ```
 
 The metadata of the nodes is also present:
@@ -70,25 +70,31 @@ head(my_tree_metadata)
 The tree must be rooted and fully solved (dicotomies only):
 
 ```{r}
-is.rooted(my_tree)
-
+is.rooted(tree_ox_strain)
 ```
 
 ```{r}
-is.binary(my_tree)
+is.binary(tree_ox_strain)
 ```
 
 # Step 4. Create a 1-0 matrix for each attribute (discrete)
 
-```{r}
-attribute_matrix <- attributeMatrix(oxygen_sp, "NCBI_ID", "Attribute")
-```
 
 ```{r}
-head(attribute_matrix)
+attribute_matrix <- oxygen_strain |> 
+    mutate(Presence = 1) |> 
+    select(NCBI_ID, Attribute, Presence) |> 
+    pivot_wider(
+        names_from = 'Attribute', values_from = 'Presence', values_fill = 0
+    ) |> 
+    distinct() |> 
+    tibble::column_to_rownames(var = 'NCBI_ID') |> 
+    as.data.frame() |> 
+    as.matrix()
+attribute_matrix[1:5, 1:5]
 ```
 
-# Step 5. Divide the 1-0 matrix into character vectors (1 vector per attribute)
+## Divide matrix into vectors
 
 ```{r}
 states <- vector("list", ncol(attribute_matrix))
@@ -103,18 +109,20 @@ states <- lapply(states, function(x) {
     output
     })
 
-statesc <- states[vapply(states, \(y) length(y) > 1 , logical(1))]
+states <- states[vapply(states, \(y) length(y) > 1 , logical(1))]
 lapply(states, head)
 ```
 
-# Step 6-7. Estimate ASR and convert likelihoods in entries
+# Estimate ASR and convert likelihoods in entries
+
+These both steps aer performed with a single function call:
 
 ```{r}
-x = createEntriesASR(x = states, phy = my_tree, df = my_tree_metadata)
+x = createEntriesASR(x = states, phy = tree_ox_strain, df = my_tree_metadata)
 head(x)
 ```
 
-# Step 8. Expand dataset and use makeSignatures
+## Expand dataset
 
 Appending entries with appendASR:
 
@@ -122,33 +130,3 @@ Appending entries with appendASR:
 oxygen$Evidence <- "EXP" # some are empty
 new_oxygen <- appendASR(oxygen, x)
 ```
-
-```{r}
-table(oxygen$Rank)
-```
-
-```{r}
-table(new_oxygen$Rank)
-```
-
-```{r}
-a = makeSignatures(
-    df = oxygen, tax.id.type = "taxname", tax.level = "species",
-    Confidence_interval = 0.7, min.size = 10
-)
-b = makeSignatures(
-    df = new_oxygen, tax.id.type = "taxname", tax.level = "species",
-    Confidence_interval = 0.7, min.size = 10
-)
-```
-
-```{r}
-lapply(a, length) %>% 
-    data.frame()
-```
-
-```{r}
-lapply(b, length) %>% 
-    data.frame()
-```
-
