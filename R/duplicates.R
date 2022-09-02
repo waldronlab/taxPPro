@@ -263,7 +263,7 @@ resolve_conflicts <- function(df) {
         conf_split <-
             split(resolved_conflicts, factor(resolved_conflicts$Taxon_name))
 
-        n_rows <- map_int(conf_split, nrow)
+        n_rows <- purrr::map_int(conf_split, nrow)
 
         if (all(n_rows >= 2)) {
             msg <- paste0(

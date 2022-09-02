@@ -18,57 +18,90 @@ get_ncbi_taxonomy <- function(force_download = FALSE) {
     superkingdom <- kingdom <- phylum <- class <- order <- family <-
         genus <- species <- NCBI_ID <- tax_name <- NULL
 
+    if (force_download) {
+        tax_dump <- .ncbi_taxonomy_dump(force = force_download)
+    } else {
+        tax_dump <- .ncbi_taxonomy_dump()
+    }
+
+    message('Extracting files...')
     ## Untar files
     temp_dir <- tempdir()
     nodes_file <- paste0(temp_dir, "/nodes.dmp")
     rankedlineage_file <- paste0(temp_dir, "/rankedlineage.dmp")
     utils::untar(
-        tarfile = .ncbi_taxonomy_dump(force = force_download),
+        tarfile = tax_dump,
         files = c("rankedlineage.dmp", "nodes.dmp"),
         exdir = temp_dir
     )
 
+    delim <- '\t|\t'
+
     ## Read rankedlineage file
     rankedlineage_col_names <- c(
-        "NCBI_ID", "tax_name", "species", "genus", "family", "order",
+        "NCBI_ID", "Taxon_name", "species", "genus", "family", "order",
         "class", "phylum", "kingdom", "superkingdom"
     )
 
+    message('Importing ranked lineage...')
+
     rankedlineage <- vroom::vroom(
-        rankedlineage_file, col_names = FALSE, show_col_types = FALSE
+        rankedlineage_file, col_names = rankedlineage_col_names,
+        show_col_types = FALSE, delim = delim
     ) %>%
-        purrr::discard(
-            ~all(is.na(.x) | all(stringr::str_detect(.x, "\\|")))
-        ) %>%
-        magrittr::set_colnames(rankedlineage_col_names) %>%
+        dplyr::mutate(
+            superkingdom = stringr::str_remove(superkingdom, '(\\||\t\\|)')
+        ) |>
         dplyr::relocate(superkingdom, kingdom, phylum, class, order, family,
-                        genus, species, NCBI_ID, tax_name) %>%
+                        genus, species, NCBI_ID, Taxon_name) %>%
         dplyr::mutate(NCBI_ID = as.character(NCBI_ID))
 
     ## Read nodes file
+    nodes_col_names <- c('NCBI_ID', 'Parent_NCBI_ID', 'Rank',
+                         'embl code', 'ddvision id',
+                         'inherited div flag  (1 or 0)',
+                         'genetic code id',
+                         'inherited GC  flag  (1 or 0)',
+                         'mitochondrial genetic code id',
+                         'inherited MGC flag  (1 or 0)',
+                         'GenBank hidden flag (1 or 0)',
+                         'hidden subtree root flag (1 or 0)',
+                         'comments',
+                         'plastid genetic code id',
+                         'inherited PGC flag  (1 or 0)',
+                         'specified_species',
+                         'hydrogenosome genetic code id',
+                         'inherited HGC flag  (1 or 0)')
+
+    message('Importing nodes...')
+
     nodes <- vroom::vroom(
-        nodes_file, delim = "|", show_col_types = FALSE, col_names = FALSE,
+        nodes_file, delim = delim,
+        show_col_types = FALSE, col_names = nodes_col_names,
         col_types = readr::cols_only(
-            X1 = readr::col_character(), X3 = readr::col_character()
+            NCBI_ID = readr::col_character(),
+            Parent_NCBI_ID = readr::col_character(),
+            Rank = readr::col_character()
+            )
         )
-    ) %>%
-        purrr::map_df(~ stringr::str_remove_all(.x, "\t")) %>%
-        magrittr::set_colnames(c("NCBI_ID", "rank")) %>%
-        dplyr::mutate(NCBI_ID = as.character(NCBI_ID))
+    nodes[[ncol(nodes)]] <- sub('\\|', '', nodes[[ncol(nodes)]])
 
-    ## Combine into taxonomy_table
+    message('Combining ranked lineages and nodes...')
+
+    ## Combine into a single taxonomy table
     dplyr::left_join(rankedlineage, nodes, by = "NCBI_ID") %>%
-        dplyr::filter(superkingdom %in% c('Archaea', 'Bacteria')) %>%
-        purrr::discard(~ all(is.na(.x))) %>%
-        dplyr::select(-kingdom) %>%
-        dplyr::rename(kingdom = superkingdom)
-
+        dplyr::filter(
+            Taxon_name %in% c('Archaea', 'Bacteria') |
+            superkingdom %in% c('Archaea', 'Bacteria')
+        ) %>%
+        dplyr::select(-kingdom) |>
+        dplyr::rename(kingdom = superkingdom) |>
+        purrr::discard(~ all(is.na(.x)))
 }
-
 
 ## This function downloads the NCBI taxonomy dump file and stores it in the
 ## package's cache with BiocFileCache
-.ncbi_taxonomy_dump <- function(verbose = FALSE, force = FALSE) {
+.ncbi_taxonomy_dump <- function(verbose = TRUE, force = FALSE) {
 
     bfc <- .get_cache()
 
