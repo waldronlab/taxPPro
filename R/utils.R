@@ -2,7 +2,11 @@
 #' Import NCBI IDs from the statistics page
 #'
 #' \code{imrpot_ncbi_ids} imports the NCBI ids as grouped in the statistics
-#' page.
+#' page. This data was imported by manually selecting exclusion options in
+#' the NCBI taxonomy statistics page: https://www.ncbi.nlm.nih.gov/Taxonomy/taxonomyhome.html/index.cgi?chapter=statistics&taxon=2157%3AArchaea&taxon=2%3ABacteria&period=&from=&to=
+#'
+#' The data was downloaded on
+#' September 2, 2022. Current numbers might be different.
 #'
 #' @return A list of NCBI taxids.
 #' @export
@@ -83,3 +87,4 @@ import_ncbi_ids <- function() {
         exclude_uncultured_informal = exclude_uncultured_informal
     )
 }
+
