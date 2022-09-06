@@ -5,16 +5,16 @@ title: "NCBI taxonomy and completeness"
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
+  comment = "#>"
 )
 ```
 
 ```{r setup, message=FALSE}
 library(taxPPro)
-library(dplyr)
-library(ggplot2)
 library(bugphyzz)
+library(dplyr)
 library(purrr)
+library(ggplot2)
 ```
 
 ```{r}
@@ -31,7 +31,7 @@ ncbi_counts <- ncbi_taxonomy |>
     dplyr::filter(Rank %in% ranks) |> 
     count(Rank)
 
-rank_levles <- ranks[ranks %in% ncbi_counts]
+rank_levels <- sort(ranks[ranks %in% ncbi_counts$Rank])
     
 ncbi_counts |> 
     mutate(Rank = factor(Rank, levels = rank_levels)) |> 
@@ -41,7 +41,67 @@ ncbi_counts |>
     
 ```
 
-# 
+# Get all NCBI IDs in bugphyzz
+
+```{r, message=FALSE}
+## Only datasets imported with the physiologies function
+phys <- map(physiologies(), as_tibble)
+bugphyzz_taxids <- phys |> 
+    map(~.x$NCBI_ID) |> 
+    unlist(recursive = TRUE) |> 
+    as.character() |> 
+    unique()
+
+```
+
+# Get NCBI taxids grouped as in the NCBI taxonomy statistics page
+
+```{r}
+ncbi_ids <- import_ncbi_ids()
+```
+
+
+# Compare how many of the bugphyzz IDs are in each group
+
+```{r}
+output <- vector('list', length(ncbi_ids))
+names(output) <- names(ncbi_ids)
+for (i in seq_along(output)) {
+    output[[i]] <- unique(intersect(bugphyzz_taxids, ncbi_ids[[i]]))
+}
+map_dbl(output, ~ length(.x) / length(bugphyzz_taxids) * 100) |> 
+    {\(y) sort(y, decreasing = TRUE)}()
+```
+
+```{r}
+sum(ncbi_ids$exclude_uncultured %in% ncbi_ids$all_ids)
+```
+
+
+It seems that excluding uncultured taxids would give the highest completeness
+values while still keeping the lowest number of taxa
+
+```{r}
+uncultured_taxids <- ncbi_ids$exclude_uncultured
+ncbi_taxonomy_remove_uncultured <- ncbi_taxonomy |> 
+    filter(NCBI_ID %in% uncultured_taxids)
+
+```
+
+```{r}
+
+ncbi_counts_remove_uncultured <- ncbi_taxonomy_remove_uncultured |> 
+    dplyr::filter(Rank %in% ranks) |> 
+    count(Rank)
+
+rank_levels_2 <- sort(ranks[ranks %in% ncbi_counts_remove_uncultured$Rank])
+    
+ncbi_counts_remove_uncultured |> 
+    mutate(Rank = factor(Rank, levels = rank_levels_2)) |> 
+    ggplot(aes(Rank, n)) +
+    geom_col() +
+    geom_label(aes(label = n))
+```
 
 
 
