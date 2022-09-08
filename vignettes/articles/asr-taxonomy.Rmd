@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup, message = FALSE}
-# library(taxPPro)
+library(taxPPro)
 library(bugphyzz)
 library(ete3r) # https://github.com/sdgamboa/ete3r
 library(phytools)
@@ -54,15 +54,15 @@ head(oxygen_strain)
 ## Get taxonomy tree for selected NCBI_IDs
 
 ```{r}
-tree_ox_strain <- getTree(unique(oxygen_strain$NCBI_ID))
-tree_ox_strain <- tree_ox_strain@phylo
+tree_ox_strain_data <- getTree(unique(oxygen_strain$NCBI_ID))
+tree_ox_strain <- tree_ox_strain_data@phylo
 tree_ox_strain
 ```
 
 The metadata of the nodes is also present:
 
 ```{r}
-my_tree_metadata <- my_tree_data %>% 
+my_tree_metadata <- tree_ox_strain_data %>% 
     as_tibble()
 head(my_tree_metadata)
 ```
@@ -115,18 +115,16 @@ lapply(states, head)
 
 # Estimate ASR and convert likelihoods in entries
 
-These both steps aer performed with a single function call:
+These two steps are performed with a single function call:
 
 ```{r}
-x = createEntriesASR(x = states, phy = tree_ox_strain, df = my_tree_metadata)
+x <- createEntriesASR(x = states, phy = tree_ox_strain, df = my_tree_metadata)
 head(x)
 ```
 
-## Expand dataset
-
-Appending entries with appendASR:
+# Session info
 
 ```{r}
-oxygen$Evidence <- "EXP" # some are empty
-new_oxygen <- appendASR(oxygen, x)
+sessionInfo()
 ```
+
