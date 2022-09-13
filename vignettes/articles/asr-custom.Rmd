@@ -28,7 +28,6 @@ library(ggplot2)
 
 ```{r}
 aer <- as_tibble(physiologies('aerophilicity')[[1]])
-dim(aer)
 ```
 
 
