@@ -4,7 +4,7 @@
 \alias{propagate}
 \title{Propagate annotations based on custom ASR}
 \usage{
-propagate(df)
+propagate(df, method = "mv")
 }
 \arguments{
 \item{df}{A data frame from bugphyzz.}

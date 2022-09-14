@@ -371,19 +371,22 @@ downstream <- function(df) {
         dplyr::distinct()
 }
 
-#' Propagate annotations based on custom ASR
+#' Propagate annotations
 #'
-#' \code{propagate} propagates annotations upstrean and downstream the
-#' taxonomy classification of the taxa.
+#' \code{propagate} propagates annotations.
 #'
 #' @param df A data frame from bugphyzz.
+#' @param asr_method A character string. The method that should be used for
+#' propagation. Option: mv, majority vote; tx, NCBI taxonomy; ph, phylogenetic
+#' tree.
 #'
 #' @return A data frame with extended annotations.
 #'
 #' @export
 #'
-propagate <- function(df) {
+propagate <- function(df, asr_method = 'mv') {
 
+    NCBI_ID <- Parent_NCBI_ID <- NULL
     df_filtered <- df |>
         resolve_conflicts() |>
         resolve_agreements() |>
@@ -401,20 +404,26 @@ propagate <- function(df) {
         return(df)
     }
 
-    no_filtered <- df[!df$NCBI_ID %in% df_filtered$NCBI_ID,] |>
-        dplyr::mutate(
-            Parent_NCBI_ID = as.character(Parent_NCBI_ID),
-            NCBI_ID = as.character(NCBI_ID)
-        )
+    if (asr_method == 'mv') {
+        no_filtered <- df[!df$NCBI_ID %in% df_filtered$NCBI_ID,] |>
+            dplyr::mutate(
+                Parent_NCBI_ID = as.character(Parent_NCBI_ID),
+                NCBI_ID = as.character(NCBI_ID)
+            )
 
-    propagated <- df_filtered |>
-        upstream() |>
-        downstream()
+        propagated <- df_filtered |>
+            upstream() |>
+            downstream()
 
-    propagated <- propagated[!propagated$NCBI_ID %in% no_filtered$NCBI_ID,]
+        propagated <- propagated[!propagated$NCBI_ID %in% no_filtered$NCBI_ID,]
 
-    dplyr::bind_rows(no_filtered, propagated) |>
-        dplyr::distinct()
+        output <- dplyr::bind_rows(no_filtered, propagated) |>
+            dplyr::distinct()
+
+        return(output)
+
+    }
+
 }
 
 #' Convert confidence intervals to numeric scores
