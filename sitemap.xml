@@ -10,19 +10,25 @@
     <loc>https://sdgamboa.github.io/taxPPro/LICENSE.html</loc>
   </url>
   <url>
+    <loc>https://sdgamboa.github.io/taxPPro/articles/asr-custom.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/articles/asr-taxonomy.html</loc>
+  </url>
+  <url>
     <loc>https://sdgamboa.github.io/taxPPro/articles/bugsigdbr.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/articles/completeness-taxonomy.html</loc>
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/articles/duplicates.html</loc>
   </url>
   <url>
-    <loc>https://sdgamboa.github.io/taxPPro/articles/example1.html</loc>
-  </url>
-  <url>
-    <loc>https://sdgamboa.github.io/taxPPro/articles/get_ncbi_taxonomy.html</loc>
-  </url>
-  <url>
     <loc>https://sdgamboa.github.io/taxPPro/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/articles/stats1.html</loc>
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/articles/taxPPro.html</loc>
@@ -34,13 +40,31 @@
     <loc>https://sdgamboa.github.io/taxPPro/index.html</loc>
   </url>
   <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/annotateInternalNodes.html</loc>
+  </url>
+  <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/calcParentScore.html</loc>
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/ci_to_scores.html</loc>
   </url>
   <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/counts_per_attribute_and_rank.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/counts_per_rank.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/counts_total.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/createEntriesASR.html</loc>
+  </url>
+  <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/downstream.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/estimateASR.html</loc>
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/filter_dataset_for_propagation.html</loc>
@@ -65,6 +89,9 @@
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/get_parents.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/import_ncbi_ids.html</loc>
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/index.html</loc>
