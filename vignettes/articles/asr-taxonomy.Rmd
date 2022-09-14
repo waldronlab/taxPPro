@@ -2,7 +2,7 @@
 title: "ASR with a taxonomy tree"
 subtitle: "All branch lengths are a unit"
 output: 
-    html_vignette:
+    html_document:
         toc: yes
 ---
 

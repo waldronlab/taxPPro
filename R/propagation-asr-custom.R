@@ -385,6 +385,8 @@ downstream <- function(df) {
 propagate <- function(df) {
 
     df_filtered <- df |>
+        resolve_conflicts() |>
+        resolve_agreements() |>
         filter_dataset_for_propagation() |>
         remove_taxa_duplicates() |>
         ci_to_scores() |>
@@ -393,6 +395,11 @@ propagate <- function(df) {
             Parent_NCBI_ID = as.character(Parent_NCBI_ID),
             NCBI_ID = as.character(NCBI_ID)
         )
+
+    if (!nrow(df_filtered)) {
+        warning('NO propagation for this dataset')
+        return(df)
+    }
 
     no_filtered <- df[!df$NCBI_ID %in% df_filtered$NCBI_ID,] |>
         dplyr::mutate(
@@ -408,7 +415,6 @@ propagate <- function(df) {
 
     dplyr::bind_rows(no_filtered, propagated) |>
         dplyr::distinct()
-
 }
 
 #' Convert confidence intervals to numeric scores

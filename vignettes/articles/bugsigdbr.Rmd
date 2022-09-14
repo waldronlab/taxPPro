@@ -1,7 +1,8 @@
 ---
 title: "signatures in bugsigdbr"
-output: html_document
-date: "2022-08-18"
+output: 
+    html_document:
+        toc: true
 ---
 
 ```{r setup, include=FALSE}

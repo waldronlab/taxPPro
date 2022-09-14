@@ -1,5 +1,8 @@
 ---
 title: "NCBI taxonomy and completeness"
+output:
+    html_document:
+        toc: true
 ---
 
 ```{r, include = FALSE}
