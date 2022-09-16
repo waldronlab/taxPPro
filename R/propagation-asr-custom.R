@@ -386,18 +386,7 @@ downstream <- function(df) {
 #'
 propagate <- function(df, asr_method = 'mv') {
 
-    NCBI_ID <- Parent_NCBI_ID <- NULL
-    df_filtered <- df |>
-        resolve_conflicts() |>
-        resolve_agreements() |>
-        filter_dataset_for_propagation() |>
-        remove_taxa_duplicates() |>
-        ci_to_scores() |>
-        dplyr::distinct() |>
-        dplyr::mutate(
-            Parent_NCBI_ID = as.character(Parent_NCBI_ID),
-            NCBI_ID = as.character(NCBI_ID)
-        )
+    df_filtered <- pre_steps(df)
 
     if (!nrow(df_filtered)) {
         warning('NO propagation for this dataset')
@@ -473,3 +462,26 @@ scores_to_ci <- function(x) {
 }
 
 .valid_parent_ranks <- function() c('species', 'genus', 'family')
+
+
+#' Previous steps
+#'
+#' @param df A data frame.
+#'
+#' @return A dara frame.
+#' @export
+#'
+pre_steps <- function(df) {
+    NCBI_ID <- Parent_NCBI_ID <- NULL
+    df |>
+        resolve_conflicts() |>
+        resolve_agreements() |>
+        filter_dataset_for_propagation() |>
+        remove_taxa_duplicates() |>
+        ci_to_scores() |>
+        dplyr::distinct() |>
+        dplyr::mutate(
+            Parent_NCBI_ID = as.character(Parent_NCBI_ID),
+            NCBI_ID = as.character(NCBI_ID)
+        )
+}

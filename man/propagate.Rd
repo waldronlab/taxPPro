@@ -2,17 +2,20 @@
 % Please edit documentation in R/propagation-asr-custom.R
 \name{propagate}
 \alias{propagate}
-\title{Propagate annotations based on custom ASR}
+\title{Propagate annotations}
 \usage{
-propagate(df, method = "mv")
+propagate(df, asr_method = "mv")
 }
 \arguments{
 \item{df}{A data frame from bugphyzz.}
+
+\item{asr_method}{A character string. The method that should be used for
+propagation. Option: mv, majority vote; tx, NCBI taxonomy; ph, phylogenetic
+tree.}
 }
 \value{
 A data frame with extended annotations.
 }
 \description{
-\code{propagate} propagates annotations upstrean and downstream the
-taxonomy classification of the taxa.
+\code{propagate} propagates annotations.
 }

@@ -29,61 +29,57 @@ library(tidyr)
 
 ## Import data
 
-```{r}
-select_cols <- c(
-    "NCBI_ID", "Attribute", "Evidence", "Frequency", "Rank", 
-    "Taxon_name"
-)
-
-oxygen <- physiologies("aerophilicity")[[1]] |> 
-    resolve_agreements() |> 
-    resolve_conflicts() |> 
-    select(all_of(select_cols)) |> 
-    filter(!is.na(NCBI_ID), !is.na(Rank))
-
-glimpse(oxygen)
+```{r, message=FALSE, warning=FALSE}
+aer <- as_tibble(physiologies('aerophilicity')[[1]]) |> 
+    dplyr::filter(Attribute != '')
+aer_pre <- pre_steps(aer)
 ```
 
-## Filter by rank
+Calculate new species
 
 ```{r}
-oxygen_strain <- oxygen[oxygen$Rank == "strain",]
-head(oxygen_strain)
+aer_strains <- filter(aer_pre, Rank == 'strain')
+aer_sp_asr <- calcParentScore(aer_strains) |> 
+    dplyr::filter(Rank == 'species')
+aer_new_sp <- aer_sp_asr[which(!aer_sp_asr$NCBI_ID %in% aer_pre$NCBI_ID),]
+aer_ready <- bind_rows(aer_pre, aer_new_sp)
 ```
 
 ## Get taxonomy tree for selected NCBI_IDs
 
 ```{r}
-tree_ox_strain_data <- getTree(unique(oxygen_strain$NCBI_ID))
-tree_ox_strain <- tree_ox_strain_data@phylo
-tree_ox_strain
+aer_sp <- dplyr::filter(aer_ready, Rank == 'species')
+aer_sp_tree_data <- getTree(unique(aer_sp$NCBI_ID))
+aer_sp_tree <- aer_sp_tree_data@phylo
+aer_sp_tree
 ```
+
+The tree must be rooted and fully solved (dichotomies only):
+
+```{r}
+is.rooted(aer_sp_tree)
+```
+
+```{r}
+is.binary(aer_sp_tree)
+```
+
 
 The metadata of the nodes is also present:
 
 ```{r}
-my_tree_metadata <- tree_ox_strain_data %>% 
+my_tree_metadata <- aer_sp_tree_data %>% 
     as_tibble()
 head(my_tree_metadata)
 ```
 
-The tree must be rooted and fully solved (dicotomies only):
-
-```{r}
-is.rooted(tree_ox_strain)
-```
-
-```{r}
-is.binary(tree_ox_strain)
-```
-
 # Step 4. Create a 1-0 matrix for each attribute (discrete)
 
-
 ```{r}
-attribute_matrix <- oxygen_strain |> 
+attribute_matrix <- aer_sp |> 
     mutate(Presence = 1) |> 
     select(NCBI_ID, Attribute, Presence) |> 
+    distinct() |> 
     pivot_wider(
         names_from = 'Attribute', values_from = 'Presence', values_fill = 0
     ) |> 
@@ -118,9 +114,92 @@ lapply(states, head)
 These two steps are performed with a single function call:
 
 ```{r}
-x <- createEntriesASR(x = states, phy = tree_ox_strain, df = my_tree_metadata)
+states$aerobic[1] <- NA
+x <- createEntriesASR(x = states, phy = aer_sp_tree, df = my_tree_metadata)
+rownames(x) <- NULL
+x <- as_tibble(x)
 head(x)
 ```
+
+```{r}
+genera <- x[which(x$Rank == 'genus'), 'NCBI_ID', drop = TRUE]
+new_genera <- x[which(!x$NCBI_ID %in% aer_ready$NCBI_ID),]
+
+new_genera$NCBI_ID <- as.character(new_genera$NCBI_ID)
+final <- bind_rows(new_genera, aer_ready)
+```
+
+## Add children
+
+```{r}
+final_inh <- downstream(final)
+```
+```{r}
+final_inh
+```
+
+```{r}
+final_inh_2 <- final_inh |> 
+    filter(Rank %in% c('genus', 'species', 'strain'))
+```
+
+
+```{r}
+aer_propagate <- propagate(aer)
+```
+
+
+
+```{r}
+aer$NCBI_ID <- as.character(aer$NCBI_ID)
+aer$Parent_NCBI_ID <- as.character(aer$Parent_NCBI_ID)
+data <- list(
+    original = aer,
+    `original + majority vote` = aer_propagate,
+    `original + ace-tax-tree` = final_inh_2
+) |> 
+    bind_rows(.id = 'method') |> 
+    distinct()
+```
+
+
+
+```{r}
+summary <- data |> 
+    count(method, Attribute, Evidence, Rank) |> 
+    filter(Rank %in% c('genus', 'species', 'strain'))
+```
+
+```{r}
+summary |> 
+    ggplot(aes(Attribute, n)) +
+    geom_col(aes(fill = Evidence)) +
+    facet_grid(method~Rank, scales = "free_x") + 
+    theme(
+        axis.text.x = element_text(angle = 45, hjust = 1)
+    )
+```
+
+```{r}
+summary |> 
+    filter(grepl('asr', Evidence)) |> 
+    ggplot(aes(Attribute, n)) +
+    geom_col(aes(fill = Evidence)) +
+    facet_grid(method~Rank, scales = "free_x") + 
+    labs(
+        title = 'Comparison of ASR methods 
+        ape::ace +majority vote (top) vs majority-vote (bottom)',
+        subtitle = 'asr = mv + ape::ace; asr-tax = mv',
+        y = '# annotation'
+    ) +
+    theme(
+        axis.text.x = element_text(angle = 45, hjust = 1)
+    )
+```
+
+
+
+
 
 
 # Session info
