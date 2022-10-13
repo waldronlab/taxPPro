@@ -222,7 +222,7 @@ get_conflicts <- function(df) {
 
     output <- output |>
         purrr::discard(is.null) |>
-        purrr::map(bind_rows) |>
+        purrr::map(~ dplyr::bind_rows(.x)) |>
         dplyr::bind_rows()
 
     return(output)
@@ -271,7 +271,7 @@ resolve_conflicts <- function(df) {
                 'Dropping ', length(n_rows), ' taxa.'
             )
             warning(msg, call. = FALSE)
-            return(no_conflicts)
+            return(df_no_conflicts)
         }
 
         if (any(n_rows >= 2)) {
