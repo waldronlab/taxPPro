@@ -23,6 +23,7 @@ library(dplyr)
 library(tidytree)
 library(ggtree)
 library(tidyr)
+library(ggplot2)
 ```
 
 # Attribute with categorical/logical values
