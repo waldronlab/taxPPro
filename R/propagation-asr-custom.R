@@ -386,6 +386,8 @@ downstream <- function(df) {
 #'
 propagate <- function(df, asr_method = 'mv') {
 
+    message('This is a message a a proof of a new version.')
+
     df_filtered <- pre_steps(df)
 
     if (!nrow(df_filtered)) {
