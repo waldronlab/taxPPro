@@ -248,7 +248,7 @@ resolve_conflicts <- function(df) {
 
         conflicts$Confidence_in_curation <- factor(
             x = conflicts$Confidence_in_curation,
-            levels = c('Low', 'Medium', 'High'),
+            levels = c('low', 'medium', 'high'),
             ordered = TRUE
         )
 
