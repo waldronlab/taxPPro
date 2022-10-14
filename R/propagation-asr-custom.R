@@ -101,6 +101,7 @@ filter_dataset_for_propagation <- function(df, df_name = NULL) {
 get_parents <- function(x) {
 
     classification <- taxizedb::classification(x)
+    classification <- classification[!is.na(classification)]
     classification <- purrr::map(classification, dplyr::distinct)
     parents_df <- purrr::map(classification, ~ {
         colnames(.x) <- c('Parent_name', 'Parent_rank', 'Parent_NCBI_ID')
