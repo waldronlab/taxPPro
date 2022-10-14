@@ -99,7 +99,6 @@ filter_dataset_for_propagation <- function(df, df_name = NULL) {
 #' @export
 #'
 get_parents <- function(x) {
-
     classification <- taxizedb::classification(x)
     classification <- classification[!is.na(classification)]
     classification <- purrr::map(classification, dplyr::distinct)
@@ -189,11 +188,14 @@ calcParentScore <- function(df) {
     colnames(df)[pos] <- attr_val_col
 
     parents <- tibble::as_tibble(get_parents(df$NCBI_ID))
-    dplyr::bind_cols(df, parents) |>
-        dplyr::mutate(
-            NCBI_ID = as.character(NCBI_ID),
-            Parent_NCBI_ID = as.character(Parent_NCBI_ID)
-        )
+    parents$Parent_NCBI_ID <- as.character(parents$Parent_NCBI_ID)
+    df$NCBI_ID <- as.character(df$NCBI_ID)
+    dplyr::right_join(df, parents, by = c('NCBI_ID' = 'Parent_NCBI_ID'))
+    # dplyr::bind_cols(df, parents) |>
+        # dplyr::mutate(
+            # NCBI_ID = as.character(NCBI_ID),
+            # Parent_NCBI_ID = as.character(Parent_NCBI_ID)
+        # )
 }
 
 #' Annotate parent nodes (upstream)
