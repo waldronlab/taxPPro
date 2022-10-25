@@ -227,7 +227,7 @@ upstream <- function(df) {
 
     split_by_rank <- split(df_filtered, factor(df_filtered$Rank))
 
-    if (!any(c('strain', 'species') %in% names(split_by_rank))) {
+    if (!any(c('strain', 'species', 'genus') %in% names(split_by_rank))) {
         warning('Nothing to do here.', call. = FALSE)
         return(df_filtered)
     }
@@ -245,7 +245,7 @@ upstream <- function(df) {
 
     ## upstream genera
     if ('species' %in% names(split_by_rank)) {
-        message('Getting new genera with asr-tax. (Step 2 = upstream).')
+        message('Getting new genera with asr-tax. (Step 2 - upstream).')
         species <- split_by_rank$species
         if (!is.null(new_species)) {
             new_species <- new_species[!new_species$NCBI_ID %in% species$NCBI_ID,]
@@ -258,8 +258,20 @@ upstream <- function(df) {
     }
 
     ## Add code for upstream family
+    if ('genus' %in% names(split_by_rank)) {
+        message('Getting new families with asr-tax. (Step 3 - upstream).')
+        genera <- split_by_rank$genus
+        if (!is.null(new_genera)) {
+            new_genera <- new_genera[!new_genera$NCBI_ID %in% genera$NCBI_ID,]
+            new_genera <- dplyr::bind_rows(genera, new_genera) |>
+                purrr::discard(~all(is.na(.x)))
+        }
+        new_families <- calcParentScore(genera) |>
+            dplyr::filter(Rank == 'family') |>
+            dplyr::distinct()
+    }
 
-    new_upstream <- list(new_species, new_genera) |>
+    new_upstream <- list(new_species, new_genera, new_families) |>
         purrr::discard(is.null) |>
         dplyr::bind_rows()
 
@@ -305,9 +317,39 @@ downstream <- function(df) {
 
     new_species <- new_strains <- NULL
 
+    ## downstream family to genus
+    if ('family' %in% names(split_by_rank)) {
+        message('Getting new genera with inh-tax. (Step 4 - downstream)')
+        family <- split_by_rank$family
+        new_genera <- get_children(family$NCBI_ID) |>
+            dplyr::filter(Rank == 'genus') |>
+            dplyr::mutate(Evidence = 'inh-tax') |>
+            dplyr::distinct()
+
+        family <- family |>
+            dplyr::select(-Parent_NCBI_ID, -Parent_name, -Parent_rank) |>
+            dplyr::rename(
+                Parent_NCBI_ID = NCBI_ID, Parent_name = Taxon_name,
+                Parent_rank = Rank
+            )
+
+        new_genera <- dplyr::left_join(
+            new_genera, family, by = 'Parent_NCBI_ID',
+            suffix = c('', '.y')
+        ) |>
+            dplyr::select(-tidyselect::ends_with('.y'))
+
+        if ('genus' %in% names(split_by_rank)) {
+            genus <- split_by_rank$genus
+            new_genera <-
+                new_genera[!new_genera$NCBI_ID %in% genus$NCBI_ID,]
+        }
+
+    }
+
     ## downstream genus to species
     if ('genus' %in% names(split_by_rank)) {
-        message('Getting new species with inh-tax. (Step 3 - downstream)')
+        message('Getting new species with inh-tax. (Step 5 - downstream)')
         genus <- split_by_rank$genus
         new_species <- get_children(genus$NCBI_ID) |>
             dplyr::filter(Rank == 'species') |>
@@ -337,7 +379,7 @@ downstream <- function(df) {
 
     ## Downstream species to strain
     if ('species' %in% names(split_by_rank)) {
-        message('Getting new strains with inh-tax (Step 4 - downstream).')
+        message('Getting new strains with inh-tax (Step 6 - downstream).')
         species <- split_by_rank$species
         new_strains <- get_children(species$NCBI_ID) |>
             dplyr::filter(Rank == 'strain') |>
@@ -364,7 +406,7 @@ downstream <- function(df) {
         }
     }
 
-    new_downstream <- list(new_species, new_strains) |>
+    new_downstream <- list(new_genera, new_species, new_strains) |>
         purrr::discard(is.null) |>
         dplyr::bind_rows()
 

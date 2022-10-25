@@ -17,3 +17,5 @@ x = calcParentScore(strains)
 x |>
     filter(.data$Rank == 'species')
 
+aer_downstream <- aer_upstream |>
+    downstream()
