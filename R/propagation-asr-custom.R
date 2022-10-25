@@ -111,7 +111,8 @@ get_parents <- function(x) {
         utils::tail(.x, 1)
     }) %>%
         dplyr::bind_rows()
-    parents_df[,c('Parent_NCBI_ID', 'Parent_name', 'Parent_rank')]
+    parents_df$NCBI_ID <- names(classification)
+    parents_df[,c('NCBI_ID', 'Parent_NCBI_ID', 'Parent_name', 'Parent_rank')]
 }
 
 #' Get children
@@ -161,6 +162,7 @@ calcParentScore <- function(df) {
             dplyr::filter(Score >= 0.5)
     }
 
+
     Parent_name <- data <- data2 <- NULL
 
     if (is.logical(df$Attribute_value)) {
@@ -190,12 +192,7 @@ calcParentScore <- function(df) {
     parents <- tibble::as_tibble(get_parents(df$NCBI_ID))
     parents$Parent_NCBI_ID <- as.character(parents$Parent_NCBI_ID)
     df$NCBI_ID <- as.character(df$NCBI_ID)
-    dplyr::right_join(df, parents, by = c('NCBI_ID' = 'Parent_NCBI_ID'))
-    # dplyr::bind_cols(df, parents) |>
-        # dplyr::mutate(
-            # NCBI_ID = as.character(NCBI_ID),
-            # Parent_NCBI_ID = as.character(Parent_NCBI_ID)
-        # )
+    dplyr::right_join(df, parents, by = 'NCBI_ID')
 }
 
 #' Annotate parent nodes (upstream)
@@ -242,7 +239,7 @@ upstream <- function(df) {
         message('Getting new species with asr-tax. (Step 1 - upstream).')
         strains <- split_by_rank$strain
         new_species <- calcParentScore(strains) |>
-            dplyr::filter(Rank == 'species') |>
+            dplyr::filter(.data$Rank == 'species') |>
             dplyr::distinct()
     }
 
@@ -260,13 +257,16 @@ upstream <- function(df) {
             dplyr::distinct()
     }
 
+    ## Add code for upstream family
+
     new_upstream <- list(new_species, new_genera) |>
         purrr::discard(is.null) |>
         dplyr::bind_rows()
 
     new_upstream <- new_upstream[!new_upstream$NCBI_ID %in% df_filtered$NCBI_ID,]
-    dplyr::bind_rows(df_filtered, new_upstream) |>
+    output <- dplyr::bind_rows(df_filtered, new_upstream) |>
         dplyr::distinct()
+    return(output)
 }
 
 #' Get annotations for descendants (downstream)
