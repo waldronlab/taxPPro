@@ -79,6 +79,10 @@ filterData <- function(df, df_name = NULL, tax.id.type) {
 
     }
 
+
+    ## For now, only NCBI_ID and Taxon_name are valid. Other columns might
+    ## be added later
+
     if (tax.id.type == 'NCBI_ID') {
         df <- df[!is.na(df$NCBI_ID) | df$NCBI_ID == 'unknown',]
     } else if (tax.id.type == 'Taxon_name') {
@@ -110,7 +114,7 @@ filterData <- function(df, df_name = NULL, tax.id.type) {
             !is.na(Parent_NCBI_ID),
             !is.na(Parent_name),
             !is.na(Parent_rank),
-            Parent_rank %in% .valid_parent_ranks()
+            Parent_rank %in% .validParentRanks()
         ) |>
         dplyr::distinct()
 
@@ -135,8 +139,8 @@ filterData <- function(df, df_name = NULL, tax.id.type) {
     return(df)
 }
 
-#' Convert confidence intervals to numeric scores
-#'
+
+#' Convert confidence intervals to numeric scores'
 #' \code{.ci_to_scores} converts the keywords in the `confidence_interval`
 #' column of a bugphyzz dataset into numeric scores, which added as an
 #' additional column named as `Score`.

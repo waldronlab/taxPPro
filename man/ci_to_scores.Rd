@@ -2,7 +2,10 @@
 % Please edit documentation in R/001.preprocessing.R
 \name{ci_to_scores}
 \alias{ci_to_scores}
-\title{Convert confidence intervals to numeric scores}
+\title{Convert confidence intervals to numeric scores'
+\code{.ci_to_scores} converts the keywords in the `confidence_interval`
+column of a bugphyzz dataset into numeric scores, which added as an
+additional column named as `Score`.}
 \usage{
 ci_to_scores(x)
 }
@@ -13,6 +16,7 @@ ci_to_scores(x)
 A datafraame. The same dataframe with the addtional `Score` column.
 }
 \description{
+Convert confidence intervals to numeric scores'
 \code{.ci_to_scores} converts the keywords in the `confidence_interval`
 column of a bugphyzz dataset into numeric scores, which added as an
 additional column named as `Score`.
