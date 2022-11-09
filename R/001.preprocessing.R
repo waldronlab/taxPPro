@@ -1,4 +1,5 @@
-## Steps for propagation
+## These file contains some of the functions used before propagation
+## Other functions are contained in the 002.duplicates.R file.
 
 #' \code{preSteps} perform the previous steps before propagating annotations.
 #' These steps include: 1) filter data, 2) resolve conflicts, 3) resolve
@@ -18,7 +19,7 @@ preSteps <- function(df, tax.id.type) {
         resolve_conflicts() |>
         resolve_agreements() |>
         remove_taxa_duplicates() |>
-        ci_to_scores() |>
+        freq2Scores() |>
         dplyr::distinct() |>
         dplyr::mutate(
             Parent_NCBI_ID = as.character(Parent_NCBI_ID),
@@ -139,23 +140,22 @@ filterData <- function(df, df_name = NULL, tax.id.type) {
     return(df)
 }
 
-
-#' Convert confidence intervals to numeric scores'
-#' \code{.ci_to_scores} converts the keywords in the `confidence_interval`
-#' column of a bugphyzz dataset into numeric scores, which added as an
-#' additional column named as `Score`.
+#' Convert frequency values to numeric scores
 #'
-#' @param x  A dataset from bugphyzz, e.g., aerophilicity.
+#' \code{freq2Scores} converts the keywords in the `Frequency`
+#' column of a bugphyzz dataset into numeric scores, which are added in a
+#' additional column named `Score`.
 #'
-#' @return A datafraame. The same dataframe with the addtional `Score` column.
+#' @param x  A data frame imported with `bugphyzz::physiologies`.
+#'
+#' @return A data frame. The same data frame with the additional `Score` column.
 #'
 #' @export
 #'
-ci_to_scores <- function(x) {
-    Frequency <- NULL
+freq2Scores <- function(x) {
     x |>
         dplyr::mutate(
-            Frequency = stringr::str_to_lower(Frequency),
+            Frequency = tolower(.data$Frequency),
             Score = dplyr::case_when(
                 Frequency == 'always' ~ 1,
                 Frequency == 'usually' ~ 0.8,
@@ -165,5 +165,5 @@ ci_to_scores <- function(x) {
                 Frequency == 'unknown' ~ NA_real_
             )
         ) |>
-        dplyr::filter(!is.na(Score))
+        dplyr::filter(!is.na(.data$Score))
 }
