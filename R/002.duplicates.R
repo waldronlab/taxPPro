@@ -18,6 +18,9 @@ getDuplicates <- function(
         df, cols = c('Taxon_name', 'NCBI_ID'), verbose = FALSE
 ) {
 
+    if (verbose)
+        message('Looking for duplicates.')
+
     df <- df[!is.na(df$Taxon_name) | df$Taxon_name != 'unknown',]
     df <- df[df$Attribute != '' & df$Attribute_value != FALSE,]
 
@@ -25,7 +28,7 @@ getDuplicates <- function(
 
     if (!length(index1)) {
         if (verbose)
-            message('No duplicates were found.')
+            message('No duplicates were found. Returning NULL')
         return(NULL)
     }
 
@@ -37,14 +40,14 @@ getDuplicates <- function(
 
 #' Get taxa with double annotations
 #'
-#' \code{get_double_annotations} gets taxa annotated twice from the same source.
+#' \code{getDoubleAnnotations} gets taxa annotated twice from the same source.
 #'
 #' @param df A data frame.
 #'
 #' @return A data frame.
 #' @export
 #'
-get_double_annotations <- function(df) {
+getDoubleAnnotations <- function(df) {
 
     dups <- getDuplicates(df)
 
@@ -53,12 +56,11 @@ get_double_annotations <- function(df) {
         return(NULL)
     }
 
-    Attribute_source <- Taxon_name <- NULL
-
+    ## Counts are based on Taxon_name, because NCBI_ID might be missing
     taxa_counts <- dups |>
-        dplyr::count(Attribute_source, Taxon_name) |>
-        dplyr::arrange(Taxon_name, Attribute_source) |>
-        dplyr::filter(n > 1)
+        dplyr::count(.data$Attribute_source, .data$Taxon_name) |>
+        dplyr::arrange(.data$Taxon_name, .data$Attribute_source) |>
+        dplyr::filter(.data$n > 1)
 
     if (!nrow(taxa_counts)) {
         message('No double annotations in this data frame.')
@@ -66,17 +68,18 @@ get_double_annotations <- function(df) {
     }
 
     taxa <- unique(taxa_counts$Taxon_name)
-    double_annotations_all <- dplyr::filter(dups, Taxon_name %in% taxa)
+    double_annotations_all <- dups[dups$Taxon_name %in% taxa,]
 
-    ## Remove conflicts and agreements
-    conflicts <- get_conflicts(df)
+    ## Remove conflicts
+    conflicts <- getConflicts(df)
     if (!is.null(conflicts)) {
         conflict_taxa <- unique(conflicts$Taxon_name)
     } else {
         conflict_taxa <- NULL
     }
 
-    agree <- get_agreements(df)
+    ## Remove agreements
+    agree <- getAgreements(df)
     if (is.null(conflicts)) {
         agree_taxa <- unique(agree$Taxon_name)
     } else {
@@ -84,14 +87,17 @@ get_double_annotations <- function(df) {
     }
 
     remove_taxa <- c(conflict_taxa, agree_taxa)
+    if (is.null(remove_taxa)) {
+        message('No double annotations')
+        return(NULL)
+    }
 
-    double_annotations_all |>
-        dplyr::filter(!Taxon_name %in% remove_taxa)
+    double_annotations_all[!double_annotations_all$Taxon_name %in% remove_taxa,]
 }
 
 #' Get agreements
 #'
-#' \code{get_agreements} gets taxa annotated two or more times from different
+#' \code{getAgreements} gets taxa annotated two or more times from different
 #' sources.
 #'
 #' @param df A data frame.
@@ -99,7 +105,7 @@ get_double_annotations <- function(df) {
 #' @return A data frame.
 #' @export
 #'
-get_agreements <- function(df) {
+getAgreements <- function(df) {
 
     df <- getDuplicates(df)
 
@@ -132,7 +138,7 @@ get_agreements <- function(df) {
     agreements_df <- split[select_lgl] |>
         dplyr::bind_rows()
 
-    conflicts_df <- get_conflicts(df)
+    conflicts_df <- getConflicts(df)
 
     if (is.null(conflicts_df))
         return(agreements_df)
@@ -157,7 +163,7 @@ get_agreements <- function(df) {
 #'
 resolve_agreements <- function(df) {
 
-    agree_df <- get_agreements(df)
+    agree_df <- getAgreements(df)
 
     if (is.null(agree_df)) {
         message('No agreements to solve')
@@ -181,7 +187,7 @@ resolve_agreements <- function(df) {
 
 #' Get conflicts
 #'
-#' \code{get_conflicts} gets taxa with two or more annotations from different
+#' \code{getConflicts} gets taxa with two or more annotations from different
 #' sources.
 #'
 #' @param df A data frame from bugphzz
@@ -189,7 +195,7 @@ resolve_agreements <- function(df) {
 #' @return a data frame or NULL
 #' @export
 #'
-get_conflicts <- function(df) {
+getConflicts <- function(df) {
 
     df <- getDuplicates(df)
 
@@ -232,7 +238,7 @@ get_conflicts <- function(df) {
 #'
 resolve_conflicts <- function(df) {
 
-    conflicts <- get_conflicts(df)
+    conflicts <- getConflicts(df)
 
     ## if there are no conflicts, return the same dataset
     if (is.null(conflicts))

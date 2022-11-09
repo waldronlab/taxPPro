@@ -10,3 +10,5 @@ aer_scores_taxnames <- freq2Scores(aer_filtered_taxnames)
 
 
 x = getDuplicates(aer_filtered_taxids)
+
+y = getDoubleAnnotations(aer_filtered_taxids)
