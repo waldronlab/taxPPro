@@ -1,21 +1,8 @@
 library(bugphyzz)
-library(taxPPro)
-library(dplyr)
 
-aer = physiologies('aerophilicity')[[1]]
+aer <- physiologies('aerophilicity')[[1]]
 
-aer_plus <- aer |>
-    propagate()
+dim(aer)
 
-count(aer_plus, Evidence)
-
-aer_upstream <- aer |>
-    upstream()
-
-
-x = calcParentScore(strains)
-x |>
-    filter(.data$Rank == 'species')
-
-aer_downstream <- aer_upstream |>
-    downstream()
+aer_filtered_taxids <- filterData(aer, tax.id.type = 'NCBI_ID')
+aer_filtered_taxnames <- filterData(aer, tax.id.type = 'Taxon_name')

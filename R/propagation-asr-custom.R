@@ -1,94 +1,4 @@
 
-#' Filter dataset propagation
-#'
-#' \code{filter_dataset_for_propagation} filters rows that
-#' have enough information to perform ASR and Inheritance propagation of
-#' taxa annotations.
-#'
-#' @param df A dataset from bugphyzz.
-#' @param df_name A character string. The name of the dataset.
-#'
-#' @return A filtered version of the input dataframe.
-#' If no rows are kept, the output is NULL with a warning.
-#'
-#' @export
-#'
-filter_dataset_for_propagation <- function(df, df_name = NULL) {
-
-    ## Columns required for propagation
-    columns_for_propagation <- c(
-        'Taxon_name', 'NCBI_ID', 'Rank',
-        'Attribute', 'Attribute_value', 'Attribute_source',
-        'Evidence', 'Frequency', 'Confidence_in_curation',
-        'Parent_NCBI_ID', 'Parent_name', 'Parent_rank'
-    )
-
-    columns_lgl <- columns_for_propagation %in% colnames(df)
-
-    if (!all(columns_lgl))  {
-
-        missing_cols <- columns_for_propagation[!columns_lgl]
-
-        if (!is.null(df_name)) {
-            stop(
-                'These columns are required for propagation in dataset ',
-                df_name, ':',
-                paste(columns_for_propagation, collapse = ', '),
-                '. The following columns are missing: ',
-                paste(missing_cols, collapse = ', '),
-                call. = FALSE
-            )
-
-        } else {
-            stop(
-                'These columns are required for propagation: ',
-                paste(columns_for_propagation, collapse = ', '),
-                '. The following columns are missing: ',
-                paste(missing_cols, collapse = ', '),
-                call. = FALSE
-            )
-        }
-
-    }
-
-    ## Filtering
-    df <- df |>
-        dplyr::filter(
-            !is.na(Taxon_name) | Taxon_name != 'unknown',
-            !is.na(Rank),
-            Attribute_value != FALSE,
-            !is.na(Attribute_source),
-            ## Evidence # Complex
-            ## Frequency # Complex
-            !is.na(Parent_NCBI_ID), !is.na(Parent_name), !is.na(Parent_rank),
-            Rank %in% .valid_ranks(),
-            Parent_rank %in% .valid_parent_ranks()
-            ## Should propagation to ranks higher than genus be included?
-        ) |>
-        dplyr::distinct()
-
-    ## Check output
-    if (nrow(df) > 1) {
-        return(df)
-    } else {
-        if (is.null(df_name)) {
-            warning(
-                paste('Not enough information for propagation.'),
-                call. = FALSE
-            )
-        } else if (!is.null(df_name)) {
-            warning(
-                paste(
-                    'Not enough information for propagation in dataset ',
-                    df_name
-                )
-            )
-
-        }
-        return(NULL)
-    }
-}
-
 #' Get parents
 #'
 #' \code{get_parents} get's the parent taxon of a vector of valid NCBI IDs.
@@ -462,34 +372,7 @@ propagate <- function(df, asr_method = 'mv') {
 
 }
 
-#' Convert confidence intervals to numeric scores
-#'
-#' \code{.ci_to_scores} converts the keywords in the `confidence_interval`
-#' column of a bugphyzz dataset into numeric scores, which added as an
-#' additional column named as `Score`.
-#'
-#' @param x  A dataset from bugphyzz, e.g., aerophilicity.
-#'
-#' @return A datafraame. The same dataframe with the addtional `Score` column.
-#'
-#' @export
-#'
-ci_to_scores <- function(x) {
-    Frequency <- NULL
-    x |>
-        dplyr::mutate(
-            Frequency = stringr::str_to_lower(Frequency),
-            Score = dplyr::case_when(
-                Frequency == 'always' ~ 1,
-                Frequency == 'usually' ~ 0.8,
-                Frequency == 'sometimes' ~ 0.5,
-                Frequency == 'rarely' ~ 0.2,
-                Frequency == 'never' ~ 0,
-                Frequency == 'unknown' ~ NA_real_
-            )
-        ) |>
-        dplyr::filter(!is.na(Score))
-}
+
 
 scores_to_ci <- function(x) {
     Score <- NULL
@@ -503,12 +386,12 @@ scores_to_ci <- function(x) {
     ## TODO
 }
 
-.valid_ranks <- function() {
+.validRanks <- function() {
     c('strain', 'species', 'genus', 'family', 'order', 'class', 'phylum',
       'superkingdom')
 }
 
-.valid_parent_ranks <- function() c('species', 'genus', 'family')
+.validParentRanks <- function() c('species', 'genus', 'family')
 
 
 #' Previous steps
