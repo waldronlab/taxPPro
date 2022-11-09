@@ -1,34 +1,32 @@
 
 #' Get duplicates
 #'
-#' \code{get_duplicates} gets duplicated taxa in a bugphuzz dataset.
+#' \code{getDuplicates} gets duplicated taxa in a bugphuzz dataset.
 #' This information could be useful for identifying conflicts of annotations
 #' between different sources.
 #'
-#' @param df A data frame.
+#' @param df A data frame imported with bugphyzz.
 #' @param cols Columns to look for duplicates.
 #'
-#' @return A dataframe with duplicated rows. If no duplicates are found, this
+#' @return A data frame with duplicate rows. If no duplicates are found, this
 #' function returns a NULL value with a message.
 #'
 #' @export
 #'
-get_duplicates <- function(
+getDuplicates <- function(
         df, cols = c('Taxon_name', 'NCBI_ID'), verbose = FALSE
 ) {
-
-    Taxon_name <- Attribute <- NULL
 
     df <- df[!is.na(df$Taxon_name) | df$Taxon_name != 'unknown',]
 
     df <- df |>
-        dplyr::filter(Attribute != "", Attribute_value != FALSE)
+        dplyr::filter(.data$Attribute != "", .data$Attribute_value != FALSE)
 
     index1 <- which(duplicated(df[, cols]))
     index2 <- which(duplicated(df[, cols], fromLast = TRUE))
     index <- sort(unique(c(index1, index2)))
 
-    duplicated_df <- dplyr::arrange(df[index,], Taxon_name)
+    duplicated_df <- dplyr::arrange(df[index,], .data$Taxon_name)
 
     if (nrow(duplicated_df) == 0) {
         if (verbose) {
@@ -51,7 +49,7 @@ get_duplicates <- function(
 #'
 get_double_annotations <- function(df) {
 
-    dups <- get_duplicates(df)
+    dups <- getDuplicates(df)
 
     if (is.null(dups)) {
         message('No duplicates or conflictes here.')
@@ -106,7 +104,7 @@ get_double_annotations <- function(df) {
 #'
 get_agreements <- function(df) {
 
-    df <- get_duplicates(df)
+    df <- getDuplicates(df)
 
     if (is.null(df)) {
         message('No duplicates or conflictes here.')
@@ -196,7 +194,7 @@ resolve_agreements <- function(df) {
 #'
 get_conflicts <- function(df) {
 
-    df <- get_duplicates(df)
+    df <- getDuplicates(df)
 
     if (is.null(df)) {
         message('No duplicates or conflictes here.')
@@ -314,7 +312,7 @@ resolve_conflicts <- function(df) {
 #'
 remove_taxa_duplicates <- function(df) {
 
-    dup <- get_duplicates(df)
+    dup <- getDuplicates(df)
 
     if (is.null(dup))
         return(df)
