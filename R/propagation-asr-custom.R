@@ -14,7 +14,7 @@ get_parents <- function(x) {
     classification <- purrr::map(classification, dplyr::distinct)
     parents_df <- purrr::map(classification, ~ {
         colnames(.x) <- c('Parent_name', 'Parent_rank', 'Parent_NCBI_ID')
-        valid_ranks <- .valid_ranks()
+        valid_ranks <- .validRanks()
         .x <- .x[.x$Parent_rank %in% valid_ranks, ]
         n_rows <- nrow(.x)
         .x <- .x[-n_rows, ]
