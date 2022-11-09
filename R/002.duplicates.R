@@ -3,7 +3,8 @@
 #'
 #' \code{getDuplicates} gets duplicated taxa in a bugphuzz dataset.
 #' This information could be useful for identifying conflicts of annotations
-#' between different sources.
+#' between different sources. Dupliation is based on both NCBI_ID and
+#' Taxon_name.
 #'
 #' @param df A data frame imported with bugphyzz.
 #' @param cols Columns to look for duplicates.
@@ -18,24 +19,20 @@ getDuplicates <- function(
 ) {
 
     df <- df[!is.na(df$Taxon_name) | df$Taxon_name != 'unknown',]
-
-    df <- df |>
-        dplyr::filter(.data$Attribute != "", .data$Attribute_value != FALSE)
+    df <- df[df$Attribute != '' & df$Attribute_value != FALSE,]
 
     index1 <- which(duplicated(df[, cols]))
+
+    if (!length(index1)) {
+        if (verbose)
+            message('No duplicates were found.')
+        return(NULL)
+    }
+
     index2 <- which(duplicated(df[, cols], fromLast = TRUE))
     index <- sort(unique(c(index1, index2)))
 
-    duplicated_df <- dplyr::arrange(df[index,], .data$Taxon_name)
-
-    if (nrow(duplicated_df) == 0) {
-        if (verbose) {
-            message('No duplicates were found.')
-        }
-        return(NULL)
-    } else {
-        return(duplicated_df)
-    }
+    dplyr::arrange(df[index,], .data$Taxon_name)
 }
 
 #' Get taxa with double annotations

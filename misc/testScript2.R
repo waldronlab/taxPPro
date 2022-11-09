@@ -9,4 +9,4 @@ aer_scores_taxids <- freq2Scores(aer_filtered_taxids)
 aer_scores_taxnames <- freq2Scores(aer_filtered_taxnames)
 
 
-x = get_duplicates(aer_filtered_taxids)
+x = getDuplicates(aer_filtered_taxids)
