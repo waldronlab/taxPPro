@@ -306,22 +306,21 @@ resolve_conflicts <- function(df) {
 }
 
 #' Remove taxa duplicates
-#' \code{remove_taxa_duplicates} remove taxa that are duplicated
+#' \code{removeTaxaDuplicates} removes taxa that are duplicated (output of
+#' the `getDuplicates` function).
 #'
-#' @param df A dataframe imported from bugphyzz
+#' @param df A data frame imported with bugphyzz.
 #'
-#' @return A dataframe without duplicated taxa
+#' @return A data frame without duplicated taxa.
 #' @export
 #'
-remove_taxa_duplicates <- function(df) {
+removeTaxaDuplicates <- function(df) {
 
     dup <- getDuplicates(df)
 
     if (is.null(dup))
         return(df)
 
-    no_select_taxa <- dup |>
-        dplyr::pull(Taxon_name) |>
-        unique()
-    return(dplyr::filter(df, !Taxon_name %in% no_select_taxa))
+    no_select_taxa <- unique(dup$Taxon_name)
+    df[!df$Taxon_name %in% no_select_taxa,]
 }
