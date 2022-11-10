@@ -153,7 +153,7 @@ getAgreements <- function(df) {
 
 #' Resolve conflicts
 #'
-#' \code{resolve_agreements} resolves agreements, returning only one
+#' \code{resolveAgreements} resolves agreements, returning only one
 #' (the highest).
 #'
 #' @param df A data frame imported from bugphuyzz.
@@ -161,7 +161,7 @@ getAgreements <- function(df) {
 #' @return A data frame
 #' @export
 #'
-resolve_agreements <- function(df) {
+resolveAgreements <- function(df) {
 
     agree_df <- getAgreements(df)
 
@@ -236,7 +236,7 @@ getConflicts <- function(df) {
 #' @return A dataframe with resolved conflicts
 #' @export
 #'
-resolve_conflicts <- function(df) {
+resolveConflicts <- function(df) {
 
     conflicts <- getConflicts(df)
 
