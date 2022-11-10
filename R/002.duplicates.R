@@ -315,12 +315,8 @@ resolve_conflicts <- function(df) {
 #' @export
 #'
 removeDuplicates <- function(df) {
-
     dup <- getDuplicates(df)
-
     if (is.null(dup))
         return(df)
-
-    no_select_taxa <- unique(dup$Taxon_name)
-    df[!df$Taxon_name %in% no_select_taxa,]
+    df[!df$Taxon_name %in% unique(dup$Taxon_name),]
 }
