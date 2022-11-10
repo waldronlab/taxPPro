@@ -306,7 +306,7 @@ resolve_conflicts <- function(df) {
 }
 
 #' Remove taxa duplicates
-#' \code{removeTaxaDuplicates} removes taxa that are duplicated (output of
+#' \code{removeDuplicates} removes taxa that are duplicated (output of
 #' the `getDuplicates` function).
 #'
 #' @param df A data frame imported with bugphyzz.
@@ -314,7 +314,7 @@ resolve_conflicts <- function(df) {
 #' @return A data frame without duplicated taxa.
 #' @export
 #'
-removeTaxaDuplicates <- function(df) {
+removeDuplicates <- function(df) {
 
     dup <- getDuplicates(df)
 
