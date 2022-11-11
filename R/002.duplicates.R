@@ -92,7 +92,8 @@ getDoubleAnnotations <- function(df) {
         return(NULL)
     }
 
-    double_annotations_all[!double_annotations_all$Taxon_name %in% remove_taxa,]
+    double_annotations_all |>
+        dplyr::filter(!.data$Taxon_name %in% remove_taxa)
 }
 
 #' Get agreements
