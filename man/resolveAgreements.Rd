@@ -13,6 +13,11 @@ resolveAgreements(df)
 A data frame
 }
 \description{
-\code{resolveAgreements} resolves agreements, returning only one
-(the highest).
+\code{resolveAgreements} resolves agreements.
+}
+\details{
+Agreements are defined as a taxon with the same annotation from two or more
+sources. The agreements are resolved with
+`dplyr::slice_max(x, with_ties = FALSE)`. So, only one source is kept,
+the one with the highest 'confidence in curation' value.
 }

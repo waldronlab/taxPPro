@@ -143,8 +143,12 @@ getConflicts <- function(dup) {
 
 #' Resolve agreements
 #'
-#' \code{resolveAgreements} resolves agreements, returning only one
-#' (the highest).
+#' \code{resolveAgreements} resolves agreements.
+#'
+#' Agreements are defined as a taxon with the same annotation from two or more
+#' sources. The agreements are resolved with
+#' `dplyr::slice_max(x, with_ties = FALSE)`. So, only one source is kept,
+#' the one with the highest 'confidence in curation' value.
 #'
 #' @param df A data frame imported from bugphuyzz.
 #'
@@ -153,26 +157,28 @@ getConflicts <- function(dup) {
 #'
 resolveAgreements <- function(df) {
 
-    agree_df <- getAgreements(df)
+    agreements_df <- getAgreements(df)
 
-    if (is.null(agree_df)) {
-        message('No agreements to solve')
+    if (is.null(agreements_df)) {
+        message('No agreements to resolve.')
         return(df)
     }
 
-    agree_names <- unique(agree_df$Taxon_name)
+    agreements_names <- unique(agreements_df$Taxon_name)
     df_no_agreements <- df |>
-        dplyr::filter(!Taxon_name %in% agree_names)
-
-    resolved_agreements <- agree_df |>
-        dplyr::group_by(Taxon_name) |>
-        dplyr::slice_max(Confidence_in_curation, with_ties = FALSE)
-
-    dplyr::bind_rows(df_no_agreements, resolved_agreements) |>
+        dplyr::filter(!Taxon_name %in% agreements_names) |>
         dplyr::mutate(
-            Confidence_in_curation = as.character(Confidence_in_curation)
+            Confidence_in_curation = as.character(.data$Confidence_in_curation)
         )
 
+    resolved_agreements <- agreements_df |>
+        dplyr::group_by(.data$Taxon_name) |>
+        dplyr::slice_max(.data$Confidence_in_curation, with_ties = FALSE) |>
+        dplyr::mutate(
+            Confidence_in_curation = as.character(.data$Confidence_in_curation)
+        )
+
+    dplyr::bind_rows(df_no_agreements, resolved_agreements)
 }
 
 #' Resolve conflicts in a bugphyzz dataset
