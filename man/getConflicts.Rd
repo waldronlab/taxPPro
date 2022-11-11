@@ -4,13 +4,13 @@
 \alias{getConflicts}
 \title{Get conflicts}
 \usage{
-getConflicts(df)
+getConflicts(dup)
 }
 \arguments{
-\item{df}{A data frame from bugphzz}
+\item{dup}{A data frame. Output of the `getDuplicates` function.}
 }
 \value{
-a data frame or NULL
+a data frame or NULL.
 }
 \description{
 \code{getConflicts} gets taxa with two or more annotations from different

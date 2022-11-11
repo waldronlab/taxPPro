@@ -52,7 +52,7 @@ getDoubleAnnotations <- function(df) {
     dups <- getDuplicates(df)
 
     if (is.null(dups)) {
-        message('No duplicates or conflictes here.')
+        message('No duplicates, double annotations, or conflictes here.')
         return(NULL)
     }
 
@@ -190,21 +190,19 @@ resolveAgreements <- function(df) {
 #' \code{getConflicts} gets taxa with two or more annotations from different
 #' sources.
 #'
-#' @param df A data frame from bugphzz
+#' @param dup A data frame. Output of the `getDuplicates` function.
 #'
-#' @return a data frame or NULL
+#' @return a data frame or NULL.
 #' @export
 #'
-getConflicts <- function(df) {
+getConflicts <- function(dup) {
 
-    df <- getDuplicates(df)
-
-    if (is.null(df)) {
+    if (is.null(dup)) {
         message('No duplicates or conflictes here.')
         return(NULL)
     }
 
-    split <- split(df, factor(df$Taxon_name))
+    split <- split(dup, factor(dup$Taxon_name))
     n_sources <- purrr::map_int(split, ~ length(unique(.x$Attribute_source)))
     n_attributes <- purrr::map_int(split, ~ {
         if (is.logical(.x$Attribute_value)) {
@@ -221,12 +219,11 @@ getConflicts <- function(df) {
         return(NULL)
     }
 
-    output <- output |>
+    output |>
         purrr::discard(is.null) |>
         purrr::map(~ dplyr::bind_rows(.x)) |>
         dplyr::bind_rows()
 
-    return(output)
 }
 
 #' Resolve conflicts in a bugphyzz dataset
