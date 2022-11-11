@@ -13,5 +13,13 @@ resolveConflicts(df)
 A dataframe with resolved conflicts
 }
 \description{
-Resolve conflicts in a bugphyzz dataset
+\code{resolveConflicts} resolves conflicts of categorical values.
+}
+\details{
+A conflict is defined as a taxon with two different annotations from two
+different attribute sources.
+
+The conflicts are resolved by giving preference to the source with higher
+'confidence in curation' value. This is done with `dplyr::slice_max`. Ties
+are resolved according to the output of `dplyr::slice_max`.
 }

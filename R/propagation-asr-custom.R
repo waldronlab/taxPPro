@@ -122,7 +122,7 @@ upstream <- function(df) {
 
     df_filtered <- df |>
         filter_dataset_for_propagation() |>
-        remove_taxa_duplicates() |>
+        removeDuplicates() |>
         ci_to_scores() |>
         dplyr::distinct() |>
         dplyr::mutate(
@@ -206,7 +206,7 @@ downstream <- function(df) {
     Parent_NCBI_ID <- NCBI_ID <- NULL
 
     df_filtered <- df |>
-        remove_taxa_duplicates() |>
+        removeDuplicates() |>
         dplyr::distinct() |>
         dplyr::mutate(
             Parent_NCBI_ID = as.character(Parent_NCBI_ID),
@@ -407,7 +407,7 @@ pre_steps <- function(df) {
         resolve_conflicts() |>
         resolve_agreements() |>
         filter_dataset_for_propagation() |>
-        remove_taxa_duplicates() |>
+        removeDuplicates() |>
         ci_to_scores() |>
         dplyr::distinct() |>
         dplyr::mutate(

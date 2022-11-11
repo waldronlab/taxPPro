@@ -21,8 +21,12 @@ getDuplicates <- function(
     if (verbose)
         message('Looking for duplicates.')
 
-    df <- df[!is.na(df$Taxon_name) | df$Taxon_name != 'unknown',]
-    df <- df[df$Attribute != '' & df$Attribute_value != FALSE,]
+    df <- df |>
+        dplyr::filter(
+            !is.na(.data$Taxon_name) | .data$Taxon_name != 'unknown',
+            .data$Attribute != '',
+            .data$Attribute_value != FALSE
+        )
 
     index1 <- which(duplicated(df[, cols]))
 
@@ -38,63 +42,6 @@ getDuplicates <- function(
     dplyr::arrange(df[index,], .data$Taxon_name)
 }
 
-#' Get taxa with double annotations
-#'
-#' \code{getDoubleAnnotations} gets taxa annotated twice from the same source.
-#'
-#' @param df A data frame.
-#'
-#' @return A data frame.
-#' @export
-#'
-getDoubleAnnotations <- function(df) {
-
-    dups <- getDuplicates(df)
-
-    if (is.null(dups)) {
-        message('No duplicates, double annotations, or conflictes here.')
-        return(NULL)
-    }
-
-    ## Counts are based on Taxon_name, because NCBI_ID might be missing
-    taxa_counts <- dups |>
-        dplyr::count(.data$Attribute_source, .data$Taxon_name) |>
-        dplyr::arrange(.data$Taxon_name, .data$Attribute_source) |>
-        dplyr::filter(.data$n > 1)
-
-    if (!nrow(taxa_counts)) {
-        message('No double annotations in this data frame.')
-        return(NULL)
-    }
-
-    taxa <- unique(taxa_counts$Taxon_name)
-    double_annotations_all <- dups[dups$Taxon_name %in% taxa,]
-
-    ## Remove conflicts
-    conflicts <- getConflicts(df)
-    if (!is.null(conflicts)) {
-        conflict_taxa <- unique(conflicts$Taxon_name)
-    } else {
-        conflict_taxa <- NULL
-    }
-
-    ## Remove agreements
-    agree <- getAgreements(df)
-    if (is.null(conflicts)) {
-        agree_taxa <- unique(agree$Taxon_name)
-    } else {
-        agree_taxa <- NULL
-    }
-
-    remove_taxa <- c(conflict_taxa, agree_taxa)
-    if (is.null(remove_taxa)) {
-        message('No double annotations')
-        return(NULL)
-    }
-
-    double_annotations_all |>
-        dplyr::filter(!.data$Taxon_name %in% remove_taxa)
-}
 
 #' Get agreements
 #'
@@ -152,39 +99,6 @@ getAgreements <- function(df) {
         dplyr::filter(Taxon_name %in% real_agree_taxa)
 }
 
-#' Resolve conflicts
-#'
-#' \code{resolveAgreements} resolves agreements, returning only one
-#' (the highest).
-#'
-#' @param df A data frame imported from bugphuyzz.
-#'
-#' @return A data frame
-#' @export
-#'
-resolveAgreements <- function(df) {
-
-    agree_df <- getAgreements(df)
-
-    if (is.null(agree_df)) {
-        message('No agreements to solve')
-        return(df)
-    }
-
-    agree_names <- unique(agree_df$Taxon_name)
-    df_no_agreements <- df |>
-        dplyr::filter(!Taxon_name %in% agree_names)
-
-    resolved_agreements <- agree_df |>
-        dplyr::group_by(Taxon_name) |>
-        dplyr::slice_max(Confidence_in_curation, with_ties = FALSE)
-
-    dplyr::bind_rows(df_no_agreements, resolved_agreements) |>
-        dplyr::mutate(
-            Confidence_in_curation = as.character(Confidence_in_curation)
-        )
-
-}
 
 #' Get conflicts
 #'
@@ -227,7 +141,50 @@ getConflicts <- function(dup) {
 
 }
 
+#' Resolve agreements
+#'
+#' \code{resolveAgreements} resolves agreements, returning only one
+#' (the highest).
+#'
+#' @param df A data frame imported from bugphuyzz.
+#'
+#' @return A data frame
+#' @export
+#'
+resolveAgreements <- function(df) {
+
+    agree_df <- getAgreements(df)
+
+    if (is.null(agree_df)) {
+        message('No agreements to solve')
+        return(df)
+    }
+
+    agree_names <- unique(agree_df$Taxon_name)
+    df_no_agreements <- df |>
+        dplyr::filter(!Taxon_name %in% agree_names)
+
+    resolved_agreements <- agree_df |>
+        dplyr::group_by(Taxon_name) |>
+        dplyr::slice_max(Confidence_in_curation, with_ties = FALSE)
+
+    dplyr::bind_rows(df_no_agreements, resolved_agreements) |>
+        dplyr::mutate(
+            Confidence_in_curation = as.character(Confidence_in_curation)
+        )
+
+}
+
 #' Resolve conflicts in a bugphyzz dataset
+#'
+#' \code{resolveConflicts} resolves conflicts of categorical values.
+#'
+#' A conflict is defined as a taxon with two different annotations from two
+#' different attribute sources.
+#'
+#' The conflicts are resolved by giving preference to the source with higher
+#' 'confidence in curation' value. This is done with `dplyr::slice_max`. Ties
+#' are resolved according to the output of `dplyr::slice_max`.
 #'
 #' @param df  A dataframe imported with bugphyzz
 #'
@@ -238,12 +195,11 @@ resolveConflicts <- function(df) {
 
     conflicts <- getConflicts(df)
 
-    ## if there are no conflicts, return the same dataset
     if (is.null(conflicts))
         return(df)
 
-    ## Resolve conflicts for character/numerical values only
-    if (is.logical(df$Attribute_value)) { ## Maybe change here with data type
+    ## Only have code for resolving conflicts of categorical values
+    if (is.logical(df$Attribute_value)) {
 
         conflicts$Confidence_in_curation <- factor(
             x = conflicts$Confidence_in_curation,
@@ -312,9 +268,48 @@ resolveConflicts <- function(df) {
 #' @return A data frame without duplicated taxa.
 #' @export
 #'
+#' @seealso
+#' \code{\link{getDuplicates}}
+#'
 removeDuplicates <- function(df) {
     dup <- getDuplicates(df)
     if (is.null(dup))
         return(df)
     df[!df$Taxon_name %in% unique(dup$Taxon_name),]
+}
+
+#' Get taxa with double annotations
+#'
+#' \code{getDoubleAnnotations} gets taxa annotated two or more times from the
+#' same source.
+#'
+#' @param df A data frame.
+#'
+#' @return A data frame.
+#' @export
+#'
+#' @seealso
+#' \code{\link{getDuplicates}}
+#'
+getDoubleAnnotations <- function(df) {
+
+    dups <- getDuplicates(df)
+
+    if (is.null(dups)) {
+        message('No duplicates or double annotations here.')
+        return(NULL)
+    }
+
+    taxa_counts <- dups |>
+        dplyr::count(.data$Attribute_source, .data$Taxon_name) |>
+        dplyr::arrange(.data$Taxon_name, .data$Attribute_source) |>
+        dplyr::filter(.data$n > 1)
+
+    if (!nrow(taxa_counts)) {
+        message('No double annotations in this data frame.')
+        return(NULL)
+    }
+
+    taxa <- unique(taxa_counts$Taxon_name)
+    dups[dups$Taxon_name %in% taxa,]
 }

@@ -19,3 +19,6 @@ Remove taxa duplicates
 \code{removeDuplicates} removes taxa that are duplicated (output of
 the `getDuplicates` function).
 }
+\seealso{
+\code{\link{getDuplicates}}
+}

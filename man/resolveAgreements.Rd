@@ -2,7 +2,7 @@
 % Please edit documentation in R/002.duplicates.R
 \name{resolveAgreements}
 \alias{resolveAgreements}
-\title{Resolve conflicts}
+\title{Resolve agreements}
 \usage{
 resolveAgreements(df)
 }

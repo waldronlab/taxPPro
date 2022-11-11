@@ -13,5 +13,9 @@ getDoubleAnnotations(df)
 A data frame.
 }
 \description{
-\code{getDoubleAnnotations} gets taxa annotated twice from the same source.
+\code{getDoubleAnnotations} gets taxa annotated two or more times from the
+same source.
+}
+\seealso{
+\code{\link{getDuplicates}}
 }
