@@ -3,7 +3,7 @@
 #'
 #' \code{getDuplicates} gets duplicated taxa in a bugphuzz dataset.
 #' This information could be useful for identifying conflicts of annotations
-#' between different sources. Dupliation is based on both NCBI_ID and
+#' between different sources. Duplication is based on both NCBI_ID and
 #' Taxon_name.
 #'
 #' @param df A data frame imported with bugphyzz.
