@@ -221,7 +221,8 @@ resolveAgreements <- function(df) {
     tax_names <- agreements$Taxon_name
     attr_vals <- agreements[[attr_col]]
 
-    index <- which(df$Taxon_name %in% tax_names & df[[attr_col]] %in% attr_vals)
+    index <-
+        which(df$Taxon_name %in% tax_names & df[[attr_col]] %in% attr_vals)
 
     new_df <- df[-index,]
 
