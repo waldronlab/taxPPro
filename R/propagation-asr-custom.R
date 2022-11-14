@@ -372,8 +372,6 @@ propagate <- function(df, asr_method = 'mv') {
 
 }
 
-
-
 scores_to_ci <- function(x) {
     Score <- NULL
     x |>
@@ -392,26 +390,3 @@ scores_to_ci <- function(x) {
 }
 
 .validParentRanks <- function() c('species', 'genus', 'family')
-
-
-#' Previous steps
-#'
-#' @param df A data frame.
-#'
-#' @return A dara frame.
-#' @export
-#'
-pre_steps <- function(df) {
-    NCBI_ID <- Parent_NCBI_ID <- NULL
-    df |>
-        resolve_conflicts() |>
-        resolve_agreements() |>
-        filter_dataset_for_propagation() |>
-        removeDuplicates() |>
-        ci_to_scores() |>
-        dplyr::distinct() |>
-        dplyr::mutate(
-            Parent_NCBI_ID = as.character(Parent_NCBI_ID),
-            NCBI_ID = as.character(NCBI_ID)
-        )
-}

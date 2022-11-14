@@ -1,19 +1,29 @@
 library(bugphyzz)
 library(taxPPro)
 
-eg_taxon <- 'Lactobacillus sakei'
-aer <- physiologies('aerophilicity')[[1]]
-aer[aer$Taxon_name == eg_taxon, ]
+# aer <- physiologies('aerophilicity')[[1]]
+# aer_filtered <- aer |>
+#     filterData(tax.id.type = 'Taxon_name') |>
+#     freq2Scores() |>
+#     resolveAgreements() |>
+#     resolveConflicts()
+# x <- getConflicts(aer_filtered)
+# length(unique(x$Taxon_name))
 
-aer_filtered <- aer |>
+phys <- physiologies()
+
+output <- vector('list', length(phys))
+for (i in seq_along(output)) {
+    message('>>>>>>', names(phys)[i])
+    output[[i]] <- preSteps(phys[[i]])
+    names(output)[i] <- names(phys)[i]
+}
+
+is <- phys$`isolation site`
+is |>
     filterData(tax.id.type = 'Taxon_name') |>
     freq2Scores() |>
-    resolveAgreements() |>
-    resolveConflicts()
+    resolveAgreements()
 
-a <- getDoubleAnnotations(aer_filtered)
-b <- getAgreements(aer_filtered)
-c <- getConflicts(aer_filtered)
-
-aer_filtered[aer_filtered$Taxon_name == eg_taxon,]
-
+conflicts <- lapply(phys, getConflicts) |>
+    purrr::discard(is.null)

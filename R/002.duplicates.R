@@ -69,11 +69,7 @@ getAgreements <- function(df) {
         return(NULL)
     }
 
-    if(is.logical(dup$Attribute_value)) {
-        attr_col <- 'Attribute'
-    } else if (is.numeric(dup$Attribute_value)) {
-        attr_col <- 'Attribute_value'
-    }
+    attr_col <- chooseColVal(dup)
 
     agreements <- dup |>
         dplyr::count(
@@ -121,11 +117,8 @@ getConflicts <- function(df) {
     split <- split(dup, factor(dup$Taxon_name))
     n_sources <- purrr::map_int(split, ~ length(unique(.x$Attribute_source)))
     n_attributes <- purrr::map_int(split, ~ {
-        if (is.logical(.x$Attribute_value)) {
-            length(unique(.x$Attribute))
-        } else {
-            length(unique(.x$Attribute_value))
-        }
+        attr_col <- chooseColVal(.x)
+        length(unique(.x[[attr_col]]))
     })
 
     conflicts <- split[n_sources > 1 & n_attributes > 1]
@@ -206,11 +199,7 @@ resolveAgreements <- function(df) {
         return(df)
     }
 
-    if(is.logical(agreements$Attribute_value)) {
-        attr_col <- 'Attribute'
-    } else if (is.numeric(agreements$Attribute_value)) {
-        attr_col <- 'Attribute_value'
-    }
+    attr_col <- chooseColVal(agreements)
 
     agreements$Confidence_in_curation <- factor(
         x = agreements$Confidence_in_curation,
@@ -262,11 +251,7 @@ resolveConflicts <- function(df) {
     if (is.null(conflicts))
         return(df)
 
-    if(is.logical(conflicts$Attribute_value)) {
-        attr_col <- 'Attribute'
-    } else if (is.numeric(conflicts$Attribute_value)) {
-        attr_col <- 'Attribute_value'
-    }
+    attr_col <- chooseColVal(conflicts)
 
     conflicts$Confidence_in_curation <- factor(
         x = conflicts$Confidence_in_curation,
@@ -307,10 +292,11 @@ resolveConflicts <- function(df) {
         msg <- paste0(
             'There were ', length(conflict_names),
             ' conflicts but none could be solved.',
-            ' Dropping ', tota_unresolved_conflicts, ' taxa.'
+            # ' Dropping ', total_unresolved_conflicts, ' taxa.'
         )
         warning(msg, call. = FALSE)
-        return(df_no_conflicts)
+        # return(df_no_conflicts)
+        return(df)
     }
 
     if (any(unresolved_lgl)) {
@@ -325,8 +311,12 @@ resolveConflicts <- function(df) {
     resolved_conflicts <- conf_split[!unresolved_lgl] |>
         dplyr::bind_rows()
 
+    unresolved_conflicts <- conf_split[unresolved_lgl] |>
+        dplyr::bind_rows()
+
     df_no_conflicts |>
         dplyr::bind_rows(resolved_conflicts) |>
+        dplyr::bind_rows(unresolved_conflicts) |>
         dplyr::mutate(
             Confidence_in_curation = as.character(
                 .data$Confidence_in_curation
