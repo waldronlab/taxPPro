@@ -12,6 +12,9 @@ preSteps(df, tax.id.type)
 }
 \arguments{
 \item{df}{A data.frame.}
+
+\item{tax.id.type}{A character string. Valid values are Taxon_name and
+NCBI_ID.}
 }
 \value{
 A data.frame.

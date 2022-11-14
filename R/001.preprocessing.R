@@ -8,23 +8,23 @@
 #' vectors.
 #'
 #' @param df A data.frame.
+#' @param tax.id.type A character string. Valid values are Taxon_name and
+#' NCBI_ID.
 #'
 #' @return A data.frame.
 #' @export
 #'
 preSteps <- function(df, tax.id.type) {
-    NCBI_ID <- Parent_NCBI_ID <- NULL
     df |>
-        filterData(tax.id.type = tax.id.type) |>
-        resolve_conflicts() |>
-        resolve_agreements() |>
-        remove_taxa_duplicates() |>
-        freq2Scores() |>
         dplyr::distinct() |>
         dplyr::mutate(
-            Parent_NCBI_ID = as.character(Parent_NCBI_ID),
-            NCBI_ID = as.character(NCBI_ID)
-        )
+            Parent_NCBI_ID = as.character(.data$Parent_NCBI_ID),
+            NCBI_ID = as.character(.data$NCBI_ID)
+        ) |>
+        filterData(tax.id.type = 'Taxon_name') |>
+        freq2Scores() |>
+        resolveAgreements() |>
+        resolveConflicts()
 }
 
 #' Filter data for propagation
