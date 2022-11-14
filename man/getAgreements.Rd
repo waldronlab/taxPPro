@@ -13,6 +13,13 @@ getAgreements(df)
 A data frame.
 }
 \description{
-\code{getAgreements} gets taxa annotated two or more times from different
+\code{getAgreements} gets taxa annotated two or more times with the same
+annotation, but from different sources.
+}
+\details{
+An agreement is defined as taxon with the same annotation from different
 sources.
+}
+\seealso{
+\code{\link{resolveAgreements}}
 }

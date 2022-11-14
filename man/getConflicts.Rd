@@ -4,10 +4,10 @@
 \alias{getConflicts}
 \title{Get conflicts}
 \usage{
-getConflicts(dup)
+getConflicts(df)
 }
 \arguments{
-\item{dup}{A data frame. Output of the `getDuplicates` function.}
+\item{df}{A data frame. Output of the `getDuplicates` function.}
 }
 \value{
 a data frame or NULL.

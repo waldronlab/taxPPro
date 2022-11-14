@@ -1,4 +1,6 @@
 
+# Get functions -----------------------------------------------------------
+
 #' Get duplicates
 #'
 #' \code{getDuplicates} gets duplicated taxa in a bugphuzz dataset.
@@ -42,10 +44,12 @@ getDuplicates <- function(
     dplyr::arrange(df[index,], .data$Taxon_name)
 }
 
-
 #' Get agreements
 #'
-#' \code{getAgreements} gets taxa annotated two or more times from different
+#' \code{getAgreements} gets taxa annotated two or more times with the same
+#' annotation, but from different sources.
+#'
+#' An agreement is defined as taxon with the same annotation from different
 #' sources.
 #'
 #' @param df A data frame.
@@ -53,67 +57,64 @@ getDuplicates <- function(
 #' @return A data frame.
 #' @export
 #'
+#' @seealso
+#' \code{\link{resolveAgreements}}
+#'
 getAgreements <- function(df) {
 
-    df <- getDuplicates(df)
+    dup <- getDuplicates(df)
 
-    if (is.null(df)) {
-        message('No duplicates or conflictes here.')
+    if (is.null(dup)) {
+        message('No duplicates or agreements here.')
         return(NULL)
     }
 
-    if(is.logical(df$Attribute_value)) {
+    if(is.logical(dup$Attribute_value)) {
         attr_col <- 'Attribute'
-    } else if (is.numeric(df$Attribute_value)) {
+    } else if (is.numeric(dup$Attribute_value)) {
         attr_col <- 'Attribute_value'
     }
 
-    split <- split(df, df$Taxon_name)
+    agreements <- dup |>
+        dplyr::count(
+            .data$Taxon_name,
+            .data[[attr_col]]
+        ) |>
+        dplyr::filter(.data$n > 1)
 
-    select_lgl <- split |>
-        purrr::map_lgl(~ {
-             attrs <- unique(.x[[attr_col]])
-             sources <- unique(.x[['Attribute_source']])
-             lgl_value <- length(attrs) == 1 & length(sources) > 1
-             lgl_value
-        })
 
-    if (!any(select_lgl)) {
-        message("No agreements.")
+    if (!nrow(agreements)) {
+        message("No agreements detected.")
         return(NULL)
     }
 
-    agreements_df <- split[select_lgl] |>
-        dplyr::bind_rows()
+    tax_names <- agreements$Taxon_name
+    attr_vals <- agreements[[attr_col]]
 
-    conflicts_df <- getConflicts(df)
+    dup |>
+        dplyr::filter(
+            .data$Taxon_name %in% tax_names,
+            .data[[attr_col]] %in% attr_vals
+        )
 
-    if (is.null(conflicts_df))
-        return(agreements_df)
-
-    agree_taxa <- unique(agreements_df$Taxon_name)
-    conflict_taxa <- unique(conflicts_df$Taxon_name)
-
-    real_agree_taxa <- agree_taxa[!agree_taxa %in% conflict_taxa]
-    agreements_df |>
-        dplyr::filter(Taxon_name %in% real_agree_taxa)
 }
-
 
 #' Get conflicts
 #'
 #' \code{getConflicts} gets taxa with two or more annotations from different
 #' sources.
 #'
-#' @param dup A data frame. Output of the `getDuplicates` function.
+#' @param df A data frame. Output of the `getDuplicates` function.
 #'
 #' @return a data frame or NULL.
 #' @export
 #'
-getConflicts <- function(dup) {
+getConflicts <- function(df) {
+
+    dup <- getDuplicates(df)
 
     if (is.null(dup)) {
-        message('No duplicates or conflictes here.')
+        message('No duplicates or conflicts here.')
         return(NULL)
     }
 
@@ -127,161 +128,18 @@ getConflicts <- function(dup) {
         }
     })
 
-    output <- split[n_sources > 1 & n_attributes > 1]
+    conflicts <- split[n_sources > 1 & n_attributes > 1]
 
-    if(!length(output)) {
+    if(!length(conflicts)) {
         message('No conflicts here.')
         return(NULL)
     }
 
-    output |>
+    conflicts |>
         purrr::discard(is.null) |>
         purrr::map(~ dplyr::bind_rows(.x)) |>
         dplyr::bind_rows()
 
-}
-
-#' Resolve agreements
-#'
-#' \code{resolveAgreements} resolves agreements.
-#'
-#' Agreements are defined as a taxon with the same annotation from two or more
-#' sources. The agreements are resolved with
-#' `dplyr::slice_max(x, with_ties = FALSE)`. So, only one source is kept,
-#' the one with the highest 'confidence in curation' value.
-#'
-#' @param df A data frame imported from bugphuyzz.
-#'
-#' @return A data frame
-#' @export
-#'
-resolveAgreements <- function(df) {
-
-    agreements_df <- getAgreements(df)
-
-    if (is.null(agreements_df)) {
-        message('No agreements to resolve.')
-        return(df)
-    }
-
-    agreements_names <- unique(agreements_df$Taxon_name)
-    df_no_agreements <- df |>
-        dplyr::filter(!Taxon_name %in% agreements_names) |>
-        dplyr::mutate(
-            Confidence_in_curation = as.character(.data$Confidence_in_curation)
-        )
-
-    resolved_agreements <- agreements_df |>
-        dplyr::group_by(.data$Taxon_name) |>
-        dplyr::slice_max(.data$Confidence_in_curation, with_ties = FALSE) |>
-        dplyr::mutate(
-            Confidence_in_curation = as.character(.data$Confidence_in_curation)
-        )
-
-    dplyr::bind_rows(df_no_agreements, resolved_agreements)
-}
-
-#' Resolve conflicts in a bugphyzz dataset
-#'
-#' \code{resolveConflicts} resolves conflicts of categorical values.
-#'
-#' A conflict is defined as a taxon with two different annotations from two
-#' different attribute sources.
-#'
-#' The conflicts are resolved by giving preference to the source with higher
-#' 'confidence in curation' value. This is done with `dplyr::slice_max`. Ties
-#' are resolved according to the output of `dplyr::slice_max`.
-#'
-#' @param df  A dataframe imported with bugphyzz
-#'
-#' @return A dataframe with resolved conflicts
-#' @export
-#'
-resolveConflicts <- function(df) {
-
-    conflicts <- getConflicts(df)
-
-    if (is.null(conflicts))
-        return(df)
-
-    ## Only have code for resolving conflicts of categorical values
-    if (is.logical(df$Attribute_value)) {
-
-        conflicts$Confidence_in_curation <- factor(
-            x = conflicts$Confidence_in_curation,
-            levels = c('low', 'medium', 'high'),
-            ordered = TRUE
-        )
-
-        conflict_names <- unique(conflicts$Taxon_name)
-        df_no_conflicts <- df |>
-            dplyr::filter(!Taxon_name %in% conflict_names)
-
-        resolved_conflicts <- conflicts |>
-            dplyr::group_by(Taxon_name) |>
-            dplyr::slice_max(Confidence_in_curation, with_ties = TRUE)
-
-        conf_split <-
-            split(resolved_conflicts, factor(resolved_conflicts$Taxon_name))
-
-        n_rows <- purrr::map_int(conf_split, nrow)
-
-        if (all(n_rows >= 2)) {
-            msg <- paste0(
-                'There were conflicts but none could be solved.',
-                'Dropping ', length(n_rows), ' taxa.'
-            )
-            warning(msg, call. = FALSE)
-            return(df_no_conflicts)
-        }
-
-        if (any(n_rows >= 2)) {
-            remaining_conflicts <- sum(n_rows >= 2)
-            msg <- paste0(
-                remaining_conflicts,
-                " conflicts couldn't be solved. Dropping them."
-            )
-            warning(msg, call. = FALSE)
-        }
-
-        resolved_conflicts <- conf_split[!n_rows >= 2] |>
-            dplyr::bind_rows()
-
-        output <-
-            dplyr::bind_rows(df_no_conflicts, resolved_conflicts) |>
-            dplyr::mutate(
-                Confidence_in_curation = as.character(Confidence_in_curation)
-            )
-
-        return(output)
-
-    } else {
-
-        warning(
-            'Cannot resolve conflicts of numerics and ranges yet.',
-            ' No action taken.', call. = FALSE
-        )
-        return(df)
-    }
-}
-
-#' Remove taxa duplicates
-#' \code{removeDuplicates} removes taxa that are duplicated (output of
-#' the `getDuplicates` function).
-#'
-#' @param df A data frame imported with bugphyzz.
-#'
-#' @return A data frame without duplicated taxa.
-#' @export
-#'
-#' @seealso
-#' \code{\link{getDuplicates}}
-#'
-removeDuplicates <- function(df) {
-    dup <- getDuplicates(df)
-    if (is.null(dup))
-        return(df)
-    df[!df$Taxon_name %in% unique(dup$Taxon_name),]
 }
 
 #' Get taxa with double annotations
@@ -318,4 +176,195 @@ getDoubleAnnotations <- function(df) {
 
     taxa <- unique(taxa_counts$Taxon_name)
     dups[dups$Taxon_name %in% taxa,]
+}
+
+# Action functions --------------------------------------------------------
+
+#' Resolve agreements
+#'
+#' \code{resolveAgreements} resolves agreements.
+#'
+#' Agreements are defined as a taxon with the same annotation from two or more
+#' sources. The agreements are resolved with
+#' `dplyr::slice_max(x, with_ties = FALSE)`. So, only one source is kept,
+#' the one with the highest 'confidence in curation' value.
+#'
+#' @param df A data frame imported from bugphuyzz.
+#'
+#' @return A data frame
+#' @export
+#'
+#' @seealso
+#' \code{\link{getAgreements}}
+#'
+resolveAgreements <- function(df) {
+
+    agreements <- getAgreements(df)
+
+    if (is.null(agreements)) {
+        message('No agreements to resolve.')
+        return(df)
+    }
+
+    if(is.logical(agreements$Attribute_value)) {
+        attr_col <- 'Attribute'
+    } else if (is.numeric(agreements$Attribute_value)) {
+        attr_col <- 'Attribute_value'
+    }
+
+    agreements$Confidence_in_curation <- factor(
+        x = agreements$Confidence_in_curation,
+        levels = c('low', 'medium', 'high'),
+        ordered = TRUE
+    )
+
+    tax_names <- agreements$Taxon_name
+    attr_vals <- agreements[[attr_col]]
+
+    index <- which(df$Taxon_name %in% tax_names & df[[attr_col]] %in% attr_vals)
+
+    new_df <- df[-index,]
+
+    ## TODO add desc and order_by in slice max
+
+    resolved_agreements <- agreements |>
+        dplyr::group_by(.data$Taxon_name) |>
+        dplyr::slice_max(.data$Confidence_in_curation, with_ties = FALSE) |>
+        dplyr::mutate(
+            Confidence_in_curation = as.character(.data$Confidence_in_curation)
+        )
+
+    dplyr::bind_rows(new_df, resolved_agreements)
+
+    # agreements_names <- unique(agreements_df$Taxon_name)
+    # df_no_agreements <- df |>
+    #     dplyr::filter(!Taxon_name %in% agreements_names) |>
+    #     dplyr::mutate(
+    #         Confidence_in_curation = as.character(.data$Confidence_in_curation)
+    #     )
+    #
+    # resolved_agreements <- agreements_df |>
+    #     dplyr::group_by(.data$Taxon_name) |>
+    #     dplyr::slice_max(.data$Confidence_in_curation, with_ties = FALSE) |>
+    #     dplyr::mutate(
+    #         Confidence_in_curation = as.character(.data$Confidence_in_curation)
+    #     )
+    #
+    # dplyr::bind_rows(df_no_agreements, resolved_agreements)
+}
+
+#' Resolve conflicts in a bugphyzz dataset
+#'
+#' \code{resolveConflicts} resolves conflicts of categorical values.
+#'
+#' A conflict is defined as a taxon with two different annotations from two
+#' different attribute sources.
+#'
+#' The conflicts are resolved by giving preference to the source with higher
+#' 'confidence in curation' value. This is done with `dplyr::slice_max`. Ties
+#' are resolved according to the output of `dplyr::slice_max`.
+#'
+#' @param df  A dataframe imported with bugphyzz
+#'
+#' @return A dataframe with resolved conflicts
+#' @export
+#'
+resolveConflicts <- function(df) {
+
+    conflicts <- getConflicts(df)
+
+    if (is.null(conflicts))
+        return(df)
+
+    ## Only have code for resolving conflicts of categorical values
+    if (is.logical(df$Attribute_value)) {
+        conflicts$Confidence_in_curation <- factor(
+            x = conflicts$Confidence_in_curation,
+            levels = c('low', 'medium', 'high'),
+            ordered = TRUE
+        )
+
+        conflict_names <- unique(conflicts$Taxon_name)
+        df_no_conflicts <- df |>
+            dplyr::filter(!Taxon_name %in% conflict_names)
+
+        resolved_conflicts <- conflicts |>
+            dplyr::group_by(Taxon_name) |>
+            dplyr::slice_max(
+                order_by = dplyr::desc(.data$Confidence_in_curation),
+                with_ties = TRUE
+            ) # |>
+            ## The slice_max function call bellow just makes an additional
+            ## selection based on the Attribute_source. The choice is made
+            ## based on alphabetical order. This should be changed at some
+            ## point for a more meaningful way of doing this.
+            # dplyr::slice_max(
+                # order_by = dplyr::desc(.data$Attribute_source),
+                # with_ties = TRUE
+            # )
+
+        conf_split <- split(
+            x = resolved_conflicts, f = factor(resolved_conflicts$Taxon_name)
+        )
+
+        n_rows <- purrr::map_int(conf_split, nrow)
+
+        if (all(n_rows >= 2)) {
+            msg <- paste0(
+                'There were conflicts but none could be solved.',
+                'Dropping ', length(n_rows), ' taxa.'
+            )
+            warning(msg, call. = FALSE)
+            return(df_no_conflicts)
+        }
+
+        if (any(n_rows >= 2)) {
+            remaining_conflicts <- sum(n_rows >= 2)
+            msg <- paste0(
+                remaining_conflicts,
+                " conflicts couldn't be solved. Dropping them."
+            )
+            warning(msg, call. = FALSE)
+        }
+
+        resolved_conflicts <- conf_split[!n_rows >= 2] |>
+            dplyr::bind_rows()
+
+        output <-
+            dplyr::bind_rows(df_no_conflicts, resolved_conflicts) |>
+            dplyr::mutate(
+                Confidence_in_curation = as.character(
+                    .data$Confidence_in_curation
+                )
+            )
+
+        return(output)
+
+    } else {
+
+        warning(
+            'Cannot resolve conflicts of numerics and ranges yet.',
+            ' No action taken.', call. = FALSE
+        )
+        return(df)
+    }
+}
+
+#' Remove taxa duplicates
+#' \code{removeDuplicates} removes taxa that are duplicated (output of
+#' the `getDuplicates` function).
+#'
+#' @param df A data frame imported with bugphyzz.
+#'
+#' @return A data frame without duplicated taxa.
+#' @export
+#'
+#' @seealso
+#' \code{\link{getDuplicates}}
+#'
+removeDuplicates <- function(df) {
+    dup <- getDuplicates(df)
+    if (is.null(dup))
+        return(df)
+    df[!df$Taxon_name %in% unique(dup$Taxon_name),]
 }

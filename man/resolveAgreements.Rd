@@ -21,3 +21,6 @@ sources. The agreements are resolved with
 `dplyr::slice_max(x, with_ties = FALSE)`. So, only one source is kept,
 the one with the highest 'confidence in curation' value.
 }
+\seealso{
+\code{\link{getAgreements}}
+}
