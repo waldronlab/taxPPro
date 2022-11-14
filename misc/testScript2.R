@@ -1,5 +1,6 @@
 library(bugphyzz)
 library(dplyr)
+library(purrr)
 
 # phys <- physiologies()
 # duplicates <- phys |>
@@ -10,13 +11,29 @@ library(dplyr)
 #     purrr::discard(is.null)
 
 aer <- physiologies('aerophilicity')[[1]]
-dup_filtered <- filterData(aer, tax.id.type = 'Taxon_name') |>
+dup_filtered <- aer |>
+    filterData(tax.id.type = 'Taxon_name') |>
     freq2Scores() |>
-    getDuplicates()
+    resolveAgreements() |>
+    resolveConflicts()
 
 ## From duplicates we should get
-a <- getDoubleAnnotations(dup_filtered)
 b <- getAgreements(dup_filtered)
 c <- getConflicts(dup_filtered)
 
-resolved_conflicts <- resolveConflicts(dup_filtered)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

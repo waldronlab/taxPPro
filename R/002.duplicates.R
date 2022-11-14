@@ -225,32 +225,17 @@ resolveAgreements <- function(df) {
 
     new_df <- df[-index,]
 
-    ## TODO add desc and order_by in slice max
-
     resolved_agreements <- agreements |>
         dplyr::group_by(.data$Taxon_name) |>
-        dplyr::slice_max(.data$Confidence_in_curation, with_ties = FALSE) |>
+        dplyr::slice_max(
+            order_by = dplyr::desc(.data$Confidence_in_curation),
+            with_ties = FALSE
+        ) |>
         dplyr::mutate(
             Confidence_in_curation = as.character(.data$Confidence_in_curation)
         )
 
     dplyr::bind_rows(new_df, resolved_agreements)
-
-    # agreements_names <- unique(agreements_df$Taxon_name)
-    # df_no_agreements <- df |>
-    #     dplyr::filter(!Taxon_name %in% agreements_names) |>
-    #     dplyr::mutate(
-    #         Confidence_in_curation = as.character(.data$Confidence_in_curation)
-    #     )
-    #
-    # resolved_agreements <- agreements_df |>
-    #     dplyr::group_by(.data$Taxon_name) |>
-    #     dplyr::slice_max(.data$Confidence_in_curation, with_ties = FALSE) |>
-    #     dplyr::mutate(
-    #         Confidence_in_curation = as.character(.data$Confidence_in_curation)
-    #     )
-    #
-    # dplyr::bind_rows(df_no_agreements, resolved_agreements)
 }
 
 #' Resolve conflicts in a bugphyzz dataset
@@ -276,78 +261,76 @@ resolveConflicts <- function(df) {
     if (is.null(conflicts))
         return(df)
 
-    ## Only have code for resolving conflicts of categorical values
-    if (is.logical(df$Attribute_value)) {
-        conflicts$Confidence_in_curation <- factor(
-            x = conflicts$Confidence_in_curation,
-            levels = c('low', 'medium', 'high'),
-            ordered = TRUE
-        )
-
-        conflict_names <- unique(conflicts$Taxon_name)
-        df_no_conflicts <- df |>
-            dplyr::filter(!Taxon_name %in% conflict_names)
-
-        resolved_conflicts <- conflicts |>
-            dplyr::group_by(Taxon_name) |>
-            dplyr::slice_max(
-                order_by = dplyr::desc(.data$Confidence_in_curation),
-                with_ties = TRUE
-            ) # |>
-            ## The slice_max function call bellow just makes an additional
-            ## selection based on the Attribute_source. The choice is made
-            ## based on alphabetical order. This should be changed at some
-            ## point for a more meaningful way of doing this.
-            # dplyr::slice_max(
-                # order_by = dplyr::desc(.data$Attribute_source),
-                # with_ties = TRUE
-            # )
-
-        conf_split <- split(
-            x = resolved_conflicts, f = factor(resolved_conflicts$Taxon_name)
-        )
-
-        n_rows <- purrr::map_int(conf_split, nrow)
-
-        if (all(n_rows >= 2)) {
-            msg <- paste0(
-                'There were conflicts but none could be solved.',
-                'Dropping ', length(n_rows), ' taxa.'
-            )
-            warning(msg, call. = FALSE)
-            return(df_no_conflicts)
-        }
-
-        if (any(n_rows >= 2)) {
-            remaining_conflicts <- sum(n_rows >= 2)
-            msg <- paste0(
-                remaining_conflicts,
-                " conflicts couldn't be solved. Dropping them."
-            )
-            warning(msg, call. = FALSE)
-        }
-
-        resolved_conflicts <- conf_split[!n_rows >= 2] |>
-            dplyr::bind_rows()
-
-        output <-
-            dplyr::bind_rows(df_no_conflicts, resolved_conflicts) |>
-            dplyr::mutate(
-                Confidence_in_curation = as.character(
-                    .data$Confidence_in_curation
-                )
-            )
-
-        return(output)
-
-    } else {
-
-        warning(
-            'Cannot resolve conflicts of numerics and ranges yet.',
-            ' No action taken.', call. = FALSE
-        )
-        return(df)
+    if(is.logical(conflicts$Attribute_value)) {
+        attr_col <- 'Attribute'
+    } else if (is.numeric(conflicts$Attribute_value)) {
+        attr_col <- 'Attribute_value'
     }
+
+    conflicts$Confidence_in_curation <- factor(
+        x = conflicts$Confidence_in_curation,
+        levels = c('low', 'medium', 'high'),
+        ordered = TRUE
+    )
+
+    conflict_names <- unique(conflicts$Taxon_name)
+    df_no_conflicts <- df |>
+        dplyr::filter(!Taxon_name %in% conflict_names)
+
+    resolved_conflicts <- conflicts |>
+        dplyr::group_by(Taxon_name) |>
+        dplyr::slice_max(
+            order_by = dplyr::desc(.data$Confidence_in_curation),
+            with_ties = TRUE
+        ) |>
+        ## The slice_max function call bellow just makes an additional
+        ## selection based on the Attribute_source. The choice is made
+        ## based on alphabetical order. This should be changed at some
+        ## point for a more meaningful way of doing this.
+        # dplyr::slice_max(
+            # order_by = dplyr::desc(.data$Attribute_source),
+            # with_ties = TRUE
+        # )
+        dplyr::ungroup()
+
+    conf_split <- split(
+        x = resolved_conflicts, f = factor(resolved_conflicts$Taxon_name)
+    )
+
+    unresolved_lgl <- conf_split |>
+        purrr::map_lgl(~ length(unique(.x$Attribute_source)) > 1)
+
+    total_unresolved_conflicts <- sum(unresolved_lgl)
+
+    if (all(unresolved_lgl)) {
+        msg <- paste0(
+            'There were ', length(conflict_names),
+            ' conflicts but none could be solved.',
+            ' Dropping ', tota_unresolved_conflicts, ' taxa.'
+        )
+        warning(msg, call. = FALSE)
+        return(df_no_conflicts)
+    }
+
+    if (any(unresolved_lgl)) {
+        msg <- paste0(
+            'There were ', length(conflict_names),
+            ' conflicts, but ', total_unresolved_conflicts,
+            " conflicts couldn't be solved. Dropping them."
+        )
+        warning(msg, call. = FALSE)
+    }
+
+    resolved_conflicts <- conf_split[!unresolved_lgl] |>
+        dplyr::bind_rows()
+
+    df_no_conflicts |>
+        dplyr::bind_rows(resolved_conflicts) |>
+        dplyr::mutate(
+            Confidence_in_curation = as.character(
+                .data$Confidence_in_curation
+            )
+        )
 }
 
 #' Remove taxa duplicates
