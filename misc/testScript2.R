@@ -1,29 +1,38 @@
 library(bugphyzz)
 library(taxPPro)
+library(dplyr)
 
-# aer <- physiologies('aerophilicity')[[1]]
-# aer_filtered <- aer |>
-#     filterData(tax.id.type = 'Taxon_name') |>
-#     freq2Scores() |>
-#     resolveAgreements() |>
-#     resolveConflicts()
-# x <- getConflicts(aer_filtered)
-# length(unique(x$Taxon_name))
+aer <- physiologies('aerophilicity')[[1]]
+ph <- physiologies('optimal ph')[[1]]
 
-phys <- physiologies()
+aer_filtered <- preSteps(aer)
+ph_filtered <- preSteps(ph)
 
-output <- vector('list', length(phys))
-for (i in seq_along(output)) {
-    message('>>>>>>', names(phys)[i])
-    output[[i]] <- preSteps(phys[[i]])
-    names(output)[i] <- names(phys)[i]
-}
+aer_pscores <- getParentScores(aer_filtered)
+ph_pscores <- getParentScores(ph_filtered)
 
-is <- phys$`isolation site`
-is |>
-    filterData(tax.id.type = 'Taxon_name') |>
-    freq2Scores() |>
-    resolveAgreements()
+aer_prop <- propagate(aer, prop = 'both')
+aer_prop_down <- propagate(aer, prop = 'downstream')
 
-conflicts <- lapply(phys, getConflicts) |>
-    purrr::discard(is.null)
+table(aer_prop$Evidence)
+
+
+## An example with Escherichia
+
+eg_taxon <- 'Escherichia'
+
+aer_filtered |>
+    filter(Taxon_name == eg_taxon)
+
+aer_pscores |>
+    filter(Taxon_name == eg_taxon) |>
+    as.data.frame()
+
+ph_filtered |>
+    filter(Taxon_name == eg_taxon)
+
+ph_pscores |>
+    filter(Taxon_name == eg_taxon) |>
+    as.data.frame()
+
+

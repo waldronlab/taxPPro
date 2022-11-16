@@ -291,7 +291,7 @@ resolveConflicts <- function(df) {
     if (all(unresolved_lgl)) {
         msg <- paste0(
             'There were ', length(conflict_names),
-            ' conflicts but none could be solved.',
+            ' conflicts but none could be solved.'
             # ' Dropping ', total_unresolved_conflicts, ' taxa.'
         )
         warning(msg, call. = FALSE)
@@ -303,7 +303,8 @@ resolveConflicts <- function(df) {
         msg <- paste0(
             'There were ', length(conflict_names),
             ' conflicts, but ', total_unresolved_conflicts,
-            " conflicts couldn't be solved. Dropping them."
+            " conflicts couldn't be solved.",
+            ' dropiing them.'
         )
         warning(msg, call. = FALSE)
     }
@@ -311,12 +312,13 @@ resolveConflicts <- function(df) {
     resolved_conflicts <- conf_split[!unresolved_lgl] |>
         dplyr::bind_rows()
 
+    ## Get unresloved conflicts as well
     unresolved_conflicts <- conf_split[unresolved_lgl] |>
         dplyr::bind_rows()
 
     df_no_conflicts |>
         dplyr::bind_rows(resolved_conflicts) |>
-        dplyr::bind_rows(unresolved_conflicts) |>
+        dplyr::bind_rows(unresolved_conflicts) |> # unresolved conflicts are also included in the output
         dplyr::mutate(
             Confidence_in_curation = as.character(
                 .data$Confidence_in_curation
