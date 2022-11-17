@@ -269,14 +269,6 @@ resolveConflicts <- function(df) {
             order_by = dplyr::desc(.data$Confidence_in_curation),
             with_ties = TRUE
         ) |>
-        ## The slice_max function call bellow just makes an additional
-        ## selection based on the Attribute_source. The choice is made
-        ## based on alphabetical order. This should be changed at some
-        ## point for a more meaningful way of doing this.
-        # dplyr::slice_max(
-            # order_by = dplyr::desc(.data$Attribute_source),
-            # with_ties = TRUE
-        # )
         dplyr::ungroup()
 
     conf_split <- split(
@@ -295,7 +287,6 @@ resolveConflicts <- function(df) {
             # ' Dropping ', total_unresolved_conflicts, ' taxa.'
         )
         warning(msg, call. = FALSE)
-        # return(df_no_conflicts)
         return(df)
     }
 
@@ -303,8 +294,7 @@ resolveConflicts <- function(df) {
         msg <- paste0(
             'There were ', length(conflict_names),
             ' conflicts, but ', total_unresolved_conflicts,
-            " conflicts couldn't be solved.",
-            ' dropiing them.'
+            " conflicts couldn't be solved."
         )
         warning(msg, call. = FALSE)
     }
@@ -312,13 +302,12 @@ resolveConflicts <- function(df) {
     resolved_conflicts <- conf_split[!unresolved_lgl] |>
         dplyr::bind_rows()
 
-    ## Get unresloved conflicts as well
     unresolved_conflicts <- conf_split[unresolved_lgl] |>
         dplyr::bind_rows()
 
     df_no_conflicts |>
         dplyr::bind_rows(resolved_conflicts) |>
-        dplyr::bind_rows(unresolved_conflicts) |> # unresolved conflicts are also included in the output
+        dplyr::bind_rows(unresolved_conflicts) |>
         dplyr::mutate(
             Confidence_in_curation = as.character(
                 .data$Confidence_in_curation
@@ -344,7 +333,6 @@ removeDuplicates <- function(df) {
         return(df)
     df[!df$Taxon_name %in% unique(dup$Taxon_name),]
 }
-
 
 # helper functions --------------------------------------------------------
 

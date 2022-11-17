@@ -1,38 +1,17 @@
 library(bugphyzz)
-library(taxPPro)
+# library(taxPPro)
 library(dplyr)
+
+phys <- physiologies()
+phys_filt <- lapply(phys, preSteps) |>
+    purrr::discard(is.null) |>
+    purrr::discard(~!nrow(.x))
+
+lapply(phys_filt, function(x) table(x$Score))
+
 
 aer <- physiologies('aerophilicity')[[1]]
 ph <- physiologies('optimal ph')[[1]]
 
-aer_filtered <- preSteps(aer)
-ph_filtered <- preSteps(ph)
-
-aer_pscores <- getParentScores(aer_filtered)
-ph_pscores <- getParentScores(ph_filtered)
-
-aer_prop <- propagate(aer, prop = 'both')
-aer_prop_down <- propagate(aer, prop = 'downstream')
-
-table(aer_prop$Evidence)
-
-
-## An example with Escherichia
-
-eg_taxon <- 'Escherichia'
-
-aer_filtered |>
-    filter(Taxon_name == eg_taxon)
-
-aer_pscores |>
-    filter(Taxon_name == eg_taxon) |>
-    as.data.frame()
-
-ph_filtered |>
-    filter(Taxon_name == eg_taxon)
-
-ph_pscores |>
-    filter(Taxon_name == eg_taxon) |>
-    as.data.frame()
-
-
+aer_upstream <- propagateUpstream(aer, max.tax.level = 'genus')
+ph_upstream <- propagateUpstream(ph, max.tax.level = 'genus')

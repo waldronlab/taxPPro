@@ -51,83 +51,70 @@ propagate <- function(df, asr_method = 'mv', prop) {
 
 }
 
-#' Annotate parent nodes (upstream)
+#' Propagate upstream
 #'
-#' \code{upstream} annotates parent node based on their immediate descendants
-#' (children).
+#' \code{propagateUpstream}
 #'
-#' @param df A data frame from bugphyzz.
+#' @param df A data frame.
+#' @param max.tax.level A character string. Maximum taxonomic rank/level.
 #'
-#' @return A data frame with parent nodes annotations (new rows).
-#'
+#' @return A data frame with asr evidence.
 #' @export
 #'
-upstream <- function(df) {
-
-    Parent_NCBI_ID <- NCBI_ID <- NULL
+propagateUpstream <- function(df, max.tax.level) {
 
     df_filtered <- preSteps(df)
 
-    if (nrow(df) == 0) {
-        warning('Nothing to do here.', call. = FALSE)
-        return(df_filtered)
+    if (!nrow(df_filtered)) {
+        warning('No propagation upstream.', call. = FALSE)
+        return(df)
     }
 
     split_by_rank <- split(df_filtered, factor(df_filtered$Rank))
 
-    if (!any(c('strain', 'species', 'genus') %in% names(split_by_rank))) {
-        warning('Nothing to do here.', call. = FALSE)
-        return(df_filtered)
-    }
+    valid_ranks <- .validRanks()
+    valid_ranks <- valid_ranks[1:which(valid_ranks == max.tax.level)]
 
-    strains <- new_species <- new_genera <- NULL
+    for (i in seq_along(valid_ranks)) {
 
-    ## upstream species
-    if ('strain' %in% names(split_by_rank)) {
-        message('Getting new species with asr-tax. (Step 1 - upstream).')
-        strains <- split_by_rank$strain
-        new_species <- getParentScores(strains) |>
-            dplyr::filter(.data$Rank == 'species') |>
-            dplyr::distinct()
-    }
+        current_rank <- valid_ranks[i]
 
-    ## upstream genera
-    if ('species' %in% names(split_by_rank)) {
-        message('Getting new genera with asr-tax. (Step 2 - upstream).')
-        species <- split_by_rank$species
-        if (!is.null(new_species)) {
-            new_species <- new_species[!new_species$NCBI_ID %in% species$NCBI_ID,]
-            new_species <- dplyr::bind_rows(species, new_species) |>
-                purrr::discard(~all(is.na(.x)))
+        if (current_rank %in% names(split_by_rank)) {
+            message('Current rank: ', current_rank)
+            next_pos <- i + 1
+            if (next_pos > length(valid_ranks))
+                break()
+            next_rank <- valid_ranks[next_pos]
+            message('Getting next rank: ', next_rank)
+            parent_scores <- getParentScores(split_by_rank[[current_rank]])
+            parent_scores <- parent_scores |>
+                dplyr::filter(.data$Rank == next_rank)
+
+            if (next_rank %in% names(split_by_rank)) {
+
+                split_by_rank[[next_rank]] <-
+                    .replaceParents(split_by_rank[[next_rank]], parent_scores)
+
+            } else {
+                split_by_rank[[next_rank]] <- parent_scores
+            }
+
+        } else {
+            next()
         }
-        new_genera <- getParentScores(species) |>
-            dplyr::filter(Rank == 'genus') |>
-            dplyr::distinct()
     }
 
-    ## Add code for upstream family
-    if ('genus' %in% names(split_by_rank)) {
-        message('Getting new families with asr-tax. (Step 3 - upstream).')
-        genera <- split_by_rank$genus
-        if (!is.null(new_genera)) {
-            new_genera <- new_genera[!new_genera$NCBI_ID %in% genera$NCBI_ID,]
-            new_genera <- dplyr::bind_rows(genera, new_genera) |>
-                purrr::discard(~all(is.na(.x)))
-        }
-        new_families <- getParentScores(genera) |>
-            dplyr::filter(Rank == 'family') |>
-            dplyr::distinct()
-    }
-
-    new_upstream <- list(new_species, new_genera, new_families) |>
-        purrr::discard(is.null) |>
-        dplyr::bind_rows()
-
-    new_upstream <- new_upstream[!new_upstream$NCBI_ID %in% df_filtered$NCBI_ID,]
-    output <- dplyr::bind_rows(df_filtered, new_upstream) |>
-        dplyr::distinct()
-    return(output)
+    split_by_rank |>
+        dplyr::bind_rows() |>
+        dplyr::distinct() |>
+        as.data.frame()
 }
+
+propagateDownstream <- function(df) {
+
+}
+
+
 
 #' Get annotations for descendants (downstream)
 #'
@@ -169,7 +156,7 @@ downstream <- function(df) {
     if ('family' %in% names(split_by_rank)) {
         message('Getting new genera with inh-tax. (Step 4 - downstream)')
         family <- split_by_rank$family
-        new_genera <- get_children(family$NCBI_ID) |>
+        new_genera <- getChildren(family$NCBI_ID) |>
             dplyr::filter(Rank == 'genus') |>
             dplyr::mutate(Evidence = 'inh-tax') |>
             dplyr::distinct()
@@ -199,7 +186,7 @@ downstream <- function(df) {
     if ('genus' %in% names(split_by_rank)) {
         message('Getting new species with inh-tax. (Step 5 - downstream)')
         genus <- split_by_rank$genus
-        new_species <- get_children(genus$NCBI_ID) |>
+        new_species <- getChildren(genus$NCBI_ID) |>
             dplyr::filter(Rank == 'species') |>
             dplyr::mutate(Evidence = 'inh-tax') |>
             dplyr::distinct()
@@ -229,7 +216,7 @@ downstream <- function(df) {
     if ('species' %in% names(split_by_rank)) {
         message('Getting new strains with inh-tax (Step 6 - downstream).')
         species <- split_by_rank$species
-        new_strains <- get_children(species$NCBI_ID) |>
+        new_strains <- getChildren(species$NCBI_ID) |>
             dplyr::filter(Rank == 'strain') |>
             dplyr::mutate(Evidence = 'inh-tax') |>
             dplyr::distinct()
@@ -264,19 +251,18 @@ downstream <- function(df) {
         dplyr::distinct()
 }
 
-
 # Helper functions --------------------------------------------------------
 
 #' Get parents
 #'
-#' \code{get_parents} get's the parent taxon of a vector of valid NCBI IDs.
+#' \code{getParents} get's the parent taxon of a vector of valid NCBI IDs.
 #'
 #' @param x A vector of valid NCBI taxids
 #'
 #' @return A data frame with Parent_NCBI_ID, Parent_name, and Parent_rank.
 #' @export
 #'
-get_parents <- function(x) {
+getParents <- function(x) {
     classification <- taxizedb::classification(x)
     classification <- classification[!is.na(classification)]
     classification <- purrr::map(classification, dplyr::distinct)
@@ -287,7 +273,7 @@ get_parents <- function(x) {
         n_rows <- nrow(.x)
         .x <- .x[-n_rows, ]
         utils::tail(.x, 1)
-    }) %>%
+    }) |>
         dplyr::bind_rows()
     parents_df$NCBI_ID <- names(classification)
     parents_df[,c('NCBI_ID', 'Parent_NCBI_ID', 'Parent_name', 'Parent_rank')]
@@ -295,7 +281,7 @@ get_parents <- function(x) {
 
 #' Get children
 #'
-#' \code{get_children} gets the immediate descendants of a taxon.
+#' \code{getChildren} gets the immediate descendants of a taxon.
 #'
 #' @param x A vector of valid NCBI taxids.
 #'
@@ -303,7 +289,7 @@ get_parents <- function(x) {
 #'
 #' @export
 #'
-get_children <- function(x) {
+getChildren <- function(x) {
     id <- name <- rank <- NULL
     taxizedb::children(x, db = 'ncbi') |>
         purrr::map(~ tibble::as_tibble(.x)) |>
@@ -327,13 +313,6 @@ get_children <- function(x) {
 #'
 getParentScores <- function(df) {
 
-    ## TODO not necessarily in this line, but find a way to concatenate
-    ## the sources and original score values.
-
-    ## TODO also add concatenated version of confidence in curation.
-
-    ## TODO maybe add Accession_ID and Genome_ID
-
     attr_val_col <- chooseColVal(df)
 
     asr_scores <- df |>
@@ -345,8 +324,7 @@ getParentScores <- function(df) {
         tidyr::nest() |>
         dplyr::ungroup() |>
         dplyr::mutate(
-            data2 = purrr::map(
-                ## 'data' is the name of the new column with nested data
+            data2 = purrr::map(# 'data' is the name of the new column (nested)
                 .data$data, ~ .calcParentScore(.x, attr_val_col)
             )
         ) |>
@@ -357,12 +335,12 @@ getParentScores <- function(df) {
             NCBI_ID = .data$Parent_NCBI_ID,
             Rank = .data$Parent_rank
         ) |>
-        dplyr::mutate(Evidence = 'asr-tax')
+        dplyr::mutate(Evidence = 'asr')
 
     pos <- which(colnames(asr_scores) == 'attr')
     colnames(asr_scores)[pos] <- attr_val_col
 
-    parents <- tibble::as_tibble(get_parents(asr_scores$NCBI_ID))
+    parents <- tibble::as_tibble(getParents(asr_scores$NCBI_ID))
     parents$Parent_NCBI_ID <- as.character(parents$Parent_NCBI_ID)
     asr_scores$NCBI_ID <- as.character(asr_scores$NCBI_ID)
     output <- dplyr::right_join(asr_scores, parents, by = 'NCBI_ID')
@@ -379,21 +357,57 @@ getParentScores <- function(df) {
 
 }
 
+getChildrenScores <- NULL
 
 # Helper functions --------------------------------------------------------
 
+## Replace parents
+.replaceParents <- function(df, parent_scores) {
+    new_taxa_lgl <- !parent_scores$Taxon_name %in% df$Taxon_name
+    new_taxa <- parent_scores[new_taxa_lgl,]
+
+    if (!length(new_taxa)) {
+        return(df)
+    } else {
+        return(dplyr::bind_rows(df, new_taxa))
+    }
+}
+
+## Replace children
+.replaceChildren <- NULL
+
 ## Function to calculate parent score
 .calcParentScore <- function(df, attr_col) {
-    df <- df[, c(attr_col, 'Score')]
-    colnames(df) <- c('attr', 'val')
-    df |> dplyr::mutate(
+
+    pos <- which(colnames(df) == attr_col)
+    colnames(df)[pos] <- 'attr'
+
+    pos <- which(colnames(df) == 'Score')
+    colnames(df)[pos] <- 'val'
+
+    df_cat <- df |>
+        dplyr::group_by(.data[['attr']]) |>
+        dplyr::summarise(
+            Attribute_source = paste0(.data$Attribute_source, collapse = '|'),
+            Confidence_in_curation = paste0(
+                .data$Confidence_in_curation, collapse = '|'
+            ),
+            Original_NCBI_ID = paste0(.data$NCBI_ID, collapse = '|'),
+            Original_Taxon_name = paste0(.data$Taxon_name, collapse = '|'),
+            Original_Score = paste0(.data$val, collapse = '|'),
+            Original_Evidence = paste0(.data$Evidence, collapse = '|')
+        ) |>
+        dplyr::ungroup()
+
+    new_scores <- df |> dplyr::mutate(
+        n = dplyr::n(),
         total = sum(.data$val),
-        prop = .data$val / .data$total
-    ) |>
+        prop = ifelse(n == 1, .data$val, .data$val / .data$total)
+        ) |>
         dplyr::count(.data$attr, wt = .data$prop, name = 'Score') |>
-        dplyr::mutate(Score = round(.data$Score, 1)) |>
-        ## TODO maybe don't apply filter.
-        dplyr::filter(.data$Score >= 0.5)
+        dplyr::mutate(Score = round(.data$Score, 1))
+        # dplyr::filter(.data$Score >= 0.5) # TODO maybe do/don't apply filter
+    dplyr::left_join(new_scores, df_cat, by = 'attr')
 }
 
 ## Function for converting scores to frequency
