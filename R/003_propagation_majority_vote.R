@@ -4,76 +4,61 @@
 #' \code{propagate} propagates annotations.
 #'
 #' @param df A data frame from bugphyzz.
-#' @param asr_method A character string. The method that should be used for
+#' @param max.tax.level A character string. The method that should be used for
 #' propagation. Option: mv, majority vote; tx, NCBI taxonomy; ph, phylogenetic
 #' tree.
+#' @param direction A character string. 'upstream', 'downstream', or 'both'.
 #'
-#' @return A data frame with extended annotations.
+#' @return A data frame with propagated annotations.
 #'
 #' @export
 #'
-propagate <- function(df, asr_method = 'mv', prop) {
-
+propagate <- function(df, max.tax.level = 'genus', direction = 'both') {
     df_filtered <- preSteps(df)
 
-    if (!nrow(df_filtered)) {
-        warning('NO propagation for this dataset')
-        return(df)
-    }
-
-    if (asr_method == 'mv') {
-        no_filtered <- df[!df$NCBI_ID %in% df_filtered$NCBI_ID,] |>
-            dplyr::mutate(
-                Parent_NCBI_ID = as.character(Parent_NCBI_ID),
-                NCBI_ID = as.character(NCBI_ID)
+    if (direction == 'upstream' || direction == 'downstream') {
+        output <- propagateAnnotations(
+            df = df_filtered,
+            max.tax.level = max.tax.level,
+            direction = direction
+        )
+    } else if (direction == 'both') {
+        output <- df_filtered |>
+            propagateAnnotations(
+                max.tax.level = max.tax.level,
+                direction = 'upstream'
+            ) |>
+            propagateAnnotations(
+                max.tax.level = max.tax.level,
+                direction = 'downstream'
             )
-
-        if (prop == 'both') {
-            propagated <- df_filtered |>
-                upstream() |>
-                downstream()
-        } else if (prop == 'upstream') {
-            propagated <- df_filtered |>
-                upstream()
-        } else if (prop == 'downstream') {
-            propagated <- df_filtered |>
-                downstream()
-        }
-
-        propagated <- propagated[!propagated$NCBI_ID %in% no_filtered$NCBI_ID,]
-
-        output <- dplyr::bind_rows(no_filtered, propagated) |>
-            dplyr::distinct()
-
-        return(output)
-
     }
 
+    return(output)
 }
 
-#' Propagate upstream
+#' Propagate annotations
 #'
-#' \code{propagateUpstream}
+#' \code{propagateAnnotations}
 #'
 #' @param df A data frame.
 #' @param max.tax.level A character string. Maximum taxonomic rank/level.
+#' @param direction A character string. 'upstream' or 'downstream'.
 #'
-#' @return A data frame with asr evidence.
+#' @return A data frame with asr/inh evidence.
 #' @export
 #'
-propagateUpstream <- function(df, max.tax.level) {
+propagateAnnotations <- function(df, max.tax.level, direction) {
 
-    df_filtered <- preSteps(df)
-
-    if (!nrow(df_filtered)) {
-        warning('No propagation upstream.', call. = FALSE)
-        return(df)
-    }
-
-    split_by_rank <- split(df_filtered, factor(df_filtered$Rank))
-
+    split_by_rank <- split(df, factor(df$Rank))
     valid_ranks <- .validRanks()
-    valid_ranks <- valid_ranks[1:which(valid_ranks == max.tax.level)]
+
+    if (direction == 'upstream') {
+        valid_ranks <- valid_ranks[1:which(valid_ranks == max.tax.level)]
+    } else if (direction == 'downstream') {
+        pos <- which(valid_ranks == max.tax.level)
+        valid_ranks <- valid_ranks[pos:1]
+    }
 
     for (i in seq_along(valid_ranks)) {
 
@@ -86,17 +71,19 @@ propagateUpstream <- function(df, max.tax.level) {
                 break()
             next_rank <- valid_ranks[next_pos]
             message('Getting next rank: ', next_rank)
-            parent_scores <- getParentScores(split_by_rank[[current_rank]])
-            parent_scores <- parent_scores |>
+
+            new_scores <- .getScores(split_by_rank[[current_rank]], direction)
+            new_scores <- new_scores |>
                 dplyr::filter(.data$Rank == next_rank)
 
             if (next_rank %in% names(split_by_rank)) {
 
-                split_by_rank[[next_rank]] <-
-                    .replaceParents(split_by_rank[[next_rank]], parent_scores)
+                split_by_rank[[next_rank]] <- .replaceTaxa(
+                    split_by_rank[[next_rank]], new_scores
+                )
 
             } else {
-                split_by_rank[[next_rank]] <- parent_scores
+                split_by_rank[[next_rank]] <- new_scores
             }
 
         } else {
@@ -108,147 +95,6 @@ propagateUpstream <- function(df, max.tax.level) {
         dplyr::bind_rows() |>
         dplyr::distinct() |>
         as.data.frame()
-}
-
-propagateDownstream <- function(df) {
-
-}
-
-
-
-#' Get annotations for descendants (downstream)
-#'
-#' \code{downstream} annotates the descendants fo parent nodes.
-#'
-#' @param df A data frame from bugphyzz.
-#'
-#' @return A data frame with child nodes annotated (new rows).
-#'
-#' @export
-#'
-downstream <- function(df) {
-
-    Parent_NCBI_ID <- NCBI_ID <- NULL
-
-    df_filtered <- df |>
-        removeDuplicates() |>
-        dplyr::distinct() |>
-        dplyr::mutate(
-            Parent_NCBI_ID = as.character(Parent_NCBI_ID),
-            NCBI_ID = as.character(NCBI_ID)
-        )
-
-    if (nrow(df) == 0) {
-        warning('Nothing to do here.', call. = FALSE)
-        return(NULL)
-    }
-
-    split_by_rank <- split(df_filtered, factor(df_filtered$Rank))
-
-    if (!any(c('species', 'genus') %in% names(split_by_rank))) {
-        warning('Nothing to do here.', call. = FALSE)
-        return(NULL)
-    }
-
-    new_species <- new_strains <- NULL
-
-    ## downstream family to genus
-    if ('family' %in% names(split_by_rank)) {
-        message('Getting new genera with inh-tax. (Step 4 - downstream)')
-        family <- split_by_rank$family
-        new_genera <- getChildren(family$NCBI_ID) |>
-            dplyr::filter(Rank == 'genus') |>
-            dplyr::mutate(Evidence = 'inh-tax') |>
-            dplyr::distinct()
-
-        family <- family |>
-            dplyr::select(-Parent_NCBI_ID, -Parent_name, -Parent_rank) |>
-            dplyr::rename(
-                Parent_NCBI_ID = NCBI_ID, Parent_name = Taxon_name,
-                Parent_rank = Rank
-            )
-
-        new_genera <- dplyr::left_join(
-            new_genera, family, by = 'Parent_NCBI_ID',
-            suffix = c('', '.y')
-        ) |>
-            dplyr::select(-tidyselect::ends_with('.y'))
-
-        if ('genus' %in% names(split_by_rank)) {
-            genus <- split_by_rank$genus
-            new_genera <-
-                new_genera[!new_genera$NCBI_ID %in% genus$NCBI_ID,]
-        }
-
-    }
-
-    ## downstream genus to species
-    if ('genus' %in% names(split_by_rank)) {
-        message('Getting new species with inh-tax. (Step 5 - downstream)')
-        genus <- split_by_rank$genus
-        new_species <- getChildren(genus$NCBI_ID) |>
-            dplyr::filter(Rank == 'species') |>
-            dplyr::mutate(Evidence = 'inh-tax') |>
-            dplyr::distinct()
-
-        genus <- genus |>
-            dplyr::select(-Parent_NCBI_ID, -Parent_name, -Parent_rank) |>
-            dplyr::rename(
-                Parent_NCBI_ID = NCBI_ID, Parent_name = Taxon_name,
-                Parent_rank = Rank
-            )
-
-        new_species <- dplyr::left_join(
-            new_species, genus, by = 'Parent_NCBI_ID',
-            suffix = c('', '.y')
-        ) |>
-            dplyr::select(-tidyselect::ends_with('.y'))
-
-        if ('species' %in% names(split_by_rank)) {
-            species <- split_by_rank$species
-            new_species <-
-                new_species[!new_species$NCBI_ID %in% species$NCBI_ID,]
-        }
-
-    }
-
-    ## Downstream species to strain
-    if ('species' %in% names(split_by_rank)) {
-        message('Getting new strains with inh-tax (Step 6 - downstream).')
-        species <- split_by_rank$species
-        new_strains <- getChildren(species$NCBI_ID) |>
-            dplyr::filter(Rank == 'strain') |>
-            dplyr::mutate(Evidence = 'inh-tax') |>
-            dplyr::distinct()
-
-        species <- species |>
-            dplyr::select(-Parent_NCBI_ID, -Parent_name, -Parent_rank) |>
-            dplyr::rename(
-                Parent_NCBI_ID = NCBI_ID, Parent_name = Taxon_name,
-                Parent_rank = Rank
-            )
-
-        new_strains <- dplyr::left_join(
-            new_strains, species, by = 'Parent_NCBI_ID',
-            suffix = c('', '.y')
-        ) |>
-            dplyr::select(-tidyselect::ends_with('.y'))
-
-        if ('strain' %in% names(split_by_rank)) {
-            strain <- split_by_rank$strain
-            new_strains <-
-                new_strains[!new_strains$NCBI_ID %in% strain$NCBI_ID,]
-        }
-    }
-
-    new_downstream <- list(new_genera, new_species, new_strains) |>
-        purrr::discard(is.null) |>
-        dplyr::bind_rows()
-
-    new_downstream <-
-        new_downstream[!new_downstream$NCBI_ID %in% df_filtered$NCBI_ID,]
-    dplyr::bind_rows(df_filtered, new_downstream) |>
-        dplyr::distinct()
 }
 
 # Helper functions --------------------------------------------------------
@@ -299,6 +145,7 @@ getChildren <- function(x) {
         )
 }
 
+
 #' Calculate parent score
 #'
 #' \code{getParentScores} calculates the parent score based on its immediate
@@ -340,6 +187,7 @@ getParentScores <- function(df) {
     pos <- which(colnames(asr_scores) == 'attr')
     colnames(asr_scores)[pos] <- attr_val_col
 
+    ## These are the new parents of the original parents
     parents <- tibble::as_tibble(getParents(asr_scores$NCBI_ID))
     parents$Parent_NCBI_ID <- as.character(parents$Parent_NCBI_ID)
     asr_scores$NCBI_ID <- as.character(asr_scores$NCBI_ID)
@@ -357,14 +205,56 @@ getParentScores <- function(df) {
 
 }
 
-getChildrenScores <- NULL
+#' Get scores for children taxa
+#'
+#' \code{getChildrenScores} works
+#'
+#' @param df A data frame imported from bugphyzz and output of the `preSteps`
+#' function
+#'
+#' @return A data frame with scores for children taxa.
+#' @export
+#'
+getChildrenScores <- function(df) {
+
+    ## Current taxa names must become the new parents
+    parent_taxa <- df[,!startsWith(colnames(df), 'Parent_')]
+
+    pos <- which(colnames(parent_taxa) == 'NCBI_ID')
+    colnames(parent_taxa)[pos] <- 'Parent_NCBI_ID'
+
+    pos <- which(colnames(parent_taxa) == 'Taxon_name')
+    colnames(parent_taxa)[pos] <- 'Parent_name'
+
+    pos <- which(colnames(parent_taxa) == 'Rank')
+    colnames(parent_taxa)[pos] <- 'Parent_rank'
+
+    pos <- which(colnames(parent_taxa) == 'Evidence')
+    colnames(parent_taxa)[pos] <- 'Parent_evidence'
+
+    children_taxa <- getChildren(df$NCBI_ID)
+
+    children_taxa |>
+        dplyr::left_join(parent_taxa, by = 'Parent_NCBI_ID') |>
+        dplyr::mutate(Evidence = 'inh')
+
+}
 
 # Helper functions --------------------------------------------------------
 
+## Helper function to get scores
+.getScores <- function(df, direction) {
+    if (direction == 'upstream') {
+        return(getParentScores(df))
+    } else if (direction == 'downstream') {
+        return(getChildrenScores(df))
+    }
+}
+
 ## Replace parents
-.replaceParents <- function(df, parent_scores) {
-    new_taxa_lgl <- !parent_scores$Taxon_name %in% df$Taxon_name
-    new_taxa <- parent_scores[new_taxa_lgl,]
+.replaceTaxa <- function(df, taxa_scores) {
+    new_taxa_lgl <- !taxa_scores$Taxon_name %in% df$Taxon_name
+    new_taxa <- taxa_scores[new_taxa_lgl,]
 
     if (!length(new_taxa)) {
         return(df)

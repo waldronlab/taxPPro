@@ -4,17 +4,19 @@
 \alias{propagate}
 \title{Propagate annotations}
 \usage{
-propagate(df, asr_method = "mv", prop)
+propagate(df, max.tax.level = "genus", direction = "both")
 }
 \arguments{
 \item{df}{A data frame from bugphyzz.}
 
-\item{asr_method}{A character string. The method that should be used for
+\item{max.tax.level}{A character string. The method that should be used for
 propagation. Option: mv, majority vote; tx, NCBI taxonomy; ph, phylogenetic
 tree.}
+
+\item{direction}{A character string. 'upstream', 'downstream', or 'both'.}
 }
 \value{
-A data frame with extended annotations.
+A data frame with propagated annotations.
 }
 \description{
 \code{propagate} propagates annotations.
