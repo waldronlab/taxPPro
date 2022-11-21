@@ -14,6 +14,28 @@
 #' @export
 #'
 propagate <- function(df, max.tax.level = 'genus', direction = 'both') {
+
+    valid_ranks <- .validRanks()
+
+    if (!max.tax.level %in% valid_ranks) {
+        msg <- paste0(
+            'Invalid max.tax.level value.',
+            ' Value must be one of ', paste0(valid_ranks, collapse = ', ')
+        )
+        stop(msg, call. = FALSE)
+    }
+
+    valid_direction_options <- c('upstream', 'downstream', 'both')
+
+    if (!direction %in% valid_direction_options) {
+        msg <- paste0(
+            'Invalid direction value.',
+            ' Value must be one of ',
+            paste0(valid_direction_options, collapse = ', ')
+        )
+        stop(msg, call. = FALSE)
+    }
+
     df_filtered <- preSteps(df)
 
     if (direction == 'upstream' || direction == 'downstream') {
@@ -50,8 +72,27 @@ propagate <- function(df, max.tax.level = 'genus', direction = 'both') {
 #'
 propagateAnnotations <- function(df, max.tax.level, direction) {
 
-    split_by_rank <- split(df, factor(df$Rank))
     valid_ranks <- .validRanks()
+
+    if (!max.tax.level %in% valid_ranks) {
+        msg <- paste0(
+            'Invalid max.tax.level value.',
+            ' Value must be one of ', paste0(valid_ranks, collapse = ', ')
+        )
+        stop(msg, call. = FALSE)
+    }
+
+    valid_direction_options <- c('upstream', 'downstream', 'both')
+    if (!direction %in% valid_direction_options) {
+        msg <- paste0(
+            'Invalid direction value.',
+            ' Value must be one of ',
+            paste0(valid_direction_options, collapse = ', ')
+        )
+        stop(msg, call. = FALSE)
+    }
+
+    split_by_rank <- split(df, factor(df$Rank))
 
     if (direction == 'upstream') {
         valid_ranks <- valid_ranks[1:which(valid_ranks == max.tax.level)]
