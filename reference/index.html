@@ -35,22 +35,10 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/asr-custom.html">Example of upstream and downstream with aerophilicity and ph</a>
-    </li>
-    <li>
-      <a href="../articles/asr-taxonomy.html">ASR with a taxonomy tree</a>
-    </li>
-    <li>
       <a href="../articles/bugsigdbr.html">signatures in bugsigdbr</a>
     </li>
     <li>
       <a href="../articles/completeness-taxonomy.html">NCBI taxonomy and completeness</a>
-    </li>
-    <li>
-      <a href="../articles/duplicates.html">Duplicates and conflicting annotations in bugphyzz</a>
-    </li>
-    <li>
-      <a href="../articles/stats1.html">bugphyzz stats</a>
     </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
@@ -80,13 +68,9 @@
         </td>
         <td><p>Annotate internal nodes</p></td>
       </tr><tr><td>
-          <p><code><a href="calcParentScore.html">calcParentScore()</a></code> </p>
+          <p><code><a href="chooseColVal.html">chooseColVal()</a></code> </p>
         </td>
-        <td><p>Calculate parent score</p></td>
-      </tr><tr><td>
-          <p><code><a href="ci_to_scores.html">ci_to_scores()</a></code> </p>
-        </td>
-        <td><p>Convert confidence intervals to numeric scores</p></td>
+        <td><p>Choose column for attribute values</p></td>
       </tr><tr><td>
           <p><code><a href="counts_per_attribute_and_rank.html">counts_per_attribute_and_rank()</a></code> </p>
         </td>
@@ -104,70 +88,87 @@
         </td>
         <td><p>Create entries for ASR</p></td>
       </tr><tr><td>
-          <p><code><a href="downstream.html">downstream()</a></code> </p>
-        </td>
-        <td><p>Get annotations for descendants (downstream)</p></td>
-      </tr><tr><td>
           <p><code><a href="estimateASR.html">estimateASR()</a></code> </p>
         </td>
         <td><p>Estimate ASR</p></td>
       </tr><tr><td>
-          <p><code><a href="filter_dataset_for_propagation.html">filter_dataset_for_propagation()</a></code> </p>
+          <p><code><a href="filterData.html">filterData()</a></code> </p>
         </td>
-        <td><p>Filter dataset propagation</p></td>
+        <td><p>Filter data for propagation</p></td>
       </tr><tr><td>
-          <p><code><a href="get_agreements.html">get_agreements()</a></code> </p>
+          <p><code><a href="freq2Scores.html">freq2Scores()</a></code> </p>
+        </td>
+        <td><p>Convert frequency values to numeric scores</p></td>
+      </tr><tr><td>
+          <p><code><a href="getAgreements.html">getAgreements()</a></code> </p>
         </td>
         <td><p>Get agreements</p></td>
       </tr><tr><td>
-          <p><code><a href="get_children.html">get_children()</a></code> </p>
+          <p><code><a href="getChildren.html">getChildren()</a></code> </p>
         </td>
         <td><p>Get children</p></td>
       </tr><tr><td>
-          <p><code><a href="get_conflicts.html">get_conflicts()</a></code> </p>
+          <p><code><a href="getChildrenScores.html">getChildrenScores()</a></code> </p>
+        </td>
+        <td><p>Get scores for children taxa</p></td>
+      </tr><tr><td>
+          <p><code><a href="getConflicts.html">getConflicts()</a></code> </p>
         </td>
         <td><p>Get conflicts</p></td>
       </tr><tr><td>
-          <p><code><a href="get_double_annotations.html">get_double_annotations()</a></code> </p>
+          <p><code><a href="getDoubleAnnotations.html">getDoubleAnnotations()</a></code> </p>
         </td>
         <td><p>Get taxa with double annotations</p></td>
       </tr><tr><td>
-          <p><code><a href="get_duplicates.html">get_duplicates()</a></code> </p>
+          <p><code><a href="getDuplicates.html">getDuplicates()</a></code> </p>
         </td>
         <td><p>Get duplicates</p></td>
+      </tr><tr><td>
+          <p><code><a href="getParentScores.html">getParentScores()</a></code> </p>
+        </td>
+        <td><p>Calculate parent score</p></td>
+      </tr><tr><td>
+          <p><code><a href="getParents.html">getParents()</a></code> </p>
+        </td>
+        <td><p>Get parents</p></td>
       </tr><tr><td>
           <p><code><a href="get_ncbi_taxonomy.html">get_ncbi_taxonomy()</a></code> </p>
         </td>
         <td><p>get_ncbi_taxonomy</p></td>
       </tr><tr><td>
-          <p><code><a href="get_parents.html">get_parents()</a></code> </p>
-        </td>
-        <td><p>Get parents</p></td>
-      </tr><tr><td>
           <p><code><a href="import_ncbi_ids.html">import_ncbi_ids()</a></code> </p>
         </td>
         <td><p>Import NCBI IDs from the statistics page</p></td>
       </tr><tr><td>
+          <p><code><a href="preSteps.html">preSteps()</a></code> </p>
+        </td>
+        <td><p><code>preSteps</code> perform the previous steps before propagating annotations.
+These steps include: 1) filter data, 2) resolve conflicts, 3) resolve
+agreements, 4) remove duplicates, 5) convert frequency to scores, 6)
+remove duplicate lines, 7) ensure Taxid and Parent_tax_id are are character
+vectors.</p></td>
+      </tr><tr><td>
           <p><code><a href="propagate.html">propagate()</a></code> </p>
         </td>
-        <td><p>Propagate annotations based on custom ASR</p></td>
+        <td><p>Propagate annotations</p></td>
       </tr><tr><td>
-          <p><code><a href="remove_taxa_duplicates.html">remove_taxa_duplicates()</a></code> </p>
+          <p><code><a href="propagateAnnotations.html">propagateAnnotations()</a></code> </p>
+        </td>
+        <td><p>Propagate annotations</p></td>
+      </tr><tr><td>
+          <p><code><a href="removeDuplicates.html">removeDuplicates()</a></code> </p>
         </td>
         <td><p>Remove taxa duplicates
-<code>remove_taxa_duplicates</code> remove taxa that are duplicated</p></td>
+<code>removeDuplicates</code> removes taxa that are duplicated (output of
+the `getDuplicates` function).</p></td>
       </tr><tr><td>
-          <p><code><a href="resolve_agreements.html">resolve_agreements()</a></code> </p>
+          <p><code><a href="resolveAgreements.html">resolveAgreements()</a></code> </p>
         </td>
-        <td><p>Resolve conflicts</p></td>
+        <td><p>Resolve agreements</p></td>
       </tr><tr><td>
-          <p><code><a href="resolve_conflicts.html">resolve_conflicts()</a></code> </p>
+          <p><code><a href="resolveConflicts.html">resolveConflicts()</a></code> </p>
         </td>
         <td><p>Resolve conflicts in a bugphyzz dataset</p></td>
-      </tr><tr><td>
-          <p><code><a href="upstream.html">upstream()</a></code> </p>
-        </td>
-        <td><p>Annotate parent nodes (upstream)</p></td>
       </tr></tbody></table></div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

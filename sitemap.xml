@@ -10,25 +10,13 @@
     <loc>https://sdgamboa.github.io/taxPPro/LICENSE.html</loc>
   </url>
   <url>
-    <loc>https://sdgamboa.github.io/taxPPro/articles/asr-custom.html</loc>
-  </url>
-  <url>
-    <loc>https://sdgamboa.github.io/taxPPro/articles/asr-taxonomy.html</loc>
-  </url>
-  <url>
     <loc>https://sdgamboa.github.io/taxPPro/articles/bugsigdbr.html</loc>
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/articles/completeness-taxonomy.html</loc>
   </url>
   <url>
-    <loc>https://sdgamboa.github.io/taxPPro/articles/duplicates.html</loc>
-  </url>
-  <url>
     <loc>https://sdgamboa.github.io/taxPPro/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://sdgamboa.github.io/taxPPro/articles/stats1.html</loc>
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/articles/taxPPro.html</loc>
@@ -43,10 +31,7 @@
     <loc>https://sdgamboa.github.io/taxPPro/reference/annotateInternalNodes.html</loc>
   </url>
   <url>
-    <loc>https://sdgamboa.github.io/taxPPro/reference/calcParentScore.html</loc>
-  </url>
-  <url>
-    <loc>https://sdgamboa.github.io/taxPPro/reference/ci_to_scores.html</loc>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/chooseColVal.html</loc>
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/counts_per_attribute_and_rank.html</loc>
@@ -61,34 +46,40 @@
     <loc>https://sdgamboa.github.io/taxPPro/reference/createEntriesASR.html</loc>
   </url>
   <url>
-    <loc>https://sdgamboa.github.io/taxPPro/reference/downstream.html</loc>
-  </url>
-  <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/estimateASR.html</loc>
   </url>
   <url>
-    <loc>https://sdgamboa.github.io/taxPPro/reference/filter_dataset_for_propagation.html</loc>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/filterData.html</loc>
   </url>
   <url>
-    <loc>https://sdgamboa.github.io/taxPPro/reference/get_agreements.html</loc>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/freq2Scores.html</loc>
   </url>
   <url>
-    <loc>https://sdgamboa.github.io/taxPPro/reference/get_children.html</loc>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/getAgreements.html</loc>
   </url>
   <url>
-    <loc>https://sdgamboa.github.io/taxPPro/reference/get_conflicts.html</loc>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/getChildren.html</loc>
   </url>
   <url>
-    <loc>https://sdgamboa.github.io/taxPPro/reference/get_double_annotations.html</loc>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/getChildrenScores.html</loc>
   </url>
   <url>
-    <loc>https://sdgamboa.github.io/taxPPro/reference/get_duplicates.html</loc>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/getConflicts.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/getDoubleAnnotations.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/getDuplicates.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/getParentScores.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/getParents.html</loc>
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/get_ncbi_taxonomy.html</loc>
-  </url>
-  <url>
-    <loc>https://sdgamboa.github.io/taxPPro/reference/get_parents.html</loc>
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/import_ncbi_ids.html</loc>
@@ -97,18 +88,21 @@
     <loc>https://sdgamboa.github.io/taxPPro/reference/index.html</loc>
   </url>
   <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/preSteps.html</loc>
+  </url>
+  <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/propagate.html</loc>
   </url>
   <url>
-    <loc>https://sdgamboa.github.io/taxPPro/reference/remove_taxa_duplicates.html</loc>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/propagateAnnotations.html</loc>
   </url>
   <url>
-    <loc>https://sdgamboa.github.io/taxPPro/reference/resolve_agreements.html</loc>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/removeDuplicates.html</loc>
   </url>
   <url>
-    <loc>https://sdgamboa.github.io/taxPPro/reference/resolve_conflicts.html</loc>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/resolveAgreements.html</loc>
   </url>
   <url>
-    <loc>https://sdgamboa.github.io/taxPPro/reference/upstream.html</loc>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/resolveConflicts.html</loc>
   </url>
 </urlset>

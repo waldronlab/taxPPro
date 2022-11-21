@@ -53,22 +53,10 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/asr-custom.html">Example of upstream and downstream with aerophilicity and ph</a>
-    </li>
-    <li>
-      <a href="../articles/asr-taxonomy.html">ASR with a taxonomy tree</a>
-    </li>
-    <li>
       <a href="../articles/bugsigdbr.html">signatures in bugsigdbr</a>
     </li>
     <li>
       <a href="../articles/completeness-taxonomy.html">NCBI taxonomy and completeness</a>
-    </li>
-    <li>
-      <a href="../articles/duplicates.html">Duplicates and conflicting annotations in bugphyzz</a>
-    </li>
-    <li>
-      <a href="../articles/stats1.html">bugphyzz stats</a>
     </li>
   </ul>
 </li>
@@ -107,7 +95,7 @@
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/sdgamboa/taxPPro" class="external-link">taxPPro</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/waldronlab/bugphyzz" class="external-link">bugphyzz</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://purrr.tidyverse.org" class="external-link">purrr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://purrr.tidyverse.org/" class="external-link">purrr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ncbi_taxonomy</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_ncbi_taxonomy.html">get_ncbi_taxonomy</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -191,13 +179,13 @@
 <span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_dbl</a></span><span class="op">(</span><span class="va">output</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">.x</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">bugphyzz_taxids</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="op">{</span>\<span class="op">(</span><span class="va">y</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">y</span>, decreasing <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">}</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt;              exclude_uncultured                         all_ids </span></span>
-<span><span class="co">#&gt;                        98.15647                        95.68552 </span></span>
+<span><span class="co">#&gt;                        98.15661                        95.68585 </span></span>
 <span><span class="co">#&gt;            exclude_unclassified exclude_unclassified_uncultured </span></span>
-<span><span class="co">#&gt;                        88.90782                        88.66770 </span></span>
+<span><span class="co">#&gt;                        88.90868                        88.66858 </span></span>
 <span><span class="co">#&gt;                     exclude_all                exclude_informal </span></span>
-<span><span class="co">#&gt;                        60.41053                        60.41053 </span></span>
+<span><span class="co">#&gt;                        60.41360                        60.41360 </span></span>
 <span><span class="co">#&gt;   exclude_unclassified_informal     exclude_uncultured_informal </span></span>
-<span><span class="co">#&gt;                        60.41053                        60.41053</span></span></code></pre></div>
+<span><span class="co">#&gt;                        60.41360                        60.41360</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">ncbi_ids</span><span class="op">$</span><span class="va">exclude_uncultured</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">ncbi_ids</span><span class="op">$</span><span class="va">all_ids</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 492528</span></span></code></pre></div>
