@@ -10,8 +10,7 @@ propagate(df, max.tax.level = "genus", direction = "both")
 \item{df}{A data frame from bugphyzz.}
 
 \item{max.tax.level}{A character string. The method that should be used for
-propagation. Option: mv, majority vote; tx, NCBI taxonomy; ph, phylogenetic
-tree.}
+propagation.}
 
 \item{direction}{A character string. 'upstream', 'downstream', or 'both'.}
 }
@@ -20,4 +19,11 @@ A data frame with propagated annotations.
 }
 \description{
 \code{propagate} propagates annotations.
+}
+\examples{
+
+library(bugphyzz)
+aer <- physiologies('aerophilicity')[[1]]
+aer_prop <- propagate(aer, max.tax.level = 'genus', direction = 'both')
+
 }

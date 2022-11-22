@@ -5,13 +5,18 @@
 #'
 #' @param df A data frame from bugphyzz.
 #' @param max.tax.level A character string. The method that should be used for
-#' propagation. Option: mv, majority vote; tx, NCBI taxonomy; ph, phylogenetic
-#' tree.
+#' propagation.
 #' @param direction A character string. 'upstream', 'downstream', or 'both'.
 #'
 #' @return A data frame with propagated annotations.
 #'
 #' @export
+#'
+#' @examples
+#'
+#' library(bugphyzz)
+#' aer <- physiologies('aerophilicity')[[1]]
+#' aer_prop <- propagate(aer, max.tax.level = 'genus', direction = 'both')
 #'
 propagate <- function(df, max.tax.level = 'genus', direction = 'both') {
 
