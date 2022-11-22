@@ -16,8 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-An R package to propagate annotations for bugphyzz
-
+An R package to propagate annotations for bugphyzz.
 
 ## Package installation
 
@@ -28,66 +27,41 @@ if (!require("BiocManager", quietly = TRUE))
 BiocManager::install('sdgamboa/taxPPro')
 ```
 
-## Propagate categorical attribute values
+## Load required packages
 
 ```{r setup, message=FALSE}
 library(taxPPro)
 library(bugphyzz)
+library(dplyr)
+library(ggplot2)
 ```
-### Import data
+
+## Import data from bugphyzz
 
 ```{r, message=FALSE}
 aer <- physiologies('aerophilicity')[[1]]
 table(aer$Evidence)
 ```
 
-### Propagate upstream with ancestral state reconstruction (ASR)
+## Propagate upstream with ancestral state reconstruction (ASR)
 
 ```{r, message=FALSE, warning=FALSE}
 aer_asr <- propagate(aer, max.tax.level = 'genus', direction = 'upstream')
 table(aer_asr$Evidence)
 ```
 
-### Propagate downstream with inheritance
+## Propagate downstream with inheritance
 
 ```{r, message=FALSE, warning=FALSE}
 aer_inh <- propagate(aer, max.tax.level = 'genus', direction = 'downstream')
 table(aer_inh$Evidence)
 ```
 
-### Propagate with both ASR and inheritance
+## Propagate with both ASR and inheritance
 
 ```{r, message=FALSE, warning=FALSE}
 aer_prop <- propagate(aer, max.tax.level = 'genus', direction = 'both')
 table(aer_prop$Evidence)
-```
-
-## Propagate an attribute with continous values
-
-```{r}
-ph <- physiologies('optimal ph')[[1]]
-table(ph$Evidence)
-```
-
-### upstream
-
-```{r}
-ph_upstream <- propagate(ph, 'genus', 'upstream')
-table(ph_upstream$Evidence)
-```
-
-### downstream
-
-```{r}
-ph_downstream <- propagate(ph, 'genus', 'downstream')
-table(ph_downstream$Evidence)
-```
-
-### ASR + Inheritance
-
-```{r}
-ph_prop <- propagate(ph, 'genus', 'both')
-table(ph_prop$Evidence)
 ```
 
 ## Session information
