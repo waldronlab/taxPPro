@@ -19,9 +19,9 @@ Attribute with categorical values (aerophilicity):
 
 ```{r, message=FALSE, warning=FALSE}
 aer <- physiologies('aerophilicity')[[1]]
-aer_asr <- propagate(aer, max.tax.level = 'genus', direction = 'upstream')
-aer_inh <- propagate(aer, max.tax.level = 'genus',  direction = 'downstream')
-aer_prop <- propagate(aer, max.tax.level = 'genus', direction = 'both')
+aer_asr <- propagate(aer, max.tax.level = 'family', direction = 'upstream')
+aer_inh <- propagate(aer, max.tax.level = 'family',  direction = 'downstream')
+aer_prop <- propagate(aer, max.tax.level = 'family', direction = 'both')
 aer_data <- list(
     original = aer, asr = aer_asr, inheritance = aer_inh,
     `asr + inheritance` = aer_prop
@@ -118,11 +118,6 @@ ph_data_summary |>
 
 This dataset didn't have any genera. So, all genera come from ASR. The increase
 in the number of taxa at the species and strain levels seems considerable.
-
-## Completeness with NCBI
-
-
-
 
 ## Session information
 
