@@ -105,9 +105,9 @@
 <p>Attribute with categorical values (aerophilicity):</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">aer</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/bugphyzz/man/physiologies.html" class="external-link">physiologies</a></span><span class="op">(</span><span class="st">'aerophilicity'</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="va">aer_asr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/propagate.html">propagate</a></span><span class="op">(</span><span class="va">aer</span>, max.tax.level <span class="op">=</span> <span class="st">'genus'</span>, direction <span class="op">=</span> <span class="st">'upstream'</span><span class="op">)</span></span>
-<span><span class="va">aer_inh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/propagate.html">propagate</a></span><span class="op">(</span><span class="va">aer</span>, max.tax.level <span class="op">=</span> <span class="st">'genus'</span>,  direction <span class="op">=</span> <span class="st">'downstream'</span><span class="op">)</span></span>
-<span><span class="va">aer_prop</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/propagate.html">propagate</a></span><span class="op">(</span><span class="va">aer</span>, max.tax.level <span class="op">=</span> <span class="st">'genus'</span>, direction <span class="op">=</span> <span class="st">'both'</span><span class="op">)</span></span>
+<span><span class="va">aer_asr</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/propagate.html">propagate</a></span><span class="op">(</span><span class="va">aer</span>, max.tax.level <span class="op">=</span> <span class="st">'family'</span>, direction <span class="op">=</span> <span class="st">'upstream'</span><span class="op">)</span></span>
+<span><span class="va">aer_inh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/propagate.html">propagate</a></span><span class="op">(</span><span class="va">aer</span>, max.tax.level <span class="op">=</span> <span class="st">'family'</span>,  direction <span class="op">=</span> <span class="st">'downstream'</span><span class="op">)</span></span>
+<span><span class="va">aer_prop</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/propagate.html">propagate</a></span><span class="op">(</span><span class="va">aer</span>, max.tax.level <span class="op">=</span> <span class="st">'family'</span>, direction <span class="op">=</span> <span class="st">'both'</span><span class="op">)</span></span>
 <span><span class="va">aer_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    original <span class="op">=</span> <span class="va">aer</span>, asr <span class="op">=</span> <span class="va">aer_asr</span>, inheritance <span class="op">=</span> <span class="va">aer_inh</span>,</span>
 <span>    `asr + inheritance` <span class="op">=</span> <span class="va">aer_prop</span></span>
@@ -195,10 +195,6 @@ The increase in the number of taxa at the species and strain levels
 seems considerable.</p>
 </div>
 <div class="section level2">
-<h2 id="completeness-with-ncbi">Completeness with NCBI<a class="anchor" aria-label="anchor" href="#completeness-with-ncbi"></a>
-</h2>
-</div>
-<div class="section level2">
 <h2 id="session-information">Session information<a class="anchor" aria-label="anchor" href="#session-information"></a>
 </h2>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -226,10 +222,10 @@ seems considerable.</p>
 <span><span class="co">#&gt; [1] ggplot2_3.4.0    dplyr_1.0.10     bugphyzz_0.0.1.3 taxPPro_0.1.0   </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
-<span><span class="co">#&gt;  [1] sass_0.4.3        tidyr_1.2.1       vroom_1.6.0       bit64_4.0.5      </span></span>
+<span><span class="co">#&gt;  [1] sass_0.4.4        tidyr_1.2.1       vroom_1.6.0       bit64_4.0.5      </span></span>
 <span><span class="co">#&gt;  [5] jsonlite_1.8.3    foreach_1.5.2     bold_1.2.0        bslib_0.4.1      </span></span>
 <span><span class="co">#&gt;  [9] assertthat_0.2.1  highr_0.9         blob_1.2.3        taxize_0.9.100   </span></span>
-<span><span class="co">#&gt; [13] yaml_2.3.6        pillar_1.8.1      RSQLite_2.2.18    lattice_0.20-45  </span></span>
+<span><span class="co">#&gt; [13] yaml_2.3.6        pillar_1.8.1      RSQLite_2.2.19    lattice_0.20-45  </span></span>
 <span><span class="co">#&gt; [17] glue_1.6.2        uuid_1.1-0        digest_0.6.30     colorspace_2.0-3 </span></span>
 <span><span class="co">#&gt; [21] htmltools_0.5.3   plyr_1.8.8        pkgconfig_2.0.3   httpcode_0.3.0   </span></span>
 <span><span class="co">#&gt; [25] purrr_0.3.5       scales_1.2.1      tzdb_0.3.0        tibble_3.1.8     </span></span>
