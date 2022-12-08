@@ -2,11 +2,7 @@
 % Please edit documentation in R/001_preprocessing.R
 \name{preSteps}
 \alias{preSteps}
-\title{\code{preSteps} perform the previous steps before propagating annotations.
-These steps include: 1) filter data, 2) resolve conflicts, 3) resolve
-agreements, 4) remove duplicates, 5) convert frequency to scores, 6)
-remove duplicate lines, 7) ensure Taxid and Parent_tax_id are are character
-vectors.}
+\title{Steps previous to propagation}
 \usage{
 preSteps(df, tax.id.type)
 }
@@ -20,9 +16,9 @@ NCBI_ID.}
 A data.frame.
 }
 \description{
-\code{preSteps} perform the previous steps before propagating annotations.
+\code{preSteps} performs the previous steps before propagating annotations.
 These steps include: 1) filter data, 2) resolve conflicts, 3) resolve
-agreements, 4) remove duplicates, 5) convert frequency to scores, 6)
-remove duplicate lines, 7) ensure Taxid and Parent_tax_id are are character
-vectors.
+agreements, 4) remove duplicates, 5) convert frequency to scores,
+6) remove duplicate lines, 7) ensure Taxid and Parent_tax_id are are
+character vectors.
 }

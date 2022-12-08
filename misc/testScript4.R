@@ -3,6 +3,7 @@ library(bugphyzz)
 library(purrr)
 library(taxPPro)
 library(dplyr)
+library(purrr)
 
 phys <- physiologies()
 phys <- map(phys, as_tibble)
@@ -12,13 +13,7 @@ remove_dat <- c(
     'animal pathogen', 'biofilm forming', 'growth temperature'
 )
 
-# phys <- phys[!names(phys) %in% remove_dat]
+phys <- phys[!names(phys) %in% remove_dat]
 
-phys_char <- phys |>
-    keep(~ is.character(.x$Attribute_value))
-
-phys_char |>
-    map(head) |>
-    bind_rows(.id = 'dataset') |>
-    View()
+phys_prop <- map(phys, ~ propagate(.x, 'genus', 'both'))
 

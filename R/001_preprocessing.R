@@ -1,11 +1,13 @@
 ## These file contains some of the functions used before propagation
 ## Other functions are contained in the 002.duplicates.R file.
 
-#' \code{preSteps} perform the previous steps before propagating annotations.
+#' Steps previous to propagation
+#'
+#' \code{preSteps} performs the previous steps before propagating annotations.
 #' These steps include: 1) filter data, 2) resolve conflicts, 3) resolve
-#' agreements, 4) remove duplicates, 5) convert frequency to scores, 6)
-#' remove duplicate lines, 7) ensure Taxid and Parent_tax_id are are character
-#' vectors.
+#' agreements, 4) remove duplicates, 5) convert frequency to scores,
+#' 6) remove duplicate lines, 7) ensure Taxid and Parent_tax_id are are
+#' character vectors.
 #'
 #' @param df A data.frame.
 #' @param tax.id.type A character string. Valid values are Taxon_name and
@@ -21,7 +23,7 @@ preSteps <- function(df, tax.id.type) {
             Parent_NCBI_ID = as.character(.data$Parent_NCBI_ID),
             NCBI_ID = as.character(.data$NCBI_ID)
         ) |>
-        filterData(tax.id.type = 'Taxon_name') |>
+        filterData(tax.id.type = tax.id.type) |>
         freq2Scores() |>
         resolveAgreements() |>
         resolveConflicts()
