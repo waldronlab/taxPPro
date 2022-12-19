@@ -1,0 +1,34 @@
+---
+title: "testRmarkdown"
+output: html_document
+date: "2022-12-19"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load packages}
+library(bugphyzz)
+library(taxPPro)
+```
+
+Import pyhsiologies from spreadsheets
+
+```{r, message=FALSE}
+phys <- physiologies(keyword = 'all')
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
