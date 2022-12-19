@@ -11,19 +11,21 @@
 #'
 #' @param df A data.frame.
 #' @param tax.id.type A character string. Valid values are Taxon_name and
+#' @param remove_false If TRUE, Attribute values with FALSE are removed.
+#' Default is FALSE.
 #' NCBI_ID.
 #'
 #' @return A data.frame.
 #' @export
 #'
-preSteps <- function(df, tax.id.type) {
+preSteps <- function(df, tax.id.type, remove_false = FALSE) {
     df |>
         dplyr::distinct() |>
         dplyr::mutate(
             Parent_NCBI_ID = as.character(.data$Parent_NCBI_ID),
             NCBI_ID = as.character(.data$NCBI_ID)
         ) |>
-        filterData(tax.id.type = tax.id.type) |>
+        filterData(tax.id.type = tax.id.type, remove_false = remove_false) |>
         freq2Scores() |>
         resolveAgreements() |>
         resolveConflicts()
@@ -38,13 +40,15 @@ preSteps <- function(df, tax.id.type) {
 #' @param df_name A character string. The name of the dataset.
 #' @param tax.id.type A character string. Valid options: NCBI_ID, Taxon_name.
 #' This may be transformed to include other taxonomy IDs.
+#' @param remove_false If TRUE, row with FALSE attribute values are removed.
+#' Default is FALSE.
 #'
 #' @return A filtered version of the input data frame.
 #' If no rows are kept, the output is NULL with a warning.
 #'
 #' @export
 #'
-filterData <- function(df, df_name = NULL, tax.id.type) {
+filterData <- function(df, df_name = NULL, tax.id.type, remove_false = TRUE) {
 
     ## Columns required for propagation
     columns_for_propagation <- c(
@@ -97,6 +101,10 @@ filterData <- function(df, df_name = NULL, tax.id.type) {
         )
     }
 
+    if (remove_false) {
+       df <- df[which(df$Attribute_value != FALSE),]
+    }
+
     df <- df |>
         dplyr::filter(
             ## Id-related
@@ -105,7 +113,7 @@ filterData <- function(df, df_name = NULL, tax.id.type) {
 
             ## Attribute-related
             !is.na(Attribute) | Attribute != '',
-            Attribute_value != FALSE,
+            # Attribute_value != FALSE, ## this was removed above
             !is.na(Attribute_source),
 
             ## Evidence-related

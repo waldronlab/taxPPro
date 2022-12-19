@@ -4,12 +4,15 @@
 \alias{preSteps}
 \title{Steps previous to propagation}
 \usage{
-preSteps(df, tax.id.type)
+preSteps(df, tax.id.type, remove_false = FALSE)
 }
 \arguments{
 \item{df}{A data.frame.}
 
-\item{tax.id.type}{A character string. Valid values are Taxon_name and
+\item{tax.id.type}{A character string. Valid values are Taxon_name and}
+
+\item{remove_false}{If TRUE, Attribute values with FALSE are removed.
+Default is FALSE.
 NCBI_ID.}
 }
 \value{

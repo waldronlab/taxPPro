@@ -4,7 +4,7 @@
 \alias{propagate}
 \title{Propagate annotations}
 \usage{
-propagate(df, max.tax.level = "genus", direction = "both")
+propagate(df, max.tax.level = "genus", direction = "both", remove_false = TRUE)
 }
 \arguments{
 \item{df}{A data frame from bugphyzz.}
@@ -13,6 +13,9 @@ propagate(df, max.tax.level = "genus", direction = "both")
 propagation.}
 
 \item{direction}{A character string. 'upstream', 'downstream', or 'both'.}
+
+\item{remove_false}{If TRUE,remove rows with Attribute value FALSE. Default
+is TRUE.}
 }
 \value{
 A data frame with propagated annotations.
@@ -24,6 +27,8 @@ A data frame with propagated annotations.
 
 library(bugphyzz)
 aer <- physiologies('aerophilicity')[[1]]
-aer_prop <- propagate(aer, max.tax.level = 'genus', direction = 'both')
+aer_prop <- propagate(
+    aer, max.tax.level = 'genus', direction = 'both', remove_false = TRUE
+)
 
 }

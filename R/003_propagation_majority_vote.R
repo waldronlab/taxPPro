@@ -7,6 +7,8 @@
 #' @param max.tax.level A character string. The method that should be used for
 #' propagation.
 #' @param direction A character string. 'upstream', 'downstream', or 'both'.
+#' @param remove_false If TRUE,remove rows with Attribute value FALSE. Default
+#' is TRUE.
 #'
 #' @return A data frame with propagated annotations.
 #'
@@ -16,9 +18,13 @@
 #'
 #' library(bugphyzz)
 #' aer <- physiologies('aerophilicity')[[1]]
-#' aer_prop <- propagate(aer, max.tax.level = 'genus', direction = 'both')
+#' aer_prop <- propagate(
+#'     aer, max.tax.level = 'genus', direction = 'both', remove_false = TRUE
+#' )
 #'
-propagate <- function(df, max.tax.level = 'genus', direction = 'both') {
+propagate <- function(
+        df, max.tax.level = 'genus', direction = 'both', remove_false = TRUE
+) {
 
   valid_ranks <- .validRanks()
 
@@ -41,7 +47,7 @@ propagate <- function(df, max.tax.level = 'genus', direction = 'both') {
     stop(msg, call. = FALSE)
   }
 
-  df_filtered <- preSteps(df, 'Taxon_name')
+  df_filtered <- preSteps(df, 'Taxon_name', remove_false = remove_false)
 
   if (direction == 'upstream' || direction == 'downstream') {
     output <- propagateAnnotations(
