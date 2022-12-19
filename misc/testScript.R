@@ -25,6 +25,8 @@ proc_exclude_all_fname <-
     system.file('extdata/proc_exclude_all.txt', package = 'taxPPro')
 proc_exclude_all <- read.table(proc_exclude_all_fname, header = FALSE)[[1]] |>
     as.character()
+x <- suppressWarnings(taxizedb::taxid2rank(proc_exclude_all))
+table(x)[c('genus', 'species', 'strain')]
 
 ## Exclude informal names
 proc_exclude_inf_fname <-
