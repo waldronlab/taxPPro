@@ -49,6 +49,9 @@ table(aer_filtered2$Attribute_value)
 ```
 
 
+```{r}
+x <- propagate(aer, 'genus', remove_false = TRUE)
+```
 
 
 
