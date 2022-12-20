@@ -131,8 +131,9 @@ propagateAnnotations <- function(df, max.tax.level, direction) {
 
       new_scores <- .getScores(split_by_rank[[current_rank]], direction)
 
-      if (is.null(new_scores))
-        break
+      if (is.null(new_scores)) {
+        break()
+      }
 
       new_scores <- new_scores |>
         dplyr::filter(.data$Rank == next_rank)
@@ -345,7 +346,6 @@ getChildrenScores <- function(df) {
 
 ## Function to calculate parent score
 .calcParentScore <- function(df, attr_col) {
-
   pos <- which(colnames(df) == attr_col)
   colnames(df)[pos] <- 'attr'
 
