@@ -4,7 +4,13 @@
 \alias{propagate}
 \title{Propagate annotations}
 \usage{
-propagate(df, max.tax.level = "genus", direction = "both", remove_false = TRUE)
+propagate(
+  df,
+  max.tax.level = "genus",
+  direction = "both",
+  remove_false = TRUE,
+  filter.tax.id.type = "Taxon_name"
+)
 }
 \arguments{
 \item{df}{A data frame from bugphyzz.}
@@ -16,6 +22,9 @@ propagation.}
 
 \item{remove_false}{If TRUE,remove rows with Attribute value FALSE. Default
 is TRUE.}
+
+\item{filter.tax.id.type}{Choose type of id/name to filter. Options are:
+'NCBI_ID' and 'Taxon_name'.}
 }
 \value{
 A data frame with propagated annotations.
@@ -28,7 +37,8 @@ A data frame with propagated annotations.
 library(bugphyzz)
 aer <- physiologies('aerophilicity')[[1]]
 aer_prop <- propagate(
-    aer, max.tax.level = 'genus', direction = 'both', remove_false = TRUE
+    aer, max.tax.level = 'genus', direction = 'both', remove_false = TRUE,
+    filter.tax.id.type = 'Taxon_name'
 )
 
 }

@@ -9,6 +9,8 @@
 #' @param direction A character string. 'upstream', 'downstream', or 'both'.
 #' @param remove_false If TRUE,remove rows with Attribute value FALSE. Default
 #' is TRUE.
+#' @param filter.tax.id.type Choose type of id/name to filter. Options are:
+#' 'NCBI_ID' and 'Taxon_name'.
 #'
 #' @return A data frame with propagated annotations.
 #'
@@ -19,11 +21,13 @@
 #' library(bugphyzz)
 #' aer <- physiologies('aerophilicity')[[1]]
 #' aer_prop <- propagate(
-#'     aer, max.tax.level = 'genus', direction = 'both', remove_false = TRUE
+#'     aer, max.tax.level = 'genus', direction = 'both', remove_false = TRUE,
+#'     filter.tax.id.type = 'Taxon_name'
 #' )
 #'
 propagate <- function(
-        df, max.tax.level = 'genus', direction = 'both', remove_false = TRUE
+        df, max.tax.level = 'genus', direction = 'both', remove_false = TRUE,
+        filter.tax.id.type = 'Taxon_name'
 ) {
 
   valid_ranks <- .validRanks()
@@ -47,7 +51,9 @@ propagate <- function(
     stop(msg, call. = FALSE)
   }
 
-  df_filtered <- preSteps(df, 'Taxon_name', remove_false = remove_false)
+  df_filtered <- preSteps(
+    df, tax.id.type = filter.tax.id.type, remove_false = remove_false
+  )
 
   if (direction == 'upstream' || direction == 'downstream') {
     output <- propagateAnnotations(
