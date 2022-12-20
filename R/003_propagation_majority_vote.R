@@ -31,7 +31,6 @@ propagate <- function(
 ) {
 
   valid_ranks <- .validRanks()
-
   if (!max.tax.level %in% valid_ranks) {
     msg <- paste0(
       'Invalid max.tax.level value.',
@@ -41,7 +40,6 @@ propagate <- function(
   }
 
   valid_direction_options <- c('upstream', 'downstream', 'both')
-
   if (!direction %in% valid_direction_options) {
     msg <- paste0(
       'Invalid direction value.',
@@ -184,7 +182,7 @@ getParents <- function(x) {
     utils::tail(.x, 1)
   })
 
-  lgl_vct <- purrr::map_int(parents_list, ~ nrow(.x) > 0)
+  lgl_vct <- purrr::map_lgl(parents_list, ~ nrow(.x) > 0)
 
   classification <- classification[lgl_vct]
 
