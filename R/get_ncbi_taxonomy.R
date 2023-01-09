@@ -96,7 +96,11 @@ get_ncbi_taxonomy <- function(force_download = FALSE) {
         ) %>%
         dplyr::select(-kingdom) |>
         dplyr::rename(kingdom = superkingdom) |>
-        purrr::discard(~ all(is.na(.x)))
+        purrr::discard(~ all(is.na(.x))) |>
+        dplyr::mutate(
+            strain = ifelse(.data$Rank == 'strain', Taxon_name, NA)
+        ) |>
+        dplyr::relocate(.data$strain, .after = 'species')
 }
 
 ## This function downloads the NCBI taxonomy dump file and stores it in the
