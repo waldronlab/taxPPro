@@ -98,7 +98,14 @@ get_ncbi_taxonomy <- function(force_download = FALSE) {
         dplyr::rename(kingdom = superkingdom) |>
         purrr::discard(~ all(is.na(.x))) |>
         dplyr::mutate(
-            strain = ifelse(.data$Rank == 'strain', Taxon_name, NA)
+            strain = ifelse(.data$Rank == 'strain', .data$Taxon_name, NA),
+            species = ifelse(.data$Rank == 'species', .data$Taxon_name, .data$species),
+            genus = ifelse(.data$Rank == 'genus', .data$Taxon_name, .data$genus),
+            family = ifelse(.data$Rank == 'family', .data$Taxon_name, .data$family),
+            order = ifelse(.data$Rank == 'order', .data$Taxon_name, .data$order),
+            class = ifelse(.data$Rank == 'class', .data$Taxon_name, .data$class),
+            phylum = ifelse(.data$Rank == 'phylum', .data$Taxon_name, .data$phylum),
+            kingdom = ifelse(.data$Rank == 'superkingdom', .data$Taxon_name, .data$kingdom),
         ) |>
         dplyr::relocate(.data$strain, .after = 'species')
 }
