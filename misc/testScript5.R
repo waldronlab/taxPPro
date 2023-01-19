@@ -2,10 +2,9 @@
 library(bugphyzz)
 library(taxPPro)
 library(data.tree)
-library(ete3r)
 library(dplyr)
-
-# First approach ----------------------------------------------------------
+library(tidygraph)
+library(igraph)
 
 valid_ranks <- validRanks()
 ncbi_taxonomy <- get_ncbi_taxonomy() |>
@@ -49,13 +48,67 @@ bac_data_tree <- bac_data |>
     ) |>
     distinct()
 
+# es <- bac_data_tree[grep('Escherichia', bac_data_tree$pathString),]
+# es <- es[1,]
+
 start_time <- Sys.time()
-bac_tree <- as.Node(bac_data_tree, pathDelimiter = '|||' )
+bac_tree <- as.Node(bac_data, pathDelimiter = '|||' )
 end_time <- Sys.time()
 difftime(end_time, start_time)
 ## Stop here
+
+
+addPath <- function(node) {
+    node$name <- paste0(node$name, '---', node$pathString)
+}
+
+bac_tree$Do(addPath)
+
 bac_tree$totalCount
 bac_tree$leafCount
+
+as_tbl_graph(bac_tree, directed = TRUE)
+
+
+
+acme$Do(addInt)
+
+acme$Accounting$name
+
+## Add children
+
+# x <- names(bac_tree$children)
+#
+# removePrefix <- function(x) {
+#     regex <- '^[kpcofgst]__'
+#     sub(regex, '', x)
+# }
+
+# addChildren <- function(node) {
+#     current_children <- removePrefix(names(node$children))
+#     current_taxon <- removePrefix(node$name)
+#     df <- tryCatch(
+#         error = function(e) NULL, {
+#           taxizedb::children(current_taxon)[[1]]
+#         }
+#     )
+#     if (is.null(df)) {
+#         return(NULL)
+#     }
+#     df <- df[df$rank %in% valid_ranks, ]
+#     children <- df$name
+#     new_children <- children[!children %in% current_children]
+#     if (isFALSE(!length(new_children))) {
+#         for (i in seq_along(new_children)) {
+#             message(new_children)
+#             node$AddChild(new_children[i])
+#         }
+#     }
+# }
+
+# bac_tree$Do(addChildren)
+
+
 
 ## Add bugphyzz data
 split_by_taxname <- split(bac_data, factor(bac_data$Taxon_name))
@@ -68,65 +121,79 @@ addBugphyzzAttributes <- function(node, list_of_df) {
     }
 }
 
-# tree$Do(addBugphyzzAttributes, list_of_df = split_by_taxname)
-
-## Escherichia (genus)
-length(names(new_tree$p__Proteobacteria$c__Gammaproteobacteria$o__Enterobacterales$f__Enterobacteriaceae$g__Escherichia$children))
-## Lactobacillus sekei (species)
-bac_tree$p__Firmicutes$c__Bacilli$o__Lactobacillales$f__Lactobacillaceae$g__Latilactobacillus$`s__Latilactobacillus sakei`$`t__Latilactobacillus sakei subsp. sakei 23K`
-
-View(print(tree$p__Proteobacteria$c__Gammaproteobacteria$o__Enterobacterales$f__Enterobacteriaceae$g__Escherichia, 'NCBI_ID', 'Attribute', 'Attribute_value', 'Attribute_source'))
-
-level_names <- data |>
-    filter(grepl('\\[Actinobacillus\\] rossii', Taxon_name)) |>
-    pull(pathString) |>
-    stringr::str_split(pattern = '\\|\\|\\|') |>
-    purrr::flatten_chr() |>
-    {\(y) y[-length(y)]}() |>
-    {\(y) y[-length(y)]}() |>
-    {\(y) y[-1]}()
-tree$Climb(
-    name = level_names
-)$children[1:3]
-
-taxizedb::children('Escherichia', db = 'ncbi', verbose = FALSE)
-
-# getChildren2 <- function(node) {
-#     taxon <- sub('^[kpcofgst]__', '', node$name)
-#     node$new_children <- tryCatch(
-#         error = function(e) NULL, {
-#             taxizedb::children(taxon, db = 'ncbi')
-#         }
-#     )
-# }
+# # tree$Do(addBugphyzzAttributes, list_of_df = split_by_taxname)
 #
-# tree$Do(getChildren2)
+# ## Escherichia (genus)
+# length(names(new_tree$p__Proteobacteria$c__Gammaproteobacteria$o__Enterobacterales$f__Enterobacteriaceae$g__Escherichia$children))
+# ## Lactobacillus sekei (species)
+# bac_tree$p__Firmicutes$c__Bacilli$o__Lactobacillales$f__Lactobacillaceae$g__Latilactobacillus$`s__Latilactobacillus sakei`$`t__Latilactobacillus sakei subsp. sakei 23K`
 #
-# taxizedb::children('Bacteria', db = 'ncbi')
+# View(print(tree$p__Proteobacteria$c__Gammaproteobacteria$o__Enterobacterales$f__Enterobacteriaceae$g__Escherichia, 'NCBI_ID', 'Attribute', 'Attribute_value', 'Attribute_source'))
+#
+# level_names <- data |>
+#     filter(grepl('\\[Actinobacillus\\] rossii', Taxon_name)) |>
+#     pull(pathString) |>
+#     stringr::str_split(pattern = '\\|\\|\\|') |>
+#     purrr::flatten_chr() |>
+#     {\(y) y[-length(y)]}() |>
+#     {\(y) y[-length(y)]}() |>
+#     {\(y) y[-1]}()
+# tree$Climb(
+#     name = level_names
+# )$children[1:3]
+#
+# taxizedb::children('Escherichia', db = 'ncbi', verbose = FALSE)
+#
+# # getChildren2 <- function(node) {
+# #     taxon <- sub('^[kpcofgst]__', '', node$name)
+# #     node$new_children <- tryCatch(
+# #         error = function(e) NULL, {
+# #             taxizedb::children(taxon, db = 'ncbi')
+# #         }
+# #     )
+# # }
+# #
+# # tree$Do(getChildren2)
+# #
+# # taxizedb::children('Bacteria', db = 'ncbi')
+#
+# # Quick test with ete3r ---------------------------------------------------
+#
+# ncbi_taxonomy$helper_pathString <- paste(
+#     'k__', ncbi_taxonomy$kingdom,  ## This will be the root
+#     '|||p__', ncbi_taxonomy$phylum,
+#     '|||c__', ncbi_taxonomy$class,
+#     '|||o__', ncbi_taxonomy$order,
+#     '|||f__', ncbi_taxonomy$family,
+#     '|||g__', ncbi_taxonomy$genus,
+#     '|||s__', ncbi_taxonomy$species,
+#     '|||t__', ncbi_taxonomy$strain,
+#     sep = ''
+# )
+#
+# tax <- unique(bac_data$NCBI_ID)
+# output_tree <- getTree(taxids = tax)
+# data1 <- output_tree@data
+# new_names <- unique(data1$name[data1$name != ""])
+#
+# colnames(ncbi_taxonomy)
+#
+# x <- ncbi_taxonomy |>
+#     filter(NCBI_ID %in% new_names)
+# x$pathString <- x$helper_pathString
+#
+# new_tree <- as.Node(x, pathDelimiter = '|||')
+nodes <- sort(unique(c(aer$NCBI_ID, aer$Parent_NCBI_ID)))
+node_df <- data.frame(nodes = nodes)
 
-# Quick test with ete3r ---------------------------------------------------
+edges <- distinct(aer[,c('Parent_NCBI_ID', 'NCBI_ID')])
+colnames(edges) <- c('from', 'to')
+edges <- data.frame(
 
-ncbi_taxonomy$helper_pathString <- paste(
-    'k__', ncbi_taxonomy$kingdom,  ## This will be the root
-    '|||p__', ncbi_taxonomy$phylum,
-    '|||c__', ncbi_taxonomy$class,
-    '|||o__', ncbi_taxonomy$order,
-    '|||f__', ncbi_taxonomy$family,
-    '|||g__', ncbi_taxonomy$genus,
-    '|||s__', ncbi_taxonomy$species,
-    '|||t__', ncbi_taxonomy$strain,
-    sep = ''
+    from = aer$NCBI_ID
 )
 
-tax <- unique(bac_data$NCBI_ID)
-output_tree <- getTree(taxids = tax)
-data1 <- output_tree@data
-new_names <- unique(data1$name[data1$name != ""])
 
-colnames(ncbi_taxonomy)
+my_graph <- graph_from_data_frame(d = edges, directed = TRUE, vertices = nodes)
+tg <- as_tbl_graph(my_graph, directed = TRUE)
 
-x <- ncbi_taxonomy |>
-    filter(NCBI_ID %in% new_names)
-x$pathString <- x$helper_pathString
-
-new_tree <- as.Node(x, pathDelimiter = '|||')
