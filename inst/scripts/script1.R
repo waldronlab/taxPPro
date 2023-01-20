@@ -14,6 +14,14 @@ options <- c(
     t = 'uncultured'
 )
 
+x <- 'blit'
+
+stringr::str_split(x, pattern = '') |>
+    unlist() |>
+    sort() |>
+    paste0(collapse = '')
+
+
 fname <- system.file('extdata/proc_all_ids.txt', package = 'taxPPro')
 taxids <- read.table(fname, header = FALSE)[[1]]
 ncbi <- get_ncbi_taxonomy()
@@ -38,6 +46,23 @@ y <- ncbi_total |>
     arrange(-n)
 head(y)
 
-data <- get_ncbi_taxids(keyword = 'all')
 
+zzz <- c(
+    bilt = 'proc_all_ids.txt',
+    b = 'proc_exclude_all.txt',
+    blt = 'proc_exclude_informal.txt',
+    bt = 'proc_exclude_unclassified_informal.txt',
+    bit = 'proc_exclude_unclassified.txt',
+    bi = 'proc_exclude_unclassified_uncultured.txt',
+    bl = 'proc_exclude_uncultured_informal.txt',
+    bil = 'proc_exclude_uncultured.txt'
+)
+
+the_names <- names(.files())
+output <- vector('list', length(the_names))
+for (i in seq_along(output)) {
+    message('Getting data for', the_names[i])
+    output[[i]] <- get_ncbi_taxids(keyword = the_names[i])
+    names(output)[i] <- the_names[i]
+}
 

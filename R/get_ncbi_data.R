@@ -13,32 +13,56 @@
 #' @export
 #'
 get_ncbi_taxids <- function(keyword = 'all', with_taxids = TRUE) {
-    ## proc all is 'base' + 'informal' + 'unclassified' + 'uncultured'
-    ## exclude all is 'base'
-    ## exclude informal is 'base' + 'unclassified' + uncultured'
-    ## exclude unclassified informal is 'base' + 'uncultured'
-    ## exclude unclassified is 'base' + 'uncultured' +  'informal'
+    ## bilt - proc all is 'base' + 'informal' + 'unclassified' + 'uncultured'
+    ## b - exclude all is 'base'
+    ## blt - exclude informal is 'base' + 'unclassified' + uncultured'
+    ## bu - exclude unclassified informal is 'base' + 'uncultured'
+    ## bui - exclude unclassified is 'base' + 'uncultured' +  'informal'
     ## exclude unclassified uncultured is 'base' + 'informal'
     ## exclude uncultured informal is 'base' + 'unclassified'
     ## exclude uncultured 'base' + 'unclassified' + 'informal'
-    if (keyword == 'all')
+
+    if (keyword == 'all') {
         keyword <- 'bilt'
-    files <- c(
-        bilt = 'proc_all_ids.txt'
-    )
+    } else {
+        keyword <- stringr::str_split(keyword, pattern = '') |>
+            unlist() |>
+            sort() |>
+            paste0(collapse = '')
+    }
+
+    files <- .files()
+
+
+    if (!keyword %in% names(files))
+        stop('No such keyword.', call. = FALSE)
+
     file_name <- paste0('extdata/', files[keyword])
     file_path <- system.file(file_name, package = 'taxPPro')
-    taxids_df <- readr::read_table(
+    taxids <- readr::read_table(
         file_path, col_names = 'taxid',
         col_types = readr::cols(taxid = readr::col_character())
     )
-    taxids <- taxids_df$taxid
 
     if (with_taxids) {
         ncbi_taxonomy <- get_ncbi_taxonomy()
-        output <- ncbi_taxonomy[ncbi_taxonomy$NCBI_ID %in% taxids, ]
-        return(output)
+        taxids_df <- ncbi_taxonomy[ncbi_taxonomy$NCBI_ID %in% taxids[[1]], ,]
+        return(taxids_df)
     } else {
         return(taxids)
     }
+}
+
+.files <- function() {
+    c(
+        bilt = 'proc_all_ids.txt',
+        b = 'proc_exclude_all.txt',
+        blt = 'proc_exclude_informal.txt',
+        bt = 'proc_exclude_unclassified_informal.txt',
+        bit = 'proc_exclude_unclassified.txt',
+        bi = 'proc_exclude_unclassified_uncultured.txt',
+        bl = 'proc_exclude_uncultured_informal.txt',
+        bil = 'proc_exclude_uncultured.txt'
+    )
+
 }
