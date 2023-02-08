@@ -10,16 +10,7 @@
     <loc>https://sdgamboa.github.io/taxPPro/LICENSE.html</loc>
   </url>
   <url>
-    <loc>https://sdgamboa.github.io/taxPPro/articles/bugsigdbr.html</loc>
-  </url>
-  <url>
-    <loc>https://sdgamboa.github.io/taxPPro/articles/completeness-taxonomy.html</loc>
-  </url>
-  <url>
     <loc>https://sdgamboa.github.io/taxPPro/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://sdgamboa.github.io/taxPPro/articles/some_numbers.html</loc>
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/articles/taxPPro.html</loc>
@@ -80,6 +71,9 @@
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/getParents.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/get_ncbi_taxids.html</loc>
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/get_ncbi_taxonomy.html</loc>

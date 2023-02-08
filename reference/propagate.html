@@ -28,22 +28,6 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/bugsigdbr.html">signatures in bugsigdbr</a>
-    </li>
-    <li>
-      <a href="../articles/completeness-taxonomy.html">NCBI taxonomy and completeness</a>
-    </li>
-    <li>
-      <a href="../articles/some_numbers.html">Some numbers</a>
-    </li>
-  </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/sdgamboa/taxPPro/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
@@ -69,7 +53,13 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">propagate</span><span class="op">(</span><span class="va">df</span>, max.tax.level <span class="op">=</span> <span class="st">"genus"</span>, direction <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">propagate</span><span class="op">(</span></span>
+<span>  <span class="va">df</span>,</span>
+<span>  max.tax.level <span class="op">=</span> <span class="st">"genus"</span>,</span>
+<span>  direction <span class="op">=</span> <span class="st">"both"</span>,</span>
+<span>  remove_false <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  filter.tax.id.type <span class="op">=</span> <span class="st">"Taxon_name"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -85,6 +75,16 @@ propagation.</p></dd>
 
 <dt>direction</dt>
 <dd><p>A character string. 'upstream', 'downstream', or 'both'.</p></dd>
+
+
+<dt>remove_false</dt>
+<dd><p>If TRUE,remove rows with Attribute value FALSE. Default
+is TRUE.</p></dd>
+
+
+<dt>filter.tax.id.type</dt>
+<dd><p>Choose type of id/name to filter. Options are:
+'NCBI_ID' and 'Taxon_name'.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -102,8 +102,12 @@ propagation.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   method           from</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>   print.cache_info httr</span>
 <span class="r-in"><span><span class="va">aer</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/bugphyzz/man/physiologies.html" class="external-link">physiologies</a></span><span class="op">(</span><span class="st">'aerophilicity'</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Importing aerophilicity (categorical)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Finished aerophilicity</span>
-<span class="r-in"><span><span class="va">aer_prop</span> <span class="op">&lt;-</span> <span class="fu">propagate</span><span class="op">(</span><span class="va">aer</span>, max.tax.level <span class="op">=</span> <span class="st">'genus'</span>, direction <span class="op">=</span> <span class="st">'both'</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">aer_prop</span> <span class="op">&lt;-</span> <span class="fu">propagate</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">aer</span>, max.tax.level <span class="op">=</span> <span class="st">'genus'</span>, direction <span class="op">=</span> <span class="st">'both'</span>, remove_false <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>    filter.tax.id.type <span class="op">=</span> <span class="st">'Taxon_name'</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>There were 367 conflicts, but 340 conflicts couldn't be solved.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Current rank: strain</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Getting next rank: species</span>
@@ -130,7 +134,7 @@ propagation.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>
