@@ -3,7 +3,7 @@ pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   taxPPro: taxPPro.html
-last_built: 2023-02-08T17:07Z
+last_built: 2023-02-08T17:38Z
 urls:
   reference: https://sdgamboa.github.io/taxPPro/reference
   article: https://sdgamboa.github.io/taxPPro/articles
