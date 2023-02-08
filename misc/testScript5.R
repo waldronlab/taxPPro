@@ -1,11 +1,41 @@
-
-library(bugphyzz)
-library(taxPPro)
-library(data.tree)
 library(dplyr)
+library(bugphyzz)
 library(tidygraph)
 library(igraph)
+library(taxPPro)
+library(data.tree)
 
+## Define some functions ####
+
+## Add children
+removePrefix <- function(x) {
+    regex <- '^[kpcofgst]__'
+    sub(regex, '', x)
+}
+addChildren <- function(node) {
+    current_children <- removePrefix(names(node$children))
+    current_taxon <- removePrefix(node$name)
+    df <- tryCatch(
+        error = function(e) NULL, {
+          taxizedb::children(current_taxon)[[1]]
+        }
+    )
+    if (is.null(df)) {
+        return(NULL)
+    }
+    df <- df[df$rank %in% valid_ranks, ]
+    children <- df$name
+    new_children <- children[!children %in% current_children]
+    if (isFALSE(!length(new_children))) {
+        for (i in seq_along(new_children)) {
+            message(new_children)
+            node$AddChild(new_children[i])
+        }
+    }
+}
+
+
+## Some code ####
 valid_ranks <- validRanks()
 ncbi_taxonomy <- get_ncbi_taxonomy() |>
     filter(Rank %in% valid_ranks) |>
@@ -35,6 +65,7 @@ bac_data$pathString <- paste(
     '|||t__', bac_data$strain,
     sep = ''
 )
+
 regex1 <- '(\\|\\|\\|[kpcofgst]__NA)*$'
 bac_data$pathString <- sub(regex1, "", bac_data$pathString)
 regex2 <- '(\\|\\|\\|[kpcofgst]__[^\\|]*$)'
@@ -48,65 +79,51 @@ bac_data_tree <- bac_data |>
     ) |>
     distinct()
 
-# es <- bac_data_tree[grep('Escherichia', bac_data_tree$pathString),]
-# es <- es[1,]
+es <- bac_data_tree[grep('Escherichia', bac_data_tree$pathString),]
+es <- es[1,]
 
 start_time <- Sys.time()
-bac_tree <- as.Node(bac_data, pathDelimiter = '|||' )
+bac_tree <- as.Node(bac_data_tree, pathDelimiter = '|||' )
 end_time <- Sys.time()
-difftime(end_time, start_time)
+(time_big_tree <- difftime(end_time, start_time))
 ## Stop here
 
 
-addPath <- function(node) {
-    node$name <- paste0(node$name, '---', node$pathString)
-}
-
-bac_tree$Do(addPath)
-
-bac_tree$totalCount
-bac_tree$leafCount
-
-as_tbl_graph(bac_tree, directed = TRUE)
-
-
-
-acme$Do(addInt)
-
-acme$Accounting$name
-
-## Add children
-
-# x <- names(bac_tree$children)
-#
-# removePrefix <- function(x) {
-#     regex <- '^[kpcofgst]__'
-#     sub(regex, '', x)
+## function for adding full path (taxonomy) to the names
+## This is so that every node has a unique name
+# addPath <- function(node) {
+    # node$name <- paste0(node$name, '---', node$pathString)
 # }
+# bac_tree$Do(addPath)
+# bac_tree$totalCount
+# bac_tree$leafCount
 
-# addChildren <- function(node) {
-#     current_children <- removePrefix(names(node$children))
-#     current_taxon <- removePrefix(node$name)
-#     df <- tryCatch(
-#         error = function(e) NULL, {
-#           taxizedb::children(current_taxon)[[1]]
-#         }
-#     )
-#     if (is.null(df)) {
-#         return(NULL)
-#     }
-#     df <- df[df$rank %in% valid_ranks, ]
-#     children <- df$name
-#     new_children <- children[!children %in% current_children]
-#     if (isFALSE(!length(new_children))) {
-#         for (i in seq_along(new_children)) {
-#             message(new_children)
-#             node$AddChild(new_children[i])
-#         }
-#     }
-# }
+## This is for a test with igraph
+# new_tbl <- as_tbl_graph(bac_tree, directed = TRUE)
 
-# bac_tree$Do(addChildren)
+
+## Let's try with a smaller dataset
+
+es <- bac_data_tree[grep('Escherichia', bac_data_tree$pathString),]
+es <- es[1,]
+
+start_time <- Sys.time()
+es_tree <- as.Node(es, pathDelimiter = '|||' )
+end_time <- Sys.time()
+time_es_tree <- difftime(end_time, start_time)
+
+
+bac_tree$Do(addChildren)
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -192,7 +209,6 @@ edges <- data.frame(
 
     from = aer$NCBI_ID
 )
-
 
 my_graph <- graph_from_data_frame(d = edges, directed = TRUE, vertices = nodes)
 tg <- as_tbl_graph(my_graph, directed = TRUE)

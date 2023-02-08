@@ -45,6 +45,7 @@ bac_taxids <- ncbi_taxonomy |>
     ) |>
     pull(NCBI_ID) |>
     unique()
+
 phylo_tree <- getTree(bac_taxids)
 tax_data <- phylo_tree@data
 
