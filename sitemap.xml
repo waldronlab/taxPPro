@@ -10,7 +10,13 @@
     <loc>https://sdgamboa.github.io/taxPPro/LICENSE.html</loc>
   </url>
   <url>
+    <loc>https://sdgamboa.github.io/taxPPro/articles/data-tree.html</loc>
+  </url>
+  <url>
     <loc>https://sdgamboa.github.io/taxPPro/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/articles/phylo.html</loc>
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/articles/taxPPro.html</loc>
@@ -20,6 +26,9 @@
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/index.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/addChildren.html</loc>
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/annotateInternalNodes.html</loc>
@@ -65,6 +74,9 @@
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/getDuplicates.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/getMpaTree.html</loc>
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/getParentScores.html</loc>
