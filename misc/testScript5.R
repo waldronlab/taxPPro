@@ -12,6 +12,15 @@ removePrefix <- function(x) {
     regex <- '^[kpcofgst]__'
     sub(regex, '', x)
 }
+
+#' Add children to node
+#'
+#' @param node A node
+#'
+#' @return An action on the node.
+#'
+#' @export
+#'
 addChildren <- function(node) {
     current_children <- removePrefix(names(node$children))
     current_taxon <- removePrefix(node$name)

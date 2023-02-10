@@ -22,7 +22,8 @@ Suggests:
     knitr,
     rmarkdown,
     tibble,
-    ete3r
+    ete3r,
+    data.tree
 Imports:
     BiocFileCache,
     dplyr,
