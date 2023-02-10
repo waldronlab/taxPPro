@@ -1,0 +1,25 @@
+---
+title: "Attempt of propagation with data.tree"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+```{r setup}
+library(taxPPro)
+library(bugphyzz)
+library(data.tree)
+```
+
+
+```{r}
+tree <- getMpaTree()
+data_tree <- data.tree::as.Node(tree)
+```
+
+

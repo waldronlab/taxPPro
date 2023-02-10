@@ -3,16 +3,29 @@ get_silva_table <- function(x) {
     db <- vroom::vroom(db_url, delim = '\t', col_names = NULL)
 }
 
-get_silve_tree <- function(x) {
-
+#' Get metaplhan tree
+#'
+#' \code{getMpaTree} gets metplhan tree. Tips are taxids.
+#'
+#' @return A phylo object
+#' @export
+#'
+getMpaTree <- function() {
+    file_url <- 'https://raw.githubusercontent.com/biobakery/MetaPhlAn/master/metaphlan/utils/mpa_vJan21_CHOCOPhlAnSGB_202103.nwk'
+    treeio::read.tree(file_url)
+    # tree_url <- 'https://raw.githubusercontent.com/biobakery/MetaPhlAn/master/metaphlan/utils/mpa_v30_CHOCOPhlAn_201901_species_tree.nwk'
+    # tree$tip.label <- gsub('_', ' ', sub('^.+s__', '', tree$tip.label))
 }
 
-tree_metaphlan <- function() {
-    tree_url <- 'https://raw.githubusercontent.com/biobakery/MetaPhlAn/master/metaphlan/utils/mpa_v30_CHOCOPhlAn_201901_species_tree.nwk'
-    tree <- treeio::read.tree(tree_url)
-    tree$tip.label <- gsub('_', ' ', sub('^.+s__', '', tree$tip.label))
-    tree
-
+getMpaTable <- function() {
+    ranks <- c(
+        'domain', 'phylym', 'class', 'order', 'family', 'genus', 'species'
+    )
+    file_url <- 'https://raw.githubusercontent.com/biobakery/MetaPhlAn/master/metaphlan/utils/mpa_vJan21_CHOCOPhlAnSGB_202103_SGB2GTDB.tsv'
+    df <- utils::read.table(file_url, header = FALSE, sep = '\t')
+    colnames(df) <- c('id', 'taxonomy')
+    df <- tidyr::separate(
+        data = df, col = 'taxonomy', into = ranks, sep = ';'
+    )
+    purrr::modify_at(.x = df, .at = ranks, .f = ~ sub('[dpcofgs]__', '', .x))
 }
-
-
