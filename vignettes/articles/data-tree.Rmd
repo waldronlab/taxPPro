@@ -1,5 +1,9 @@
 ---
 title: "Examles of attribute propagation with data.tree"
+output:
+  html_document:
+    toc:
+      true
 ---
 
 ```{r, include = FALSE}
@@ -9,16 +13,98 @@ knitr::opts_chunk$set(
 )
 ```
 
-
 ```{r setup, message=FALSE}
 library(taxPPro)
 library(bugphyzz)
 library(data.tree)
-library(dplyr)
-library(stringr)
+library(purrr)
 ```
 
+# Define some helpful function
 
+```{r}
+## Define functions ####
+fillNAs <- function(x) {
+    counter <- 1
+    for (i in seq_along(x)) {
+        if (is.na(x[i])) {
+            x[i] <- paste0('NA', counter)
+            counter <- counter + 1
+        }
+    }
+    return(x)
+}
+
+taxname2taxid <- function(tax_tbl) {
+    if ('kingdom' %in% colnames(tax_tbl)) {
+        pos <- which(colnames(tax_tbl) == 'kingdom')
+        colnames(tax_tbl)[pos] <- 'superkingdom'
+    }
+    ranks <- c(
+        'superkingdom', 'phylum', 'class', 'order', 'family', 'genus'
+    )
+    for (i in ranks) {
+        df <- tax_tbl[tax_tbl[['Rank']] == i, ]
+        vct <- df$NCBI_ID
+        names(vct) <- df[[i]]
+        tax_tbl[[i]] <- vapply(tax_tbl[[i]], function(.x) vct[.x], character(1))
+        # tax_tbl[[i]] <- purrr::map_chr(tax_tbl[[i]], ~ {vct[.x]})
+    }
+    return(tax_tbl)
+}
+```
+
+# Get NCBI data
+
+```{r get and modify ncbi data, message=FALSE}
+ncbi_taxids <- get_ncbi_taxids(keyword = 'b', with_taxids = TRUE)
+new_ncbi_taxids <- taxname2taxid(tax_tbl = ncbi_taxids)
+cond1 <- new_ncbi_taxids$Rank == 'species'
+cond2 <- new_ncbi_taxids$superkingdom == '2'
+bacteria <- new_ncbi_taxids[cond1 & cond2,]
+no_select_cols <- c(
+    'species', 'strain', 'Taxon_name', 'Parent_NCBI_ID', 'Rank'
+)
+bacteria <- bacteria[,!colnames(bacteria) %in% no_select_cols]
+for (i in seq_along(bacteria)) {
+  bacteria[[i]] <- fillNAs(bacteria[[i]])
+}
+head(bacteria)
+```
+
+# Convert NCBI data to data.tree
+
+Add path string
+
+```{r add pathString}
+pathString <- paste(
+    'k__', bacteria$superkingdom, # root
+    '|||p__', bacteria$phylum,
+    '|||c__', bacteria$class,
+    '|||o__', bacteria$order,
+    '|||f__', bacteria$family,
+    '|||g__', bacteria$genus,
+    '|||s__', bacteria$NCBI_ID,
+    sep = ''
+)
+
+bacteria$pathString <- pathString
+head(bacteria$pathString)
+```
+Convert to data.tree
+
+```{r concert to data.tree}
+start_time <- Sys.time()
+bac_tree <- as.Node(bacteria, pathDelimiter = '|||')
+end_time <- Sys.time()
+(elapsed_time <- difftime(end_time, start_time))
+```
+
+ a small portion of the tree
+
+```{r print tree}
+print(bac_tree, limit = 20)
+```
 
 # Session infomation
 
