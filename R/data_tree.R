@@ -12,7 +12,7 @@ removePrefix <- function(x) {
 #' @return An action on the node.
 #' @export
 #'
-addStrain <- function(node) {
+addStrains <- function(node) {
 
     if (node$isLeaf) {
         current_children <- removePrefix(names(node$children))
