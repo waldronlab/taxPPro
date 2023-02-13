@@ -38,3 +38,53 @@ addStrains <- function(node) {
     }
 
 }
+
+
+
+#' Fill NAs
+#'
+#' \code{fillNAs} changes NAs wit NA\[number\].
+#'
+#' @param x An atomic vector.
+#'
+#' @return An atomic vector
+#' @export
+#'
+fillNAs <- function(x) {
+    counter <- 1
+    for (i in seq_along(x)) {
+        if (is.na(x[i])) {
+            x[i] <- paste0('NA', counter)
+            counter <- counter + 1
+        }
+    }
+    return(x)
+}
+
+#' Conver taxname to taxid
+#'
+#'\code{taxname2taxid} Converts a taxon name from the ncbi to its corresponding
+#'taxid
+#'
+#' @param tax_tbl An table with taxnames.
+#'
+#' @return A data.frame.
+#' @export
+#'
+taxname2taxid <- function(tax_tbl) {
+    if ('kingdom' %in% colnames(tax_tbl)) {
+        pos <- which(colnames(tax_tbl) == 'kingdom')
+        colnames(tax_tbl)[pos] <- 'superkingdom'
+    }
+    ranks <- c(
+        'superkingdom', 'phylum', 'class', 'order', 'family', 'genus'
+    )
+    for (i in ranks) {
+        df <- tax_tbl[tax_tbl[['Rank']] == i, ]
+        vct <- df$NCBI_ID
+        names(vct) <- df[[i]]
+        tax_tbl[[i]] <- vapply(tax_tbl[[i]], function(.x) vct[.x], character(1))
+        # tax_tbl[[i]] <- purrr::map_chr(tax_tbl[[i]], ~ {vct[.x]})
+    }
+    return(tax_tbl)
+}
