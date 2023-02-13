@@ -98,45 +98,11 @@ data.tree</h1>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://github.com/gluc/data.tree" class="external-link">data.tree</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://purrr.tidyverse.org/" class="external-link">purrr</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
-<h2 id="define-some-helpful-function">Define some helpful function<a class="anchor" aria-label="anchor" href="#define-some-helpful-function"></a>
-</h2>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">## Define functions ####</span></span>
-<span><span class="va">fillNAs</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="va">counter</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
-<span>    <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>        <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>            <span class="va">x</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'NA'</span>, <span class="va">counter</span><span class="op">)</span></span>
-<span>            <span class="va">counter</span> <span class="op">&lt;-</span> <span class="va">counter</span> <span class="op">+</span> <span class="fl">1</span></span>
-<span>        <span class="op">}</span></span>
-<span>    <span class="op">}</span></span>
-<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="va">taxname2taxid</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">tax_tbl</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="kw">if</span> <span class="op">(</span><span class="st">'kingdom'</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">tax_tbl</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>        <span class="va">pos</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">tax_tbl</span><span class="op">)</span> <span class="op">==</span> <span class="st">'kingdom'</span><span class="op">)</span></span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">tax_tbl</span><span class="op">)</span><span class="op">[</span><span class="va">pos</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">'superkingdom'</span></span>
-<span>    <span class="op">}</span></span>
-<span>    <span class="va">ranks</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>        <span class="st">'superkingdom'</span>, <span class="st">'phylum'</span>, <span class="st">'class'</span>, <span class="st">'order'</span>, <span class="st">'family'</span>, <span class="st">'genus'</span></span>
-<span>    <span class="op">)</span></span>
-<span>    <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="va">ranks</span><span class="op">)</span> <span class="op">{</span></span>
-<span>        <span class="va">df</span> <span class="op">&lt;-</span> <span class="va">tax_tbl</span><span class="op">[</span><span class="va">tax_tbl</span><span class="op">[[</span><span class="st">'Rank'</span><span class="op">]</span><span class="op">]</span> <span class="op">==</span> <span class="va">i</span>, <span class="op">]</span></span>
-<span>        <span class="va">vct</span> <span class="op">&lt;-</span> <span class="va">df</span><span class="op">$</span><span class="va">NCBI_ID</span></span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">vct</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">df</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span></span>
-<span>        <span class="va">tax_tbl</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">tax_tbl</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span>, <span class="kw">function</span><span class="op">(</span><span class="va">.x</span><span class="op">)</span> <span class="va">vct</span><span class="op">[</span><span class="va">.x</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span>        <span class="co"># tax_tbl[[i]] &lt;- purrr::map_chr(tax_tbl[[i]], ~ {vct[.x]})</span></span>
-<span>    <span class="op">}</span></span>
-<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">tax_tbl</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-</div>
-<div class="section level2">
 <h2 id="get-ncbi-data">Get NCBI data<a class="anchor" aria-label="anchor" href="#get-ncbi-data"></a>
 </h2>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ncbi_taxids</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_ncbi_taxids.html">get_ncbi_taxids</a></span><span class="op">(</span>keyword <span class="op">=</span> <span class="st">'b'</span>, with_taxids <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">new_ncbi_taxids</span> <span class="op">&lt;-</span> <span class="fu">taxname2taxid</span><span class="op">(</span>tax_tbl <span class="op">=</span> <span class="va">ncbi_taxids</span><span class="op">)</span></span>
+<span><span class="va">new_ncbi_taxids</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/taxname2taxid.html">taxname2taxid</a></span><span class="op">(</span>tax_tbl <span class="op">=</span> <span class="va">ncbi_taxids</span><span class="op">)</span></span>
 <span><span class="va">cond1</span> <span class="op">&lt;-</span> <span class="va">new_ncbi_taxids</span><span class="op">$</span><span class="va">Rank</span> <span class="op">==</span> <span class="st">'species'</span></span>
 <span><span class="va">cond2</span> <span class="op">&lt;-</span> <span class="va">new_ncbi_taxids</span><span class="op">$</span><span class="va">superkingdom</span> <span class="op">==</span> <span class="st">'2'</span></span>
 <span><span class="va">bacteria</span> <span class="op">&lt;-</span> <span class="va">new_ncbi_taxids</span><span class="op">[</span><span class="va">cond1</span> <span class="op">&amp;</span> <span class="va">cond2</span>,<span class="op">]</span></span>
@@ -145,24 +111,24 @@ data.tree</h1>
 <span><span class="op">)</span></span>
 <span><span class="va">bacteria</span> <span class="op">&lt;-</span> <span class="va">bacteria</span><span class="op">[</span>,<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">bacteria</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">no_select_cols</span><span class="op">]</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">bacteria</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">bacteria</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">fillNAs</span><span class="op">(</span><span class="va">bacteria</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="va">bacteria</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fillNAs.html">fillNAs</a></span><span class="op">(</span><span class="va">bacteria</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">bacteria</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 7</span></span></span>
-<span><span class="co">#&gt;   superkingdom phylum class  order  family genus   NCBI_ID</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2            57723  204432 204433 204434 1078830 1335627</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 2            57723  204432 204433 204434 1078830 1615681</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 2            57723  204432 204433 204434 1078830 946336 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 2            57723  204432 204433 204434 1078830 2218256</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 2            57723  204432 204433 204434 1078830 1335629</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 2            57723  204432 204433 204434 1078830 542300</span></span></code></pre></div>
+<span><span class="co">#&gt;   superkingdom phylum class   order   family  genus   NCBI_ID</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2            57723  1562566 1748771 1748772 1562564 1384638</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 2            57723  1562566 1748771 1748772 1562564 1384639</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 2            57723  1562566 1748771 1748772 1562564 1911421</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 2            57723  1562566 1748771 1748772 1281902 1235480</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 2            57723  1562566 1748771 1748772 1748767 1603871</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 2            57723  1562566 1748771 1748772 1748767 1603869</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="convert-ncbi-data-to-data-tree">Convert NCBI data to data.tree<a class="anchor" aria-label="anchor" href="#convert-ncbi-data-to-data-tree"></a>
 </h2>
 <p>Add path string</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pathString</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span></span>
 <span>    <span class="st">'k__'</span>, <span class="va">bacteria</span><span class="op">$</span><span class="va">superkingdom</span>, <span class="co"># root</span></span>
 <span>    <span class="st">'|||p__'</span>, <span class="va">bacteria</span><span class="op">$</span><span class="va">phylum</span>,</span>
@@ -176,52 +142,56 @@ data.tree</h1>
 <span></span>
 <span><span class="va">bacteria</span><span class="op">$</span><span class="va">pathString</span> <span class="op">&lt;-</span> <span class="va">pathString</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">bacteria</span><span class="op">$</span><span class="va">pathString</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "k__2|||p__57723|||c__204432|||o__204433|||f__204434|||g__1078830|||s__1335627"</span></span>
-<span><span class="co">#&gt; [2] "k__2|||p__57723|||c__204432|||o__204433|||f__204434|||g__1078830|||s__1615681"</span></span>
-<span><span class="co">#&gt; [3] "k__2|||p__57723|||c__204432|||o__204433|||f__204434|||g__1078830|||s__946336" </span></span>
-<span><span class="co">#&gt; [4] "k__2|||p__57723|||c__204432|||o__204433|||f__204434|||g__1078830|||s__2218256"</span></span>
-<span><span class="co">#&gt; [5] "k__2|||p__57723|||c__204432|||o__204433|||f__204434|||g__1078830|||s__1335629"</span></span>
-<span><span class="co">#&gt; [6] "k__2|||p__57723|||c__204432|||o__204433|||f__204434|||g__1078830|||s__542300"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "k__2|||p__57723|||c__1562566|||o__1748771|||f__1748772|||g__1562564|||s__1384638"</span></span>
+<span><span class="co">#&gt; [2] "k__2|||p__57723|||c__1562566|||o__1748771|||f__1748772|||g__1562564|||s__1384639"</span></span>
+<span><span class="co">#&gt; [3] "k__2|||p__57723|||c__1562566|||o__1748771|||f__1748772|||g__1562564|||s__1911421"</span></span>
+<span><span class="co">#&gt; [4] "k__2|||p__57723|||c__1562566|||o__1748771|||f__1748772|||g__1281902|||s__1235480"</span></span>
+<span><span class="co">#&gt; [5] "k__2|||p__57723|||c__1562566|||o__1748771|||f__1748772|||g__1748767|||s__1603871"</span></span>
+<span><span class="co">#&gt; [6] "k__2|||p__57723|||c__1562566|||o__1748771|||f__1748772|||g__1748767|||s__1603869"</span></span></code></pre></div>
 <p>Convert to data.tree</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">start_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">bac_tree</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.tree/man/as.Node.html" class="external-link">as.Node</a></span><span class="op">(</span><span class="va">bacteria</span>, pathDelimiter <span class="op">=</span> <span class="st">'|||'</span><span class="op">)</span></span>
 <span><span class="va">end_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">(</span><span class="va">elapsed_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/difftime.html" class="external-link">difftime</a></span><span class="op">(</span><span class="va">end_time</span>, <span class="va">start_time</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Time difference of 21.28558 secs</span></span></code></pre></div>
+<span><span class="co">#&gt; Time difference of 30.61599 secs</span></span></code></pre></div>
 <p>a small portion of the tree</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">bac_tree</span>, limit <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                                       levelName</span></span>
 <span><span class="co">#&gt; 1  k__2                                        </span></span>
 <span><span class="co">#&gt; 2   ¦--p__57723                                </span></span>
-<span><span class="co">#&gt; 3   ¦   ¦--c__204432                           </span></span>
-<span><span class="co">#&gt; 4   ¦   ¦   ¦--o__204433                       </span></span>
-<span><span class="co">#&gt; 5   ¦   ¦   ¦   °--f__204434                   </span></span>
-<span><span class="co">#&gt; 6   ¦   ¦   ¦       ¦--g__1078830              </span></span>
-<span><span class="co">#&gt; 7   ¦   ¦   ¦       ¦   ¦--s__1335627          </span></span>
-<span><span class="co">#&gt; 8   ¦   ¦   ¦       ¦   ¦--s__1615681          </span></span>
-<span><span class="co">#&gt; 9   ¦   ¦   ¦       ¦   ¦--s__946336           </span></span>
-<span><span class="co">#&gt; 10  ¦   ¦   ¦       ¦   ¦--s__2218256          </span></span>
-<span><span class="co">#&gt; 11  ¦   ¦   ¦       ¦   ¦--s__1335629          </span></span>
-<span><span class="co">#&gt; 12  ¦   ¦   ¦       ¦   °--s__542300           </span></span>
-<span><span class="co">#&gt; 13  ¦   ¦   ¦       ¦--g__1000999              </span></span>
-<span><span class="co">#&gt; 14  ¦   ¦   ¦       ¦   °--s__768535           </span></span>
-<span><span class="co">#&gt; 15  ¦   ¦   ¦       ¦--g__2608728              </span></span>
-<span><span class="co">#&gt; 16  ¦   ¦   ¦       ¦   °--s__2211140          </span></span>
-<span><span class="co">#&gt; 17  ¦   ¦   ¦       ¦--g__33973                </span></span>
-<span><span class="co">#&gt; 18  ¦   ¦   ¦       ¦   °--s__33075            </span></span>
-<span><span class="co">#&gt; 19  ¦   ¦   ¦       ¦--g__2951993              </span></span>
+<span><span class="co">#&gt; 3   ¦   ¦--c__1562566                          </span></span>
+<span><span class="co">#&gt; 4   ¦   ¦   ¦--o__1748771                      </span></span>
+<span><span class="co">#&gt; 5   ¦   ¦   ¦   ¦--f__1748772                  </span></span>
+<span><span class="co">#&gt; 6   ¦   ¦   ¦   ¦   ¦--g__1562564              </span></span>
+<span><span class="co">#&gt; 7   ¦   ¦   ¦   ¦   ¦   ¦--s__1384638          </span></span>
+<span><span class="co">#&gt; 8   ¦   ¦   ¦   ¦   ¦   ¦--s__1384639          </span></span>
+<span><span class="co">#&gt; 9   ¦   ¦   ¦   ¦   ¦   °--s__1911421          </span></span>
+<span><span class="co">#&gt; 10  ¦   ¦   ¦   ¦   ¦--g__1281902              </span></span>
+<span><span class="co">#&gt; 11  ¦   ¦   ¦   ¦   ¦   °--s__1235480          </span></span>
+<span><span class="co">#&gt; 12  ¦   ¦   ¦   ¦   ¦--g__1748767              </span></span>
+<span><span class="co">#&gt; 13  ¦   ¦   ¦   ¦   ¦   ¦--s__1603871          </span></span>
+<span><span class="co">#&gt; 14  ¦   ¦   ¦   ¦   ¦   ¦--s__1603869          </span></span>
+<span><span class="co">#&gt; 15  ¦   ¦   ¦   ¦   ¦   °--s__1458337          </span></span>
+<span><span class="co">#&gt; 16  ¦   ¦   ¦   ¦   °--g__1748764              </span></span>
+<span><span class="co">#&gt; 17  ¦   ¦   ¦   ¦       °--s__1592105          </span></span>
+<span><span class="co">#&gt; 18  ¦   ¦   ¦   °--f__2048906                  </span></span>
+<span><span class="co">#&gt; 19  ¦   ¦   ¦       ¦--g__2048907              </span></span>
 <span><span class="co">#&gt; 20  ¦   ¦   ¦       ¦   °--... 1 nodes w/ 0 sub</span></span>
-<span><span class="co">#&gt; 21  ¦   ¦   ¦       °--... 13 nodes w/ 36 sub  </span></span>
-<span><span class="co">#&gt; 22  ¦   ¦   °--... 3 nodes w/ 69 sub           </span></span>
+<span><span class="co">#&gt; 21  ¦   ¦   ¦       °--... 2 nodes w/ 4 sub    </span></span>
+<span><span class="co">#&gt; 22  ¦   ¦   °--... 3 nodes w/ 15 sub           </span></span>
 <span><span class="co">#&gt; 23  ¦   °--... 6 nodes w/ 154 sub              </span></span>
-<span><span class="co">#&gt; 24  °--... 101 nodes w/ 36396 sub</span></span></code></pre></div>
+<span><span class="co">#&gt; 24  °--... 108 nodes w/ 36403 sub</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="smaller-example">Smaller example<a class="anchor" aria-label="anchor" href="#smaller-example"></a>
+</h3>
+</div>
 </div>
 <div class="section level2">
 <h2 id="session-infomation">Session infomation<a class="anchor" aria-label="anchor" href="#session-infomation"></a>
 </h2>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">sessioninfo</span><span class="fu">::</span><span class="fu"><a href="https://r-lib.github.io/sessioninfo/reference/session_info.html" class="external-link">session_info</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">─ Session info ───────────────────────────────────────────────────────────────</span></span></span>
 <span><span class="co">#&gt;  <span style="color: #555555; font-style: italic;">setting </span> <span style="color: #555555; font-style: italic;">value</span></span></span>
@@ -246,7 +216,7 @@ data.tree</h1>
 <span><span class="co">#&gt;  blob            1.2.3   <span style="color: #555555;">2022-04-10</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  bold            1.2.0   <span style="color: #555555;">2021-05-11</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  bslib           0.4.2   <span style="color: #555555;">2022-12-16</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  bugphyzz      * 0.0.1.3 <span style="color: #555555;">2023-02-13</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">Github (waldronlab/bugphyzz@83c8dea)</span></span></span>
+<span><span class="co">#&gt;  bugphyzz      * 0.0.1.3 <span style="color: #555555;">2023-02-13</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">Github (waldronlab/bugphyzz@4ed84e9)</span></span></span>
 <span><span class="co">#&gt;  cachem          1.0.6   <span style="color: #555555;">2021-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  cli             3.6.0   <span style="color: #555555;">2023-01-09</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  codetools       0.2-19  <span style="color: #555555;">2023-02-01</span> <span style="color: #555555;">[2]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>

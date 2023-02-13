@@ -52,6 +52,9 @@
     <loc>https://sdgamboa.github.io/taxPPro/reference/estimateASR.html</loc>
   </url>
   <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/fillNAs.html</loc>
+  </url>
+  <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/filterData.html</loc>
   </url>
   <url>
@@ -110,5 +113,8 @@
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/resolveConflicts.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/taxname2taxid.html</loc>
   </url>
 </urlset>
