@@ -67,5 +67,16 @@ end_time <- Sys.time()
 
 print(bac_tree, limit = 20)
 
+bac_tree$p__1224$c__1236$o__91347$f__543$g__561
+
+e <- bacteria[bacteria$genus == '561',]
+e_tree <- as.Node(e, pathDelimiter = '|||')
+
+
+e_tree$Do(addChildren)
+
+e_tree$p__1224$c__1236$o__91347$f__543$g__561$s__562
+
+
 
 
