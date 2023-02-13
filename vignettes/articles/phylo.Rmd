@@ -27,7 +27,9 @@ tree
 # Import bugphyzz physiologies
 
 ```{r, message=FALSE}
-phys <- physiologies()
+aer <- physiologies('aerophilicity', remove_false = TRUE, full_source = FALSE)
+aer <- aer[[1]]
+aer_prop <- propagate(aer)
 ```
 
 # Get as many species level taxids as possible
