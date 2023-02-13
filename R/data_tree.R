@@ -26,8 +26,9 @@ addChildren <- function(node) {
             return(NULL)
         }
         df <- df[df$rank %in% 'strain', ]
-        children <- df$name
+        children <- df$id
         new_children <- children[!children %in% current_children]
+        new_children <- paste0('t__', new_children)
         if (isFALSE(!length(new_children))) {
             for (i in seq_along(new_children)) {
                 message(new_children)
