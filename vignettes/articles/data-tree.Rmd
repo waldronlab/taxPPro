@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 library(taxPPro)
 library(bugphyzz)
 library(data.tree)
-library(purrr)
+library(dplyr)
 ```
 
 # Get NCBI data
@@ -73,8 +73,40 @@ print(bac_tree, limit = 20)
 ```
 
 
-## Smaller example
+# Escherichia
 
+
+```{r}
+e <- bacteria[bacteria$genus == '561',]
+```
+
+
+
+
+
+# Bugphyzz
+
+```{r divide into attributes}
+aer <- physiologies('aerophilicity', remove_false = TRUE)[[1]]
+aer <- preSteps(aer, tax.id.type = 'NCBI_ID', remove_false = TRUE)
+dic <- c('g__', 's__', 't__')
+names(dic) <- c('genus', 'species', 'strain')
+aer$NCBI_ID <- paste0(dic[aer$Rank], aer$NCBI_ID)
+select_cols <- c(
+  'NCBI_ID', 'Attribute', 'Attribute_value', 'Evidence',  'Frequency', 
+  'Confidence_in_curation', 'Attribute_source', 'Score'
+)
+aer <- unique(aer[, select_cols])
+sp <- split(aer, aer$NCBI_ID)
+
+
+
+e_species <- unique(e$NCBI_ID)
+e_species <- c('561', e_species)
+e_regex <- paste0('__(', paste0(e_species, collapse = '|'), ')$')
+
+grep(e_regex, names(sp), value = TRUE)
+```
 
 
 
@@ -86,4 +118,3 @@ print(bac_tree, limit = 20)
 ```{r}
 sessioninfo::session_info()
 ```
-
