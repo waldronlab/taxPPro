@@ -5,14 +5,14 @@ removePrefix <- function(x) {
     sub(regex, '', x)
 }
 
-#' Add child taxa
+#' Add strains
 #'
 #' @param node A node.
 #'
 #' @return An action on the node.
 #' @export
 #'
-addChildren <- function(node) {
+addStrain <- function(node) {
 
     if (node$isLeaf) {
         current_children <- removePrefix(names(node$children))
