@@ -114,7 +114,7 @@
 <h2 id="import-bugphyzz-physiologies">Import bugphyzz physiologies<a class="anchor" aria-label="anchor" href="#import-bugphyzz-physiologies"></a>
 </h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">phys</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/bugphyzz/man/physiologies.html" class="external-link">physiologies</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">phys</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/bugphyzz/man/physiologies.html" class="external-link">physiologies</a></span><span class="op">(</span><span class="st">'all'</span>, remove_false <span class="op">=</span> <span class="cn">TRUE</span>, full_source <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="get-as-many-species-level-taxids-as-possible">Get as many species level taxids as possible<a class="anchor" aria-label="anchor" href="#get-as-many-species-level-taxids-as-possible"></a>
@@ -135,24 +135,24 @@
 <span><span class="co">#&gt; 2                      health associated 33.3333333</span></span>
 <span><span class="co">#&gt; 3                          growth medium 30.7086614</span></span>
 <span><span class="co">#&gt; 4                 sphingolipid producing 30.0000000</span></span>
-<span><span class="co">#&gt; 5       mutation rates per site per year 25.9259259</span></span>
-<span><span class="co">#&gt; 6                        biofilm forming 21.8309859</span></span>
-<span><span class="co">#&gt; 7             COGEM pathogenicity rating 21.3051823</span></span>
-<span><span class="co">#&gt; 8                                  width 19.4543298</span></span>
-<span><span class="co">#&gt; 9                                 length 18.5410334</span></span>
-<span><span class="co">#&gt; 10                       animal pathogen 17.7966102</span></span>
-<span><span class="co">#&gt; 11                   plant pathogenicity 17.4815807</span></span>
-<span><span class="co">#&gt; 12                    growth temperature 17.0432025</span></span>
-<span><span class="co">#&gt; 13                   extreme environment 16.3287086</span></span>
+<span><span class="co">#&gt; 5                        animal pathogen 26.9230769</span></span>
+<span><span class="co">#&gt; 6                        biofilm forming 26.5957447</span></span>
+<span><span class="co">#&gt; 7       mutation rates per site per year 25.9259259</span></span>
+<span><span class="co">#&gt; 8             COGEM pathogenicity rating 21.3051823</span></span>
+<span><span class="co">#&gt; 9                    plant pathogenicity 21.0526316</span></span>
+<span><span class="co">#&gt; 10                                 width 19.4543298</span></span>
+<span><span class="co">#&gt; 11                                length 18.5410334</span></span>
+<span><span class="co">#&gt; 12             antimicrobial sensitivity 17.8644764</span></span>
+<span><span class="co">#&gt; 13                    growth temperature 17.0400000</span></span>
 <span><span class="co">#&gt; 14                        isolation site 16.1588181</span></span>
-<span><span class="co">#&gt; 15                               habitat 16.1256711</span></span>
-<span><span class="co">#&gt; 16                           arrangement 15.5708855</span></span>
-<span><span class="co">#&gt; 17             antimicrobial sensitivity 15.5048077</span></span>
-<span><span class="co">#&gt; 18                            optimal ph 15.4627540</span></span>
-<span><span class="co">#&gt; 19                                 shape 14.6901641</span></span>
-<span><span class="co">#&gt; 20                            gram stain 13.5819406</span></span>
-<span><span class="co">#&gt; 21                         aerophilicity 13.2745680</span></span>
-<span><span class="co">#&gt; 22                           spore shape  5.2117264</span></span>
+<span><span class="co">#&gt; 15                            optimal ph 15.4627540</span></span>
+<span><span class="co">#&gt; 16                            gram stain 12.7866574</span></span>
+<span><span class="co">#&gt; 17                                 shape 12.5729775</span></span>
+<span><span class="co">#&gt; 18                   extreme environment 12.4333925</span></span>
+<span><span class="co">#&gt; 19                               habitat 12.4267551</span></span>
+<span><span class="co">#&gt; 20                         aerophilicity 11.2804097</span></span>
+<span><span class="co">#&gt; 21                           arrangement 10.8473189</span></span>
+<span><span class="co">#&gt; 22                           spore shape  7.0512821</span></span>
 <span><span class="co">#&gt; 23                           genome size  3.3869239</span></span>
 <span><span class="co">#&gt; 24                          coding genes  3.3840223</span></span>
 <span><span class="co">#&gt; 25                   disease association  0.2247191</span></span>
