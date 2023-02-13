@@ -23,7 +23,8 @@ Suggests:
     rmarkdown,
     tibble,
     ete3r,
-    data.tree
+    data.tree,
+    sessioninfo
 Imports:
     BiocFileCache,
     dplyr,

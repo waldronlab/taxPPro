@@ -1,5 +1,5 @@
 ---
-title: "Attempt of propagation with data.tree"
+title: "Examles of attribute propagation with data.tree"
 ---
 
 ```{r, include = FALSE}
@@ -18,92 +18,9 @@ library(dplyr)
 library(stringr)
 ```
 
-# Import the full NCBI taxonomy
 
-Get full NCBI taxonomy in the form of a table with taxon ranks as column names:
 
-```{r, message=FALSE}
-valid_ranks <- validRanks()
-ncbi_taxonomy <- get_ncbi_taxonomy() |>
-    filter(Rank %in% valid_ranks) |>
-    select(-Parent_NCBI_ID, -Rank, -Taxon_name)
-glimpse(ncbi_taxonomy, width = 50)
-```
-
-# Import aerophilicity dataset
-
-```{r, message=FALSE, warning=FALSE}
-aer <- physiologies('aerophilicity', remove_false = TRUE)[[1]] |>
-    mutate(NCBI_ID = tolower(as.character(NCBI_ID))) |>
-    filter(
-        Rank %in% valid_ranks,
-        !is.na(NCBI_ID),
-        NCBI_ID != 'unknown',
-        !is.na(Attribute_value)
-    ) |>
-    preSteps(tax.id.type = 'NCBI_ID')
-```
-
-# Create a data.tree column 
-
-Add a pathString column
-
-```{r add pathString}
-regex1 <- '(\\|\\|\\|[kpcofgst]__NA)*$'
-regex2 <- '(\\|\\|\\|[kpcofgst]__[^\\|]*$)'
-bac_data <- aer |> 
-    left_join(ncbi_taxonomy, by = 'NCBI_ID') |>
-    filter(kingdom == 'Bacteria') |> 
-    mutate(
-        pathString = paste(
-        'k__', kingdom,
-        '|||p__', phylum,
-        '|||c__', class,
-        '|||o__', order,
-        '|||f__', family,
-        '|||g__', genus,
-        '|||s__', species,
-        '|||t__', strain,
-        sep = ''
-        ),
-        pathString = str_remove(pathString, regex1),
-        Taxon_name = str_remove(str_extract(pathString, regex2), '\\|\\|\\|')
-    )
-```
-
-Convert to a tree
-
-```{r create tree}
-select_cols <- c(
-    'kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species', 
-    'strain', 'Taxon_name', 'pathString'
-)
-bac_data_tree <- bac_data |>
-    select(all_of(select_cols)) |>
-    distinct() 
-
-start_time <- Sys.time()
-bac_tree <- as.Node(bac_data_tree, pathDelimiter = '|||' )
-end_time <- Sys.time()
-elapsed_time <- difftime(end_time, start_time, units = 'secs')
-elapsed_time
-```
-
-# Small example
-
-```{r}
-genera <- unique(bac_data[grep("^g__", bac_data$Taxon_name),]$Taxon_name)
-small_data_tree <- bac_data_tree |> 
-    filter(Taxon_name %in% c('g__Escherichia', genera[1]))
-small_tree <- as.Node(small_data_tree, pathDelimiter = '|||')
-small_tree
-```
-
-```{r}
-small_tree$Do(addChildren)
-```
-
-# Session information
+# Session infomation
 
 ```{r}
 sessioninfo::session_info()
