@@ -2,10 +2,10 @@ pandoc: 2.19.2
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
-  data-tree: data-tree.html
+  asr1-data-tree: asr1-data-tree.html
   phylo: phylo.html
   taxPPro: taxPPro.html
-last_built: 2023-02-13T21:31Z
+last_built: 2023-02-14T00:18Z
 urls:
   reference: https://sdgamboa.github.io/taxPPro/reference
   article: https://sdgamboa.github.io/taxPPro/articles
