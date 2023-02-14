@@ -55,6 +55,7 @@ pathString <- paste(
 )
 
 bacteria$pathString <- pathString
+bacteria$NCBI_ID <- paste0('s__', bacteria$NCBI_ID) 
 head(bacteria$pathString)
 ```
 Convert to data.tree
@@ -66,23 +67,11 @@ end_time <- Sys.time()
 (elapsed_time <- difftime(end_time, start_time))
 ```
 
- a small portion of the tree
+A small portion of the tree
 
 ```{r print tree}
 print(bac_tree, limit = 20)
 ```
-
-
-# Escherichia
-
-
-```{r}
-e <- bacteria[bacteria$genus == '561',]
-```
-
-
-
-
 
 # Bugphyzz
 
@@ -97,24 +86,106 @@ select_cols <- c(
   'Confidence_in_curation', 'Attribute_source', 'Score'
 )
 aer <- unique(aer[, select_cols])
+aer <- aer[which(grepl('^[gs]__', aer$NCBI_ID)),]
 sp <- split(aer, aer$NCBI_ID)
+```
+
+# aer + data.tree
+
+Adding information
+
+```{r}
+bac_tree$Do(function(node) node$Attribute_info <- sp[[node$name]])
+```
+
+Let's check it
+
+```{r}
+print(e_tree, 'aerobic', 'facultatively anaerobic') |> View()
+
+```
+
+Let's print it
+
+```{r}
+print(bac_tree, 'Attribute_info', limit = 10)
+```
 
 
+# E coli
 
-e_species <- unique(e$NCBI_ID)
-e_species <- c('561', e_species)
-e_regex <- paste0('__(', paste0(e_species, collapse = '|'), ')$')
+Add separate attributes
 
-grep(e_regex, names(sp), value = TRUE)
+```{r}
+e <- bacteria[bacteria$genus == '561',]
+e_tree <- as.Node(e, pathDelimiter = '|||')
+a <- split(aer, factor(aer$Attribute))
+
+for (i in seq_along(a)) {
+  attr_name <- names(a)[i]
+  lst_vct <- split(a[[i]], factor(a[[i]][['NCBI_ID']]))
+  e_tree$Do(function(node) node[[attr_name]] <- lst_vct[[node$name]]$Score)
+}
+
+e_tree$Do(function(node) node$aerobic <- Aggregate(node, 'aerobic', function(x) sum(x[!is.na(x)])), traversal = 'post-order')
+e_tree$Do(function(node) node$`facultatively anaerobic` <- Aggregate(node, 'facultatively anaerobic', function(x) sum(x[!is.na(x)])), traversal = 'post-order')
+
+e_tree$Do(function(node) if (is.na(node$aerobic)) { node$aerobic <- node$parent$aerobic})
+e_tree$Do(function(node) if (is.na(node$`facultatively anaerobic`)) { node$`facultatively anaerobic` <- node$parent$`facultatively anaerobic`})
+
 ```
 
 
 
+```{r}
+tbl <- ToDataFrameTree(e_tree, 'aerobic', 'facultatively anaerobic')
+m <- tbl |> 
+  tibble::column_to_rownames('levelName') |> 
+  as.matrix()
 
+rownames(m) <- sub('^.*([kpcofgst]__[0-9]+).*$', '\\1', rownames(m))
+m2 <- t(apply(t(m), 2, function(x) x / sum(x)))
+```
+
+
+```{r}
+e_tree$p__1224$c__1236$o__91347$f__543$g__561$aerobic 
+```
+
+```{r}
+
+
+
+
+
+Aggregate(
+  node = e_tree,
+  attribute = 'aerobic',
+  aggFun = function(x) sum(x[!is.na(x)])
+)
+```
+
+# 
+
+```{r}
+e <- bacteria[bacteria$genus == '561',]
+e_tree <- as.Node(e, pathDelimiter = '|||')
+a <- split(aer, factor(aer$Attribute))
+e_tree$Do(function(node) node$Attribute_info <- sp[[node$name]])
+```
+
+
+```{r}
+Aggregate(
+  node = e_tree$p__1224$c__1236$o__91347$f__543$g__561,
+  attribute = 'Attribute_info',
+  aggFun = function(x) cbind(x)
+)
+
+```
 
 
 # Session infomation
-
 ```{r}
 sessioninfo::session_info()
 ```
