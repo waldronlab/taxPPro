@@ -24,7 +24,9 @@ Suggests:
     tibble,
     ete3r,
     data.tree,
-    sessioninfo
+    sessioninfo,
+    phytools,
+    ape
 Imports:
     BiocFileCache,
     dplyr,
