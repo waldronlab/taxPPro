@@ -113,9 +113,9 @@ data.tree</h1>
 <span>    <span class="st">'species'</span>, <span class="st">'strain'</span>, <span class="st">'Taxon_name'</span>, <span class="st">'Parent_NCBI_ID'</span>, <span class="st">'Rank'</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">bacteria</span> <span class="op">&lt;-</span> <span class="va">bacteria</span><span class="op">[</span>,<span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">bacteria</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">no_select_cols</span><span class="op">]</span></span>
-<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">bacteria</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">bacteria</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fillNAs.html">fillNAs</a></span><span class="op">(</span><span class="va">bacteria</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
+<span><span class="co"># for (i in seq_along(bacteria)) {</span></span>
+<span><span class="co">#   bacteria[[i]] &lt;- fillNAs(bacteria[[i]])</span></span>
+<span><span class="co"># }</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">bacteria</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 7</span></span></span>
 <span><span class="co">#&gt;   superkingdom phylum class   order   family  genus   NCBI_ID</span></span>
@@ -133,7 +133,7 @@ data.tree</h1>
 <p>Add path string</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pathString</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span></span>
-<span>    <span class="st">'k__'</span>, <span class="va">bacteria</span><span class="op">$</span><span class="va">superkingdom</span>, <span class="co"># root</span></span>
+<span>    <span class="st">'k__'</span>, <span class="va">bacteria</span><span class="op">$</span><span class="va">superkingdom</span>,</span>
 <span>    <span class="st">'|||p__'</span>, <span class="va">bacteria</span><span class="op">$</span><span class="va">phylum</span>,</span>
 <span>    <span class="st">'|||c__'</span>, <span class="va">bacteria</span><span class="op">$</span><span class="va">class</span>,</span>
 <span>    <span class="st">'|||o__'</span>, <span class="va">bacteria</span><span class="op">$</span><span class="va">order</span>,</span>
@@ -144,64 +144,24 @@ data.tree</h1>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">bacteria</span><span class="op">$</span><span class="va">pathString</span> <span class="op">&lt;-</span> <span class="va">pathString</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">bacteria</span><span class="op">$</span><span class="va">pathString</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "k__2|||p__57723|||c__1562566|||o__1748771|||f__1748772|||g__1562564|||s__1384638"</span></span>
-<span><span class="co">#&gt; [2] "k__2|||p__57723|||c__1562566|||o__1748771|||f__1748772|||g__1562564|||s__1384639"</span></span>
-<span><span class="co">#&gt; [3] "k__2|||p__57723|||c__1562566|||o__1748771|||f__1748772|||g__1562564|||s__1911421"</span></span>
-<span><span class="co">#&gt; [4] "k__2|||p__57723|||c__1562566|||o__1748771|||f__1748772|||g__1281902|||s__1235480"</span></span>
-<span><span class="co">#&gt; [5] "k__2|||p__57723|||c__1562566|||o__1748771|||f__1748772|||g__1748767|||s__1603871"</span></span>
-<span><span class="co">#&gt; [6] "k__2|||p__57723|||c__1562566|||o__1748771|||f__1748772|||g__1748767|||s__1603869"</span></span></code></pre></div>
+<span><span class="va">bacteria</span><span class="op">$</span><span class="va">NCBI_ID</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'s__'</span>, <span class="va">bacteria</span><span class="op">$</span><span class="va">NCBI_ID</span><span class="op">)</span> </span>
+<span><span class="va">bacteria</span> <span class="op">&lt;-</span> <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/drop_na.html" class="external-link">drop_na</a></span><span class="op">(</span><span class="va">bacteria</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">bacteria</span><span class="op">$</span><span class="va">pathString</span>, n <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "k__2|||p__57723|||c__1562566|||o__1748771|||f__1748772|||g__1562564|||s__1384638"</span></span></code></pre></div>
 <p>Convert to data.tree</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">start_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">bac_tree</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.tree/man/as.Node.html" class="external-link">as.Node</a></span><span class="op">(</span><span class="va">bacteria</span>, pathDelimiter <span class="op">=</span> <span class="st">'|||'</span><span class="op">)</span></span>
 <span><span class="va">end_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">(</span><span class="va">elapsed_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/difftime.html" class="external-link">difftime</a></span><span class="op">(</span><span class="va">end_time</span>, <span class="va">start_time</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Time difference of 21.28683 secs</span></span></code></pre></div>
-<p>a small portion of the tree</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">bac_tree</span>, limit <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                                       levelName</span></span>
-<span><span class="co">#&gt; 1  k__2                                        </span></span>
-<span><span class="co">#&gt; 2   ¦--p__57723                                </span></span>
-<span><span class="co">#&gt; 3   ¦   ¦--c__1562566                          </span></span>
-<span><span class="co">#&gt; 4   ¦   ¦   ¦--o__1748771                      </span></span>
-<span><span class="co">#&gt; 5   ¦   ¦   ¦   ¦--f__1748772                  </span></span>
-<span><span class="co">#&gt; 6   ¦   ¦   ¦   ¦   ¦--g__1562564              </span></span>
-<span><span class="co">#&gt; 7   ¦   ¦   ¦   ¦   ¦   ¦--s__1384638          </span></span>
-<span><span class="co">#&gt; 8   ¦   ¦   ¦   ¦   ¦   ¦--s__1384639          </span></span>
-<span><span class="co">#&gt; 9   ¦   ¦   ¦   ¦   ¦   °--s__1911421          </span></span>
-<span><span class="co">#&gt; 10  ¦   ¦   ¦   ¦   ¦--g__1281902              </span></span>
-<span><span class="co">#&gt; 11  ¦   ¦   ¦   ¦   ¦   °--s__1235480          </span></span>
-<span><span class="co">#&gt; 12  ¦   ¦   ¦   ¦   ¦--g__1748767              </span></span>
-<span><span class="co">#&gt; 13  ¦   ¦   ¦   ¦   ¦   ¦--s__1603871          </span></span>
-<span><span class="co">#&gt; 14  ¦   ¦   ¦   ¦   ¦   ¦--s__1603869          </span></span>
-<span><span class="co">#&gt; 15  ¦   ¦   ¦   ¦   ¦   °--s__1458337          </span></span>
-<span><span class="co">#&gt; 16  ¦   ¦   ¦   ¦   °--g__1748764              </span></span>
-<span><span class="co">#&gt; 17  ¦   ¦   ¦   ¦       °--s__1592105          </span></span>
-<span><span class="co">#&gt; 18  ¦   ¦   ¦   °--f__2048906                  </span></span>
-<span><span class="co">#&gt; 19  ¦   ¦   ¦       ¦--g__2048907              </span></span>
-<span><span class="co">#&gt; 20  ¦   ¦   ¦       ¦   °--... 1 nodes w/ 0 sub</span></span>
-<span><span class="co">#&gt; 21  ¦   ¦   ¦       °--... 2 nodes w/ 4 sub    </span></span>
-<span><span class="co">#&gt; 22  ¦   ¦   °--... 3 nodes w/ 15 sub           </span></span>
-<span><span class="co">#&gt; 23  ¦   °--... 6 nodes w/ 154 sub              </span></span>
-<span><span class="co">#&gt; 24  °--... 108 nodes w/ 36403 sub</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="escherichia">Escherichia<a class="anchor" aria-label="anchor" href="#escherichia"></a>
-</h2>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">e</span> <span class="op">&lt;-</span> <span class="va">bacteria</span><span class="op">[</span><span class="va">bacteria</span><span class="op">$</span><span class="va">genus</span> <span class="op">==</span> <span class="st">'561'</span>,<span class="op">]</span></span></code></pre></div>
+<span><span class="co">#&gt; Time difference of 22.12261 secs</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="bugphyzz">Bugphyzz<a class="anchor" aria-label="anchor" href="#bugphyzz"></a>
 </h2>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">aer</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/bugphyzz/man/physiologies.html" class="external-link">physiologies</a></span><span class="op">(</span><span class="st">'aerophilicity'</span>, remove_false <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="co">#&gt; Importing aerophilicity (categorical)</span></span>
-<span><span class="co">#&gt; Finished aerophilicity</span></span>
 <span><span class="va">aer</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/preSteps.html">preSteps</a></span><span class="op">(</span><span class="va">aer</span>, tax.id.type <span class="op">=</span> <span class="st">'NCBI_ID'</span>, remove_false <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: There were 367 conflicts, but 340 conflicts couldn't be solved.</span></span>
 <span><span class="va">dic</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'g__'</span>, <span class="st">'s__'</span>, <span class="st">'t__'</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">dic</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'genus'</span>, <span class="st">'species'</span>, <span class="st">'strain'</span><span class="op">)</span></span>
 <span><span class="va">aer</span><span class="op">$</span><span class="va">NCBI_ID</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">dic</span><span class="op">[</span><span class="va">aer</span><span class="op">$</span><span class="va">Rank</span><span class="op">]</span>, <span class="va">aer</span><span class="op">$</span><span class="va">NCBI_ID</span><span class="op">)</span></span>
@@ -210,21 +170,55 @@ data.tree</h1>
 <span>  <span class="st">'Confidence_in_curation'</span>, <span class="st">'Attribute_source'</span>, <span class="st">'Score'</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">aer</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">aer</span><span class="op">[</span>, <span class="va">select_cols</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="va">sp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/split.html" class="external-link">split</a></span><span class="op">(</span><span class="va">aer</span>, <span class="va">aer</span><span class="op">$</span><span class="va">NCBI_ID</span><span class="op">)</span></span>
+<span><span class="va">aer</span> <span class="op">&lt;-</span> <span class="va">aer</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">'^[gs]__'</span>, <span class="va">aer</span><span class="op">$</span><span class="va">NCBI_ID</span><span class="op">)</span><span class="op">)</span>,<span class="op">]</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="add-attribute-values">Add Attribute values<a class="anchor" aria-label="anchor" href="#add-attribute-values"></a>
+</h3>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/split.html" class="external-link">split</a></span><span class="op">(</span><span class="va">aer</span>, <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">aer</span><span class="op">$</span><span class="va">Attribute</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">attr_name</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span><span class="op">[</span><span class="va">i</span><span class="op">]</span></span>
+<span>  <span class="va">lst_vct</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/split.html" class="external-link">split</a></span><span class="op">(</span><span class="va">a</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">a</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="st">'NCBI_ID'</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">bac_tree</span><span class="op">$</span><span class="fu">Do</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">node</span><span class="op">)</span> <span class="va">node</span><span class="op">[[</span><span class="va">attr_name</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">lst_vct</span><span class="op">[[</span><span class="va">node</span><span class="op">$</span><span class="va">name</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">Score</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="propagate-upstream">Propagate upstream<a class="anchor" aria-label="anchor" href="#propagate-upstream"></a>
+</h3>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">bac_tree</span><span class="op">$</span><span class="fu">Do</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">node</span><span class="op">)</span> <span class="va">node</span><span class="op">$</span><span class="va">aerobic</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.tree/man/Aggregate.html" class="external-link">Aggregate</a></span><span class="op">(</span><span class="va">node</span>, <span class="st">'aerobic'</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>, traversal <span class="op">=</span> <span class="st">'post-order'</span><span class="op">)</span></span>
+<span><span class="va">bac_tree</span><span class="op">$</span><span class="fu">Do</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">node</span><span class="op">)</span> <span class="va">node</span><span class="op">$</span><span class="va">`facultatively anaerobic`</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.tree/man/Aggregate.html" class="external-link">Aggregate</a></span><span class="op">(</span><span class="va">node</span>, <span class="st">'facultatively anaerobic'</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>, traversal <span class="op">=</span> <span class="st">'post-order'</span><span class="op">)</span></span>
+<span><span class="va">bac_tree</span><span class="op">$</span><span class="fu">Do</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">node</span><span class="op">)</span> <span class="va">node</span><span class="op">$</span><span class="va">anaerobic</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.tree/man/Aggregate.html" class="external-link">Aggregate</a></span><span class="op">(</span><span class="va">node</span>, <span class="st">'anaerobic'</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span>, traversal <span class="op">=</span> <span class="st">'post-order'</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="propagate-downstream">Propagate downstream<a class="anchor" aria-label="anchor" href="#propagate-downstream"></a>
+</h3>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">bac_tree</span><span class="op">$</span><span class="fu">Do</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">node</span><span class="op">)</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">node</span><span class="op">$</span><span class="va">aerobic</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span> <span class="va">node</span><span class="op">$</span><span class="va">aerobic</span> <span class="op">&lt;-</span> <span class="va">node</span><span class="op">$</span><span class="va">parent</span><span class="op">$</span><span class="va">aerobic</span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="va">bac_tree</span><span class="op">$</span><span class="fu">Do</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">node</span><span class="op">)</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">node</span><span class="op">$</span><span class="va">`facultatively anaerobic`</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span> <span class="va">node</span><span class="op">$</span><span class="va">`facultatively anaerobic`</span> <span class="op">&lt;-</span> <span class="va">node</span><span class="op">$</span><span class="va">parent</span><span class="op">$</span><span class="va">`facultatively anaerobic`</span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="va">bac_tree</span><span class="op">$</span><span class="fu">Do</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">node</span><span class="op">)</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">node</span><span class="op">$</span><span class="va">anaerobic</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span> <span class="va">node</span><span class="op">$</span><span class="va">anaerobic</span> <span class="op">&lt;-</span> <span class="va">node</span><span class="op">$</span><span class="va">parent</span><span class="op">$</span><span class="va">anerobic</span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="convert-back-to-tree">Convert back to tree<a class="anchor" aria-label="anchor" href="#convert-back-to-tree"></a>
+</h3>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.tree/man/as.data.frame.Node.html" class="external-link">ToDataFrameTree</a></span><span class="op">(</span><span class="va">bac_tree</span>, <span class="st">'aerobic'</span>, <span class="st">'facultatively anaerobic'</span>, <span class="st">'anaerobic'</span><span class="op">)</span></span>
+<span><span class="va">m</span> <span class="op">&lt;-</span> <span class="va">tbl</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">column_to_rownames</a></span><span class="op">(</span><span class="st">'levelName'</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span><span class="st">'^.*([kpcofgst]__[0-9]+).*$'</span>, <span class="st">'\\1'</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">m2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span>, <span class="fl">2</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="va">x</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
+<span><span class="va">m2</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">m2</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
 <span></span>
-<span><span class="va">e_species</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">e</span><span class="op">$</span><span class="va">NCBI_ID</span><span class="op">)</span></span>
-<span><span class="va">e_species</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'561'</span>, <span class="va">e_species</span><span class="op">)</span></span>
-<span><span class="va">e_regex</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'__('</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">e_species</span>, collapse <span class="op">=</span> <span class="st">'|'</span><span class="op">)</span>, <span class="st">')$'</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="va">e_regex</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">sp</span><span class="op">)</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "g__561"    "s__208962" "s__562"    "s__564"</span></span></code></pre></div>
+<span><span class="va">m3</span> <span class="op">&lt;-</span> <span class="va">m2</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">m2</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0.001</span>,<span class="op">]</span></span></code></pre></div>
+</div>
 </div>
 <div class="section level2">
 <h2 id="session-infomation">Session infomation<a class="anchor" aria-label="anchor" href="#session-infomation"></a>
 </h2>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">sessioninfo</span><span class="fu">::</span><span class="fu"><a href="https://r-lib.github.io/sessioninfo/reference/session_info.html" class="external-link">session_info</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">─ Session info ───────────────────────────────────────────────────────────────</span></span></span>
 <span><span class="co">#&gt;  <span style="color: #555555; font-style: italic;">setting </span> <span style="color: #555555; font-style: italic;">value</span></span></span>
@@ -236,7 +230,7 @@ data.tree</h1>
 <span><span class="co">#&gt;  collate  en_US.UTF-8</span></span>
 <span><span class="co">#&gt;  ctype    en_US.UTF-8</span></span>
 <span><span class="co">#&gt;  tz       Etc/UTC</span></span>
-<span><span class="co">#&gt;  date     2023-02-14</span></span>
+<span><span class="co">#&gt;  date     2023-02-15</span></span>
 <span><span class="co">#&gt;  pandoc   2.19.2 @ /usr/local/bin/ (via rmarkdown)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">─ Packages ───────────────────────────────────────────────────────────────────</span></span></span>
@@ -249,7 +243,7 @@ data.tree</h1>
 <span><span class="co">#&gt;  blob            1.2.3   <span style="color: #555555;">2022-04-10</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  bold            1.2.0   <span style="color: #555555;">2021-05-11</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  bslib           0.4.2   <span style="color: #555555;">2022-12-16</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  bugphyzz      * 0.0.1.3 <span style="color: #555555;">2023-02-14</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">Github (waldronlab/bugphyzz@4ed84e9)</span></span></span>
+<span><span class="co">#&gt;  bugphyzz      * 0.0.1.3 <span style="color: #555555;">2023-02-15</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">Github (waldronlab/bugphyzz@43dad6a)</span></span></span>
 <span><span class="co">#&gt;  cachem          1.0.6   <span style="color: #555555;">2021-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  cli             3.6.0   <span style="color: #555555;">2023-01-09</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  codetools       0.2-19  <span style="color: #555555;">2023-02-01</span> <span style="color: #555555;">[2]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
@@ -310,7 +304,7 @@ data.tree</h1>
 <span><span class="co">#&gt;  systemfonts     1.0.4   <span style="color: #555555;">2022-02-11</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  taxize          0.9.100 <span style="color: #555555;">2022-04-22</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  taxizedb        0.3.0   <span style="color: #555555;">2021-01-15</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  taxPPro       * 0.1.0   <span style="color: #555555;">2023-02-14</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">local</span></span></span>
+<span><span class="co">#&gt;  taxPPro       * 0.1.0   <span style="color: #555555;">2023-02-15</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">local</span></span></span>
 <span><span class="co">#&gt;  textshaping     0.3.6   <span style="color: #555555;">2021-10-13</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  tibble          3.1.8   <span style="color: #555555;">2022-07-22</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  tidyr           1.3.0   <span style="color: #555555;">2023-01-24</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
