@@ -82,7 +82,13 @@
     <loc>https://sdgamboa.github.io/taxPPro/reference/getDuplicates.html</loc>
   </url>
   <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/getMpaTable.html</loc>
+  </url>
+  <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/getMpaTree.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/getNCBI.html</loc>
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/getParentScores.html</loc>
