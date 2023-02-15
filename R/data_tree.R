@@ -88,3 +88,47 @@ taxname2taxid <- function(tax_tbl) {
     }
     return(tax_tbl)
 }
+
+
+#' Get NCBI data (tree or table)
+#'
+#' \code{getNCBI} gets data from the NCBI in tree or table format. Tree format
+#' is in the node format of the data.tree package. For now, it only inlcudes
+#' taxa from the bacteria superkingdom/domain/kingdom.
+#'
+#' @param format A character string. Options: 'table' or 'tree'.
+#'
+#' @return A data.frame or a tree in data.tree format (Node, R6) .
+#' @export
+#'
+getNCBI <- function(format = 'table') {
+    ncbi_taxids <- get_ncbi_taxids(keyword = 'b', with_taxids = TRUE)
+    new_ncbi_taxids <- taxname2taxid(tax_tbl = ncbi_taxids)
+    cond1 <- new_ncbi_taxids$Rank == 'species'
+    cond2 <- new_ncbi_taxids$superkingdom == '2'
+    bacteria <- new_ncbi_taxids[cond1 & cond2,]
+    no_cols <- c('species', 'strain', 'Taxon_name', 'Parent_NCBI_ID', 'Rank')
+    bacteria <- bacteria[,!colnames(bacteria) %in% no_cols]
+    # for (i in seq_along(bacteria)) {
+    #   bacteria[[i]] <- fillNAs(bacteria[[i]])
+    # }
+    bacteria$NCBI_ID <- paste0('s__', bacteria$NCBI_ID)
+    bacteria <- tidyr::drop_na(bacteria)
+    if (format == 'table') {
+        return(bacteria)
+    } else if (format == 'tree') {
+        pathString <- paste(
+            'k__', bacteria$superkingdom,
+            '|||p__', bacteria$phylum,
+            '|||c__', bacteria$class,
+            '|||o__', bacteria$order,
+            '|||f__', bacteria$family,
+            '|||g__', bacteria$genus,
+            '|||s__', bacteria$NCBI_ID,
+            sep = ''
+        )
+        bacteria$pathString <- pathString
+        tree <- data.tree::as.Node(bacteria, pathDelimiter = '|||')
+        return(tree)
+    }
+}

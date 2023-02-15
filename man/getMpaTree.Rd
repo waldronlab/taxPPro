@@ -10,5 +10,5 @@ getMpaTree()
 A phylo object
 }
 \description{
-\code{getMpaTree} gets metplhan tree. Tips are taxids.
+\code{getMpaTree} gets metplhan tree. Tips are taxids. v4.0.0.
 }

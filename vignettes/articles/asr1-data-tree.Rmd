@@ -1,5 +1,6 @@
+
 ---
-title: "Examles of attribute propagation with data.tree"
+title: "Propagation with data.tree"
 output:
   html_document:
     toc:
@@ -22,52 +23,12 @@ library(dplyr)
 
 # Get NCBI data
 
-```{r get and modify ncbi data, message=FALSE}
-ncbi_taxids <- get_ncbi_taxids(keyword = 'b', with_taxids = TRUE)
-new_ncbi_taxids <- taxname2taxid(tax_tbl = ncbi_taxids)
-cond1 <- new_ncbi_taxids$Rank == 'species'
-cond2 <- new_ncbi_taxids$superkingdom == '2'
-bacteria <- new_ncbi_taxids[cond1 & cond2,]
-no_select_cols <- c(
-    'species', 'strain', 'Taxon_name', 'Parent_NCBI_ID', 'Rank'
-)
-bacteria <- bacteria[,!colnames(bacteria) %in% no_select_cols]
-# for (i in seq_along(bacteria)) {
-#   bacteria[[i]] <- fillNAs(bacteria[[i]])
-# }
-head(bacteria)
+```{r, message=FALSE}
+bac_tree <- getNCBI(format = 'tree')
 ```
 
-# Convert NCBI data to data.tree
-
-Add path string
-
-```{r add pathString}
-pathString <- paste(
-    'k__', bacteria$superkingdom,
-    '|||p__', bacteria$phylum,
-    '|||c__', bacteria$class,
-    '|||o__', bacteria$order,
-    '|||f__', bacteria$family,
-    '|||g__', bacteria$genus,
-    '|||s__', bacteria$NCBI_ID,
-    sep = ''
-)
-
-bacteria$pathString <- pathString
-bacteria$NCBI_ID <- paste0('s__', bacteria$NCBI_ID) 
-bacteria <- tidyr::drop_na(bacteria)
-head(bacteria$pathString, n = 1)
-```
 
 Convert to data.tree
-
-```{r concert to data.tree}
-start_time <- Sys.time()
-bac_tree <- as.Node(bacteria, pathDelimiter = '|||')
-end_time <- Sys.time()
-(elapsed_time <- difftime(end_time, start_time))
-```
 
 # Bugphyzz
 
@@ -84,8 +45,6 @@ select_cols <- c(
 aer <- unique(aer[, select_cols])
 aer <- aer[which(grepl('^[gs]__', aer$NCBI_ID)),]
 ```
-
-
 
 ## Add Attribute values
 

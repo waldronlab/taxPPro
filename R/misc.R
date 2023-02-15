@@ -5,7 +5,7 @@ get_silva_table <- function(x) {
 
 #' Get metaplhan tree
 #'
-#' \code{getMpaTree} gets metplhan tree. Tips are taxids.
+#' \code{getMpaTree} gets metplhan tree. Tips are taxids. v4.0.0.
 #'
 #' @return A phylo object
 #' @export
@@ -17,6 +17,13 @@ getMpaTree <- function() {
     # tree$tip.label <- gsub('_', ' ', sub('^.+s__', '', tree$tip.label))
 }
 
+#' Get metaphlan table
+#'
+#' \code{getMpaTable} gets metaphlan table v4.0.0
+#'
+#' @return A data.frame
+#' @export
+#'
 getMpaTable <- function() {
     ranks <- c(
         'domain', 'phylym', 'class', 'order', 'family', 'genus', 'species'

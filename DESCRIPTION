@@ -23,7 +23,6 @@ Suggests:
     rmarkdown,
     tibble,
     ete3r,
-    data.tree,
     sessioninfo,
     phytools,
     ape
@@ -36,7 +35,8 @@ Imports:
     stringr,
     tools,
     utils,
-    vroom
+    vroom,
+    data.tree,
 VignetteBuilder: knitr
 URL: https://github.com/sdgamboa/taxPPro
 BugReports: https://github.com/sdgamboa/taxPPro/issues/
