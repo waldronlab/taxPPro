@@ -31,10 +31,16 @@
     <loc>https://sdgamboa.github.io/taxPPro/index.html</loc>
   </url>
   <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/addAttributes.html</loc>
+  </url>
+  <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/addStrains.html</loc>
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/annotateInternalNodes.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/asrUpstream.html</loc>
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/chooseColVal.html</loc>
@@ -104,6 +110,9 @@
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/inhDownstream.html</loc>
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/preSteps.html</loc>
