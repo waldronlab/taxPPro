@@ -7,7 +7,7 @@ Maintainer: Samuel Gamboa <Samuel.Gamboa.Tuz@gmail.com>
 Description: Propagation of annotations for Bugphyz.
 License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
+LazyData: false 
 RoxygenNote: 7.2.3
 Depends:
     R (>= 4.2)
