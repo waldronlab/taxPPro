@@ -1,4 +1,3 @@
-
 ---
 title: "Propagation with data.tree"
 output:
@@ -19,52 +18,93 @@ library(taxPPro)
 library(bugphyzz)
 library(data.tree)
 library(dplyr)
+library(purrr)
 ```
 
-# Get NCBI data
+# Get bacteria taxonmy from the NCBI
 
 ```{r, message=FALSE}
-bac_tree <- getNCBI(format = 'tree')
+b_tbl <- getNCBI(format = 'table')
+b_tree <- as.Node(b_tbl[, 'pathString', drop = FALSE], pathDelimiter = '|||')
 ```
-
-
-Convert to data.tree
 
 # Bugphyzz
 
 ```{r divide into attributes, message=FALSE, warning=FALSE}
-aer <- physiologies('aerophilicity', remove_false = TRUE)[[1]]
+aer <- physiologies(
+  'aerophilicity', remove_false = TRUE, full_source = FALSE
+)[[1]]
 aer <- preSteps(aer, tax.id.type = 'NCBI_ID', remove_false = TRUE)
 dic <- c('g__', 's__', 't__')
 names(dic) <- c('genus', 'species', 'strain')
 aer$NCBI_ID <- paste0(dic[aer$Rank], aer$NCBI_ID)
 select_cols <- c(
-  'NCBI_ID', 'Attribute', 'Attribute_value', 'Evidence',  'Frequency', 
-  'Confidence_in_curation', 'Attribute_source', 'Score'
+  'NCBI_ID', 'Attribute', 'Evidence', 'Attribute_source', 'Score'
 )
 aer <- unique(aer[, select_cols])
 aer <- aer[which(grepl('^[gs]__', aer$NCBI_ID)),]
 ```
 
-## Add Attribute values
-
 ```{r}
-a <- split(aer, factor(aer$Attribute))
-for (i in seq_along(a)) {
-  attr_name <- names(a)[i]
-  lst_vct <- split(a[[i]], factor(a[[i]][['NCBI_ID']]))
-  bac_tree$Do(function(node) node[[attr_name]] <- lst_vct[[node$name]]$Score)
-}
+res <- addAttributes(data_tree = b_tree, df = aer)
 ```
 
+
+
+```{r}
+jj <- res$p__1224$c__1236$o__91347$f__543$g__561
+jj$aerobic__Score <- NA
+
+
+attrs <- unique(res$attributesAll)
+output <- vector('double', length(attrs))
+for (i in seq_along(output)) {
+  output[[i]] <- jj$Get(attribute = attrs[i])
+}
+names(output) <- attrs
+output[is.na(output)] <- 0
+x <- output / sum(output)
+
+for (i in seq_along(x)) {
+  jj[[attrs[i]]] <- x[i]
+}
+
+```
+
+
+```{r}
+print(
+  res$p__1224$c__1236$o__91347$f__543$g__561,
+  'aerobic__Score', 'facultatively_anaerobic__Score'
+)
+```
+
+
+
+```{r}
+jjj <- c('aerobic__Score', 'facultatively_anaerobic__Score')
+res$p__1224$c__1236$o__91347$f__543$g__561$children
+
+m <- res$p__1224$c__1236$o__91347$f__543
+
+sdf <- data.frame(x = letters[1:5], y = 1:5)
+
+m$g__561$s__562$my_attr <- sdf
+m$g__561$s__1499973$my_attr <- sdf
+
+x <- m$g__561$s__562$Get('my_attr')
+
+
+m$g__561$s__562$Get('my_attr', simplify = FALSE)
+m$g__561$s__562$Do()
+
+```
 ## Propagate upstream
 
 ```{r}
 bac_tree$Do(function(node) node$aerobic <- Aggregate(node, 'aerobic', function(x) sum(x[!is.na(x)])), traversal = 'post-order')
 bac_tree$Do(function(node) node$`facultatively anaerobic` <- Aggregate(node, 'facultatively anaerobic', function(x) sum(x[!is.na(x)])), traversal = 'post-order')
 bac_tree$Do(function(node) node$anaerobic <- Aggregate(node, 'anaerobic', function(x) sum(x[!is.na(x)])), traversal = 'post-order')
-
-
 ```
 
 ## Propagate downstream

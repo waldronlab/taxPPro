@@ -112,12 +112,8 @@ getNCBI <- function(format = 'table') {
     # for (i in seq_along(bacteria)) {
     #   bacteria[[i]] <- fillNAs(bacteria[[i]])
     # }
-    bacteria$NCBI_ID <- paste0('s__', bacteria$NCBI_ID)
     bacteria <- tidyr::drop_na(bacteria)
-    if (format == 'table') {
-        return(bacteria)
-    } else if (format == 'tree') {
-        pathString <- paste(
+    pathString <- paste(
             'k__', bacteria$superkingdom,
             '|||p__', bacteria$phylum,
             '|||c__', bacteria$class,
@@ -126,9 +122,146 @@ getNCBI <- function(format = 'table') {
             '|||g__', bacteria$genus,
             '|||s__', bacteria$NCBI_ID,
             sep = ''
-        )
-        bacteria$pathString <- pathString
+    )
+    bacteria$pathString <- pathString
+    bacteria$NCBI_ID <- paste0('s__', bacteria$NCBI_ID)
+    if (format == 'table') {
+        return(bacteria)
+    } else if (format == 'tree') {
         tree <- data.tree::as.Node(bacteria, pathDelimiter = '|||')
         return(tree)
     }
 }
+
+#' Add attributes to data_tree
+#'
+#' \code{addAttributes} adds attributes to a data.tree object.
+#'
+#' @param data_tree A data.tree object.
+#' @param df A data.frame from bugphyzz
+#'
+#' @return A data.tree with extra attributes.
+#' @export
+#'
+addAttributes <- function(data_tree, df) {
+    df[['Attribute']] <- gsub(' ', '_', df[['Attribute']])
+    attributes <- unique(df[['Attribute']])
+    for (i in seq_along(attributes)) {
+        attr <- attributes[i]
+        attr_df <- df[df[['Attribute']] == attr, ]
+        colnames(attr_df) <- paste0(attr, '__', colnames(attr_df))
+        ncbi_col <- grep('__NCBI_ID$', colnames(attr_df), value = TRUE)
+        evi_col <- grep('__Evidence$', colnames(attr_df), value = TRUE)
+        source_col <- grep('__Attribute_source$', colnames(attr_df), value = TRUE)
+        score_col <- grep('__Score$', colnames(attr_df), value = TRUE)
+        ncbi_list <- split(attr_df, factor(attr_df[[ncbi_col]]))
+        data_tree$Do(function(node) node[[score_col]] <- ncbi_list[[node$name]][[score_col]])
+        data_tree$Do(function(node) node[[evi_col]] <- ncbi_list[[node$name]][[evi_col]])
+        data_tree$Do(function(node) node[[source_col]] <- ncbi_list[[node$name]][[source_col]])
+    }
+    return(data_tree)
+}
+
+#' ASR / Upstream
+#'
+#' \code{asrUpstream}
+#'
+#' @param node
+#'
+#' @return Node/R6. A data.tree object
+#' @export
+#'
+asrUpstream <- function(node) {
+    attrs <- grep('__Score$', node$attributesAll, value = TRUE)
+    ## If node is leaf
+    cond1 <- node$isLeaf
+    ## If the node has any attribute
+    cond2 <- any(vapply(attrs, function(x) !is.null(node[[x]]) , logical(1)))
+    if (cond1 && cond2) {
+        ## This conditional is not ASR. Just recalculates existing scores.
+        message(node$name)
+        message('just homogenize leaf')
+        scores <- vector('double', length(attrs))
+        for (i in seq_along(scores)) {
+            if (is.null(node[[attrs[i]]])) {
+                scores[[i]] <- 0
+            } else {
+                scores[[i]] <- node[[attrs[i]]]
+            }
+        }
+        if (sum(scores) > 0) {
+            scores <- scores / sum(scores)
+        } else {
+            scores[scores == 0] <- NA
+        }
+        names(scores) <- attrs
+        for (i in seq_along(scores)) {
+            node[[attrs[i]]] <- scores[[attrs[i]]]
+        }
+    } else if (!cond1 && cond2) {
+        ## This conditional is not ASR. Just recalculate existing scores.
+        message(node$name)
+        message('Just homogenize parent node')
+        scores <- vector('double', length(attrs))
+        for (i in seq_along(scores)) {
+            if (is.null(node[[attrs[i]]]) || is.na(node[[attrs[i]]])) {
+                scores[[i]] <- 0
+            } else {
+                scores[[i]] <- node[[attrs[i]]]
+            }
+        }
+        if (sum(scores) > 0) {
+            scores <- scores / sum(scores)
+        } else {
+            scores[scores == 0] <- NA
+        }
+        names(scores) <- attrs
+        for (i in seq_along(scores)) {
+            node[[attrs[i]]] <- scores[[attrs[i]]]
+        }
+    } else if (!cond1 && !cond2) {
+        ## This is the real ASR part
+        message(node$name)
+        message('Aggregate and homogenize parent node.')
+        ## Aggregate
+        for (i in seq_along(attrs)) {
+            children <- names(node$children)
+            scores <- vector('double', length(children))
+            for (j in seq_along(children)) {
+                if (is.null(node[[children[j]]][[attrs[i]]]) || is.na(node[[children[j]]][[attrs[i]]])) {
+                    scores[[j]] <- 0
+                } else {
+                    scores[[j]] <- node[[children[j]]][[attrs[i]]]
+                }
+            }
+            node[[attrs[i]]] <- sum(scores)
+        }
+        ## Homogenize
+        scores <- vector('double', length(attrs))
+        for (i in seq_along(scores)) {
+            if (is.null(node[[attrs[i]]]) || is.na(node[[attrs[i]]])) {
+                scores[[i]] <- 0
+            } else {
+                scores[[i]] <- node[[attrs[i]]]
+            }
+        }
+        if (sum(scores) > 0) {
+            scores <- scores / sum(scores)
+        } else {
+            scores[scores == 0] <- NA
+        }
+        names(scores) <- attrs
+        for (i in seq_along(scores)) {
+            node[[attrs[i]]] <- scores[[attrs[i]]]
+            attr_evi <- sub('^(.*)__Score', '\\1__Evidence', attrs[i])
+            if (all(is.na(scores))) {
+                node[[attr_evi]] <- NA
+            } else {
+                node[[attr_evi]] <- 'asr'
+            }
+        }
+    }
+}
+
+## Note for downstream
+## check for NA, NULL, and 0!

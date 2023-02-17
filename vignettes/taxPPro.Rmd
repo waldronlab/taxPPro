@@ -30,42 +30,6 @@ BiocManager::install('sdgamboa/taxPPro')
 ## Load required packages
 
 ```{r setup, message=FALSE}
-library(taxPPro)
-library(bugphyzz)
-library(dplyr)
-library(ggplot2)
+## library(taxPPro)
 ```
 
-## Import data from bugphyzz
-
-```{r, message=FALSE}
-aer <- physiologies('aerophilicity')[[1]]
-table(aer$Evidence)
-```
-
-## Propagate upstream with ancestral state reconstruction (ASR)
-
-```{r, message=FALSE, warning=FALSE}
-aer_asr <- propagate(aer, max.tax.level = 'genus', direction = 'upstream')
-table(aer_asr$Evidence)
-```
-
-## Propagate downstream with inheritance
-
-```{r, message=FALSE, warning=FALSE}
-aer_inh <- propagate(aer, max.tax.level = 'genus', direction = 'downstream')
-table(aer_inh$Evidence)
-```
-
-## Propagate with both ASR and inheritance
-
-```{r, message=FALSE, warning=FALSE}
-aer_prop <- propagate(aer, max.tax.level = 'genus', direction = 'both')
-table(aer_prop$Evidence)
-```
-
-## Session information
-
-```{r}
-sessionInfo()
-```
