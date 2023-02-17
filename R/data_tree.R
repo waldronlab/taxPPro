@@ -179,8 +179,8 @@ asrUpstream <- function(node) {
     cond2 <- any(vapply(attrs, function(x) !is.null(node[[x]]) , logical(1)))
     if (cond1 && cond2) {
         ## This conditional is not ASR. Just recalculates existing scores.
-        message(node$name)
-        message('just homogenize leaf')
+        # message(node$name)
+        # message('just homogenize leaf')
         scores <- vector('double', length(attrs))
         for (i in seq_along(scores)) {
             if (is.null(node[[attrs[i]]])) {
@@ -200,8 +200,8 @@ asrUpstream <- function(node) {
         }
     } else if (!cond1 && cond2) {
         ## This conditional is not ASR. Just recalculate existing scores.
-        message(node$name)
-        message('Just homogenize parent node')
+        # message(node$name)
+        # message('Just homogenize parent node')
         scores <- vector('double', length(attrs))
         for (i in seq_along(scores)) {
             if (is.null(node[[attrs[i]]]) || is.na(node[[attrs[i]]])) {
@@ -221,8 +221,8 @@ asrUpstream <- function(node) {
         }
     } else if (!cond1 && !cond2) {
         ## This is the real ASR part
-        message(node$name)
-        message('Aggregate and homogenize parent node.')
+        # message(node$name)
+        # message('Aggregate and homogenize parent node.')
         ## Aggregate
         for (i in seq_along(attrs)) {
             children <- names(node$children)
@@ -263,5 +263,23 @@ asrUpstream <- function(node) {
     }
 }
 
-## Note for downstream
-## check for NA, NULL, and 0!
+#' Inheritance / Downstream
+#'
+#' \code{inhDownstream} each node inherits an attribute from it's ancestor
+#' if values are NA or NULL
+#'
+#' @param node
+#'
+#' @return Node, R6, data.tree.
+#' @export
+#'
+inhDownstream <- function(node) {
+    attrs <- grep('__Score', node$attributesAll, value = TRUE)
+    for (i in seq_along(attrs)) {
+        if (is.null(node[[attrs[i]]]) || is.na(node[[attrs[i]]])) {
+            node[[attrs[i]]] <- node[['parent']][[attrs[i]]]
+            attr_evi <- sub('^(.*)__Score', '\\1__Evidence', attrs[i])
+            node[[attr_evi]] <- 'inh'
+        }
+    }
+}

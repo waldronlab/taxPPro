@@ -45,94 +45,57 @@ aer <- unique(aer[, select_cols])
 aer <- aer[which(grepl('^[gs]__', aer$NCBI_ID)),]
 ```
 
+# Propagation
+
+Add attributes
+
 ```{r}
 res <- addAttributes(data_tree = b_tree, df = aer)
 ```
 
-
-
-```{r}
-jj <- res$p__1224$c__1236$o__91347$f__543$g__561
-jj$aerobic__Score <- NA
-
-
-attrs <- unique(res$attributesAll)
-output <- vector('double', length(attrs))
-for (i in seq_along(output)) {
-  output[[i]] <- jj$Get(attribute = attrs[i])
-}
-names(output) <- attrs
-output[is.na(output)] <- 0
-x <- output / sum(output)
-
-for (i in seq_along(x)) {
-  jj[[attrs[i]]] <- x[i]
-}
-
-```
-
+Print tree
 
 ```{r}
 print(
-  res$p__1224$c__1236$o__91347$f__543$g__561,
-  'aerobic__Score', 'facultatively_anaerobic__Score'
+    # res$p__57723$c__204432$o__204433$f__204434,
+    # res$p__1224$c__1236$o__91347$f__543,
+    res$p__1224$c__1236$o__91347$f__543$g__561,
+    'aerobic__Score', 'aerobic__Evidence',
+    'facultatively_anaerobic__Score', 'facultatively_anaerobic__Evidence',
+    'anaerobic__Score', 'anaerobic__Evidence',
+    'microaerophilic__Score', 'microaerophilic__Evidence',
+    'obligately_aerobic__Score', 'obligately_aerobic__Evidence',
+    'obligately_anaerobic__Score', 'obligately_anaerobic__Evidence',
+    limit = 100
 )
 ```
 
-
-
-```{r}
-jjj <- c('aerobic__Score', 'facultatively_anaerobic__Score')
-res$p__1224$c__1236$o__91347$f__543$g__561$children
-
-m <- res$p__1224$c__1236$o__91347$f__543
-
-sdf <- data.frame(x = letters[1:5], y = 1:5)
-
-m$g__561$s__562$my_attr <- sdf
-m$g__561$s__1499973$my_attr <- sdf
-
-x <- m$g__561$s__562$Get('my_attr')
-
-
-m$g__561$s__562$Get('my_attr', simplify = FALSE)
-m$g__561$s__562$Do()
-
-```
-## Propagate upstream
+Propagate
 
 ```{r}
-bac_tree$Do(function(node) node$aerobic <- Aggregate(node, 'aerobic', function(x) sum(x[!is.na(x)])), traversal = 'post-order')
-bac_tree$Do(function(node) node$`facultatively anaerobic` <- Aggregate(node, 'facultatively anaerobic', function(x) sum(x[!is.na(x)])), traversal = 'post-order')
-bac_tree$Do(function(node) node$anaerobic <- Aggregate(node, 'anaerobic', function(x) sum(x[!is.na(x)])), traversal = 'post-order')
+res$Do(asrUpstream, traversal = 'post-order')
+res$Do(inhDownstream, traversal = 'pre-order')
 ```
 
-## Propagate downstream
+Print propagated tree
 
 ```{r}
-bac_tree$Do(function(node) if (is.na(node$aerobic)) { node$aerobic <- node$parent$aerobic})
-bac_tree$Do(function(node) if (is.na(node$`facultatively anaerobic`)) { node$`facultatively anaerobic` <- node$parent$`facultatively anaerobic`})
-bac_tree$Do(function(node) if (is.na(node$anaerobic)) { node$anaerobic <- node$parent$anerobic})
-```
-
-## Convert back to tree
-
-```{r}
-tbl <- ToDataFrameTree(bac_tree, 'aerobic', 'facultatively anaerobic', 'anaerobic')
-m <- tbl |>
-  tibble::column_to_rownames('levelName') |>
-  as.matrix()
-
-rownames(m) <- sub('^.*([kpcofgst]__[0-9]+).*$', '\\1', rownames(m))
-m2 <- t(apply(t(m), 2, function(x) x / sum(x)))
-
-m2[is.na(m2)] <- 0
-
-m3 <- m2[rowSums(m2) > 0.001,]
-
+print(
+    # res$p__57723$c__204432$o__204433$f__204434,
+    # res$p__1224$c__1236$o__91347$f__543,
+    res$p__1224$c__1236$o__91347$f__543$g__561,
+    'aerobic__Score', 'aerobic__Evidence',
+    'facultatively_anaerobic__Score', 'facultatively_anaerobic__Evidence',
+    'anaerobic__Score', 'anaerobic__Evidence',
+    'microaerophilic__Score', 'microaerophilic__Evidence',
+    'obligately_aerobic__Score', 'obligately_aerobic__Evidence',
+    'obligately_anaerobic__Score', 'obligately_anaerobic__Evidence',
+    limit = 100
+)
 ```
 
 # Session infomation
+
 ```{r}
 sessioninfo::session_info()
 ```

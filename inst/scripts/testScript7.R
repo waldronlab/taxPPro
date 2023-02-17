@@ -2,6 +2,7 @@
 
 res <- addAttributes(data_tree = b_tree, df = aer)
 res$Do(asrUpstream, traversal = 'post-order')
+res$Do(inhDownstream, traversal = 'pre-order')
 
 
 # jj <- res$p__1224$c__1236$o__91347$f__543$g__1903434
@@ -32,7 +33,11 @@ print(
     # res$p__1224$c__1236$o__91347$f__543$g__561,
     # jj,
     res,
-    'aerobic__Score', 'aerobic__Evidence', 'aerobic__Evidence',
-    'facultatively_anaerobic__',
+    'aerobic__Score', 'aerobic__Evidence',
+    'facultatively_anaerobic__Score', 'facultatively_anaerobic__Evidence',
+    'anaerobic__Score', 'anaerobic__Evidence',
+    'microaerophilic__Score', 'microaerophilic__Evidence',
+    'obligately_aerobic__Score', 'obligately_aerobic__Evidence',
+    'obligately_anaerobic__Score', 'obligately_anaerobic__Evidence',
     limit = 1000
 ) |> View()
