@@ -1,7 +1,7 @@
 
 ## A function for removing prefix from a character vector x
 removePrefix <- function(x) {
-    regex <- '^[kpcofgst]__'
+    regex <- '^[dkpcofgst]__'
     sub(regex, '', x)
 }
 
@@ -105,8 +105,9 @@ getNCBI <- function(format = 'table') {
     ncbi_taxids <- get_ncbi_taxids(keyword = 'b', with_taxids = TRUE)
     new_ncbi_taxids <- taxname2taxid(tax_tbl = ncbi_taxids)
     cond1 <- new_ncbi_taxids$Rank == 'species'
-    cond2 <- new_ncbi_taxids$superkingdom == '2'
-    bacteria <- new_ncbi_taxids[cond1 & cond2,]
+    # cond2 <- new_ncbi_taxids$superkingdom == '2'
+    # bacteria <- new_ncbi_taxids[cond1 & cond2,]
+    bacteria <- new_ncbi_taxids[cond1,]
     no_cols <- c('species', 'strain', 'Taxon_name', 'Parent_NCBI_ID', 'Rank')
     bacteria <- bacteria[,!colnames(bacteria) %in% no_cols]
     # for (i in seq_along(bacteria)) {
@@ -114,14 +115,15 @@ getNCBI <- function(format = 'table') {
     # }
     bacteria <- tidyr::drop_na(bacteria)
     pathString <- paste(
-            'k__', bacteria$superkingdom,
-            '|||p__', bacteria$phylum,
-            '|||c__', bacteria$class,
-            '|||o__', bacteria$order,
-            '|||f__', bacteria$family,
-            '|||g__', bacteria$genus,
-            '|||s__', bacteria$NCBI_ID,
-            sep = ''
+        'ArcBac', # root
+        '|||d__', bacteria$superkingdom,
+        '|||p__', bacteria$phylum,
+        '|||c__', bacteria$class,
+        '|||o__', bacteria$order,
+        '|||f__', bacteria$family,
+        '|||g__', bacteria$genus,
+        '|||s__', bacteria$NCBI_ID,
+        sep = ''
     )
     bacteria$pathString <- pathString
     bacteria$NCBI_ID <- paste0('s__', bacteria$NCBI_ID)
