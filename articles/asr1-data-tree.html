@@ -104,8 +104,8 @@
 <h2 id="get-bacteria-taxonmy-from-the-ncbi">Get bacteria taxonmy from the NCBI<a class="anchor" aria-label="anchor" href="#get-bacteria-taxonmy-from-the-ncbi"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">b_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getNCBI.html">getNCBI</a></span><span class="op">(</span>format <span class="op">=</span> <span class="st">'table'</span><span class="op">)</span></span>
-<span><span class="va">b_tree</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.tree/man/as.Node.html" class="external-link">as.Node</a></span><span class="op">(</span><span class="va">b_tbl</span><span class="op">[</span>, <span class="st">'pathString'</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>, pathDelimiter <span class="op">=</span> <span class="st">'|||'</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getNCBI.html">getNCBI</a></span><span class="op">(</span>format <span class="op">=</span> <span class="st">'table'</span><span class="op">)</span></span>
+<span><span class="va">tree</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.tree/man/as.Node.html" class="external-link">as.Node</a></span><span class="op">(</span><span class="va">tbl</span><span class="op">[</span>, <span class="st">'pathString'</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>, pathDelimiter <span class="op">=</span> <span class="st">'|||'</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="bugphyzz">Bugphyzz<a class="anchor" aria-label="anchor" href="#bugphyzz"></a>
@@ -129,13 +129,13 @@
 </h2>
 <p>Add attributes</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/addAttributes.html">addAttributes</a></span><span class="op">(</span>data_tree <span class="op">=</span> <span class="va">b_tree</span>, df <span class="op">=</span> <span class="va">aer</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/addAttributes.html">addAttributes</a></span><span class="op">(</span>data_tree <span class="op">=</span> <span class="va">tree</span>, df <span class="op">=</span> <span class="va">aer</span><span class="op">)</span></span></code></pre></div>
 <p>Print tree</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span></span>
 <span>    <span class="co"># res$p__57723$c__204432$o__204433$f__204434,</span></span>
 <span>    <span class="co"># res$p__1224$c__1236$o__91347$f__543,</span></span>
-<span>    <span class="va">res</span><span class="op">$</span><span class="va">p__1224</span><span class="op">$</span><span class="va">c__1236</span><span class="op">$</span><span class="va">o__91347</span><span class="op">$</span><span class="va">f__543</span><span class="op">$</span><span class="va">g__561</span>,</span>
+<span>    <span class="va">res</span><span class="op">$</span><span class="va">d__2</span><span class="op">$</span><span class="va">p__1224</span><span class="op">$</span><span class="va">c__1236</span><span class="op">$</span><span class="va">o__91347</span><span class="op">$</span><span class="va">f__543</span><span class="op">$</span><span class="va">g__561</span>,</span>
 <span>    <span class="st">'aerobic__Score'</span>, <span class="st">'aerobic__Evidence'</span>,</span>
 <span>    <span class="st">'facultatively_anaerobic__Score'</span>, <span class="st">'facultatively_anaerobic__Evidence'</span>,</span>
 <span>    <span class="st">'anaerobic__Score'</span>, <span class="st">'anaerobic__Evidence'</span>,</span>
@@ -225,7 +225,7 @@
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span></span>
 <span>    <span class="co"># res$p__57723$c__204432$o__204433$f__204434,</span></span>
 <span>    <span class="co"># res$p__1224$c__1236$o__91347$f__543,</span></span>
-<span>    <span class="va">res</span><span class="op">$</span><span class="va">p__1224</span><span class="op">$</span><span class="va">c__1236</span><span class="op">$</span><span class="va">o__91347</span><span class="op">$</span><span class="va">f__543</span><span class="op">$</span><span class="va">g__561</span>,</span>
+<span>    <span class="va">res</span><span class="op">$</span><span class="va">d__2</span><span class="op">$</span><span class="va">p__1224</span><span class="op">$</span><span class="va">c__1236</span><span class="op">$</span><span class="va">o__91347</span><span class="op">$</span><span class="va">f__543</span><span class="op">$</span><span class="va">g__561</span>,</span>
 <span>    <span class="st">'aerobic__Score'</span>, <span class="st">'aerobic__Evidence'</span>,</span>
 <span>    <span class="st">'facultatively_anaerobic__Score'</span>, <span class="st">'facultatively_anaerobic__Evidence'</span>,</span>
 <span>    <span class="st">'anaerobic__Score'</span>, <span class="st">'anaerobic__Evidence'</span>,</span>
