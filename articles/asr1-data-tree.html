@@ -787,14 +787,14 @@
 <code class="sourceCode R"><span><span class="va">df_summary</span> <span class="op">&lt;-</span> <span class="va">output3</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Score</span> <span class="op">&gt;</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">Attribute</span>, <span class="va">Evidence</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                                               </span></span>
-<span><span class="co">#&gt; 1 function (x, df1, df2, ncp, log = FALSE)    </span></span>
-<span><span class="co">#&gt; 2 {                                           </span></span>
-<span><span class="co">#&gt; 3     if (missing(ncp))                       </span></span>
-<span><span class="co">#&gt; 4         .Call(C_df, x, df1, df2, log)       </span></span>
-<span><span class="co">#&gt; 5     else .Call(C_dnf, x, df1, df2, ncp, log)</span></span>
-<span><span class="co">#&gt; 6 }</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">df_summary</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   Attribute Evidence     n</span></span>
+<span><span class="co">#&gt; 1   aerobic      asr   642</span></span>
+<span><span class="co">#&gt; 2   aerobic      exp   537</span></span>
+<span><span class="co">#&gt; 3   aerobic      inh 19321</span></span>
+<span><span class="co">#&gt; 4   aerobic      nas     7</span></span>
+<span><span class="co">#&gt; 5   aerobic      tas  3046</span></span>
+<span><span class="co">#&gt; 6 anaerobic      asr   160</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="session-infomation">Session infomation<a class="anchor" aria-label="anchor" href="#session-infomation"></a>
