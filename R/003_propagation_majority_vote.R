@@ -220,7 +220,6 @@ getChildren <- function(x) {
     )
 }
 
-
 #' Calculate parent score
 #'
 #' \code{getParentScores} calculates the parent score based on its immediate

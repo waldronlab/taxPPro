@@ -23,12 +23,23 @@ getDuplicates <- function(
     if (verbose)
         message('Looking for duplicates.')
 
-    df <- df |>
-        dplyr::filter(
-            !is.na(.data$Taxon_name) | .data$Taxon_name != 'unknown',
-            .data$Attribute != '',
-            .data$Attribute_value != FALSE
-        )
+
+
+    if ('Attribute_value' %in% colnames(df)) {
+        df <- df |>
+            dplyr::filter(
+                !is.na(.data$Taxon_name) | .data$Taxon_name != 'unknown',
+                .data$Attribute != '',
+                .data$Attribute_value != FALSE
+            )
+    } else {
+         df <- df |>
+            dplyr::filter(
+                !is.na(.data$Taxon_name) | .data$Taxon_name != 'unknown'
+                # .data$Attribute != '',
+                # .data$Attribute_value != FALSE
+            )
+    }
 
     index1 <- which(duplicated(df[, cols]))
 

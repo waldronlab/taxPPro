@@ -54,9 +54,16 @@ filterData <- function(df, df_name = NULL, tax.id.type, remove_false = TRUE) {
     columns_for_propagation <- c(
         'Taxon_name', 'NCBI_ID', 'Rank', # id-related
         'Attribute', 'Attribute_value', 'Attribute_source', # attribute-related
+        'Attribute_value_min', 'Attribute_value_max',
         'Evidence', 'Frequency', 'Confidence_in_curation', # evidence-related
         'Parent_NCBI_ID', 'Parent_name', 'Parent_rank' # parent-related
     )
+
+    if ('Attribute_value' %in% colnames(df)) {
+        columns_for_propagation <- columns_for_propagation[!columns_for_propagation %in% c('Attribute_value_min', 'Attribute_value_max')]
+    } else {
+        columns_for_propagation <- columns_for_propagation[columns_for_propagation != 'Attribute_value']
+    }
 
     columns_lgl <- columns_for_propagation %in% colnames(df)
 
@@ -101,7 +108,7 @@ filterData <- function(df, df_name = NULL, tax.id.type, remove_false = TRUE) {
         )
     }
 
-    if (remove_false) {
+    if (remove_false && 'Attribute_value' %in% colnames(df)) {
        df <- df[which(df$Attribute_value != FALSE),]
     }
 
