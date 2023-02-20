@@ -106,7 +106,7 @@ output3 <- bind_rows(output2, .id = 'Attribute')
 df_summary <- output3 |> 
   filter(Score > 0.5) |> 
   count(Attribute, Evidence)
-head(df)
+head(df_summary)
 ```
 
 # Session infomation
