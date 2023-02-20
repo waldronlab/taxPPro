@@ -99,13 +99,13 @@
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/waldronlab/bugphyzz" class="external-link">bugphyzz</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://github.com/gluc/data.tree" class="external-link">data.tree</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://purrr.tidyverse.org/" class="external-link">purrr</a></span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="get-bacteria-taxonmy-from-the-ncbi">Get bacteria taxonmy from the NCBI<a class="anchor" aria-label="anchor" href="#get-bacteria-taxonmy-from-the-ncbi"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getNCBI.html">getNCBI</a></span><span class="op">(</span>format <span class="op">=</span> <span class="st">'table'</span><span class="op">)</span></span>
-<span><span class="va">tree</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.tree/man/as.Node.html" class="external-link">as.Node</a></span><span class="op">(</span><span class="va">tbl</span><span class="op">[</span>, <span class="st">'pathString'</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>, pathDelimiter <span class="op">=</span> <span class="st">'|||'</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">'tree_list'</span><span class="op">)</span></span>
+<span><span class="va">tree</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.tree/man/as.Node.html" class="external-link">as.Node</a></span><span class="op">(</span><span class="va">tree_list</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="bugphyzz">Bugphyzz<a class="anchor" aria-label="anchor" href="#bugphyzz"></a>
@@ -144,173 +144,662 @@
 <span>    <span class="st">'obligately_anaerobic__Score'</span>, <span class="st">'obligately_anaerobic__Evidence'</span>,</span>
 <span>    limit <span class="op">=</span> <span class="fl">100</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt;         levelName aerobic__Score aerobic__Evidence</span></span>
-<span><span class="co">#&gt; 1  g__561                    0.5               exp</span></span>
-<span><span class="co">#&gt; 2   ¦--s__2562891             NA                  </span></span>
-<span><span class="co">#&gt; 3   ¦--s__208962             1.0               tas</span></span>
-<span><span class="co">#&gt; 4   ¦--s__562                1.0               tas</span></span>
-<span><span class="co">#&gt; 5   ¦--s__279970              NA                  </span></span>
-<span><span class="co">#&gt; 6   ¦--s__564                1.0               tas</span></span>
-<span><span class="co">#&gt; 7   ¦--s__2764324             NA                  </span></span>
-<span><span class="co">#&gt; 8   ¦--s__1499973             NA                  </span></span>
-<span><span class="co">#&gt; 9   ¦--s__2608867             NA                  </span></span>
-<span><span class="co">#&gt; 10  ¦--s__223381              NA                  </span></span>
-<span><span class="co">#&gt; 11  °--s__2762229             NA                  </span></span>
-<span><span class="co">#&gt;    facultatively_anaerobic__Score facultatively_anaerobic__Evidence</span></span>
-<span><span class="co">#&gt; 1                             0.5                               exp</span></span>
-<span><span class="co">#&gt; 2                              NA                                  </span></span>
-<span><span class="co">#&gt; 3                             1.0                               igc</span></span>
-<span><span class="co">#&gt; 4                             1.0                               igc</span></span>
-<span><span class="co">#&gt; 5                              NA                                  </span></span>
-<span><span class="co">#&gt; 6                             1.0                               igc</span></span>
-<span><span class="co">#&gt; 7                              NA                                  </span></span>
-<span><span class="co">#&gt; 8                              NA                                  </span></span>
-<span><span class="co">#&gt; 9                              NA                                  </span></span>
-<span><span class="co">#&gt; 10                             NA                                  </span></span>
-<span><span class="co">#&gt; 11                             NA                                  </span></span>
-<span><span class="co">#&gt;    anaerobic__Score anaerobic__Evidence microaerophilic__Score</span></span>
-<span><span class="co">#&gt; 1                NA                  NA                     NA</span></span>
-<span><span class="co">#&gt; 2                NA                  NA                     NA</span></span>
-<span><span class="co">#&gt; 3                NA                  NA                     NA</span></span>
-<span><span class="co">#&gt; 4                NA                  NA                     NA</span></span>
-<span><span class="co">#&gt; 5                NA                  NA                     NA</span></span>
-<span><span class="co">#&gt; 6                NA                  NA                     NA</span></span>
-<span><span class="co">#&gt; 7                NA                  NA                     NA</span></span>
-<span><span class="co">#&gt; 8                NA                  NA                     NA</span></span>
-<span><span class="co">#&gt; 9                NA                  NA                     NA</span></span>
-<span><span class="co">#&gt; 10               NA                  NA                     NA</span></span>
-<span><span class="co">#&gt; 11               NA                  NA                     NA</span></span>
-<span><span class="co">#&gt;    microaerophilic__Evidence obligately_aerobic__Score</span></span>
-<span><span class="co">#&gt; 1                         NA                        NA</span></span>
-<span><span class="co">#&gt; 2                         NA                        NA</span></span>
-<span><span class="co">#&gt; 3                         NA                        NA</span></span>
-<span><span class="co">#&gt; 4                         NA                        NA</span></span>
-<span><span class="co">#&gt; 5                         NA                        NA</span></span>
-<span><span class="co">#&gt; 6                         NA                        NA</span></span>
-<span><span class="co">#&gt; 7                         NA                        NA</span></span>
-<span><span class="co">#&gt; 8                         NA                        NA</span></span>
-<span><span class="co">#&gt; 9                         NA                        NA</span></span>
-<span><span class="co">#&gt; 10                        NA                        NA</span></span>
-<span><span class="co">#&gt; 11                        NA                        NA</span></span>
-<span><span class="co">#&gt;    obligately_aerobic__Evidence obligately_anaerobic__Score</span></span>
-<span><span class="co">#&gt; 1                            NA                          NA</span></span>
-<span><span class="co">#&gt; 2                            NA                          NA</span></span>
-<span><span class="co">#&gt; 3                            NA                          NA</span></span>
-<span><span class="co">#&gt; 4                            NA                          NA</span></span>
-<span><span class="co">#&gt; 5                            NA                          NA</span></span>
-<span><span class="co">#&gt; 6                            NA                          NA</span></span>
-<span><span class="co">#&gt; 7                            NA                          NA</span></span>
-<span><span class="co">#&gt; 8                            NA                          NA</span></span>
-<span><span class="co">#&gt; 9                            NA                          NA</span></span>
-<span><span class="co">#&gt; 10                           NA                          NA</span></span>
-<span><span class="co">#&gt; 11                           NA                          NA</span></span>
-<span><span class="co">#&gt;    obligately_anaerobic__Evidence</span></span>
-<span><span class="co">#&gt; 1                              NA</span></span>
-<span><span class="co">#&gt; 2                              NA</span></span>
-<span><span class="co">#&gt; 3                              NA</span></span>
-<span><span class="co">#&gt; 4                              NA</span></span>
-<span><span class="co">#&gt; 5                              NA</span></span>
-<span><span class="co">#&gt; 6                              NA</span></span>
-<span><span class="co">#&gt; 7                              NA</span></span>
-<span><span class="co">#&gt; 8                              NA</span></span>
-<span><span class="co">#&gt; 9                              NA</span></span>
-<span><span class="co">#&gt; 10                             NA</span></span>
-<span><span class="co">#&gt; 11                             NA</span></span></code></pre></div>
+<span><span class="co">#&gt;                           levelName aerobic__Score aerobic__Evidence</span></span>
+<span><span class="co">#&gt; 1   g__561                                     0.5               exp</span></span>
+<span><span class="co">#&gt; 2    ¦--s__2562891                              NA                  </span></span>
+<span><span class="co">#&gt; 3    ¦--s__208962                              1.0               tas</span></span>
+<span><span class="co">#&gt; 4    ¦   ¦--t__1440052                          NA                  </span></span>
+<span><span class="co">#&gt; 5    ¦   ¦--t__1115511                          NA                  </span></span>
+<span><span class="co">#&gt; 6    ¦   ¦--t__910238                           NA                  </span></span>
+<span><span class="co">#&gt; 7    ¦   ¦--t__909209                           NA                  </span></span>
+<span><span class="co">#&gt; 8    ¦   ¦--t__550693                           NA                  </span></span>
+<span><span class="co">#&gt; 9    ¦   ¦--t__550692                           NA                  </span></span>
+<span><span class="co">#&gt; 10   ¦   °--t__502347                           NA                  </span></span>
+<span><span class="co">#&gt; 11   ¦--s__562                                 1.0               tas</span></span>
+<span><span class="co">#&gt; 12   ¦   ¦--t__2735160                          NA                  </span></span>
+<span><span class="co">#&gt; 13   ¦   ¦--t__2491878                          NA                  </span></span>
+<span><span class="co">#&gt; 14   ¦   ¦--t__2491876                          NA                  </span></span>
+<span><span class="co">#&gt; 15   ¦   ¦--t__2491875                          NA                  </span></span>
+<span><span class="co">#&gt; 16   ¦   ¦--t__2491873                          NA                  </span></span>
+<span><span class="co">#&gt; 17   ¦   ¦--t__2491872                          NA                  </span></span>
+<span><span class="co">#&gt; 18   ¦   ¦--t__2491870                          NA                  </span></span>
+<span><span class="co">#&gt; 19   ¦   ¦--t__2491698                          NA                  </span></span>
+<span><span class="co">#&gt; 20   ¦   ¦--t__2491697                          NA                  </span></span>
+<span><span class="co">#&gt; 21   ¦   ¦--t__2491696                          NA                  </span></span>
+<span><span class="co">#&gt; 22   ¦   ¦--t__2491695                          NA                  </span></span>
+<span><span class="co">#&gt; 23   ¦   ¦--t__2491694                          NA                  </span></span>
+<span><span class="co">#&gt; 24   ¦   ¦--t__2491693                          NA                  </span></span>
+<span><span class="co">#&gt; 25   ¦   ¦--t__2491692                          NA                  </span></span>
+<span><span class="co">#&gt; 26   ¦   ¦--t__2491691                          NA                  </span></span>
+<span><span class="co">#&gt; 27   ¦   ¦--t__2491690                          NA                  </span></span>
+<span><span class="co">#&gt; 28   ¦   ¦--t__2491689                          NA                  </span></span>
+<span><span class="co">#&gt; 29   ¦   ¦--t__2491688                          NA                  </span></span>
+<span><span class="co">#&gt; 30   ¦   ¦--t__2491687                          NA                  </span></span>
+<span><span class="co">#&gt; 31   ¦   ¦--t__2491685                          NA                  </span></span>
+<span><span class="co">#&gt; 32   ¦   ¦--t__2491684                          NA                  </span></span>
+<span><span class="co">#&gt; 33   ¦   ¦--t__2491683                          NA                  </span></span>
+<span><span class="co">#&gt; 34   ¦   ¦--t__2491682                          NA                  </span></span>
+<span><span class="co">#&gt; 35   ¦   ¦--t__2491681                          NA                  </span></span>
+<span><span class="co">#&gt; 36   ¦   ¦--t__2491680                          NA                  </span></span>
+<span><span class="co">#&gt; 37   ¦   ¦--t__2491679                          NA                  </span></span>
+<span><span class="co">#&gt; 38   ¦   ¦--t__2170737                          NA                  </span></span>
+<span><span class="co">#&gt; 39   ¦   ¦--t__2170736                          NA                  </span></span>
+<span><span class="co">#&gt; 40   ¦   ¦--t__2126982                          NA                  </span></span>
+<span><span class="co">#&gt; 41   ¦   ¦--t__2100521                          NA                  </span></span>
+<span><span class="co">#&gt; 42   ¦   ¦--t__2100519                          NA                  </span></span>
+<span><span class="co">#&gt; 43   ¦   ¦--t__2100518                          NA                  </span></span>
+<span><span class="co">#&gt; 44   ¦   ¦--t__2100517                          NA                  </span></span>
+<span><span class="co">#&gt; 45   ¦   ¦--t__2100516                          NA                  </span></span>
+<span><span class="co">#&gt; 46   ¦   ¦--t__2100514                          NA                  </span></span>
+<span><span class="co">#&gt; 47   ¦   ¦--t__2100513                          NA                  </span></span>
+<span><span class="co">#&gt; 48   ¦   ¦--t__2100512                          NA                  </span></span>
+<span><span class="co">#&gt; 49   ¦   ¦--t__2100509                          NA                  </span></span>
+<span><span class="co">#&gt; 50   ¦   ¦--t__2100507                          NA                  </span></span>
+<span><span class="co">#&gt; 51   ¦   ¦--t__2100506                          NA                  </span></span>
+<span><span class="co">#&gt; 52   ¦   ¦--t__2100501                          NA                  </span></span>
+<span><span class="co">#&gt; 53   ¦   ¦--t__2100500                          NA                  </span></span>
+<span><span class="co">#&gt; 54   ¦   ¦--t__2100497                          NA                  </span></span>
+<span><span class="co">#&gt; 55   ¦   ¦--t__2100496                          NA                  </span></span>
+<span><span class="co">#&gt; 56   ¦   ¦--t__2100495                          NA                  </span></span>
+<span><span class="co">#&gt; 57   ¦   ¦--t__2100494                          NA                  </span></span>
+<span><span class="co">#&gt; 58   ¦   ¦--t__2100493                          NA                  </span></span>
+<span><span class="co">#&gt; 59   ¦   ¦--t__2100492                          NA                  </span></span>
+<span><span class="co">#&gt; 60   ¦   ¦--t__2100491                          NA                  </span></span>
+<span><span class="co">#&gt; 61   ¦   ¦--t__2100490                          NA                  </span></span>
+<span><span class="co">#&gt; 62   ¦   ¦--t__2100489                          NA                  </span></span>
+<span><span class="co">#&gt; 63   ¦   ¦--t__2100488                          NA                  </span></span>
+<span><span class="co">#&gt; 64   ¦   ¦--t__2100487                          NA                  </span></span>
+<span><span class="co">#&gt; 65   ¦   ¦--t__2100486                          NA                  </span></span>
+<span><span class="co">#&gt; 66   ¦   ¦--t__2100485                          NA                  </span></span>
+<span><span class="co">#&gt; 67   ¦   ¦--t__2100483                          NA                  </span></span>
+<span><span class="co">#&gt; 68   ¦   ¦--t__2100482                          NA                  </span></span>
+<span><span class="co">#&gt; 69   ¦   ¦--t__2100481                          NA                  </span></span>
+<span><span class="co">#&gt; 70   ¦   ¦--t__2100480                          NA                  </span></span>
+<span><span class="co">#&gt; 71   ¦   ¦--t__2079165                          NA                  </span></span>
+<span><span class="co">#&gt; 72   ¦   ¦--t__2079163                          NA                  </span></span>
+<span><span class="co">#&gt; 73   ¦   ¦--t__2079162                          NA                  </span></span>
+<span><span class="co">#&gt; 74   ¦   ¦--t__2079161                          NA                  </span></span>
+<span><span class="co">#&gt; 75   ¦   ¦--t__2079159                          NA                  </span></span>
+<span><span class="co">#&gt; 76   ¦   ¦--t__2079157                          NA                  </span></span>
+<span><span class="co">#&gt; 77   ¦   ¦--t__2079156                          NA                  </span></span>
+<span><span class="co">#&gt; 78   ¦   ¦--t__2072461                          NA                  </span></span>
+<span><span class="co">#&gt; 79   ¦   ¦--t__2072452                          NA                  </span></span>
+<span><span class="co">#&gt; 80   ¦   ¦--t__2067432                          NA                  </span></span>
+<span><span class="co">#&gt; 81   ¦   ¦--t__2067423                          NA                  </span></span>
+<span><span class="co">#&gt; 82   ¦   ¦--t__2067422                          NA                  </span></span>
+<span><span class="co">#&gt; 83   ¦   ¦--t__2067421                          NA                  </span></span>
+<span><span class="co">#&gt; 84   ¦   ¦--t__2048781                          NA                  </span></span>
+<span><span class="co">#&gt; 85   ¦   ¦--t__2048779                          NA                  </span></span>
+<span><span class="co">#&gt; 86   ¦   ¦--t__2048778                          NA                  </span></span>
+<span><span class="co">#&gt; 87   ¦   ¦--t__2048777                          NA                  </span></span>
+<span><span class="co">#&gt; 88   ¦   ¦--t__2048776                          NA                  </span></span>
+<span><span class="co">#&gt; 89   ¦   ¦--t__2027295                          NA                  </span></span>
+<span><span class="co">#&gt; 90   ¦   ¦--t__1954351                          NA                  </span></span>
+<span><span class="co">#&gt; 91   ¦   ¦--t__1581707                          NA                  </span></span>
+<span><span class="co">#&gt; 92   ¦   ¦--t__1458844                          NA                  </span></span>
+<span><span class="co">#&gt; 93   ¦   ¦--t__1457300                          NA                  </span></span>
+<span><span class="co">#&gt; 94   ¦   ¦--t__1457192                          NA                  </span></span>
+<span><span class="co">#&gt; 95   ¦   ¦--t__1455601                          NA                  </span></span>
+<span><span class="co">#&gt; 96   ¦   ¦--t__1455600                          NA                  </span></span>
+<span><span class="co">#&gt; 97   ¦   ¦--t__1455599                          NA                  </span></span>
+<span><span class="co">#&gt; 98   ¦   ¦--t__1455598                          NA                  </span></span>
+<span><span class="co">#&gt; 99   ¦   ¦--t__1455597                          NA                  </span></span>
+<span><span class="co">#&gt; 100  ¦   °--... 2335 nodes w/ 0 sub             NA                  </span></span>
+<span><span class="co">#&gt; 101  °--... 7 nodes w/ 2338 sub                 NA                  </span></span>
+<span><span class="co">#&gt;     facultatively_anaerobic__Score facultatively_anaerobic__Evidence</span></span>
+<span><span class="co">#&gt; 1                              0.5                               exp</span></span>
+<span><span class="co">#&gt; 2                               NA                                  </span></span>
+<span><span class="co">#&gt; 3                              1.0                               igc</span></span>
+<span><span class="co">#&gt; 4                               NA                                  </span></span>
+<span><span class="co">#&gt; 5                               NA                                  </span></span>
+<span><span class="co">#&gt; 6                               NA                                  </span></span>
+<span><span class="co">#&gt; 7                               NA                                  </span></span>
+<span><span class="co">#&gt; 8                               NA                                  </span></span>
+<span><span class="co">#&gt; 9                               NA                                  </span></span>
+<span><span class="co">#&gt; 10                              NA                                  </span></span>
+<span><span class="co">#&gt; 11                             1.0                               igc</span></span>
+<span><span class="co">#&gt; 12                              NA                                  </span></span>
+<span><span class="co">#&gt; 13                              NA                                  </span></span>
+<span><span class="co">#&gt; 14                              NA                                  </span></span>
+<span><span class="co">#&gt; 15                              NA                                  </span></span>
+<span><span class="co">#&gt; 16                              NA                                  </span></span>
+<span><span class="co">#&gt; 17                              NA                                  </span></span>
+<span><span class="co">#&gt; 18                              NA                                  </span></span>
+<span><span class="co">#&gt; 19                              NA                                  </span></span>
+<span><span class="co">#&gt; 20                              NA                                  </span></span>
+<span><span class="co">#&gt; 21                              NA                                  </span></span>
+<span><span class="co">#&gt; 22                              NA                                  </span></span>
+<span><span class="co">#&gt; 23                              NA                                  </span></span>
+<span><span class="co">#&gt; 24                              NA                                  </span></span>
+<span><span class="co">#&gt; 25                              NA                                  </span></span>
+<span><span class="co">#&gt; 26                              NA                                  </span></span>
+<span><span class="co">#&gt; 27                              NA                                  </span></span>
+<span><span class="co">#&gt; 28                              NA                                  </span></span>
+<span><span class="co">#&gt; 29                              NA                                  </span></span>
+<span><span class="co">#&gt; 30                              NA                                  </span></span>
+<span><span class="co">#&gt; 31                              NA                                  </span></span>
+<span><span class="co">#&gt; 32                              NA                                  </span></span>
+<span><span class="co">#&gt; 33                              NA                                  </span></span>
+<span><span class="co">#&gt; 34                              NA                                  </span></span>
+<span><span class="co">#&gt; 35                              NA                                  </span></span>
+<span><span class="co">#&gt; 36                              NA                                  </span></span>
+<span><span class="co">#&gt; 37                              NA                                  </span></span>
+<span><span class="co">#&gt; 38                              NA                                  </span></span>
+<span><span class="co">#&gt; 39                              NA                                  </span></span>
+<span><span class="co">#&gt; 40                              NA                                  </span></span>
+<span><span class="co">#&gt; 41                              NA                                  </span></span>
+<span><span class="co">#&gt; 42                              NA                                  </span></span>
+<span><span class="co">#&gt; 43                              NA                                  </span></span>
+<span><span class="co">#&gt; 44                              NA                                  </span></span>
+<span><span class="co">#&gt; 45                              NA                                  </span></span>
+<span><span class="co">#&gt; 46                              NA                                  </span></span>
+<span><span class="co">#&gt; 47                              NA                                  </span></span>
+<span><span class="co">#&gt; 48                              NA                                  </span></span>
+<span><span class="co">#&gt; 49                              NA                                  </span></span>
+<span><span class="co">#&gt; 50                              NA                                  </span></span>
+<span><span class="co">#&gt; 51                              NA                                  </span></span>
+<span><span class="co">#&gt; 52                              NA                                  </span></span>
+<span><span class="co">#&gt; 53                              NA                                  </span></span>
+<span><span class="co">#&gt; 54                              NA                                  </span></span>
+<span><span class="co">#&gt; 55                              NA                                  </span></span>
+<span><span class="co">#&gt; 56                              NA                                  </span></span>
+<span><span class="co">#&gt; 57                              NA                                  </span></span>
+<span><span class="co">#&gt; 58                              NA                                  </span></span>
+<span><span class="co">#&gt; 59                              NA                                  </span></span>
+<span><span class="co">#&gt; 60                              NA                                  </span></span>
+<span><span class="co">#&gt; 61                              NA                                  </span></span>
+<span><span class="co">#&gt; 62                              NA                                  </span></span>
+<span><span class="co">#&gt; 63                              NA                                  </span></span>
+<span><span class="co">#&gt; 64                              NA                                  </span></span>
+<span><span class="co">#&gt; 65                              NA                                  </span></span>
+<span><span class="co">#&gt; 66                              NA                                  </span></span>
+<span><span class="co">#&gt; 67                              NA                                  </span></span>
+<span><span class="co">#&gt; 68                              NA                                  </span></span>
+<span><span class="co">#&gt; 69                              NA                                  </span></span>
+<span><span class="co">#&gt; 70                              NA                                  </span></span>
+<span><span class="co">#&gt; 71                              NA                                  </span></span>
+<span><span class="co">#&gt; 72                              NA                                  </span></span>
+<span><span class="co">#&gt; 73                              NA                                  </span></span>
+<span><span class="co">#&gt; 74                              NA                                  </span></span>
+<span><span class="co">#&gt; 75                              NA                                  </span></span>
+<span><span class="co">#&gt; 76                              NA                                  </span></span>
+<span><span class="co">#&gt; 77                              NA                                  </span></span>
+<span><span class="co">#&gt; 78                              NA                                  </span></span>
+<span><span class="co">#&gt; 79                              NA                                  </span></span>
+<span><span class="co">#&gt; 80                              NA                                  </span></span>
+<span><span class="co">#&gt; 81                              NA                                  </span></span>
+<span><span class="co">#&gt; 82                              NA                                  </span></span>
+<span><span class="co">#&gt; 83                              NA                                  </span></span>
+<span><span class="co">#&gt; 84                              NA                                  </span></span>
+<span><span class="co">#&gt; 85                              NA                                  </span></span>
+<span><span class="co">#&gt; 86                              NA                                  </span></span>
+<span><span class="co">#&gt; 87                              NA                                  </span></span>
+<span><span class="co">#&gt; 88                              NA                                  </span></span>
+<span><span class="co">#&gt; 89                              NA                                  </span></span>
+<span><span class="co">#&gt; 90                              NA                                  </span></span>
+<span><span class="co">#&gt; 91                              NA                                  </span></span>
+<span><span class="co">#&gt; 92                              NA                                  </span></span>
+<span><span class="co">#&gt; 93                              NA                                  </span></span>
+<span><span class="co">#&gt; 94                              NA                                  </span></span>
+<span><span class="co">#&gt; 95                              NA                                  </span></span>
+<span><span class="co">#&gt; 96                              NA                                  </span></span>
+<span><span class="co">#&gt; 97                              NA                                  </span></span>
+<span><span class="co">#&gt; 98                              NA                                  </span></span>
+<span><span class="co">#&gt; 99                              NA                                  </span></span>
+<span><span class="co">#&gt; 100                             NA                                  </span></span>
+<span><span class="co">#&gt; 101                             NA                                  </span></span>
+<span><span class="co">#&gt;     anaerobic__Score anaerobic__Evidence microaerophilic__Score</span></span>
+<span><span class="co">#&gt; 1                 NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 2                 NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 3                 NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 4                 NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 5                 NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 6                 NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 7                 NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 8                 NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 9                 NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 10                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 11                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 12                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 13                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 14                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 15                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 16                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 17                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 18                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 19                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 20                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 21                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 22                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 23                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 24                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 25                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 26                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 27                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 28                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 29                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 30                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 31                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 32                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 33                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 34                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 35                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 36                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 37                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 38                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 39                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 40                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 41                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 42                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 43                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 44                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 45                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 46                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 47                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 48                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 49                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 50                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 51                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 52                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 53                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 54                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 55                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 56                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 57                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 58                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 59                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 60                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 61                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 62                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 63                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 64                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 65                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 66                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 67                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 68                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 69                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 70                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 71                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 72                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 73                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 74                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 75                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 76                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 77                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 78                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 79                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 80                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 81                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 82                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 83                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 84                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 85                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 86                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 87                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 88                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 89                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 90                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 91                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 92                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 93                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 94                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 95                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 96                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 97                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 98                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 99                NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 100               NA                  NA                     NA</span></span>
+<span><span class="co">#&gt; 101               NA                  NA                     NA</span></span>
+<span><span class="co">#&gt;     microaerophilic__Evidence obligately_aerobic__Score</span></span>
+<span><span class="co">#&gt; 1                          NA                        NA</span></span>
+<span><span class="co">#&gt; 2                          NA                        NA</span></span>
+<span><span class="co">#&gt; 3                          NA                        NA</span></span>
+<span><span class="co">#&gt; 4                          NA                        NA</span></span>
+<span><span class="co">#&gt; 5                          NA                        NA</span></span>
+<span><span class="co">#&gt; 6                          NA                        NA</span></span>
+<span><span class="co">#&gt; 7                          NA                        NA</span></span>
+<span><span class="co">#&gt; 8                          NA                        NA</span></span>
+<span><span class="co">#&gt; 9                          NA                        NA</span></span>
+<span><span class="co">#&gt; 10                         NA                        NA</span></span>
+<span><span class="co">#&gt; 11                         NA                        NA</span></span>
+<span><span class="co">#&gt; 12                         NA                        NA</span></span>
+<span><span class="co">#&gt; 13                         NA                        NA</span></span>
+<span><span class="co">#&gt; 14                         NA                        NA</span></span>
+<span><span class="co">#&gt; 15                         NA                        NA</span></span>
+<span><span class="co">#&gt; 16                         NA                        NA</span></span>
+<span><span class="co">#&gt; 17                         NA                        NA</span></span>
+<span><span class="co">#&gt; 18                         NA                        NA</span></span>
+<span><span class="co">#&gt; 19                         NA                        NA</span></span>
+<span><span class="co">#&gt; 20                         NA                        NA</span></span>
+<span><span class="co">#&gt; 21                         NA                        NA</span></span>
+<span><span class="co">#&gt; 22                         NA                        NA</span></span>
+<span><span class="co">#&gt; 23                         NA                        NA</span></span>
+<span><span class="co">#&gt; 24                         NA                        NA</span></span>
+<span><span class="co">#&gt; 25                         NA                        NA</span></span>
+<span><span class="co">#&gt; 26                         NA                        NA</span></span>
+<span><span class="co">#&gt; 27                         NA                        NA</span></span>
+<span><span class="co">#&gt; 28                         NA                        NA</span></span>
+<span><span class="co">#&gt; 29                         NA                        NA</span></span>
+<span><span class="co">#&gt; 30                         NA                        NA</span></span>
+<span><span class="co">#&gt; 31                         NA                        NA</span></span>
+<span><span class="co">#&gt; 32                         NA                        NA</span></span>
+<span><span class="co">#&gt; 33                         NA                        NA</span></span>
+<span><span class="co">#&gt; 34                         NA                        NA</span></span>
+<span><span class="co">#&gt; 35                         NA                        NA</span></span>
+<span><span class="co">#&gt; 36                         NA                        NA</span></span>
+<span><span class="co">#&gt; 37                         NA                        NA</span></span>
+<span><span class="co">#&gt; 38                         NA                        NA</span></span>
+<span><span class="co">#&gt; 39                         NA                        NA</span></span>
+<span><span class="co">#&gt; 40                         NA                        NA</span></span>
+<span><span class="co">#&gt; 41                         NA                        NA</span></span>
+<span><span class="co">#&gt; 42                         NA                        NA</span></span>
+<span><span class="co">#&gt; 43                         NA                        NA</span></span>
+<span><span class="co">#&gt; 44                         NA                        NA</span></span>
+<span><span class="co">#&gt; 45                         NA                        NA</span></span>
+<span><span class="co">#&gt; 46                         NA                        NA</span></span>
+<span><span class="co">#&gt; 47                         NA                        NA</span></span>
+<span><span class="co">#&gt; 48                         NA                        NA</span></span>
+<span><span class="co">#&gt; 49                         NA                        NA</span></span>
+<span><span class="co">#&gt; 50                         NA                        NA</span></span>
+<span><span class="co">#&gt; 51                         NA                        NA</span></span>
+<span><span class="co">#&gt; 52                         NA                        NA</span></span>
+<span><span class="co">#&gt; 53                         NA                        NA</span></span>
+<span><span class="co">#&gt; 54                         NA                        NA</span></span>
+<span><span class="co">#&gt; 55                         NA                        NA</span></span>
+<span><span class="co">#&gt; 56                         NA                        NA</span></span>
+<span><span class="co">#&gt; 57                         NA                        NA</span></span>
+<span><span class="co">#&gt; 58                         NA                        NA</span></span>
+<span><span class="co">#&gt; 59                         NA                        NA</span></span>
+<span><span class="co">#&gt; 60                         NA                        NA</span></span>
+<span><span class="co">#&gt; 61                         NA                        NA</span></span>
+<span><span class="co">#&gt; 62                         NA                        NA</span></span>
+<span><span class="co">#&gt; 63                         NA                        NA</span></span>
+<span><span class="co">#&gt; 64                         NA                        NA</span></span>
+<span><span class="co">#&gt; 65                         NA                        NA</span></span>
+<span><span class="co">#&gt; 66                         NA                        NA</span></span>
+<span><span class="co">#&gt; 67                         NA                        NA</span></span>
+<span><span class="co">#&gt; 68                         NA                        NA</span></span>
+<span><span class="co">#&gt; 69                         NA                        NA</span></span>
+<span><span class="co">#&gt; 70                         NA                        NA</span></span>
+<span><span class="co">#&gt; 71                         NA                        NA</span></span>
+<span><span class="co">#&gt; 72                         NA                        NA</span></span>
+<span><span class="co">#&gt; 73                         NA                        NA</span></span>
+<span><span class="co">#&gt; 74                         NA                        NA</span></span>
+<span><span class="co">#&gt; 75                         NA                        NA</span></span>
+<span><span class="co">#&gt; 76                         NA                        NA</span></span>
+<span><span class="co">#&gt; 77                         NA                        NA</span></span>
+<span><span class="co">#&gt; 78                         NA                        NA</span></span>
+<span><span class="co">#&gt; 79                         NA                        NA</span></span>
+<span><span class="co">#&gt; 80                         NA                        NA</span></span>
+<span><span class="co">#&gt; 81                         NA                        NA</span></span>
+<span><span class="co">#&gt; 82                         NA                        NA</span></span>
+<span><span class="co">#&gt; 83                         NA                        NA</span></span>
+<span><span class="co">#&gt; 84                         NA                        NA</span></span>
+<span><span class="co">#&gt; 85                         NA                        NA</span></span>
+<span><span class="co">#&gt; 86                         NA                        NA</span></span>
+<span><span class="co">#&gt; 87                         NA                        NA</span></span>
+<span><span class="co">#&gt; 88                         NA                        NA</span></span>
+<span><span class="co">#&gt; 89                         NA                        NA</span></span>
+<span><span class="co">#&gt; 90                         NA                        NA</span></span>
+<span><span class="co">#&gt; 91                         NA                        NA</span></span>
+<span><span class="co">#&gt; 92                         NA                        NA</span></span>
+<span><span class="co">#&gt; 93                         NA                        NA</span></span>
+<span><span class="co">#&gt; 94                         NA                        NA</span></span>
+<span><span class="co">#&gt; 95                         NA                        NA</span></span>
+<span><span class="co">#&gt; 96                         NA                        NA</span></span>
+<span><span class="co">#&gt; 97                         NA                        NA</span></span>
+<span><span class="co">#&gt; 98                         NA                        NA</span></span>
+<span><span class="co">#&gt; 99                         NA                        NA</span></span>
+<span><span class="co">#&gt; 100                        NA                        NA</span></span>
+<span><span class="co">#&gt; 101                        NA                        NA</span></span>
+<span><span class="co">#&gt;     obligately_aerobic__Evidence obligately_anaerobic__Score</span></span>
+<span><span class="co">#&gt; 1                             NA                          NA</span></span>
+<span><span class="co">#&gt; 2                             NA                          NA</span></span>
+<span><span class="co">#&gt; 3                             NA                          NA</span></span>
+<span><span class="co">#&gt; 4                             NA                          NA</span></span>
+<span><span class="co">#&gt; 5                             NA                          NA</span></span>
+<span><span class="co">#&gt; 6                             NA                          NA</span></span>
+<span><span class="co">#&gt; 7                             NA                          NA</span></span>
+<span><span class="co">#&gt; 8                             NA                          NA</span></span>
+<span><span class="co">#&gt; 9                             NA                          NA</span></span>
+<span><span class="co">#&gt; 10                            NA                          NA</span></span>
+<span><span class="co">#&gt; 11                            NA                          NA</span></span>
+<span><span class="co">#&gt; 12                            NA                          NA</span></span>
+<span><span class="co">#&gt; 13                            NA                          NA</span></span>
+<span><span class="co">#&gt; 14                            NA                          NA</span></span>
+<span><span class="co">#&gt; 15                            NA                          NA</span></span>
+<span><span class="co">#&gt; 16                            NA                          NA</span></span>
+<span><span class="co">#&gt; 17                            NA                          NA</span></span>
+<span><span class="co">#&gt; 18                            NA                          NA</span></span>
+<span><span class="co">#&gt; 19                            NA                          NA</span></span>
+<span><span class="co">#&gt; 20                            NA                          NA</span></span>
+<span><span class="co">#&gt; 21                            NA                          NA</span></span>
+<span><span class="co">#&gt; 22                            NA                          NA</span></span>
+<span><span class="co">#&gt; 23                            NA                          NA</span></span>
+<span><span class="co">#&gt; 24                            NA                          NA</span></span>
+<span><span class="co">#&gt; 25                            NA                          NA</span></span>
+<span><span class="co">#&gt; 26                            NA                          NA</span></span>
+<span><span class="co">#&gt; 27                            NA                          NA</span></span>
+<span><span class="co">#&gt; 28                            NA                          NA</span></span>
+<span><span class="co">#&gt; 29                            NA                          NA</span></span>
+<span><span class="co">#&gt; 30                            NA                          NA</span></span>
+<span><span class="co">#&gt; 31                            NA                          NA</span></span>
+<span><span class="co">#&gt; 32                            NA                          NA</span></span>
+<span><span class="co">#&gt; 33                            NA                          NA</span></span>
+<span><span class="co">#&gt; 34                            NA                          NA</span></span>
+<span><span class="co">#&gt; 35                            NA                          NA</span></span>
+<span><span class="co">#&gt; 36                            NA                          NA</span></span>
+<span><span class="co">#&gt; 37                            NA                          NA</span></span>
+<span><span class="co">#&gt; 38                            NA                          NA</span></span>
+<span><span class="co">#&gt; 39                            NA                          NA</span></span>
+<span><span class="co">#&gt; 40                            NA                          NA</span></span>
+<span><span class="co">#&gt; 41                            NA                          NA</span></span>
+<span><span class="co">#&gt; 42                            NA                          NA</span></span>
+<span><span class="co">#&gt; 43                            NA                          NA</span></span>
+<span><span class="co">#&gt; 44                            NA                          NA</span></span>
+<span><span class="co">#&gt; 45                            NA                          NA</span></span>
+<span><span class="co">#&gt; 46                            NA                          NA</span></span>
+<span><span class="co">#&gt; 47                            NA                          NA</span></span>
+<span><span class="co">#&gt; 48                            NA                          NA</span></span>
+<span><span class="co">#&gt; 49                            NA                          NA</span></span>
+<span><span class="co">#&gt; 50                            NA                          NA</span></span>
+<span><span class="co">#&gt; 51                            NA                          NA</span></span>
+<span><span class="co">#&gt; 52                            NA                          NA</span></span>
+<span><span class="co">#&gt; 53                            NA                          NA</span></span>
+<span><span class="co">#&gt; 54                            NA                          NA</span></span>
+<span><span class="co">#&gt; 55                            NA                          NA</span></span>
+<span><span class="co">#&gt; 56                            NA                          NA</span></span>
+<span><span class="co">#&gt; 57                            NA                          NA</span></span>
+<span><span class="co">#&gt; 58                            NA                          NA</span></span>
+<span><span class="co">#&gt; 59                            NA                          NA</span></span>
+<span><span class="co">#&gt; 60                            NA                          NA</span></span>
+<span><span class="co">#&gt; 61                            NA                          NA</span></span>
+<span><span class="co">#&gt; 62                            NA                          NA</span></span>
+<span><span class="co">#&gt; 63                            NA                          NA</span></span>
+<span><span class="co">#&gt; 64                            NA                          NA</span></span>
+<span><span class="co">#&gt; 65                            NA                          NA</span></span>
+<span><span class="co">#&gt; 66                            NA                          NA</span></span>
+<span><span class="co">#&gt; 67                            NA                          NA</span></span>
+<span><span class="co">#&gt; 68                            NA                          NA</span></span>
+<span><span class="co">#&gt; 69                            NA                          NA</span></span>
+<span><span class="co">#&gt; 70                            NA                          NA</span></span>
+<span><span class="co">#&gt; 71                            NA                          NA</span></span>
+<span><span class="co">#&gt; 72                            NA                          NA</span></span>
+<span><span class="co">#&gt; 73                            NA                          NA</span></span>
+<span><span class="co">#&gt; 74                            NA                          NA</span></span>
+<span><span class="co">#&gt; 75                            NA                          NA</span></span>
+<span><span class="co">#&gt; 76                            NA                          NA</span></span>
+<span><span class="co">#&gt; 77                            NA                          NA</span></span>
+<span><span class="co">#&gt; 78                            NA                          NA</span></span>
+<span><span class="co">#&gt; 79                            NA                          NA</span></span>
+<span><span class="co">#&gt; 80                            NA                          NA</span></span>
+<span><span class="co">#&gt; 81                            NA                          NA</span></span>
+<span><span class="co">#&gt; 82                            NA                          NA</span></span>
+<span><span class="co">#&gt; 83                            NA                          NA</span></span>
+<span><span class="co">#&gt; 84                            NA                          NA</span></span>
+<span><span class="co">#&gt; 85                            NA                          NA</span></span>
+<span><span class="co">#&gt; 86                            NA                          NA</span></span>
+<span><span class="co">#&gt; 87                            NA                          NA</span></span>
+<span><span class="co">#&gt; 88                            NA                          NA</span></span>
+<span><span class="co">#&gt; 89                            NA                          NA</span></span>
+<span><span class="co">#&gt; 90                            NA                          NA</span></span>
+<span><span class="co">#&gt; 91                            NA                          NA</span></span>
+<span><span class="co">#&gt; 92                            NA                          NA</span></span>
+<span><span class="co">#&gt; 93                            NA                          NA</span></span>
+<span><span class="co">#&gt; 94                            NA                          NA</span></span>
+<span><span class="co">#&gt; 95                            NA                          NA</span></span>
+<span><span class="co">#&gt; 96                            NA                          NA</span></span>
+<span><span class="co">#&gt; 97                            NA                          NA</span></span>
+<span><span class="co">#&gt; 98                            NA                          NA</span></span>
+<span><span class="co">#&gt; 99                            NA                          NA</span></span>
+<span><span class="co">#&gt; 100                           NA                          NA</span></span>
+<span><span class="co">#&gt; 101                           NA                          NA</span></span>
+<span><span class="co">#&gt;     obligately_anaerobic__Evidence</span></span>
+<span><span class="co">#&gt; 1                               NA</span></span>
+<span><span class="co">#&gt; 2                               NA</span></span>
+<span><span class="co">#&gt; 3                               NA</span></span>
+<span><span class="co">#&gt; 4                               NA</span></span>
+<span><span class="co">#&gt; 5                               NA</span></span>
+<span><span class="co">#&gt; 6                               NA</span></span>
+<span><span class="co">#&gt; 7                               NA</span></span>
+<span><span class="co">#&gt; 8                               NA</span></span>
+<span><span class="co">#&gt; 9                               NA</span></span>
+<span><span class="co">#&gt; 10                              NA</span></span>
+<span><span class="co">#&gt; 11                              NA</span></span>
+<span><span class="co">#&gt; 12                              NA</span></span>
+<span><span class="co">#&gt; 13                              NA</span></span>
+<span><span class="co">#&gt; 14                              NA</span></span>
+<span><span class="co">#&gt; 15                              NA</span></span>
+<span><span class="co">#&gt; 16                              NA</span></span>
+<span><span class="co">#&gt; 17                              NA</span></span>
+<span><span class="co">#&gt; 18                              NA</span></span>
+<span><span class="co">#&gt; 19                              NA</span></span>
+<span><span class="co">#&gt; 20                              NA</span></span>
+<span><span class="co">#&gt; 21                              NA</span></span>
+<span><span class="co">#&gt; 22                              NA</span></span>
+<span><span class="co">#&gt; 23                              NA</span></span>
+<span><span class="co">#&gt; 24                              NA</span></span>
+<span><span class="co">#&gt; 25                              NA</span></span>
+<span><span class="co">#&gt; 26                              NA</span></span>
+<span><span class="co">#&gt; 27                              NA</span></span>
+<span><span class="co">#&gt; 28                              NA</span></span>
+<span><span class="co">#&gt; 29                              NA</span></span>
+<span><span class="co">#&gt; 30                              NA</span></span>
+<span><span class="co">#&gt; 31                              NA</span></span>
+<span><span class="co">#&gt; 32                              NA</span></span>
+<span><span class="co">#&gt; 33                              NA</span></span>
+<span><span class="co">#&gt; 34                              NA</span></span>
+<span><span class="co">#&gt; 35                              NA</span></span>
+<span><span class="co">#&gt; 36                              NA</span></span>
+<span><span class="co">#&gt; 37                              NA</span></span>
+<span><span class="co">#&gt; 38                              NA</span></span>
+<span><span class="co">#&gt; 39                              NA</span></span>
+<span><span class="co">#&gt; 40                              NA</span></span>
+<span><span class="co">#&gt; 41                              NA</span></span>
+<span><span class="co">#&gt; 42                              NA</span></span>
+<span><span class="co">#&gt; 43                              NA</span></span>
+<span><span class="co">#&gt; 44                              NA</span></span>
+<span><span class="co">#&gt; 45                              NA</span></span>
+<span><span class="co">#&gt; 46                              NA</span></span>
+<span><span class="co">#&gt; 47                              NA</span></span>
+<span><span class="co">#&gt; 48                              NA</span></span>
+<span><span class="co">#&gt; 49                              NA</span></span>
+<span><span class="co">#&gt; 50                              NA</span></span>
+<span><span class="co">#&gt; 51                              NA</span></span>
+<span><span class="co">#&gt; 52                              NA</span></span>
+<span><span class="co">#&gt; 53                              NA</span></span>
+<span><span class="co">#&gt; 54                              NA</span></span>
+<span><span class="co">#&gt; 55                              NA</span></span>
+<span><span class="co">#&gt; 56                              NA</span></span>
+<span><span class="co">#&gt; 57                              NA</span></span>
+<span><span class="co">#&gt; 58                              NA</span></span>
+<span><span class="co">#&gt; 59                              NA</span></span>
+<span><span class="co">#&gt; 60                              NA</span></span>
+<span><span class="co">#&gt; 61                              NA</span></span>
+<span><span class="co">#&gt; 62                              NA</span></span>
+<span><span class="co">#&gt; 63                              NA</span></span>
+<span><span class="co">#&gt; 64                              NA</span></span>
+<span><span class="co">#&gt; 65                              NA</span></span>
+<span><span class="co">#&gt; 66                              NA</span></span>
+<span><span class="co">#&gt; 67                              NA</span></span>
+<span><span class="co">#&gt; 68                              NA</span></span>
+<span><span class="co">#&gt; 69                              NA</span></span>
+<span><span class="co">#&gt; 70                              NA</span></span>
+<span><span class="co">#&gt; 71                              NA</span></span>
+<span><span class="co">#&gt; 72                              NA</span></span>
+<span><span class="co">#&gt; 73                              NA</span></span>
+<span><span class="co">#&gt; 74                              NA</span></span>
+<span><span class="co">#&gt; 75                              NA</span></span>
+<span><span class="co">#&gt; 76                              NA</span></span>
+<span><span class="co">#&gt; 77                              NA</span></span>
+<span><span class="co">#&gt; 78                              NA</span></span>
+<span><span class="co">#&gt; 79                              NA</span></span>
+<span><span class="co">#&gt; 80                              NA</span></span>
+<span><span class="co">#&gt; 81                              NA</span></span>
+<span><span class="co">#&gt; 82                              NA</span></span>
+<span><span class="co">#&gt; 83                              NA</span></span>
+<span><span class="co">#&gt; 84                              NA</span></span>
+<span><span class="co">#&gt; 85                              NA</span></span>
+<span><span class="co">#&gt; 86                              NA</span></span>
+<span><span class="co">#&gt; 87                              NA</span></span>
+<span><span class="co">#&gt; 88                              NA</span></span>
+<span><span class="co">#&gt; 89                              NA</span></span>
+<span><span class="co">#&gt; 90                              NA</span></span>
+<span><span class="co">#&gt; 91                              NA</span></span>
+<span><span class="co">#&gt; 92                              NA</span></span>
+<span><span class="co">#&gt; 93                              NA</span></span>
+<span><span class="co">#&gt; 94                              NA</span></span>
+<span><span class="co">#&gt; 95                              NA</span></span>
+<span><span class="co">#&gt; 96                              NA</span></span>
+<span><span class="co">#&gt; 97                              NA</span></span>
+<span><span class="co">#&gt; 98                              NA</span></span>
+<span><span class="co">#&gt; 99                              NA</span></span>
+<span><span class="co">#&gt; 100                             NA</span></span>
+<span><span class="co">#&gt; 101                             NA</span></span></code></pre></div>
 <p>Propagate</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span><span class="op">$</span><span class="fu">Do</span><span class="op">(</span><span class="va">asrUpstream</span>, traversal <span class="op">=</span> <span class="st">'post-order'</span><span class="op">)</span></span>
 <span><span class="va">res</span><span class="op">$</span><span class="fu">Do</span><span class="op">(</span><span class="va">inhDownstream</span>, traversal <span class="op">=</span> <span class="st">'pre-order'</span><span class="op">)</span></span></code></pre></div>
-<p>Print propagated tree</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span></span>
-<span>    <span class="co"># res$p__57723$c__204432$o__204433$f__204434,</span></span>
-<span>    <span class="co"># res$p__1224$c__1236$o__91347$f__543,</span></span>
-<span>    <span class="va">res</span><span class="op">$</span><span class="va">d__2</span><span class="op">$</span><span class="va">p__1224</span><span class="op">$</span><span class="va">c__1236</span><span class="op">$</span><span class="va">o__91347</span><span class="op">$</span><span class="va">f__543</span><span class="op">$</span><span class="va">g__561</span>,</span>
-<span>    <span class="st">'aerobic__Score'</span>, <span class="st">'aerobic__Evidence'</span>,</span>
-<span>    <span class="st">'facultatively_anaerobic__Score'</span>, <span class="st">'facultatively_anaerobic__Evidence'</span>,</span>
-<span>    <span class="st">'anaerobic__Score'</span>, <span class="st">'anaerobic__Evidence'</span>,</span>
-<span>    <span class="st">'microaerophilic__Score'</span>, <span class="st">'microaerophilic__Evidence'</span>,</span>
-<span>    <span class="st">'obligately_aerobic__Score'</span>, <span class="st">'obligately_aerobic__Evidence'</span>,</span>
-<span>    <span class="st">'obligately_anaerobic__Score'</span>, <span class="st">'obligately_anaerobic__Evidence'</span>,</span>
-<span>    limit <span class="op">=</span> <span class="fl">100</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt;         levelName aerobic__Score aerobic__Evidence</span></span>
-<span><span class="co">#&gt; 1  g__561                    0.5               exp</span></span>
-<span><span class="co">#&gt; 2   ¦--s__2562891            0.5               inh</span></span>
-<span><span class="co">#&gt; 3   ¦--s__208962             0.5               tas</span></span>
-<span><span class="co">#&gt; 4   ¦--s__562                0.5               tas</span></span>
-<span><span class="co">#&gt; 5   ¦--s__279970             0.5               inh</span></span>
-<span><span class="co">#&gt; 6   ¦--s__564                0.5               tas</span></span>
-<span><span class="co">#&gt; 7   ¦--s__2764324            0.5               inh</span></span>
-<span><span class="co">#&gt; 8   ¦--s__1499973            0.5               inh</span></span>
-<span><span class="co">#&gt; 9   ¦--s__2608867            0.5               inh</span></span>
-<span><span class="co">#&gt; 10  ¦--s__223381             0.5               inh</span></span>
-<span><span class="co">#&gt; 11  °--s__2762229            0.5               inh</span></span>
-<span><span class="co">#&gt;    facultatively_anaerobic__Score facultatively_anaerobic__Evidence</span></span>
-<span><span class="co">#&gt; 1                             0.5                               exp</span></span>
-<span><span class="co">#&gt; 2                             0.5                               inh</span></span>
-<span><span class="co">#&gt; 3                             0.5                               igc</span></span>
-<span><span class="co">#&gt; 4                             0.5                               igc</span></span>
-<span><span class="co">#&gt; 5                             0.5                               inh</span></span>
-<span><span class="co">#&gt; 6                             0.5                               igc</span></span>
-<span><span class="co">#&gt; 7                             0.5                               inh</span></span>
-<span><span class="co">#&gt; 8                             0.5                               inh</span></span>
-<span><span class="co">#&gt; 9                             0.5                               inh</span></span>
-<span><span class="co">#&gt; 10                            0.5                               inh</span></span>
-<span><span class="co">#&gt; 11                            0.5                               inh</span></span>
-<span><span class="co">#&gt;    anaerobic__Score anaerobic__Evidence microaerophilic__Score</span></span>
-<span><span class="co">#&gt; 1                 0                                          0</span></span>
-<span><span class="co">#&gt; 2                 0                 inh                      0</span></span>
-<span><span class="co">#&gt; 3                 0                                          0</span></span>
-<span><span class="co">#&gt; 4                 0                                          0</span></span>
-<span><span class="co">#&gt; 5                 0                 inh                      0</span></span>
-<span><span class="co">#&gt; 6                 0                                          0</span></span>
-<span><span class="co">#&gt; 7                 0                 inh                      0</span></span>
-<span><span class="co">#&gt; 8                 0                 inh                      0</span></span>
-<span><span class="co">#&gt; 9                 0                 inh                      0</span></span>
-<span><span class="co">#&gt; 10                0                 inh                      0</span></span>
-<span><span class="co">#&gt; 11                0                 inh                      0</span></span>
-<span><span class="co">#&gt;    microaerophilic__Evidence obligately_aerobic__Score</span></span>
-<span><span class="co">#&gt; 1                                                    0</span></span>
-<span><span class="co">#&gt; 2                        inh                         0</span></span>
-<span><span class="co">#&gt; 3                                                    0</span></span>
-<span><span class="co">#&gt; 4                                                    0</span></span>
-<span><span class="co">#&gt; 5                        inh                         0</span></span>
-<span><span class="co">#&gt; 6                                                    0</span></span>
-<span><span class="co">#&gt; 7                        inh                         0</span></span>
-<span><span class="co">#&gt; 8                        inh                         0</span></span>
-<span><span class="co">#&gt; 9                        inh                         0</span></span>
-<span><span class="co">#&gt; 10                       inh                         0</span></span>
-<span><span class="co">#&gt; 11                       inh                         0</span></span>
-<span><span class="co">#&gt;    obligately_aerobic__Evidence obligately_anaerobic__Score</span></span>
-<span><span class="co">#&gt; 1                                                         0</span></span>
-<span><span class="co">#&gt; 2                           inh                           0</span></span>
-<span><span class="co">#&gt; 3                                                         0</span></span>
-<span><span class="co">#&gt; 4                                                         0</span></span>
-<span><span class="co">#&gt; 5                           inh                           0</span></span>
-<span><span class="co">#&gt; 6                                                         0</span></span>
-<span><span class="co">#&gt; 7                           inh                           0</span></span>
-<span><span class="co">#&gt; 8                           inh                           0</span></span>
-<span><span class="co">#&gt; 9                           inh                           0</span></span>
-<span><span class="co">#&gt; 10                          inh                           0</span></span>
-<span><span class="co">#&gt; 11                          inh                           0</span></span>
-<span><span class="co">#&gt;    obligately_anaerobic__Evidence</span></span>
-<span><span class="co">#&gt; 1                                </span></span>
-<span><span class="co">#&gt; 2                             inh</span></span>
-<span><span class="co">#&gt; 3                                </span></span>
-<span><span class="co">#&gt; 4                                </span></span>
-<span><span class="co">#&gt; 5                             inh</span></span>
-<span><span class="co">#&gt; 6                                </span></span>
-<span><span class="co">#&gt; 7                             inh</span></span>
-<span><span class="co">#&gt; 8                             inh</span></span>
-<span><span class="co">#&gt; 9                             inh</span></span>
-<span><span class="co">#&gt; 10                            inh</span></span>
-<span><span class="co">#&gt; 11                            inh</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">args1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">res</span>, row.names <span class="op">=</span> <span class="cn">NULL</span>, optional <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">attr_cols</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">$</span><span class="va">attributesAll</span> </span>
+<span><span class="va">args2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">as.list</a></span><span class="op">(</span><span class="va">attr_cols</span><span class="op">)</span></span>
+<span><span class="va">args</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">args1</span>, <span class="va">args2</span><span class="op">)</span></span>
+<span><span class="va">tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="st">'as.data.frame'</span>, <span class="va">args</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">attrs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span><span class="st">'__.*$'</span>, <span class="st">''</span>, <span class="va">attr_cols</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">vector</a></span><span class="op">(</span><span class="st">'list'</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">attrs</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">output</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">tbl</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/startsWith.html" class="external-link">startsWith</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">tbl</span><span class="op">)</span>, <span class="va">attrs</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
+<span>  <span class="va">cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'levelName'</span>, <span class="va">cols</span><span class="op">)</span></span>
+<span>  <span class="va">output</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">tbl</span><span class="op">[</span>, <span class="va">cols</span><span class="op">]</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">output</span><span class="op">)</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">attrs</span><span class="op">[</span><span class="va">i</span><span class="op">]</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">output2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">output</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">x</span><span class="op">$</span><span class="va">levelName</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span><span class="st">'^.*([dpcofgst]__)'</span>, <span class="st">'\\1'</span>, <span class="va">x</span><span class="op">$</span><span class="va">levelName</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">'NCBI_ID'</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span><span class="st">'.*__'</span>, <span class="st">''</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">x</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="va">output3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">output2</span>, .id <span class="op">=</span> <span class="st">'Attribute'</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df_summary</span> <span class="op">&lt;-</span> <span class="va">output3</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Score</span> <span class="op">&gt;</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">Attribute</span>, <span class="va">Evidence</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                                               </span></span>
+<span><span class="co">#&gt; 1 function (x, df1, df2, ncp, log = FALSE)    </span></span>
+<span><span class="co">#&gt; 2 {                                           </span></span>
+<span><span class="co">#&gt; 3     if (missing(ncp))                       </span></span>
+<span><span class="co">#&gt; 4         .Call(C_df, x, df1, df2, log)       </span></span>
+<span><span class="co">#&gt; 5     else .Call(C_dnf, x, df1, df2, ncp, log)</span></span>
+<span><span class="co">#&gt; 6 }</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="session-infomation">Session infomation<a class="anchor" aria-label="anchor" href="#session-infomation"></a>
 </h2>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">sessioninfo</span><span class="fu">::</span><span class="fu"><a href="https://r-lib.github.io/sessioninfo/reference/session_info.html" class="external-link">session_info</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">─ Session info ───────────────────────────────────────────────────────────────</span></span></span>
 <span><span class="co">#&gt;  <span style="color: #555555; font-style: italic;">setting </span> <span style="color: #555555; font-style: italic;">value</span></span></span>
@@ -322,95 +811,87 @@
 <span><span class="co">#&gt;  collate  en_US.UTF-8</span></span>
 <span><span class="co">#&gt;  ctype    en_US.UTF-8</span></span>
 <span><span class="co">#&gt;  tz       Etc/UTC</span></span>
-<span><span class="co">#&gt;  date     2023-02-18</span></span>
+<span><span class="co">#&gt;  date     2023-02-20</span></span>
 <span><span class="co">#&gt;  pandoc   2.19.2 @ /usr/local/bin/ (via rmarkdown)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">─ Packages ───────────────────────────────────────────────────────────────────</span></span></span>
-<span><span class="co">#&gt;  <span style="color: #555555; font-style: italic;">package      </span> <span style="color: #555555; font-style: italic;">*</span> <span style="color: #555555; font-style: italic;">version</span> <span style="color: #555555; font-style: italic;">date (UTC)</span> <span style="color: #555555; font-style: italic;">lib</span> <span style="color: #555555; font-style: italic;">source</span></span></span>
-<span><span class="co">#&gt;  ape             5.7     <span style="color: #555555;">2023-02-16</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  assertthat      0.2.1   <span style="color: #555555;">2019-03-21</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  BiocFileCache   2.7.1   <span style="color: #555555;">2022-12-09</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">Bioconductor</span></span></span>
-<span><span class="co">#&gt;  bit             4.0.5   <span style="color: #555555;">2022-11-15</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  bit64           4.0.5   <span style="color: #555555;">2020-08-30</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  blob            1.2.3   <span style="color: #555555;">2022-04-10</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  bold            1.2.0   <span style="color: #555555;">2021-05-11</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  bslib           0.4.2   <span style="color: #555555;">2022-12-16</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  bugphyzz      * 0.0.1.3 <span style="color: #555555;">2023-02-18</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">Github (waldronlab/bugphyzz@348d614)</span></span></span>
-<span><span class="co">#&gt;  cachem          1.0.6   <span style="color: #555555;">2021-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  cli             3.6.0   <span style="color: #555555;">2023-01-09</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  codetools       0.2-19  <span style="color: #555555;">2023-02-01</span> <span style="color: #555555;">[2]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  conditionz      0.1.0   <span style="color: #555555;">2019-04-24</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  crayon          1.5.2   <span style="color: #555555;">2022-09-29</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  crul            1.3     <span style="color: #555555;">2022-09-03</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  curl            5.0.0   <span style="color: #555555;">2023-01-12</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  data.table      1.14.8  <span style="color: #555555;">2023-02-17</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  data.tree     * 1.0.0   <span style="color: #555555;">2020-08-03</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  DBI             1.1.3   <span style="color: #555555;">2022-06-18</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  dbplyr          2.3.0   <span style="color: #555555;">2023-01-16</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  desc            1.4.2   <span style="color: #555555;">2022-09-08</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  digest          0.6.31  <span style="color: #555555;">2022-12-11</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  dplyr         * 1.1.0   <span style="color: #555555;">2023-01-29</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  ellipsis        0.3.2   <span style="color: #555555;">2021-04-29</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  evaluate        0.20    <span style="color: #555555;">2023-01-17</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  fansi           1.0.4   <span style="color: #555555;">2023-01-22</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  fastmap         1.1.0   <span style="color: #555555;">2021-01-25</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  filelock        1.0.2   <span style="color: #555555;">2018-10-05</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  foreach         1.5.2   <span style="color: #555555;">2022-02-02</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  fs              1.6.1   <span style="color: #555555;">2023-02-06</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  generics        0.1.3   <span style="color: #555555;">2022-07-05</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  glue            1.6.2   <span style="color: #555555;">2022-02-24</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  hms             1.1.2   <span style="color: #555555;">2022-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  hoardr          0.5.3   <span style="color: #555555;">2023-01-26</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  htmltools       0.5.4   <span style="color: #555555;">2022-12-07</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  httpcode        0.3.0   <span style="color: #555555;">2020-04-10</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  httr            1.4.4   <span style="color: #555555;">2022-08-17</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  iterators       1.0.14  <span style="color: #555555;">2022-02-05</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  jquerylib       0.1.4   <span style="color: #555555;">2021-04-26</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  jsonlite        1.8.4   <span style="color: #555555;">2022-12-06</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  knitr           1.42    <span style="color: #555555;">2023-01-25</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  lattice         0.20-45 <span style="color: #555555;">2021-09-22</span> <span style="color: #555555;">[2]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  lifecycle       1.0.3   <span style="color: #555555;">2022-10-07</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  magrittr        2.0.3   <span style="color: #555555;">2022-03-30</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  memoise         2.0.1   <span style="color: #555555;">2021-11-26</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  mgsub           1.7.3   <span style="color: #555555;">2021-07-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  nlme            3.1-162 <span style="color: #555555;">2023-01-31</span> <span style="color: #555555;">[2]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  pillar          1.8.1   <span style="color: #555555;">2022-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  pkgconfig       2.0.3   <span style="color: #555555;">2019-09-22</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  pkgdown         2.0.7   <span style="color: #555555;">2022-12-14</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  plyr            1.8.8   <span style="color: #555555;">2022-11-11</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  purrr         * 1.0.1   <span style="color: #555555;">2023-01-10</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  R6              2.5.1   <span style="color: #555555;">2021-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  ragg            1.2.5   <span style="color: #555555;">2023-01-12</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  rappdirs        0.3.3   <span style="color: #555555;">2021-01-31</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  Rcpp            1.0.10  <span style="color: #555555;">2023-01-22</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  readr           2.1.4   <span style="color: #555555;">2023-02-10</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  reshape         0.8.9   <span style="color: #555555;">2022-04-12</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  rlang           1.0.6   <span style="color: #555555;">2022-09-24</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  rmarkdown       2.20    <span style="color: #555555;">2023-01-19</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  rprojroot       2.0.3   <span style="color: #555555;">2022-04-02</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  RSQLite         2.3.0   <span style="color: #555555;">2023-02-17</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  sass            0.4.5   <span style="color: #555555;">2023-01-24</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  sessioninfo     1.2.2   <span style="color: #555555;">2021-12-06</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  stringi         1.7.12  <span style="color: #555555;">2023-01-11</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  stringr         1.5.0   <span style="color: #555555;">2022-12-02</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  systemfonts     1.0.4   <span style="color: #555555;">2022-02-11</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  taxize          0.9.100 <span style="color: #555555;">2022-04-22</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  taxizedb        0.3.0   <span style="color: #555555;">2021-01-15</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  taxPPro       * 0.1.0   <span style="color: #555555;">2023-02-18</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">local</span></span></span>
-<span><span class="co">#&gt;  textshaping     0.3.6   <span style="color: #555555;">2021-10-13</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  tibble          3.1.8   <span style="color: #555555;">2022-07-22</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  tidyr           1.3.0   <span style="color: #555555;">2023-01-24</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  tidyselect      1.2.0   <span style="color: #555555;">2022-10-10</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  tzdb            0.3.0   <span style="color: #555555;">2022-03-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  utf8            1.2.3   <span style="color: #555555;">2023-01-31</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  uuid            1.1-0   <span style="color: #555555;">2022-04-19</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  vctrs           0.5.2   <span style="color: #555555;">2023-01-23</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  vroom           1.6.1   <span style="color: #555555;">2023-01-22</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  withr           2.5.0   <span style="color: #555555;">2022-03-03</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  xfun            0.37    <span style="color: #555555;">2023-01-31</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  xml2            1.3.3   <span style="color: #555555;">2021-11-30</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  yaml            2.3.7   <span style="color: #555555;">2023-01-23</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  zoo             1.8-11  <span style="color: #555555;">2022-09-17</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  <span style="color: #555555; font-style: italic;">package    </span> <span style="color: #555555; font-style: italic;">*</span> <span style="color: #555555; font-style: italic;">version</span> <span style="color: #555555; font-style: italic;">date (UTC)</span> <span style="color: #555555; font-style: italic;">lib</span> <span style="color: #555555; font-style: italic;">source</span></span></span>
+<span><span class="co">#&gt;  ape           5.7     <span style="color: #555555;">2023-02-16</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  assertthat    0.2.1   <span style="color: #555555;">2019-03-21</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  bit           4.0.5   <span style="color: #555555;">2022-11-15</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  bit64         4.0.5   <span style="color: #555555;">2020-08-30</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  blob          1.2.3   <span style="color: #555555;">2022-04-10</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  bold          1.2.0   <span style="color: #555555;">2021-05-11</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  bslib         0.4.2   <span style="color: #555555;">2022-12-16</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  bugphyzz    * 0.0.1.3 <span style="color: #555555;">2023-02-20</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">Github (waldronlab/bugphyzz@348d614)</span></span></span>
+<span><span class="co">#&gt;  cachem        1.0.6   <span style="color: #555555;">2021-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  cli           3.6.0   <span style="color: #555555;">2023-01-09</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  codetools     0.2-19  <span style="color: #555555;">2023-02-01</span> <span style="color: #555555;">[2]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  conditionz    0.1.0   <span style="color: #555555;">2019-04-24</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  crayon        1.5.2   <span style="color: #555555;">2022-09-29</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  crul          1.3     <span style="color: #555555;">2022-09-03</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  curl          5.0.0   <span style="color: #555555;">2023-01-12</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  data.table    1.14.8  <span style="color: #555555;">2023-02-17</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  data.tree   * 1.0.0   <span style="color: #555555;">2020-08-03</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  DBI           1.1.3   <span style="color: #555555;">2022-06-18</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  dbplyr        2.3.0   <span style="color: #555555;">2023-01-16</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  desc          1.4.2   <span style="color: #555555;">2022-09-08</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  digest        0.6.31  <span style="color: #555555;">2022-12-11</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  dplyr       * 1.1.0   <span style="color: #555555;">2023-01-29</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  evaluate      0.20    <span style="color: #555555;">2023-01-17</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  fansi         1.0.4   <span style="color: #555555;">2023-01-22</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  fastmap       1.1.0   <span style="color: #555555;">2021-01-25</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  foreach       1.5.2   <span style="color: #555555;">2022-02-02</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  fs            1.6.1   <span style="color: #555555;">2023-02-06</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  generics      0.1.3   <span style="color: #555555;">2022-07-05</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  glue          1.6.2   <span style="color: #555555;">2022-02-24</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  hoardr        0.5.3   <span style="color: #555555;">2023-01-26</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  htmltools     0.5.4   <span style="color: #555555;">2022-12-07</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  httpcode      0.3.0   <span style="color: #555555;">2020-04-10</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  iterators     1.0.14  <span style="color: #555555;">2022-02-05</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  jquerylib     0.1.4   <span style="color: #555555;">2021-04-26</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  jsonlite      1.8.4   <span style="color: #555555;">2022-12-06</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  knitr         1.42    <span style="color: #555555;">2023-01-25</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  lattice       0.20-45 <span style="color: #555555;">2021-09-22</span> <span style="color: #555555;">[2]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  lifecycle     1.0.3   <span style="color: #555555;">2022-10-07</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  magrittr      2.0.3   <span style="color: #555555;">2022-03-30</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  memoise       2.0.1   <span style="color: #555555;">2021-11-26</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  mgsub         1.7.3   <span style="color: #555555;">2021-07-28</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  nlme          3.1-162 <span style="color: #555555;">2023-01-31</span> <span style="color: #555555;">[2]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  pillar        1.8.1   <span style="color: #555555;">2022-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  pkgconfig     2.0.3   <span style="color: #555555;">2019-09-22</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  pkgdown       2.0.7   <span style="color: #555555;">2022-12-14</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  plyr          1.8.8   <span style="color: #555555;">2022-11-11</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  purrr         1.0.1   <span style="color: #555555;">2023-01-10</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  R6            2.5.1   <span style="color: #555555;">2021-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  ragg          1.2.5   <span style="color: #555555;">2023-01-12</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  rappdirs      0.3.3   <span style="color: #555555;">2021-01-31</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  Rcpp          1.0.10  <span style="color: #555555;">2023-01-22</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  reshape       0.8.9   <span style="color: #555555;">2022-04-12</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  rlang         1.0.6   <span style="color: #555555;">2022-09-24</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  rmarkdown     2.20    <span style="color: #555555;">2023-01-19</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  rprojroot     2.0.3   <span style="color: #555555;">2022-04-02</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  RSQLite       2.3.0   <span style="color: #555555;">2023-02-17</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  sass          0.4.5   <span style="color: #555555;">2023-01-24</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  sessioninfo   1.2.2   <span style="color: #555555;">2021-12-06</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  stringi       1.7.12  <span style="color: #555555;">2023-01-11</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  stringr       1.5.0   <span style="color: #555555;">2022-12-02</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  systemfonts   1.0.4   <span style="color: #555555;">2022-02-11</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  taxize        0.9.100 <span style="color: #555555;">2022-04-22</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  taxizedb      0.3.0   <span style="color: #555555;">2021-01-15</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  taxPPro     * 0.1.0   <span style="color: #555555;">2023-02-20</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">local</span></span></span>
+<span><span class="co">#&gt;  textshaping   0.3.6   <span style="color: #555555;">2021-10-13</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  tibble        3.1.8   <span style="color: #555555;">2022-07-22</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  tidyr       * 1.3.0   <span style="color: #555555;">2023-01-24</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  tidyselect    1.2.0   <span style="color: #555555;">2022-10-10</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  utf8          1.2.3   <span style="color: #555555;">2023-01-31</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  uuid          1.1-0   <span style="color: #555555;">2022-04-19</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  vctrs         0.5.2   <span style="color: #555555;">2023-01-23</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  withr         2.5.0   <span style="color: #555555;">2022-03-03</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  xfun          0.37    <span style="color: #555555;">2023-01-31</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  xml2          1.3.3   <span style="color: #555555;">2021-11-30</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  yaml          2.3.7   <span style="color: #555555;">2023-01-23</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  zoo           1.8-11  <span style="color: #555555;">2022-09-17</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #555555;"> [1] /usr/local/lib/R/site-library</span></span></span>
 <span><span class="co">#&gt; <span style="color: #555555;"> [2] /usr/local/lib/R/library</span></span></span>
