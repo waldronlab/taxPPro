@@ -1,5 +1,7 @@
 library(taxPPro)
 library(data.tree)
+## The bit option allows having more taxamm, only excluding unclassified
+## bacteria
 tbl <- getNCBI(keyword = 'bit')
 tree <- as.Node(tbl[, 'pathString', drop = FALSE], pathDelimiter = '|||')
 tree$Do(addStrains)
