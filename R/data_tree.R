@@ -305,20 +305,49 @@ prepareData2 <- function(df) {
         select_cols <- c(
             'NCBI_ID', 'Attribute', 'Evidence', 'Attribute_source', 'Score'
         )
+        output <- df |>
+            dplyr::select(dplyr::all_of(select_cols)) |>
+            dplyr::distinct() |>
+            dplyr::filter(grepl('^[gst]__', .data$NCBI_ID)) |>
+            dplyr::distinct()
     } else if (attr_type == 'numeric') {
         select_cols <- c(
             'NCBI_ID', 'Attribute_value', 'Evidence', 'Attribute_source',
             'Score'
         )
+        output <- df |>
+            dplyr::select(dplyr::all_of(select_cols)) |>
+            dplyr::distinct() |>
+            dplyr::group_by(.data$NCBI_ID) |>
+            dplyr::mutate_at(
+                .vars = c('Attribute_value', 'Score'),
+                .funs = ~ mean(.x)
+            ) |>
+            dplyr::mutate_at(
+                .vars = c('Evidence', 'Attribute_source'),
+                .funs = ~ paste0(unique(.x), collapse = '|')
+            ) |>
+            dplyr::filter(grepl('^[gst]__', .data$NCBI_ID)) |>
+            dplyr::distinct()
     } else if (attr_type == 'range') {
         select_cols <- c(
             'NCBI_ID', 'Attribute_value_min', 'Attribute_value_max',
             'Evidence', 'Attribute_source', 'Score'
         )
+        output <- df |>
+            dplyr::select(dplyr::all_of(select_cols)) |>
+            dplyr::distinct() |>
+            dplyr::group_by(.data$NCBI_ID) |>
+            dplyr::mutate_at(
+                .vars = c('Attribute_value_min', 'Attribute_value_max', 'Score'),
+                .funs = ~ mean(.x)
+            ) |>
+            dplyr::mutate_at(
+                .vars = c('Evidence', 'Attribute_source'),
+                .funs = ~ paste0(unique(.x), collapse = '|')
+            ) |>
+            dplyr::filter(grepl('^[gst]__', .data$NCBI_ID)) |>
+            dplyr::distinct()
     }
-    df <- unique(df[, select_cols])
-    df <- df[which(grepl('^[gst]__', df$NCBI_ID)),]
-    df <- dplyr::distinct(df)
-    return(df)
+    return(output)
 }
-
