@@ -1,9 +1,11 @@
 ## These file contains some of the functions used before propagation
-## Other functions are contained in the 002.duplicates.R file.
+## Other functions used here are contained in the 002.duplicates.R file. For
+## example, resolveConflicts and resolveDuplicates.
 
-#' Steps previous to propagation
+#' Preparare data for propagation part 1
 #'
-#' \code{preSteps} performs the previous steps before propagating annotations.
+#' \code{prepareData} performs the previous steps before propagating
+#' annotations.
 #' These steps include: 1) filter data, 2) resolve conflicts, 3) resolve
 #' agreements, 4) remove duplicates, 5) convert frequency to scores,
 #' 6) remove duplicate lines, 7) ensure Taxid and Parent_tax_id are are
@@ -11,6 +13,7 @@
 #'
 #' @param df A data.frame.
 #' @param tax.id.type A character string. Valid values are Taxon_name and
+#' NCBI_ID. Default is NCBI_ID.
 #' @param remove_false If TRUE, Attribute values with FALSE are removed.
 #' Default is FALSE.
 #' NCBI_ID.
@@ -18,14 +21,11 @@
 #' @return A data.frame.
 #' @export
 #'
-preSteps <- function(df, tax.id.type, remove_false = FALSE) {
+prepareData <- function(df, tax.id.type = 'NCBI_ID', remove_false = FALSE) {
     df |>
-        dplyr::distinct() |>
-        dplyr::mutate(
-            Parent_NCBI_ID = as.character(.data$Parent_NCBI_ID),
-            NCBI_ID = as.character(.data$NCBI_ID)
+        filterData(
+            tax.id.type = tax.id.type, remove_false = remove_false
         ) |>
-        filterData(tax.id.type = tax.id.type, remove_false = remove_false) |>
         freq2Scores() |>
         resolveAgreements() |>
         resolveConflicts()
@@ -50,13 +50,12 @@ preSteps <- function(df, tax.id.type, remove_false = FALSE) {
 #'
 filterData <- function(df, df_name = NULL, tax.id.type, remove_false = TRUE) {
 
-    ## Columns required for propagation
     columns_for_propagation <- c(
-        'Taxon_name', 'NCBI_ID', 'Rank', # id-related
-        'Attribute', 'Attribute_value', 'Attribute_source', # attribute-related
+        'Taxon_name', 'NCBI_ID', 'Rank',
+        'Attribute', 'Attribute_value', 'Attribute_source',
         'Attribute_value_min', 'Attribute_value_max',
-        'Evidence', 'Frequency', 'Confidence_in_curation', # evidence-related
-        'Parent_NCBI_ID', 'Parent_name', 'Parent_rank' # parent-related
+        'Evidence', 'Frequency', 'Confidence_in_curation',
+        'Parent_NCBI_ID', 'Parent_name', 'Parent_rank'
     )
 
     if ('Attribute_value' %in% colnames(df)) {
@@ -92,10 +91,6 @@ filterData <- function(df, df_name = NULL, tax.id.type, remove_false = TRUE) {
         }
 
     }
-
-
-    ## For now, only NCBI_ID and Taxon_name are valid. Other columns might
-    ## be added later
 
     if (tax.id.type == 'NCBI_ID') {
         df <- df[!is.na(df$NCBI_ID) | df$NCBI_ID == 'unknown',]
@@ -151,9 +146,8 @@ filterData <- function(df, df_name = NULL, tax.id.type, remove_false = TRUE) {
             )
 
         }
-        return(NULL)
+        return(invisible(NULL))
     }
-
     return(df)
 }
 
@@ -163,14 +157,14 @@ filterData <- function(df, df_name = NULL, tax.id.type, remove_false = TRUE) {
 #' column of a bugphyzz dataset into numeric scores, which are added in a
 #' additional column named `Score`.
 #'
-#' @param x  A data frame imported with `bugphyzz::physiologies`.
+#' @param df  A data frame imported with `bugphyzz::physiologies`.
 #'
 #' @return A data frame. The same data frame with the additional `Score` column.
 #'
 #' @export
 #'
-freq2Scores <- function(x) {
-    x |>
+freq2Scores <- function(df) {
+    output <- df |>
         dplyr::mutate(
             Frequency = tolower(.data$Frequency),
             Score = dplyr::case_when(
@@ -178,9 +172,12 @@ freq2Scores <- function(x) {
                 Frequency == 'usually' ~ 0.8,
                 Frequency == 'sometimes' ~ 0.5,
                 Frequency == 'rarely' ~ 0.2,
-                Frequency == 'never' ~ 0,
-                Frequency == 'unknown' ~ NA_real_
+                # Frequency == 'never' ~ 0,
+                # Frequency == 'unknown' ~ NA_real_
+                Frequency == 'unknown' ~ 0
             )
         ) |>
-        dplyr::filter(!is.na(.data$Score))
+        dplyr::filter(!is.na(.data$Score)) |>
+        dplyr::distinct()
+    return(output)
 }
