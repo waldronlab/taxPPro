@@ -224,12 +224,24 @@ addAttributesNumeric <- function(data_tree, df) {
 #' @export
 #'
 addAttributesRange <- function(data_tree, df) {
+    datatree <- data.tree::Clone(data_tree)
     attr_grp <- unique(df[['Attribute_group']])
-    return(attr_grp)
-
+    colnames(df) <- paste0(attr_grp, '__', colnames(df))
+    colnames(df) <- gsub(' ', '_', colnames(df))
+    attr_val_min_col <- grep('__Attribute_value_min$', colnames(df), value = TRUE)
+    attr_val_max_col <- grep('__Attribute_value_max$', colnames(df), value = TRUE)
+    ncbi_col <- grep('__NCBI_ID$', colnames(df), value = TRUE)
+    evi_col <- grep('__Evidence$', colnames(df), value = TRUE)
+    source_col <- grep('__Attribute_source$', colnames(df), value = TRUE)
+    score_col <- grep('__Score$', colnames(df), value = TRUE)
+    ncbi_list <- split(df, factor(df[[ncbi_col]]))
+    datatree$Do(function(node) node[[attr_val_min_col]] <- ncbi_list[[node$name]][[attr_val_min_col]])
+    datatree$Do(function(node) node[[attr_val_min_col]] <- ncbi_list[[node$name]][[attr_val_min_col]])
+    datatree$Do(function(node) node[[score_col]] <- ncbi_list[[node$name]][[score_col]])
+    datatree$Do(function(node) node[[evi_col]] <- ncbi_list[[node$name]][[evi_col]])
+    datatree$Do(function(node) node[[source_col]] <- ncbi_list[[node$name]][[source_col]])
+    return(datatree)
 }
-
-
 
 #' ASR / Upstream
 #'
