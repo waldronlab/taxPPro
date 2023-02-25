@@ -2,17 +2,17 @@
 % Please edit documentation in R/data_tree.R
 \name{addAttributesLogical}
 \alias{addAttributesLogical}
-\title{Add attributes to data_tree}
+\title{Add attributes to a data.tree (numeric)}
 \usage{
 addAttributesLogical(data_tree, df)
 }
 \arguments{
 \item{data_tree}{A data.tree object.}
 
-\item{df}{A data.frame from bugphyzz}
+\item{df}{A data.frame from bugphyzz. Output of \code{prepareData2}.}
 }
 \value{
-A data.tree with extra attributes.
+A clone of the original data.tree.
 }
 \description{
 \code{addAttributesLogical} adds attributes to a data.tree object.

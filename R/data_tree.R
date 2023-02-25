@@ -136,14 +136,32 @@ getNCBI <- function(format = 'table') {
     }
 }
 
-#' Add attributes to data_tree
+#' Add attributes to a data.tree object
+#'
+#' \code{addAttributes} Adds attributes to a data.tree object
+#'
+#' @param data_tree  A data.tree object.
+#' @param df A data.frame. Output of \code{prepareData2}
+#'
+#' @return A clone of the original data.tree object.
+#' @export
+#'
+addAttributes <- function(data_tree, df) {
+    attr_type <- unique(df[['Attribute_type']])
+    if (attr_type == 'logical') output <- addAttributesLogical(data_tree, df)
+    if (attr_type == 'numeric') output <- addAttributesNumeric(data_tree, df)
+    if (attr_type == 'range') output <- addAttributesRange(data_tree, df)
+    return(output)
+}
+
+#' Add attributes to a data.tree (numeric)
 #'
 #' \code{addAttributesLogical} adds attributes to a data.tree object.
 #'
 #' @param data_tree A data.tree object.
-#' @param df A data.frame from bugphyzz
+#' @param df A data.frame from bugphyzz. Output of \code{prepareData2}.
 #'
-#' @return A data.tree with extra attributes.
+#' @return A clone of the original data.tree.
 #' @export
 #'
 addAttributesLogical <- function(data_tree, df) {
@@ -167,6 +185,16 @@ addAttributesLogical <- function(data_tree, df) {
     return(datatree)
 }
 
+#' Add attributes to a data.tree object (numeric)
+#'
+#' \code{addAttributesNumeric} Add numeric attributes to a data.tree object.
+#'
+#' @param data_tree  A data.tree object.
+#' @param df A data.frame. Output of \code{prepareData2}
+#'
+#' @return A clone of the data.tree object.
+#' @export
+#'
 addAttributesNumeric <- function(data_tree, df) {
     datatree <- data.tree::Clone(data_tree)
     attr_grp <- unique(df[['Attribute_group']])
@@ -185,8 +213,19 @@ addAttributesNumeric <- function(data_tree, df) {
     return(datatree)
 }
 
+#' Add attributes to a data.tree object (range)
+#'
+#' \code{addAttributesRange} adds range attributes to a data.tree object.
+#'
+#' @param data_tree A data.tree object.
+#' @param df A data.frame. Output of \code{prepareData2}
+#'
+#' @return A clone of the input data.tree object with extra attributes.
+#' @export
+#'
 addAttributesRange <- function(data_tree, df) {
     attr_grp <- unique(df[['Attribute_group']])
+    return(attr_grp)
 
 }
 

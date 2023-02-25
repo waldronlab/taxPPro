@@ -22,8 +22,8 @@ w <- phys$width |> # numeric range
 
 data('tree_list')
 tree <- data.tree::as.Node(tree_list)
-x <- addAttributesLogical(tree, aer)
-y <- addAttributesNumeric(tree, ph)
-# z <- addAttributesRange(tree, w)
+x <- addAttributes(tree, aer)
+y <- addAttributes(tree, ph)
+z <- addAttributes(tree, w)
 
-printDataTreeAttributes(y, limit = 1000)
+View(printDataTreeAttributes(y, limit = 100))

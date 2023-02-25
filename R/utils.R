@@ -1,3 +1,13 @@
+#' Print data.tree attributes
+#'
+#' \code{printDataTreeAttributes} prints all of the attributes in a data.tree.
+#'
+#' @param data_tree A data.tree object with attributes.
+#' @param limit The number of nodes to be displayed. Default = 100.
+#'
+#' @return A data.frame or data on the console. Can use \code{View}.
+#' @export
+#'
 printDataTreeAttributes <- function(data_tree, limit = 100) {
   attrs <- as.list(data_tree$attributesAll)
   lim = list(limit = limit)
