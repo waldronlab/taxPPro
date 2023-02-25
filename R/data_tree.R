@@ -138,7 +138,7 @@ getNCBI <- function(format = 'table') {
 
 #' Add attributes to data_tree
 #'
-#' \code{addAttributes} adds attributes to a data.tree object.
+#' \code{addAttributesLogical} adds attributes to a data.tree object.
 #'
 #' @param data_tree A data.tree object.
 #' @param df A data.frame from bugphyzz
@@ -146,24 +146,51 @@ getNCBI <- function(format = 'table') {
 #' @return A data.tree with extra attributes.
 #' @export
 #'
-addAttributes <- function(data_tree, df) {
+addAttributesLogical <- function(data_tree, df) {
+    datatree <- data.tree::Clone(data_tree)
+    attr_grp <- unique(df[['Attribute_group']])
     df[['Attribute']] <- gsub(' ', '_', df[['Attribute']])
     attributes <- unique(df[['Attribute']])
     for (i in seq_along(attributes)) {
         attr <- attributes[i]
         attr_df <- df[df[['Attribute']] == attr, ]
-        colnames(attr_df) <- paste0(attr, '__', colnames(attr_df))
+        colnames(attr_df) <- paste0(attr_grp, ':', attr, '__', colnames(attr_df))
         ncbi_col <- grep('__NCBI_ID$', colnames(attr_df), value = TRUE)
         evi_col <- grep('__Evidence$', colnames(attr_df), value = TRUE)
         source_col <- grep('__Attribute_source$', colnames(attr_df), value = TRUE)
         score_col <- grep('__Score$', colnames(attr_df), value = TRUE)
         ncbi_list <- split(attr_df, factor(attr_df[[ncbi_col]]))
-        data_tree$Do(function(node) node[[score_col]] <- ncbi_list[[node$name]][[score_col]])
-        data_tree$Do(function(node) node[[evi_col]] <- ncbi_list[[node$name]][[evi_col]])
-        data_tree$Do(function(node) node[[source_col]] <- ncbi_list[[node$name]][[source_col]])
+        datatree$Do(function(node) node[[score_col]] <- ncbi_list[[node$name]][[score_col]])
+        datatree$Do(function(node) node[[evi_col]] <- ncbi_list[[node$name]][[evi_col]])
+        datatree$Do(function(node) node[[source_col]] <- ncbi_list[[node$name]][[source_col]])
     }
-    return(data_tree)
+    return(datatree)
 }
+
+addAttributesNumeric <- function(data_tree, df) {
+    datatree <- data.tree::Clone(data_tree)
+    attr_grp <- unique(df[['Attribute_group']])
+    colnames(df) <- paste0(attr_grp, '__', colnames(df))
+    colnames(df) <- gsub(' ', '_', colnames(df))
+    attr_val_col <- grep('__Attribute_value$', colnames(df), value = TRUE)
+    ncbi_col <- grep('__NCBI_ID$', colnames(df), value = TRUE)
+    evi_col <- grep('__Evidence$', colnames(df), value = TRUE)
+    source_col <- grep('__Attribute_source$', colnames(df), value = TRUE)
+    score_col <- grep('__Score$', colnames(df), value = TRUE)
+    ncbi_list <- split(df, factor(df[[ncbi_col]]))
+    datatree$Do(function(node) node[[attr_val_col]] <- ncbi_list[[node$name]][[attr_val_col]])
+    datatree$Do(function(node) node[[score_col]] <- ncbi_list[[node$name]][[score_col]])
+    datatree$Do(function(node) node[[evi_col]] <- ncbi_list[[node$name]][[evi_col]])
+    datatree$Do(function(node) node[[source_col]] <- ncbi_list[[node$name]][[source_col]])
+    return(datatree)
+}
+
+addAttributesRange <- function(data_tree, df) {
+    attr_grp <- unique(df[['Attribute_group']])
+
+}
+
+
 
 #' ASR / Upstream
 #'
@@ -271,7 +298,7 @@ asrUpstream <- function(node) {
 #' \code{inhDownstream} each node inherits an attribute from it's ancestor
 #' if values are NA or NULL
 #'
-#' @param node
+#' @param node A node
 #'
 #' @return Node, R6, data.tree.
 #' @export
@@ -303,7 +330,8 @@ prepareData2 <- function(df) {
     attr_type <- unique(df$Attribute_type)
     if (attr_type == 'logical') {
         select_cols <- c(
-            'NCBI_ID', 'Attribute', 'Evidence', 'Attribute_source', 'Score'
+            'NCBI_ID', 'Attribute', 'Evidence', 'Attribute_source', 'Score',
+            'Attribute_group', 'Attribute_type'
         )
         output <- df |>
             dplyr::select(dplyr::all_of(select_cols)) |>
@@ -313,7 +341,7 @@ prepareData2 <- function(df) {
     } else if (attr_type == 'numeric') {
         select_cols <- c(
             'NCBI_ID', 'Attribute_value', 'Evidence', 'Attribute_source',
-            'Score'
+            'Score', 'Attribute_group', 'Attribute_type'
         )
         output <- df |>
             dplyr::select(dplyr::all_of(select_cols)) |>
@@ -332,7 +360,8 @@ prepareData2 <- function(df) {
     } else if (attr_type == 'range') {
         select_cols <- c(
             'NCBI_ID', 'Attribute_value_min', 'Attribute_value_max',
-            'Evidence', 'Attribute_source', 'Score'
+            'Evidence', 'Attribute_source', 'Score', 'Attribute_group',
+            'Attribute_type'
         )
         output <- df |>
             dplyr::select(dplyr::all_of(select_cols)) |>

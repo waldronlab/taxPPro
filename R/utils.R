@@ -1,3 +1,12 @@
+printDataTreeAttributes <- function(data_tree, limit = 100) {
+  attrs <- as.list(data_tree$attributesAll)
+  lim = list(limit = limit)
+  args <- c(list(data_tree), attrs)
+  args <- c(args, lim)
+  do.call('print', args = args)
+}
+
+
 ## Function for converting scores to frequency
 ## Input is a vector
 .scores2Freq <- function(Score) {

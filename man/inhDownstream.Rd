@@ -7,7 +7,7 @@
 inhDownstream(node)
 }
 \arguments{
-\item{node}{}
+\item{node}{A node}
 }
 \value{
 Node, R6, data.tree.

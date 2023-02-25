@@ -19,4 +19,11 @@ ph <- phys$`optimal ph` |> # numeric
 w <- phys$width |> # numeric range
     prepareData() |>
     prepareData2()
-w[w$NCBI_ID %in% dups, ] |> View()
+
+data('tree_list')
+tree <- data.tree::as.Node(tree_list)
+x <- addAttributesLogical(tree, aer)
+y <- addAttributesNumeric(tree, ph)
+# z <- addAttributesRange(tree, w)
+
+printDataTreeAttributes(y, limit = 1000)
