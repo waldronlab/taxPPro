@@ -41,7 +41,6 @@ addStrains <- function(node) {
 
 }
 
-
 #' Fill NAs
 #'
 #' \code{fillNAs} changes NAs wit NA\[number\].
@@ -245,14 +244,14 @@ addAttributesRange <- function(data_tree, df) {
 
 #' ASR / Upstream
 #'
-#' \code{asrUpstream}
+#' \code{asrUpstreamLogical} Propagate attributes and scores.
 #'
-#' @param node
+#' @param node A node.
 #'
 #' @return Node/R6. A data.tree object
 #' @export
 #'
-asrUpstream <- function(node) {
+asrUpstreamLogical <- function(node) {
     attrs <- grep('__Score$', node$attributesAll, value = TRUE)
     ## If node is leaf
     cond1 <- node$isLeaf
@@ -344,19 +343,58 @@ asrUpstream <- function(node) {
     }
 }
 
+#' ASR / Upstream (numeric)
+#'
+#' \code{asrUpstreamNumeric} asr for numeric values.
+#'
+#' @param node A node.
+#'
+#' @return node value
+#' @export
+#'
+asrUpstreamNumeric <- function(node) {
+    attr_score <- grep('__Score$', node$attributesAll, value = TRUE)
+    attr_val <- grep('__Attribute_value$', node$attributesAll, value = TRUE)
+    attr_evi <- grep('__Evidence$', node$attributesAll, value = TRUE)
+    cond1 <- node$isLeaf
+    cond2 <- is.null(attr_val) || is.na(attr_val)
+    cond3 <- is.null(attr_score) || is.na(attr_score)
+    if (!cond1 && !cond2 && !cond3) {
+        children <- names(node$children)
+        scores <- vector('double', length(children))
+        for (i in seq_along(scores)) {
+            score <- node[[children[i]]][[attr_score]]
+            if (is.null(score) || is.na(score)) {
+                scores[[i]] <- 0
+            } else {
+                scores[[i]] <- score
+            }
+            names(scores)[i] <- children[i]
+        }
+        if (sum(scores) == 0) {
+            return(NULL)
+        }
+        selected_children <- names(scores)[scores / sum(scores) == max(scores / sum(scores))]
+        if (length(selected_children) > 1) {
+            values <- vector('double', length(selected_children))
+            for (i in seq_along(selected_children)) {
+                values[[i]] <- node[[selected_children[i]]][[attr_val]]
+            }
+            node[[attr_val]] <- mean(values)
+            node[[attr_score]] <- max(scores / sum(scores))
+            node[[attr_evi]] <- 'asr'
 
+        } else {
+            node[[attr_score]] <- max(scores / sum(scores))
+            node[[attr_val]] <- node[[selected_children]][[attr_val]]
+            node[[attr_evi]] <- 'asr'
+        }
+    }
+}
 
+asrUpstreamRange <- function(node) {
 
-
-
-
-
-
-
-
-
-
-
+}
 
 #' Inheritance / Downstream (logical)
 #'
