@@ -26,4 +26,3 @@ x <- addAttributes(tree, aer)
 y <- addAttributes(tree, ph)
 z <- addAttributes(tree, w)
 
-# View(printDataTreeAttributes(x, limit = 100))

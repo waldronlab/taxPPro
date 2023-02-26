@@ -236,7 +236,7 @@ addAttributesRange <- function(data_tree, df) {
     score_col <- grep('__Score$', colnames(df), value = TRUE)
     ncbi_list <- split(df, factor(df[[ncbi_col]]))
     datatree$Do(function(node) node[[attr_val_min_col]] <- ncbi_list[[node$name]][[attr_val_min_col]])
-    datatree$Do(function(node) node[[attr_val_min_col]] <- ncbi_list[[node$name]][[attr_val_min_col]])
+    datatree$Do(function(node) node[[attr_val_max_col]] <- ncbi_list[[node$name]][[attr_val_max_col]])
     datatree$Do(function(node) node[[score_col]] <- ncbi_list[[node$name]][[score_col]])
     datatree$Do(function(node) node[[evi_col]] <- ncbi_list[[node$name]][[evi_col]])
     datatree$Do(function(node) node[[source_col]] <- ncbi_list[[node$name]][[source_col]])
