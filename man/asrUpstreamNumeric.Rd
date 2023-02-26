@@ -10,7 +10,7 @@ asrUpstreamNumeric(node)
 \item{node}{A node.}
 }
 \value{
-node value
+node value.
 }
 \description{
 \code{asrUpstreamNumeric} asr for numeric values.

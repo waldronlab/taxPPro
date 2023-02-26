@@ -21,6 +21,7 @@ w <- phys$width |> # numeric range
     prepareData() |>
     prepareData2()
 
+## -- ####
 data('tree_list')
 tree <- data.tree::as.Node(tree_list)
 
@@ -33,5 +34,5 @@ y$Do(asrUpstreamNumeric, traversal = 'post-order')
 y$Do(inhDownstreamNumeric, traversal = 'pre-order')
 
 z <- addAttributes(tree, w)
-
-printDataTreeAttributes(z, limit = 1000) |> View()
+z$Do(asrUpstreamRange, traversal = 'post-order')
+z$Do(inhDownstreamRange, traversal = 'pre-order')

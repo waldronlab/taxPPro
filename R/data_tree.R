@@ -349,7 +349,7 @@ asrUpstreamLogical <- function(node) {
 #'
 #' @param node A node.
 #'
-#' @return node value
+#' @return node value.
 #' @export
 #'
 asrUpstreamNumeric <- function(node) {
@@ -380,10 +380,9 @@ asrUpstreamNumeric <- function(node) {
             for (i in seq_along(selected_children)) {
                 values[[i]] <- node[[selected_children[i]]][[attr_val]]
             }
-            node[[attr_val]] <- mean(values)
+            node[[attr_val]] <- mean(values) # If two or more are top we are getting the mean of them
             node[[attr_score]] <- max(scores / sum(scores))
             node[[attr_evi]] <- 'asr'
-
         } else {
             node[[attr_score]] <- max(scores / sum(scores))
             node[[attr_val]] <- node[[selected_children]][[attr_val]]
@@ -392,8 +391,60 @@ asrUpstreamNumeric <- function(node) {
     }
 }
 
+#' ASR / Upstream (range)
+#'
+#' \code{asrUpstreamRange} asr for range attributes
+#'
+#' @param node A node.
+#'
+#' @return A modified node.
+#' @export
+#'
 asrUpstreamRange <- function(node) {
-
+    attr_score <- grep('__Score$', node$attributesAll, value = TRUE)
+    attr_val_min <- grep('__Attribute_value_min$', node$attributesAll, value = TRUE)
+    attr_val_max <- grep('__Attribute_value_max$', node$attributesAll, value = TRUE)
+    attr_evi <- grep('__Evidence$', node$attributesAll, value = TRUE)
+    cond1 <- node$isLeaf
+    # cond2 <- is.null(attr_val_min) || is.na(attr_val_max)
+    # cond2 <- is.null(attr_val_min) || is.na(attr_val_max)
+    cond3 <- is.null(attr_score) || is.na(attr_score)
+    if (!cond1 && !cond3) {
+        children <- names(node$children)
+        scores <- vector('double', length(children))
+        for (i in seq_along(scores)) {
+            score <- node[[children[i]]][[attr_score]]
+            if (is.null(score) || is.na(score)) {
+                scores[[i]] <- 0
+            } else {
+                scores[[i]] <- score
+            }
+            names(scores)[i] <- children[i]
+        }
+        if (sum(scores) == 0) {
+            return(NULL)
+        }
+        selected_children <- names(scores)[scores / sum(scores) == max(scores / sum(scores))]
+        if (length(selected_children) > 1) {
+            min_values <- vector('double', length(selected_children))
+            for (i in seq_along(selected_children)) {
+                min_values[[i]] <- node[[selected_children[i]]][[attr_val_min]]
+            }
+            max_values <- vector('double', length(selected_children))
+            for (i in seq_along(selected_children)) {
+                max_values[[i]] <- node[[selected_children[i]]][[attr_val_max]]
+            }
+            node[[attr_val_min]] <- mean(min_values) # if two or more came on top, we're getting the mean
+            node[[attr_val_max]] <- mean(max_values) # if two or more came on top, we're getting the mean
+            node[[attr_score]] <- max(scores / sum(scores))
+            node[[attr_evi]] <- 'asr'
+        } else {
+            node[[attr_score]] <- max(scores / sum(scores))
+            node[[attr_val_min]] <- node[[selected_children]][[attr_val_min]]
+            node[[attr_val_max]] <- node[[selected_children]][[attr_val_max]]
+            node[[attr_evi]] <- 'asr'
+        }
+    }
 }
 
 #' Inheritance / Downstream (logical)
