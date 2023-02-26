@@ -344,6 +344,20 @@ asrUpstream <- function(node) {
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #' Inheritance / Downstream (logical)
 #'
 #' \code{inhDownstreamLogical} each node inherits an attribute from it's
