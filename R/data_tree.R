@@ -344,17 +344,17 @@ asrUpstream <- function(node) {
     }
 }
 
-#' Inheritance / Downstream
+#' Inheritance / Downstream (logical)
 #'
-#' \code{inhDownstream} each node inherits an attribute from it's ancestor
-#' if values are NA or NULL
+#' \code{inhDownstreamLogical} each node inherits an attribute from it's
+#' ancestor if values are NA or NULL
 #'
 #' @param node A node
 #'
 #' @return Node, R6, data.tree.
 #' @export
 #'
-inhDownstream <- function(node) {
+inhDownstreamLogical <- function(node) {
     attrs <- grep('__Score', node$attributesAll, value = TRUE)
     for (i in seq_along(attrs)) {
         if (is.null(node[[attrs[i]]]) || is.na(node[[attrs[i]]])) {
@@ -364,3 +364,48 @@ inhDownstream <- function(node) {
         }
     }
 }
+
+#' Inheritance / Downstream (numeric)
+#'
+#' \code{inhDownstreamNumeric} each node inherits an attribute from it's ancestor
+#' if values are NA or NULL
+#'
+#' @param node A node
+#'
+#' @return Node, R6, data.tree.
+#' @export
+#'
+inhDownstreamNumeric <- function(node) {
+    attr_score <- grep('__Score', node$attributesAll, value = TRUE)
+    attr_evi <- grep('__Evidence', node$attributesAll, value = TRUE)
+    attr_val <- grep('__Attribute_value', node$attributesAll, value = TRUE)
+    if (is.null(node[[attr_score]]) || is.na(node[[attr_score]])) {
+        node[[attr_score]] <- node[['parent']][[attr_score]]
+        node[[attr_val]] <- node[['parent']][[attr_val]]
+        node[[attr_evi]] <- 'inh'
+    }
+}
+
+#' Inheritance / Downstream (range)
+#'
+#' \code{inhDownstreamRange} each node inherits an attribute from it's ancestor
+#' if values are NA or NULL
+#'
+#' @param node A node
+#'
+#' @return Node, R6, data.tree.
+#' @export
+#'
+inhDownstreamRange <- function(node) {
+    attr_score <- grep('__Score', node$attributesAll, value = TRUE)
+    attr_evi <- grep('__Evidence', node$attributesAll, value = TRUE)
+    attr_val_min <- grep('__Attribute_value_min', node$attributesAll, value = TRUE)
+    attr_val_max <- grep('__Attribute_value_max', node$attributesAll, value = TRUE)
+    if (is.null(node[[attr_score]]) || is.na(node[[attr_score]])) {
+        node[[attr_score]] <- node[['parent']][[attr_score]]
+        node[[attr_val_min]] <- node[['parent']][[attr_val_min]]
+        node[[attr_val_max]] <- node[['parent']][[attr_val_max]]
+        node[[attr_evi]] <- 'inh'
+    }
+}
+
