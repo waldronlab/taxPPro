@@ -4,10 +4,10 @@
 \alias{freq2Scores}
 \title{Convert frequency values to numeric scores}
 \usage{
-freq2Scores(x)
+freq2Scores(df)
 }
 \arguments{
-\item{x}{A data frame imported with `bugphyzz::physiologies`.}
+\item{df}{A data frame imported with `bugphyzz::physiologies`.}
 }
 \value{
 A data frame. The same data frame with the additional `Score` column.

@@ -2,18 +2,18 @@
 % Please edit documentation in R/data_tree.R
 \name{addAttributes}
 \alias{addAttributes}
-\title{Add attributes to data_tree}
+\title{Add attributes to a data.tree object}
 \usage{
 addAttributes(data_tree, df)
 }
 \arguments{
 \item{data_tree}{A data.tree object.}
 
-\item{df}{A data.frame from bugphyzz}
+\item{df}{A data.frame. Output of \code{prepareData2}}
 }
 \value{
-A data.tree with extra attributes.
+A clone of the original data.tree object.
 }
 \description{
-\code{addAttributes} adds attributes to a data.tree object.
+\code{addAttributes} Adds attributes to a data.tree object
 }

@@ -37,6 +37,7 @@ Imports:
     utils,
     vroom,
     data.tree,
+    mclust
 VignetteBuilder: knitr
 URL: https://github.com/sdgamboa/taxPPro
 BugReports: https://github.com/sdgamboa/taxPPro/issues/
