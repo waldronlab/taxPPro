@@ -4,10 +4,12 @@
 \alias{toDataFrame}
 \title{toDataFrame}
 \usage{
-toDataFrame(data_tree)
+toDataFrame(data_tree, ncbi_tax)
 }
 \arguments{
 \item{data_tree}{A data.tree.}
+
+\item{ncbi_tax}{NCBI taxonomy. Output of \code{get_ncbi_taxonomy}.}
 }
 \value{
 A data.frame.

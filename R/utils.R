@@ -21,11 +21,12 @@ printDataTreeAttributes <- function(data_tree, limit = 100) {
 #' \code{toDataFrame}
 #'
 #' @param data_tree A data.tree.
+#' @param ncbi_tax NCBI taxonomy. Output of \code{get_ncbi_taxonomy}.
 #'
 #' @return A data.frame.
 #' @export
 #'
-toDataFrame <- function(data_tree) {
+toDataFrame <- function(data_tree, ncbi_tax) {
   args <- as.list(data_tree$attributesAll)
   args <- c(list(x = data_tree, row.names = NULL, optional = FALSE), args)
   df <- do.call('as.data.frame', args)
@@ -39,8 +40,10 @@ toDataFrame <- function(data_tree) {
     g = 'genus', s = 'species', t = 'strain'
   )
   df$Rank <- dict[df$Rank]
-  ncbi_tax <- get_ncbi_taxonomy()
-  ncbi_tax$Rank <- NULL
+  # ncbi_tax <- get_ncbi_taxonomy()
+  if ('Rank' %in% colnames(ncbi_tax)) {
+    ncbi_tax$Rank <- NULL
+  }
   pos <- which(colnames(ncbi_tax) == 'kingdom')
   names(ncbi_tax)[pos] <- 'domain'
   output <- dplyr::left_join(df, ncbi_tax, by = 'NCBI_ID')

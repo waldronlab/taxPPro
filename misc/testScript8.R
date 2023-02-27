@@ -11,6 +11,7 @@ tree <- data.tree::as.Node(tree_list)
 trees <- vector('list', length(data2))
 for (i in seq_along(trees)) {
     message('Propagating ', names(data2)[i])
+    names(trees)[i] <- names(data2)[i]
     trees[[i]] <- propagate(tree, data2[[i]])
 }
 ncbi_taxonomy <- get_ncbi_taxonomy()
