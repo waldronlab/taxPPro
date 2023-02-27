@@ -16,7 +16,15 @@ printDataTreeAttributes <- function(data_tree, limit = 100) {
   do.call('print', args = args)
 }
 
-
+#' toDataFrame
+#'
+#' \code{toDataFrame}
+#'
+#' @param data_tree A data.tree.
+#'
+#' @return A data.frame.
+#' @export
+#'
 toDataFrame <- function(data_tree) {
   args <- as.list(data_tree$attributesAll)
   args <- c(list(x = data_tree, row.names = NULL, optional = FALSE), args)
@@ -38,7 +46,6 @@ toDataFrame <- function(data_tree) {
   output <- dplyr::left_join(df, ncbi_tax, by = 'NCBI_ID')
   return(output)
 }
-
 
 ## Function for converting scores to frequency
 ## Input is a vector
