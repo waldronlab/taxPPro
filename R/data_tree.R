@@ -512,3 +512,24 @@ inhDownstreamRange <- function(node) {
     }
 }
 
+#' propagate
+#'
+#' \code{propagate} propagates asr/inheritance.
+#'
+#' @param data_tree A data.tree object.
+#' @param df A data.frame.
+#'
+#' @return A data.tree
+#' @export
+#'
+propagate <- function(data_tree, df) {
+    x <- addAttributes(data_tree, df)
+    x$Do(asrUpstreamLogical, traversal = 'post-order')
+    x$Do(inhDownstreamLogical, traversal = 'pre-order')
+    return(x)
+}
+
+
+
+
+

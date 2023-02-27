@@ -1,38 +1,16 @@
 library(bugphyzz)
-
-phys <- physiologies(
-    keyword = c('aerophilicity', 'optimal ph', 'width'),
-    remove_false = TRUE, full_source = FALSE
-)
-
-## logical
-aer <- phys$aerophilicity |>
-    prepareData() |>
-    prepareData2()
-
-## numeric
-ph <- phys$`optimal ph` |> # numeric
-    prepareData() |>
-    prepareData2()
-ph$Score <- sample(c(0.5, 1), length(ph$Score), replace = TRUE)
-
-## range
-w <- phys$width |> # numeric range
-    prepareData() |>
-    prepareData2()
-
-## -- ####
+library(purrr)
+phys <- physiologies(keyword = 'all', remove_false = TRUE, full_source = FALSE)
+data1 <- map(phys, prepareData)
+data1 <- discard(data1, is.null)
+data2 <- map(data1, prepareData2)
+phys_names <- c('aerophilicity', 'width', 'acetate producing')
+data2 <- data2[phys_names]
 data('tree_list')
 tree <- data.tree::as.Node(tree_list)
-
-x <- addAttributes(tree, aer)
-x$Do(asrUpstreamLogical, traversal = 'post-order')
-x$Do(inhDownstreamLogical, traversal = 'pre-order')
-
-y <- addAttributes(tree, ph)
-y$Do(asrUpstreamNumeric, traversal = 'post-order')
-y$Do(inhDownstreamNumeric, traversal = 'pre-order')
-
-z <- addAttributes(tree, w)
-z$Do(asrUpstreamRange, traversal = 'post-order')
-z$Do(inhDownstreamRange, traversal = 'pre-order')
+trees <- vector('list', length(data2))
+for (i in seq_along(trees)) {
+    message('Propagating ', names(data2)[i])
+    trees[[i]] <- propagate(tree, data2[[i]])
+}
+dfs <- map(trees, toDataFrame)

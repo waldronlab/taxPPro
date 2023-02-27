@@ -22,13 +22,18 @@
 #' @export
 #'
 prepareData <- function(df, tax.id.type = 'NCBI_ID', remove_false = FALSE) {
-    df |>
+    df <- df |>
         filterData(
             tax.id.type = tax.id.type, remove_false = remove_false
         ) |>
         freq2Scores() |>
         resolveAgreements() |>
         resolveConflicts()
+    if (!nrow(df)) {
+        return(NULL)
+    } else {
+        return(df)
+    }
 }
 
 #' Filter data for propagation
@@ -172,9 +177,9 @@ freq2Scores <- function(df) {
                 Frequency == 'usually' ~ 0.8,
                 Frequency == 'sometimes' ~ 0.5,
                 Frequency == 'rarely' ~ 0.2,
-                # Frequency == 'never' ~ 0,
-                # Frequency == 'unknown' ~ NA_real_
-                Frequency == 'unknown' ~ 0
+                Frequency == 'never' ~ 0,
+                Frequency == 'unknown' ~ NA_real_
+                # Frequency == 'unknown' ~ 0
             )
         ) |>
         dplyr::filter(!is.na(.data$Score)) |>

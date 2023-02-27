@@ -16,6 +16,30 @@ printDataTreeAttributes <- function(data_tree, limit = 100) {
   do.call('print', args = args)
 }
 
+
+toDataFrame <- function(data_tree) {
+  args <- as.list(data_tree$attributesAll)
+  args <- c(list(x = data_tree, row.names = NULL, optional = FALSE), args)
+  df <- do.call('as.data.frame', args)
+  df$levelName <- stringr::str_squish(sub('.*-', '', df$levelName))
+  df <- df[df$levelName != 'ArcBac',]
+  df <- tidyr::separate(
+    df, col = 'levelName', into = c('Rank', 'NCBI_ID'), sep = '__'
+  )
+  dict <- c(
+    d = 'domain', p = 'phylum', c = 'class', o = 'order', f = 'family',
+    g = 'genus', s = 'species', t = 'strain'
+  )
+  df$Rank <- dict[df$Rank]
+  ncbi_tax <- get_ncbi_taxonomy()
+  ncbi_tax$Rank <- NULL
+  pos <- which(colnames(ncbi_tax) == 'kingdom')
+  names(ncbi_tax)[pos] <- 'domain'
+  output <- dplyr::left_join(df, ncbi_tax, by = 'NCBI_ID')
+  return(output)
+}
+
+
 ## Function for converting scores to frequency
 ## Input is a vector
 .scores2Freq <- function(Score) {
