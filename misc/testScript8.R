@@ -27,12 +27,3 @@ dfs2 <- map(trees, ~ {
     df <- do.call('as.data.frame', args)
     return(df)
 })
-
-
-prepareData2(data1$`acetate producing`) |>
-    View()
-
-
-
-
-ifelse(phys$`optimal ph`$Frequency == 'unknown', 'always', phys$`optimal ph`$Frequency )
