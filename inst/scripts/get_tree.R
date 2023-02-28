@@ -1,7 +1,10 @@
 library(taxPPro)
 library(data.tree)
-tbl <- getNCBI()
+## The bit option allows having more taxamm, only excluding unclassified
+## bacteria
+tbl <- getNCBI(keyword = 'bit')
 tree <- as.Node(tbl[, 'pathString', drop = FALSE], pathDelimiter = '|||')
 tree$Do(addStrains)
 tree_list <- as.list(tree)
 usethis::use_data(tree_list, overwrite = TRUE)
+## starts at 10:05 finished 11:12 (a little more than an hour)

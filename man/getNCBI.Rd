@@ -4,9 +4,11 @@
 \alias{getNCBI}
 \title{Get NCBI data (tree or table)}
 \usage{
-getNCBI(format = "table")
+getNCBI(keyword = "b", format = "table")
 }
 \arguments{
+\item{keyword}{A character string. See}
+
 \item{format}{A character string. Options: 'table' or 'tree'.}
 }
 \value{

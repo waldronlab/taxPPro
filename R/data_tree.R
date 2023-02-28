@@ -96,13 +96,14 @@ taxname2taxid <- function(tax_tbl) {
 #' is in the node format of the data.tree package. For now, it only inlcudes
 #' taxa from the bacteria superkingdom/domain/kingdom.
 #'
+#' @param keyword A character string. See
 #' @param format A character string. Options: 'table' or 'tree'.
 #'
 #' @return A data.frame or a tree in data.tree format (Node, R6) .
 #' @export
 #'
-getNCBI <- function(format = 'table') {
-    ncbi_taxids <- get_ncbi_taxids(keyword = 'b', with_taxids = TRUE)
+getNCBI <- function(keyword = 'b', format = 'table') {
+    ncbi_taxids <- get_ncbi_taxids(keyword = keyword, with_taxids = TRUE)
     new_ncbi_taxids <- taxname2taxid(tax_tbl = ncbi_taxids)
     cond1 <- new_ncbi_taxids$Rank == 'species'
     # cond2 <- new_ncbi_taxids$superkingdom == '2'
@@ -113,7 +114,7 @@ getNCBI <- function(format = 'table') {
     # for (i in seq_along(bacteria)) {
     #   bacteria[[i]] <- fillNAs(bacteria[[i]])
     # }
-    bacteria <- tidyr::drop_na(bacteria)
+    bacteria <- tidyr::drop_na(bacteria) ## I'm droping all with an NA
     pathString <- paste(
         'ArcBac', # root
         '|||d__', bacteria$superkingdom,
