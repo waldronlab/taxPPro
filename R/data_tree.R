@@ -357,10 +357,10 @@ asrUpstreamNumeric <- function(node) {
     attr_score <- grep('__Score$', node$attributesAll, value = TRUE)
     attr_val <- grep('__Attribute_value$', node$attributesAll, value = TRUE)
     attr_evi <- grep('__Evidence$', node$attributesAll, value = TRUE)
-    cond1 <- node$isLeaf
-    cond2 <- is.null(attr_val) || is.na(attr_val)
-    cond3 <- is.null(attr_score) || is.na(attr_score)
-    if (!cond1 && !cond2 && !cond3) {
+    cond1 <- !node$isLeaf
+    cond2 <- is.null(node[[attr_val]]) || is.na(node[[attr_val]])
+    cond3 <- is.null(node[[attr_score]]) || is.na(node[[attr_score]])
+    if (cond1 && cond2 && cond3) {
         children <- names(node$children)
         scores <- vector('double', length(children))
         for (i in seq_along(scores)) {
@@ -409,8 +409,8 @@ asrUpstreamRange <- function(node) {
     cond1 <- node$isLeaf
     # cond2 <- is.null(attr_val_min) || is.na(attr_val_max)
     # cond2 <- is.null(attr_val_min) || is.na(attr_val_max)
-    cond3 <- is.null(attr_score) || is.na(attr_score)
-    if (!cond1 && !cond3) {
+    cond3 <- is.null(node[[attr_score]]) || is.na(node[[attr_score]])
+    if (!cond1 && cond3) {
         children <- names(node$children)
         scores <- vector('double', length(children))
         for (i in seq_along(scores)) {
@@ -525,12 +525,16 @@ inhDownstreamRange <- function(node) {
 #'
 propagate <- function(data_tree, df) {
     x <- addAttributes(data_tree, df)
-    x$Do(asrUpstreamLogical, traversal = 'post-order')
-    x$Do(inhDownstreamLogical, traversal = 'pre-order')
+    attr_type <- unique(df$Attribute_type)
+    if (attr_type == 'logical') {
+        x$Do(asrUpstreamLogical, traversal = 'post-order')
+        x$Do(inhDownstreamLogical, traversal = 'pre-order')
+    } else if (attr_type == 'numeric') {
+        x$Do(asrUpstreamNumeric, traversal = 'post-order')
+        x$Do(inhDownstreamNumeric, traversal = 'pre-order')
+    } else if (attr_type == 'range') {
+        x$Do(asrUpstreamRange, traversal = 'post-order')
+        x$Do(inhDownstreamRange, traversal = 'pre-order')
+    }
     return(x)
 }
-
-
-
-
-
