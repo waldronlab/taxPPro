@@ -16,3 +16,9 @@ for (i in seq_along(trees)) {
 }
 ncbi_taxonomy <- get_ncbi_taxonomy()
 dfs <- map(trees, ~ toDataFrame(.x, ncbi_taxonomy))
+dfs2 <- map(trees, ~ {
+    args <- as.list(.x$attributesAll)
+    args <- c(list(x = .x, row.names = NULL, optional = FALSE), args)
+    df <- do.call('as.data.frame', args)
+    return(df)
+})
