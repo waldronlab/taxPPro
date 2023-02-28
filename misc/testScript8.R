@@ -1,8 +1,13 @@
 library(bugphyzz)
 library(taxPPro)
 library(purrr)
-phys_names <- c('aerophilicity', 'width', 'acetate producing')
-phys <- physiologies(keyword = phys_names, remove_false = TRUE, full_source = FALSE)
+library(dplyr)
+fname <- system.file('extdata/links.tsv', package = 'bugphyzz')
+data <- read.table(fname, row.names = NULL, header = TRUE, sep = '\t')
+data <- data[,c('physiology', 'sig_type')]
+data <- data[data$sig_type == 'numeric', ]
+phys_names <- data[['physiology']]
+phys <- physiologies(phys_names, remove_false = TRUE, full_source = FALSE)
 data1 <- map(phys, prepareData)
 data1 <- discard(data1, is.null)
 data2 <- map(data1, prepareData2)
@@ -22,3 +27,12 @@ dfs2 <- map(trees, ~ {
     df <- do.call('as.data.frame', args)
     return(df)
 })
+
+
+prepareData2(data1$`acetate producing`) |>
+    View()
+
+
+
+
+ifelse(phys$`optimal ph`$Frequency == 'unknown', 'always', phys$`optimal ph`$Frequency )

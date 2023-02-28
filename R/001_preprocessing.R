@@ -169,6 +169,12 @@ filterData <- function(df, df_name = NULL, tax.id.type, remove_false = TRUE) {
 #' @export
 #'
 freq2Scores <- function(df) {
+    attr_type <- unique(df$Attribute_type)
+    if (attr_type %in% c('numeric', 'range')) {
+        df$Frequency <- ifelse(
+            df$Frequency == 'unknown', 'always', df$Frequency
+        )
+    }
     output <- df |>
         dplyr::mutate(
             Frequency = tolower(.data$Frequency),
@@ -186,7 +192,6 @@ freq2Scores <- function(df) {
         dplyr::distinct()
     return(output)
 }
-
 
 #' Prepare data for propagation part 2
 #'
@@ -213,16 +218,19 @@ prepareData2 <- function(df) {
             dplyr::filter(grepl('^[gst]__', .data$NCBI_ID)) |>
             dplyr::distinct()
     } else if (attr_type == 'numeric') {
+        df <- numericToRange(df)
+        df$Attribute_type <- 'range'
         select_cols <- c(
-            'NCBI_ID', 'Attribute_value', 'Evidence', 'Attribute_source',
-            'Score', 'Attribute_group', 'Attribute_type'
+            'NCBI_ID', 'Attribute_value_min', 'Attribute_value_max',
+            'Evidence', 'Attribute_source', 'Score', 'Attribute_group',
+            'Attribute_type'
         )
         output <- df |>
             dplyr::select(dplyr::all_of(select_cols)) |>
             dplyr::distinct() |>
             dplyr::group_by(.data$NCBI_ID) |>
             dplyr::mutate_at(
-                .vars = c('Attribute_value', 'Score'),
+                .vars = c('Attribute_value_min', 'Attribute_value_max', 'Score'),
                 .funs = ~ mean(.x)
             ) |>
             dplyr::mutate_at(
@@ -231,6 +239,24 @@ prepareData2 <- function(df) {
             ) |>
             dplyr::filter(grepl('^[gst]__', .data$NCBI_ID)) |>
             dplyr::distinct()
+        # select_cols <- c(
+        #     'NCBI_ID', 'Attribute_value', 'Evidence', 'Attribute_source',
+        #     'Score', 'Attribute_group', 'Attribute_type'
+        # )
+        # output <- df |>
+        #     dplyr::select(dplyr::all_of(select_cols)) |>
+        #     dplyr::distinct() |>
+        #     dplyr::group_by(.data$NCBI_ID) |>
+        #     dplyr::mutate_at(
+        #         .vars = c('Attribute_value', 'Score'),
+        #         .funs = ~ mean(.x)
+        #     ) |>
+        #     dplyr::mutate_at(
+        #         .vars = c('Evidence', 'Attribute_source'),
+        #         .funs = ~ paste0(unique(.x), collapse = '|')
+        #     ) |>
+        #     dplyr::filter(grepl('^[gst]__', .data$NCBI_ID)) |>
+        #     dplyr::distinct()
     } else if (attr_type == 'range') {
         select_cols <- c(
             'NCBI_ID', 'Attribute_value_min', 'Attribute_value_max',
@@ -255,3 +281,25 @@ prepareData2 <- function(df) {
     return(output)
 }
 
+#' Convert numeric atttributes to range
+#'
+#' \code{numericToRange} convers numeric attributes to range attributes.
+#' This function is meant to be used in \code{prepareData2}.
+#'
+#' @param df A data frame.
+#'
+#' @return A data.frame
+#' @export
+#'
+numericToRange <- function(df) {
+    df <- df |>
+        dplyr::filter(!is.na(NCBI_ID), NCBI_ID != 'unknown') |>
+        dplyr::group_by(NCBI_ID) |>
+        dplyr::mutate(
+            Attribute_value_min = min(.data$Attribute_value),
+            Attribute_value_max = max(.data$Attribute_value)
+        ) |>
+        dplyr::select(-.data$Attribute_value) |>
+        dplyr::distinct()
+    return(df)
+}
