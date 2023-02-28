@@ -2,12 +2,7 @@ library(bugphyzz)
 library(taxPPro)
 library(purrr)
 library(dplyr)
-fname <- system.file('extdata/links.tsv', package = 'bugphyzz')
-data <- read.table(fname, row.names = NULL, header = TRUE, sep = '\t')
-data <- data[,c('physiology', 'sig_type')]
-data <- data[data$sig_type == 'numeric', ]
-phys_names <- data[['physiology']]
-phys <- physiologies(phys_names, remove_false = TRUE, full_source = FALSE)
+phys <- physiologies(remove_false = TRUE, full_source = FALSE)
 data1 <- map(phys, prepareData)
 data1 <- discard(data1, is.null)
 data2 <- map(data1, prepareData2)

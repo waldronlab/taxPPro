@@ -98,9 +98,9 @@ filterData <- function(df, df_name = NULL, tax.id.type, remove_false = TRUE) {
     }
 
     if (tax.id.type == 'NCBI_ID') {
-        df <- df[!is.na(df$NCBI_ID) | df$NCBI_ID == 'unknown',]
+        df <- df[!is.na(df$NCBI_ID) & df$NCBI_ID != 'unknown',]
     } else if (tax.id.type == 'Taxon_name') {
-        df <- df[!is.na(df$Taxon_name) | df$Taxon_name == 'unknown',]
+        df <- df[!is.na(df$Taxon_name) & df$Taxon_name != 'unknown',]
     } else {
         stop(
             'At the moment, only NCBI_ID or Taxon_name are valid values for',
