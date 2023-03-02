@@ -98,9 +98,9 @@ filterData <- function(df, df_name = NULL, tax.id.type, remove_false = TRUE) {
     }
 
     if (tax.id.type == 'NCBI_ID') {
-        df <- df[!is.na(df$NCBI_ID) | df$NCBI_ID == 'unknown',]
+        df <- df[!is.na(df$NCBI_ID) & df$NCBI_ID != 'unknown',]
     } else if (tax.id.type == 'Taxon_name') {
-        df <- df[!is.na(df$Taxon_name) | df$Taxon_name == 'unknown',]
+        df <- df[!is.na(df$Taxon_name) & df$Taxon_name != 'unknown',]
     } else {
         stop(
             'At the moment, only NCBI_ID or Taxon_name are valid values for',
@@ -216,7 +216,10 @@ prepareData2 <- function(df) {
             dplyr::select(dplyr::all_of(select_cols)) |>
             dplyr::distinct() |>
             dplyr::filter(grepl('^[gst]__', .data$NCBI_ID)) |>
-            dplyr::distinct()
+            dplyr::distinct() |>
+            dplyr::group_by(.data$NCBI_ID) |>
+            dplyr::slice_max(.data$Score) |>
+            dplyr::ungroup()
     } else if (attr_type == 'numeric') {
         df <- numericToRange(df)
         df$Attribute_type <- 'range'
