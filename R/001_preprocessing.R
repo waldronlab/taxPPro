@@ -216,7 +216,10 @@ prepareData2 <- function(df) {
             dplyr::select(dplyr::all_of(select_cols)) |>
             dplyr::distinct() |>
             dplyr::filter(grepl('^[gst]__', .data$NCBI_ID)) |>
-            dplyr::distinct()
+            dplyr::distinct() |>
+            dplyr::group_by(.data$NCBI_ID) |>
+            dplyr::slice_max(.data$Score) |>
+            dplyr::ungroup()
     } else if (attr_type == 'numeric') {
         df <- numericToRange(df)
         df$Attribute_type <- 'range'
