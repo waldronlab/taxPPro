@@ -89,7 +89,6 @@ taxname2taxid <- function(tax_tbl) {
     return(tax_tbl)
 }
 
-
 #' Get NCBI data (tree or table)
 #'
 #' \code{getNCBI} gets data from the NCBI in tree or table format. Tree format

@@ -6,13 +6,13 @@
 #'
 #' @param keyword Default 'all'. Options b = base, i = informal,
 #' l = unclassified, t = uncultured.
-#' @param with_taxids Default TRUE.
+#' @param full_taxonomy Default TRUE.
 #'
 #' @return A table of taxids with taxonomic information.
 #'
 #' @export
 #'
-get_ncbi_taxids <- function(keyword = 'all', with_taxids = TRUE) {
+get_ncbi_taxids <- function(keyword = 'all', full_taxonomy = TRUE) {
     ## bilt - proc all is 'base' + 'informal' + 'unclassified' + 'uncultured'
     ## b - exclude all is 'base'
     ## blt - exclude informal is 'base' + 'unclassified' + uncultured'
@@ -44,12 +44,12 @@ get_ncbi_taxids <- function(keyword = 'all', with_taxids = TRUE) {
         col_types = readr::cols(taxid = readr::col_character())
     )
 
-    if (with_taxids) {
+    if (full_taxonomy) {
         ncbi_taxonomy <- get_ncbi_taxonomy()
         taxids_df <- ncbi_taxonomy[ncbi_taxonomy$NCBI_ID %in% taxids[[1]], ,]
-        return(taxids_df)
+        return(as.data.frame(taxids_df))
     } else {
-        return(taxids)
+        return(as.data.frame(taxids))
     }
 }
 
