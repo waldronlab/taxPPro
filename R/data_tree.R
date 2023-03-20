@@ -102,7 +102,7 @@ taxname2taxid <- function(tax_tbl) {
 #' @export
 #'
 getNCBI <- function(keyword = 'b', format = 'table') {
-    ncbi_taxids <- get_ncbi_taxids(keyword = keyword, with_taxids = TRUE)
+    ncbi_taxids <- get_ncbi_taxids(keyword = keyword)
     new_ncbi_taxids <- taxname2taxid(tax_tbl = ncbi_taxids)
     cond1 <- new_ncbi_taxids$Rank == 'species'
     # cond2 <- new_ncbi_taxids$superkingdom == '2'
