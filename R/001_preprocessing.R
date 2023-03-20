@@ -59,8 +59,8 @@ filterData <- function(df, df_name = NULL, tax.id.type, remove_false = TRUE) {
         'Taxon_name', 'NCBI_ID', 'Rank',
         'Attribute', 'Attribute_value', 'Attribute_source',
         'Attribute_value_min', 'Attribute_value_max',
-        'Evidence', 'Frequency', 'Confidence_in_curation',
-        'Parent_NCBI_ID', 'Parent_name', 'Parent_rank'
+        'Evidence', 'Frequency', 'Confidence_in_curation'
+        # 'Parent_NCBI_ID', 'Parent_name', 'Parent_rank'
     )
 
     if ('Attribute_value' %in% colnames(df)) {
