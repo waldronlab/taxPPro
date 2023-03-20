@@ -128,12 +128,6 @@ filterData <- function(df, df_name = NULL, tax.id.type, remove_false = TRUE) {
             !is.na(Evidence),
             !is.na(Frequency),
             !is.na(Confidence_in_curation),
-
-            ## Parent-related
-            !is.na(Parent_NCBI_ID),
-            !is.na(Parent_name),
-            !is.na(Parent_rank),
-            Parent_rank %in% .validParentRanks()
         ) |>
         dplyr::distinct()
 
