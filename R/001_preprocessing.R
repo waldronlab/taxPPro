@@ -182,10 +182,10 @@ freq2Scores <- function(df) {
                 Frequency == 'always' ~ 1,
                 Frequency == 'usually' ~ 0.8,
                 Frequency == 'sometimes' ~ 0.5,
-                Frequency == 'rarely' ~ 0.2,
-                Frequency == 'never' ~ 0,
-                Frequency == 'unknown' ~ NA_real_
-                # Frequency == 'unknown' ~ 0
+                # Frequency == 'rarely' ~ 0.2,
+                # Frequency == 'never' ~ 0,
+                # Frequency == 'unknown' ~ NA_real_
+                Frequency == 'unknown' ~ 0.1
             )
         ) |>
         dplyr::filter(!is.na(.data$Score)) |>

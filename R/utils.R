@@ -50,15 +50,24 @@ toDataFrame <- function(data_tree, ncbi_tax) {
   return(output)
 }
 
-## Function for converting scores to frequency
-## Input is a vector
-.scores2Freq <- function(Score) {
+#' Scores to frequency
+#'
+#' \code{scores2Freq} performs the opposite of \code{freq2scores}.
+#'
+#' @param Score A numeric vector.
+#'
+#' @return A character vector
+#' @export
+#'
+scores2Freq <- function(Score) {
     dplyr::case_when(
         Score == 1 ~ 'always',
         Score >= 0.7 & Score < 1 ~ 'usually',
         Score >= 0.4 & Score < 0.7 ~ 'sometimes',
-        Score >= 0.1 & Score < 0.4 ~ 'rarely',
-        Score < 0.1 ~ 'never'
+        # Score >= 0.1 & Score < 0.4 ~ 'rarely',
+        # Score < 0.1 ~ 'never'
+        Score >= 0.1 & Score < 0.4 ~ 'unknown',
+        Score < 0.1 ~ 'unknown'
     )
 }
 

@@ -4,13 +4,13 @@
 \alias{get_ncbi_taxids}
 \title{Get NCBI taxids}
 \usage{
-get_ncbi_taxids(keyword = "all", with_taxids = TRUE)
+get_ncbi_taxids(keyword = "all", full_taxonomy = TRUE)
 }
 \arguments{
 \item{keyword}{Default 'all'. Options b = base, i = informal,
 l = unclassified, t = uncultured.}
 
-\item{with_taxids}{Default TRUE.}
+\item{full_taxonomy}{Default TRUE.}
 }
 \value{
 A table of taxids with taxonomic information.
