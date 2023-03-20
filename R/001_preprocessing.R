@@ -56,7 +56,8 @@ prepareData <- function(df, tax.id.type = 'NCBI_ID', remove_false = FALSE) {
 filterData <- function(df, df_name = NULL, tax.id.type, remove_false = TRUE) {
 
     columns_for_propagation <- c(
-        'Taxon_name', 'NCBI_ID', 'Rank',
+        'NCBI_ID', 'Rank',
+        'Taxon_name',
         'Attribute', 'Attribute_value', 'Attribute_source',
         'Attribute_value_min', 'Attribute_value_max',
         'Evidence', 'Frequency', 'Confidence_in_curation'
