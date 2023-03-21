@@ -4,7 +4,7 @@
 \alias{getDuplicates}
 \title{Get duplicates}
 \usage{
-getDuplicates(df, cols = c("Taxon_name", "NCBI_ID"), verbose = FALSE)
+getDuplicates(df, cols = "NCBI_ID", verbose = FALSE)
 }
 \arguments{
 \item{df}{A data frame imported with bugphyzz.}

@@ -17,42 +17,19 @@
 #' @export
 #'
 getDuplicates <- function(
-        df, cols = c('Taxon_name', 'NCBI_ID'), verbose = FALSE
+        df, cols = 'NCBI_ID', verbose = FALSE
 ) {
-
     if (verbose)
         message('Looking for duplicates.')
-
-
-
-    if ('Attribute_value' %in% colnames(df)) {
-        df <- df |>
-            dplyr::filter(
-                !is.na(.data$Taxon_name) | .data$Taxon_name != 'unknown',
-                .data$Attribute != '',
-                .data$Attribute_value != FALSE
-            )
-    } else {
-         df <- df |>
-            dplyr::filter(
-                !is.na(.data$Taxon_name) | .data$Taxon_name != 'unknown'
-                # .data$Attribute != '',
-                # .data$Attribute_value != FALSE
-            )
-    }
-
     index1 <- which(duplicated(df[, cols]))
-
     if (!length(index1)) {
         if (verbose)
             message('No duplicates were found. Returning NULL')
         return(NULL)
     }
-
     index2 <- which(duplicated(df[, cols], fromLast = TRUE))
     index <- sort(unique(c(index1, index2)))
-
-    dplyr::arrange(df[index,], .data$Taxon_name)
+    dplyr::arrange(df[index,], .data$NCBI_ID)
 }
 
 #' Get agreements

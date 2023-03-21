@@ -4,18 +4,18 @@
 \alias{filterData}
 \title{Filter data for propagation}
 \usage{
-filterData(df, df_name = NULL, tax.id.type, remove_false = TRUE)
+filterData(df, df_name = NULL, remove_false = TRUE)
 }
 \arguments{
 \item{df}{A dataset from bugphyzz.}
 
 \item{df_name}{A character string. The name of the dataset.}
 
-\item{tax.id.type}{A character string. Valid options: NCBI_ID, Taxon_name.
-This may be transformed to include other taxonomy IDs.}
-
 \item{remove_false}{If TRUE, row with FALSE attribute values are removed.
 Default is FALSE.}
+
+\item{tax.id.type}{A character string. Valid options: NCBI_ID, Taxon_name.
+This may be transformed to include other taxonomy IDs.}
 }
 \value{
 A filtered version of the input data frame.

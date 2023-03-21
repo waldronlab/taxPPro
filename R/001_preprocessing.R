@@ -21,11 +21,9 @@
 #' @return A data.frame.
 #' @export
 #'
-prepareData <- function(df, tax.id.type = 'NCBI_ID', remove_false = FALSE) {
+prepareData <- function(df, remove_false = FALSE) {
     df <- df |>
-        filterData(
-            tax.id.type = tax.id.type, remove_false = remove_false
-        ) |>
+        filterData(remove_false = remove_false) |>
         freq2Scores() |>
         resolveAgreements() |>
         resolveConflicts()
@@ -53,63 +51,45 @@ prepareData <- function(df, tax.id.type = 'NCBI_ID', remove_false = FALSE) {
 #'
 #' @export
 #'
-filterData <- function(df, df_name = NULL, tax.id.type, remove_false = TRUE) {
-
-    columns_for_propagation <- c(
+filterData <- function(df, df_name = NULL, remove_false = TRUE) {
+    cols <- c(
         'NCBI_ID', 'Rank',
-        # 'Taxon_name',
-        'Attribute', 'Attribute_value', 'Attribute_source',
-        'Attribute_value_min', 'Attribute_value_max',
-        'Evidence', 'Frequency', 'Confidence_in_curation'
-        # 'Parent_NCBI_ID', 'Parent_name', 'Parent_rank'
+        'Attribute',
+        'Attribute_value', 'Attribute_value_min', 'Attribute_value_max',
+        'Evidence', 'Frequency',
+        'Attribute_source',
+        'Confidence_in_curation'
     )
-
     if ('Attribute_value' %in% colnames(df)) {
-        columns_for_propagation <- columns_for_propagation[!columns_for_propagation %in% c('Attribute_value_min', 'Attribute_value_max')]
+        cols <- cols[!cols %in% c('Attribute_value_min', 'Attribute_value_max')]
     } else {
-        columns_for_propagation <- columns_for_propagation[columns_for_propagation != 'Attribute_value']
+        cols <- cols[cols != 'Attribute_value']
     }
-
-    columns_lgl <- columns_for_propagation %in% colnames(df)
+    cols_lgl <- cols %in% colnames(df)
 
     if (!all(columns_lgl))  {
-
-        missing_cols <- columns_for_propagation[!columns_lgl]
-
+        missing_cols <- cols[!cols_lgl]
         if (!is.null(df_name)) {
             stop(
                 'These columns are required for propagation in dataset ',
                 df_name, ':',
-                paste(columns_for_propagation, collapse = ', '),
+                paste(cols, collapse = ', '),
                 '. The following columns are missing: ',
                 paste(missing_cols, collapse = ', '),
                 call. = FALSE
             )
-
         } else {
             stop(
                 'These columns are required for propagation: ',
-                paste(columns_for_propagation, collapse = ', '),
+                paste(cols, collapse = ', '),
                 '. The following columns are missing: ',
                 paste(missing_cols, collapse = ', '),
                 call. = FALSE
             )
         }
-
     }
 
-    if (tax.id.type == 'NCBI_ID') {
-        df <- df[!is.na(df$NCBI_ID) & df$NCBI_ID != 'unknown',]
-    } else if (tax.id.type == 'Taxon_name') {
-        df <- df[!is.na(df$Taxon_name) & df$Taxon_name != 'unknown',]
-    } else {
-        stop(
-            'At the moment, only NCBI_ID or Taxon_name are valid values for',
-            'the tax.id.type argument.'
-        )
-    }
-
-    if (remove_false && 'Attribute_value' %in% colnames(df)) {
+    if (remove_false && ('Attribute_value' %in% colnames(df))) {
        df <- df[which(df$Attribute_value != FALSE),]
     }
 
@@ -120,14 +100,14 @@ filterData <- function(df, df_name = NULL, tax.id.type, remove_false = TRUE) {
             Rank %in% .validRanks(),
 
             ## Attribute-related
-            !is.na(Attribute) | Attribute != '',
+            # !is.na(Attribute) | Attribute != '',
             # Attribute_value != FALSE, ## this was removed above
-            !is.na(Attribute_source),
+            # !is.na(Attribute_source),
 
             ## Evidence-related
-            !is.na(Evidence),
-            !is.na(Frequency),
-            !is.na(Confidence_in_curation),
+            # !is.na(Evidence),
+            # !is.na(Frequency),
+            # !is.na(Confidence_in_curation),
         ) |>
         dplyr::distinct()
 

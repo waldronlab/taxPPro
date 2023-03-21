@@ -4,17 +4,17 @@
 \alias{prepareData}
 \title{Preparare data for propagation part 1}
 \usage{
-prepareData(df, tax.id.type = "NCBI_ID", remove_false = FALSE)
+prepareData(df, remove_false = FALSE)
 }
 \arguments{
 \item{df}{A data.frame.}
 
-\item{tax.id.type}{A character string. Valid values are Taxon_name and
-NCBI_ID. Default is NCBI_ID.}
-
 \item{remove_false}{If TRUE, Attribute values with FALSE are removed.
 Default is FALSE.
 NCBI_ID.}
+
+\item{tax.id.type}{A character string. Valid values are Taxon_name and
+NCBI_ID. Default is NCBI_ID.}
 }
 \value{
 A data.frame.
