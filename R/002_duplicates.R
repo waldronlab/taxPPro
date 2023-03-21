@@ -187,7 +187,7 @@ resolveAgreements <- function(df) {
     tax_ids <- agreements$NCBI_ID
     attr_vals <- agreements[[attr_col]]
     index <-
-        which(df$NCBI_ID %in% taxids & df[[attr_col]] %in% attr_vals)
+        which(df$NCBI_ID %in% tax_ids & df[[attr_col]] %in% attr_vals)
     new_df <- df[-index,]
     resolved_agreements <- agreements |>
         dplyr::group_by(.data$NCBI_ID) |>
