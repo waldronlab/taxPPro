@@ -320,13 +320,9 @@ removeDuplicates <- function(df) {
 #' @export
 #'
 chooseColVal <- function(df) {
-
-    av <- df$Attribute_value
-
-    if(is.logical(av)) {
+    attr_type <- unique(df$Attribute_type)
+    if (attr_type == 'logical') {
         attr_col <- 'Attribute'
-    } else if (is.numeric(av) || is.character(av)) {
-        attr_col <- 'Attribute_value'
     }
     attr_col
 }
