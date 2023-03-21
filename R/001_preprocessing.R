@@ -185,7 +185,8 @@ prepareData2 <- function(df) {
     if (attr_type == 'logical') {
         select_cols <- c(
             'NCBI_ID', 'Attribute', 'Evidence', 'Attribute_source', 'Score',
-            'Attribute_group', 'Attribute_type'
+            'Attribute_group', 'Attribute_type', 'Confidence_in_curation',
+            'Attribute_source', 'Frequency'
         )
         output <- df |>
             dplyr::select(dplyr::all_of(select_cols)) |>
