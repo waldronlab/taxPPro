@@ -250,7 +250,7 @@ resolveConflicts <- function(df) {
 
     if (all(unresolved_lgl)) {
         msg <- paste0(
-            'There were ', length(conflict_names),
+            'There were ', length(conflict_ids),
             ' conflicts but none could be solved.'
             # ' Dropping ', total_unresolved_conflicts, ' taxa.'
         )
@@ -260,7 +260,7 @@ resolveConflicts <- function(df) {
 
     if (any(unresolved_lgl)) {
         msg <- paste0(
-            'There were ', length(conflict_names),
+            'There were ', length(conflict_ids),
             ' conflicts, but ', total_unresolved_conflicts,
             " conflicts couldn't be solved."
         )
