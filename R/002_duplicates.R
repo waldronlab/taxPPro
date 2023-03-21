@@ -101,7 +101,7 @@ getConflicts <- function(df) {
 
     conflicts <- split[n_sources > 1 & n_attributes > 1]
 
-    if(!length(conflicts)) {
+    if (!length(conflicts)) {
         message('No conflicts here.')
         return(NULL)
     }
@@ -227,9 +227,9 @@ resolveConflicts <- function(df) {
         ordered = TRUE
     )
 
-    conflict_names <- unique(conflicts$Taxon_name)
+    conflict_ids <- unique(conflicts$NCBI_ID)
     df_no_conflicts <- df |>
-        dplyr::filter(!Taxon_name %in% conflict_names)
+        dplyr::filter(!.data$NCBI_ID %in% conflict_ids)
 
     resolved_conflicts <- conflicts |>
         dplyr::group_by(Taxon_name) |>
