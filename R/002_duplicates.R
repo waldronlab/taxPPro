@@ -181,30 +181,23 @@ getDoubleAnnotations <- function(df) {
 resolveAgreements <- function(df) {
 
     agreements <- getAgreements(df)
-
     if (is.null(agreements)) {
         message('No agreements to resolve.')
         return(df)
     }
-
     attr_col <- chooseColVal(agreements)
-
     agreements$Confidence_in_curation <- factor(
         x = agreements$Confidence_in_curation,
         levels = c('low', 'medium', 'high'),
         ordered = TRUE
     )
-
-    tax_names <- agreements$Taxon_name
+    tax_ids <- agreements$NCBI_ID
     attr_vals <- agreements[[attr_col]]
-
     index <-
-        which(df$Taxon_name %in% tax_names & df[[attr_col]] %in% attr_vals)
-
+        which(df$NCBI_ID %in% taxids & df[[attr_col]] %in% attr_vals)
     new_df <- df[-index,]
-
     resolved_agreements <- agreements |>
-        dplyr::group_by(.data$Taxon_name) |>
+        dplyr::group_by(.data$NCBI_ID) |>
         dplyr::slice_max(
             order_by = dplyr::desc(.data$Confidence_in_curation),
             with_ties = FALSE
@@ -212,7 +205,6 @@ resolveAgreements <- function(df) {
         dplyr::mutate(
             Confidence_in_curation = as.character(.data$Confidence_in_curation)
         )
-
     dplyr::bind_rows(new_df, resolved_agreements)
 }
 
@@ -343,6 +335,5 @@ chooseColVal <- function(df) {
     } else if (is.numeric(av) || is.character(av)) {
         attr_col <- 'Attribute_value'
     }
-
     attr_col
 }
