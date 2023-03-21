@@ -87,15 +87,12 @@ getAgreements <- function(df) {
 #' @export
 #'
 getConflicts <- function(df) {
-
     dup <- getDuplicates(df)
-
     if (is.null(dup)) {
         message('No duplicates or conflicts here.')
         return(NULL)
     }
-
-    split <- split(dup, factor(dup$Taxon_name))
+    split <- split(dup, factor(dup$NCBI_ID))
     n_sources <- purrr::map_int(split, ~ length(unique(.x$Attribute_source)))
     n_attributes <- purrr::map_int(split, ~ {
         attr_col <- chooseColVal(.x)
@@ -108,12 +105,10 @@ getConflicts <- function(df) {
         message('No conflicts here.')
         return(NULL)
     }
-
     conflicts |>
         purrr::discard(is.null) |>
         purrr::map(~ dplyr::bind_rows(.x)) |>
         dplyr::bind_rows()
-
 }
 
 #' Get taxa with double annotations
