@@ -232,7 +232,7 @@ resolveConflicts <- function(df) {
         dplyr::filter(!.data$NCBI_ID %in% conflict_ids)
 
     resolved_conflicts <- conflicts |>
-        dplyr::group_by(Taxon_name) |>
+        dplyr::group_by(.data$NCBI_ID) |>
         dplyr::slice_max(
             order_by = dplyr::desc(.data$Confidence_in_curation),
             with_ties = TRUE
