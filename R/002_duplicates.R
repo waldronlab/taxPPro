@@ -49,38 +49,31 @@ getDuplicates <- function(
 #' \code{\link{resolveAgreements}}
 #'
 getAgreements <- function(df) {
-
     dup <- getDuplicates(df)
-
     if (is.null(dup)) {
         message('No duplicates or agreements here.')
         return(NULL)
     }
-
     attr_col <- chooseColVal(dup)
-
     agreements <- dup |>
         dplyr::count(
-            .data$Taxon_name,
+            .data$NCBI_ID,
             .data[[attr_col]]
         ) |>
         dplyr::filter(.data$n > 1)
-
 
     if (!nrow(agreements)) {
         message("No agreements detected.")
         return(NULL)
     }
 
-    tax_names <- agreements$Taxon_name
+    taxids <- agreements$NCBI_ID
     attr_vals <- agreements[[attr_col]]
-
     dup |>
         dplyr::filter(
-            .data$Taxon_name %in% tax_names,
+            .data$NCBI_ID %in% taxids,
             .data[[attr_col]] %in% attr_vals
         )
-
 }
 
 #' Get conflicts
