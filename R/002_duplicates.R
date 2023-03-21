@@ -240,7 +240,7 @@ resolveConflicts <- function(df) {
         dplyr::ungroup()
 
     conf_split <- split(
-        x = resolved_conflicts, f = factor(resolved_conflicts$Taxon_name)
+        x = resolved_conflicts, f = factor(resolved_conflicts$NCBI_ID)
     )
 
     unresolved_lgl <- conf_split |>
