@@ -16,20 +16,19 @@
 #'
 #' @export
 #'
-getDuplicates <- function(
-        df, cols = 'NCBI_ID', verbose = FALSE
-) {
+getDuplicates <- function(df, verbose = FALSE) {
     if (verbose)
         message('Looking for duplicates.')
-    index1 <- which(duplicated(df[, cols]))
+    index1 <- which(duplicated(df[, 'NCBI_ID']))
     if (!length(index1)) {
         if (verbose)
             message('No duplicates were found. Returning NULL')
         return(NULL)
     }
-    index2 <- which(duplicated(df[, cols], fromLast = TRUE))
+    index2 <- which(duplicated(df[, 'NCBI_ID'], fromLast = TRUE))
     index <- sort(unique(c(index1, index2)))
-    dplyr::arrange(df[index,], .data$NCBI_ID)
+    output <- dplyr::arrange(df[index,], .data$NCBI_ID)
+    return(output)
 }
 
 #' Get agreements
@@ -49,31 +48,51 @@ getDuplicates <- function(
 #' \code{\link{resolveAgreements}}
 #'
 getAgreements <- function(df) {
-    dup <- getDuplicates(df)
-    if (is.null(dup)) {
-        message('No duplicates or agreements here.')
-        return(NULL)
-    }
-    attr_col <- chooseColVal(dup)
-    agreements <- dup |>
-        dplyr::count(
-            .data$NCBI_ID,
-            .data[[attr_col]]
+    attr_type <- unique(df$Attribute_type)
+    dups <- getDuplicates(df)
+    if (attr_type == 'logical') {
+        cols <- c('NCBI_ID', 'Attribute', 'Attribute_value')
+        x <- dups[,cols]
+        agreements <- dplyr::count(x, NCBI_ID, Attribute, Attribute_value) |>
+            dplyr::arrange(-n) |>
+            dplyr::filter(.data$n > 1)
+    } else if (attr_type == 'range') {
+        cols <- c('NCBI_ID', 'Attribute', 'Attribute_value_min', 'Attribute_value_max')
+        x <- dups[,cols]
+        agreements <- dplyr::count(
+            x, NCBI_ID, Attribute, Attribute_value_min, Attribute_value_max
         ) |>
-        dplyr::filter(.data$n > 1)
-
+            dplyr::arrange(-n) |>
+            dplyr::filter(.data$n > 1)
+    }
     if (!nrow(agreements)) {
         message("No agreements detected.")
         return(NULL)
     }
-
-    taxids <- agreements$NCBI_ID
-    attr_vals <- agreements[[attr_col]]
-    dup |>
-        dplyr::filter(
-            .data$NCBI_ID %in% taxids,
-            .data[[attr_col]] %in% attr_vals
-        )
+    if (attr_type == 'logical') {
+        taxids <- agreements[['NCBI_ID']]
+        attr <- agreements[['Attribute']]
+        attr_vals <- agreements[['Attribute_value']]
+        output <- dups |>
+            dplyr::filter(
+                .data[['NCBI_ID']] %in% taxids,
+                .data[['Attribute']] %in% attr,
+                .data[['Attribute_value']] %in% attr_vals
+            )
+    } else if (attr_type == 'range') {
+        taxids <- agreements[['NCBI_ID']]
+        attr <- agreements[['Attribute']]
+        attr_vals_min <- agreements[['Attribute_value_min']]
+        attr_vals_max <- agreements[['Attribute_value_max']]
+        output <- dups |>
+            dplyr::filter(
+                .data[['NCBI_ID']] %in% taxids,
+                .data[['Attribute']] %in% attr,
+                .data[['Attribute_value_min']] %in% attr_vals_min,
+                .data[['Attribute_value_max']] %in% attr_vals_max
+            )
+    }
+    return(output)
 }
 
 #' Get conflicts
@@ -148,53 +167,6 @@ getDoubleAnnotations <- function(df) {
 }
 
 # Action functions --------------------------------------------------------
-
-#' Resolve agreements
-#'
-#' \code{resolveAgreements} resolves agreements.
-#'
-#' Agreements are defined as a taxon with the same annotation from two or more
-#' sources. The agreements are resolved with
-#' `dplyr::slice_max(x, with_ties = FALSE)`. So, only one source is kept,
-#' the one with the highest 'confidence in curation' value.
-#'
-#' @param df A data frame imported from bugphuyzz.
-#'
-#' @return A data frame
-#' @export
-#'
-#' @seealso
-#' \code{\link{getAgreements}}
-#'
-resolveAgreements <- function(df) {
-
-    agreements <- getAgreements(df)
-    if (is.null(agreements)) {
-        message('No agreements to resolve.')
-        return(df)
-    }
-    attr_col <- chooseColVal(agreements)
-    agreements$Confidence_in_curation <- factor(
-        x = agreements$Confidence_in_curation,
-        levels = c('low', 'medium', 'high'),
-        ordered = TRUE
-    )
-    tax_ids <- agreements$NCBI_ID
-    attr_vals <- agreements[[attr_col]]
-    index <-
-        which(df$NCBI_ID %in% tax_ids & df[[attr_col]] %in% attr_vals)
-    new_df <- df[-index,]
-    resolved_agreements <- agreements |>
-        dplyr::group_by(.data$NCBI_ID) |>
-        dplyr::slice_max(
-            order_by = dplyr::desc(.data$Confidence_in_curation),
-            with_ties = FALSE
-        ) |>
-        dplyr::mutate(
-            Confidence_in_curation = as.character(.data$Confidence_in_curation)
-        )
-    dplyr::bind_rows(new_df, resolved_agreements)
-}
 
 #' Resolve conflicts in a bugphyzz dataset
 #'
