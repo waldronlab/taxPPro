@@ -73,8 +73,6 @@ calcParentScores <- function(df) {
     return(output)
 }
 
-
-
 getDataReadyForPropagation <- function(df) {
     df$NCBI_ID[which(is.na(df$NCBI_ID))] <- 'unknown'
     df$Parent_NCBI_ID[which(is.na(df$Parent_NCBI_ID))] <- 'unknown'
@@ -114,7 +112,13 @@ getDataReadyForPropagation <- function(df) {
     df_new$NCBI_ID <- paste0(dict[df_new$Rank], df_new$NCBI_ID)
     df_new <- df_new[which(!startsWith(colnames(df_new), 'Parent'))]
     df_new <- unique(df_new)
-    return(df_new)
+    output <- df_new |>
+        resolveAgreements() |>
+        resolveConflicts() |>
+        dplyr::distinct() |>
+        as.data.frame()
+    return(output)
+
     # attr_type <- unique(x$Attribute_type)
     # cols <- c(
     #     'NCBI_ID', 'Taxon_name', 'Rank',
@@ -130,13 +134,6 @@ getDataReadyForPropagation <- function(df) {
     # }
     #
     # x_new <- unique(x_new[,cols])
-
-    ## Last preparations before using the data for ASR. Then
-    ## resolve agreements and conflicts
-    resolvedAgreements <- resolveAgreements(df_new)
-    resolvedConflicts <- resolveConflicts(resolvedAgreements)
-    # x_ready <- prepareData2(ressolvedConflicts)
-    return(resolvedConflicts)
 }
 
 resolveAgreements <- function(df) {
@@ -190,9 +187,66 @@ resolveAgreements <- function(df) {
     return(output)
 }
 
-
-
-
+resolveConflicts <- function(df) {
+    attr_type <- unique(df$Attribute_type)
+    df$Confidence_in_curation <- ifelse(
+        is.na(df$Confidence_in_curation), 'unknown', df$Confidence_in_curation
+    )
+    df$Confidence_in_curation <- factor(
+        x = df$Confidence_in_curation,
+        levels = c('unknown', 'low', 'medium', 'high'),
+        ordered = TRUE
+    )
+    if (attr_type == 'logical') {
+        output <- df |>
+            dplyr::group_by(
+                .data$NCBI_ID,
+            ) |>
+            dplyr::slice_max(
+                order_by = .data$Confidence_in_curation,
+                with_ties = TRUE
+            ) |>
+            dplyr::ungroup() |>
+            dplyr::mutate(
+                Confidence_in_curation = as.character(.data$Confidence_in_curation)
+            )
+    } else if (attr_type == 'range') {
+        ## This part is performed in three steps.
+        ## First we get the mean of values from the same source
+        output <- df |>
+            dplyr::group_by(
+                .data$NCBI_ID, .data$Attribute_source
+            ) |>
+            dplyr::mutate(
+                Attribute_value_min = mean(Attribute_value_min, na.rm = TRUE),
+                Attribute_value_max = mean(Attribute_value_max, na.rm = TRUE)
+            ) |>
+            dplyr::ungroup() |>
+            dplyr::distinct() |>
+            ## Second, we get the source with the highest confidence in
+            ## curation allowing ties.
+            dplyr::group_by(.data$NCBI_ID) |>
+            dplyr::slice_max(
+                order_by = .data$Confidence_in_curation,
+                with_ties = TRUE
+            ) |>
+            dplyr::ungroup() |>
+            dplyr::mutate(
+                Confidence_in_curation = as.character(.data$Confidence_in_curation)
+            ) |>
+            ## Third, in case there are still duplicates, because of ties,
+            ## we get the mean and combine the names of the attribute sources
+            ## into a single one separated by ';''
+            dplyr::group_by(.data$NCBI_ID) |>
+            dplyr::mutate(
+                Attribute_value_min = mean(Attribute_value_min, na.rm = TRUE),
+                Attribute_value_max = mean(Attribute_value_max, na.rm = TRUE),
+                Attribute_source = paste(sort(unique(Attribute_source)), collapse = ';')
+            ) |>
+            dplyr::distinct()
+    }
+    return(output)
+}
 
 
 

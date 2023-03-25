@@ -9,18 +9,9 @@ aer <- phys$aerophilicity
 gt <- phys$`growth temperature`
 a <- getDataReadyForPropagation(aer)
 g <- getDataReadyForPropagation(gt)
-
 a_ag <- getAgreements(a)
 g_ag <- getAgreements(g)
-
 x <- resolveAgreements(a)
 y <- resolveAgreements(g)
-
-getAgreements(x)
-getAgreements(y)
-
-
-
-
-
-
+j <- resolveConflicts(x)
+k <- resolveConflicts(y)
