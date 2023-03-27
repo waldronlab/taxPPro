@@ -11,7 +11,17 @@
 #     return(df[vct,])
 # }
 
-getDataReadyForPropagation <- function(df) {
+#' Prepare Data for Propagation
+#'
+#' \code{prepareDataForPropagation} prepares data to be used in the
+#' propagation method.
+#'
+#' @param df A data.frame.
+#'
+#' @return A data.frame
+#' @export
+#'
+prepareDatForPropagation <- function(df) {
     df$NCBI_ID[which(is.na(df$NCBI_ID))] <- 'unknown'
     df$Parent_NCBI_ID[which(is.na(df$Parent_NCBI_ID))] <- 'unknown'
     df <- df[df$Parent_NCBI_ID != 'unknown',]

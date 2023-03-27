@@ -1,4 +1,5 @@
 
+library(taxPPro)
 library(bugphyzz)
 library(purrr)
 library(dplyr)
@@ -11,3 +12,6 @@ x <- map(phys, ~ {
 })
 
 any(map_lgl(x, rlang::is_error))
+
+
+head(phys[[2]]) |> View()
