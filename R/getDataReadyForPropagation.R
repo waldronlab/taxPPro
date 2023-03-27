@@ -59,7 +59,23 @@ prepareDatForPropagation <- function(df) {
     dict <- c(genus = 'g__', species = 's__', strain = 't__')
     df_new$NCBI_ID <- paste0(dict[df_new$Rank], df_new$NCBI_ID)
     df_new <- df_new[which(!startsWith(colnames(df_new), 'Parent'))]
+
+    attr_type <- unique(df$Attribute_type)
+    cols <- c(
+        'NCBI_ID', 'Taxon_name', 'Rank',
+        'Attribute', 'Attribute_source',
+        'Evidence', 'Frequency',
+        'Attribute_type', 'Attribute_group',
+        'Confidence_in_curation', 'Score'
+    )
+    if (attr_type == 'logical') {
+        cols <- c(cols, 'Attribute_value')
+    } else if (attr_type == 'range') {
+        cols <- c(cols, c('Attribute_value_min', 'Attribute_value_max'))
+    }
+    df_new <- df_new[,cols]
     df_new <- unique(df_new)
+
     output <- df_new |>
         resolveAgreements() |>
         resolveConflicts() |>
@@ -67,21 +83,6 @@ prepareDatForPropagation <- function(df) {
         as.data.frame()
     return(output)
 
-    # attr_type <- unique(x$Attribute_type)
-    # cols <- c(
-    #     'NCBI_ID', 'Taxon_name', 'Rank',
-    #     'Attribute', 'Attribute_source',
-    #     'Evidence', 'Frequency',
-    #     'Attribute_type', 'Attribute_group',
-    #     'Confidence_in_curation', 'Score'
-    # )
-    # if (attr_type == 'logical') {
-    #     cols <- c(cols, 'Attribute_value')
-    # } else if (attr_type == 'range') {
-    #     cols <- c(cols, c('Attribute_value_min', 'Attribute_value_max'))
-    # }
-    #
-    # x_new <- unique(x_new[,cols])
 }
 
 
