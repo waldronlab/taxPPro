@@ -35,7 +35,7 @@ prepareDatForPropagation <- function(df) {
             Parent_name = paste(unique(.data$Parent_name), collapse = ';')
         ) |>
         dplyr::ungroup() |>
-        distinct()
+        dplyr::distinct()
     df <- unique(df)
     df <- freq2Scores(df)
     df_yesid <- df[which(df$NCBI_ID != 'unknown'),]
