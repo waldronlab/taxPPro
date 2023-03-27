@@ -289,3 +289,40 @@ resolveConflicts <- function(df) {
     }
     return(output)
 }
+
+#' Convert frequency values to numeric scores
+#'
+#' \code{freq2Scores} converts the keywords in the `Frequency`
+#' column of a bugphyzz dataset into numeric scores, which are added in a
+#' additional column named `Score`.
+#'
+#' @param df  A data frame imported with `bugphyzz::physiologies`.
+#'
+#' @return A data frame. The same data frame with the additional `Score` column.
+#'
+#' @export
+#'
+freq2Scores <- function(df) {
+    attr_type <- unique(df$Attribute_type)
+    if (attr_type %in% c('numeric', 'range')) {
+        df$Frequency <- ifelse(
+            df$Frequency == 'unknown', 'always', df$Frequency
+        )
+    }
+    output <- df |>
+        dplyr::mutate(
+            Frequency = tolower(.data$Frequency),
+            Score = dplyr::case_when(
+                Frequency == 'always' ~ 1,
+                Frequency == 'usually' ~ 0.8,
+                Frequency == 'sometimes' ~ 0.5,
+                # Frequency == 'rarely' ~ 0.2,
+                # Frequency == 'never' ~ 0,
+                # Frequency == 'unknown' ~ NA_real_
+                Frequency == 'unknown' ~ 0.1
+            )
+        ) |>
+        dplyr::filter(!is.na(.data$Score)) |>
+        dplyr::distinct()
+    return(output)
+}
