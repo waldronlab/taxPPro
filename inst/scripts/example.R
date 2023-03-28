@@ -7,7 +7,11 @@ library(data.tree)
 
 phys_names <- c('aerophilicity', 'growth temperature')
 phys <- physiologies(phys_names, remove_false = TRUE, full_source = FALSE)
-phys <- map(phys, ~ select(.x, -Accession_ID, -Genome_ID))
+phys <- map(phys, ~ distinct(select(.x, -Accession_ID, -Genome_ID)))
+fname <- system.file('extdata/attributes.tsv', package = 'bugphyzz')
+attributes <- read.table(fname, header = TRUE, sep = '\t')
+phys <- map(phys, ~ filter(.x, Attribute %in% unique(attributes$attribute)))
+phys <- keep(phys, ~ nrow(.x) > 0)
 data_ready <- vector('list', length(phys))
 for (i in seq_along(data_ready)) {
     message('Preparing ', names(phys)[i])
@@ -24,10 +28,8 @@ if (any(vct_lgl))  {
     message('Removing data with errors.')
     data_ready <- discard(data_ready, is_error)
 }
-
 data('tree_list')
 tree <- as.Node(tree_list)
-
 propagated <- vector('list', length(data_ready))
 for (i in seq_along(propagated)) {
     message('Propagating ', names(data_ready)[i], ' - ', Sys.time())
@@ -41,7 +43,6 @@ for (i in seq_along(propagated)) {
 }
 ncbi_taxonomy <- get_ncbi_taxonomy()
 dfs <- map(propagated, ~ toDataFrame(.x, ncbi_tax = ncbi_taxonomy))
-
 for (i in seq_along(dfs)) {
     if (names(dfs)[i] %in% names(phys)) {
         dfs[[i]]$Attribute_group <- unique(phys[[names(dfs[i])]]$Attribute_group)
@@ -130,3 +131,4 @@ unlink(fname)
 con <- bzfile(fname, "w")
 write.csv(full_dump, file = con, quote = TRUE)
 close(con)
+
