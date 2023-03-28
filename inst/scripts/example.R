@@ -3,6 +3,7 @@ library(taxPPro)
 library(purrr)
 library(rlang)
 library(dplyr)
+library(data.tree)
 
 phys_names <- c('aerophilicity', 'growth temperature')
 phys <- physiologies(phys_names, remove_false = TRUE, full_source = FALSE)
@@ -47,6 +48,16 @@ for (i in seq_along(dfs)) {
         dfs[[i]]$Attribute_type <- unique(phys[[names(dfs[i])]]$Attribute_type)
     }
 }
+
+data_ready <- data_ready |>
+    map(~ {
+        attr_type <- unique(.x$Attribute_type)
+        if (attr_type == 'logical')  {
+            .x$Attribute <- paste0(.x$Attribute_group, ':', .x$Attribute)
+        }
+        .x
+    })
+
 
 output <- vector('list', length(dfs))
 for (i in seq_along(output)) {
@@ -98,9 +109,24 @@ for (i in seq_along(output)) {
 }
 
 full_dump <- reduce(output, bind_rows)
+full_dump <- full_dump |>
+    mutate(
+        Rank = case_when(
+            grepl('t__', full_dump$NCBI_ID) ~ 'strain',
+            grepl('s__', full_dump$NCBI_ID) ~ 'species',
+            grepl('g__', full_dump$NCBI_ID) ~ 'genus',
+            grepl('f__', full_dump$NCBI_ID) ~ 'family',
+            grepl('o__', full_dump$NCBI_ID) ~ 'order',
+            grepl('c__', full_dump$NCBI_ID) ~ 'class',
+            grepl('p__', full_dump$NCBI_ID) ~ 'phylum',
+            grepl('d__', full_dump$NCBI_ID) ~ 'domain',
+            TRUE ~ Rank),
+        Attribute = sub(' ', '_', Attribute)
+    )
+full_dump$NCBI_ID <- sub('^[dpcofgst]__', '', full_dump$NCBI_ID)
+
 fname <- paste0("full_dump_bugphyzz_", Sys.Date(), ".csv.bz2")
 unlink(fname)
 con <- bzfile(fname, "w")
 write.csv(full_dump, file = con, quote = TRUE)
 close(con)
-
