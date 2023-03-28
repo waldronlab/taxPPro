@@ -71,6 +71,7 @@ for (i in seq_along(output)) {
             k <- k[which(!is.na(k$Evidence)),]
             k <- k[which(k$Evidence %in% c('asr', 'inh')),]
             k$Frequency <- scores2Freq(k$Score)
+            k <- k[which(k$Frequency != 'unknown'),]
             k
         })
         names(data) <- attr_names
@@ -90,6 +91,7 @@ for (i in seq_along(output)) {
         data <- data[which(!is.na(data$Evidence)),]
         data <- data[which(data$Evidence %in% c('asr', 'inh')),]
         data$Frequency <- scores2Freq(data$Score)
+        data <- data[which(data$Frequency != 'unknown'),]
         data <- bind_rows(data_ready[[names(dfs)[i]]], data)
         output[[i]] <- data
     }
