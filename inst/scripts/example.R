@@ -5,9 +5,18 @@ library(rlang)
 library(dplyr)
 library(data.tree)
 
-phys_names <- c('aerophilicity', 'growth temperature')
+# phys_names <- c('aerophilicity', 'growth temperature')
+phys_names <- 'all'
 phys <- physiologies(phys_names, remove_false = TRUE, full_source = FALSE)
-phys <- map(phys, ~ distinct(select(.x, -Accession_ID, -Genome_ID)))
+phys <- map(phys, ~ {
+    if ('Accession_ID' %in% colnames(.x)) {
+        .x <- distinct(select(.x, -Accession_ID))
+    }
+    if ('Genome_ID' %in% colnames(.x)) {
+        .x <- distinct(select(.x, -Genome_ID))
+    }
+    .x
+})
 fname <- system.file('extdata/attributes.tsv', package = 'bugphyzz')
 attributes <- read.table(fname, header = TRUE, sep = '\t')
 phys <- map(phys, ~ filter(.x, Attribute %in% unique(attributes$attribute)))
