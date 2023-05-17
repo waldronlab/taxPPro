@@ -17,11 +17,13 @@
 #' propagation method.
 #'
 #' @param df A data.frame.
+#' @param resolve Logical value. If TRUE (deafulat) resolve agreements,
+#' conflicts, and double annotations.
 #'
 #' @return A data.frame
 #' @export
 #'
-prepareDatForPropagation <- function(df) {
+prepareDatForPropagation <- function(df, resolve = TRUE) {
     df$NCBI_ID[which(is.na(df$NCBI_ID))] <- 'unknown'
     df$Parent_NCBI_ID[which(is.na(df$Parent_NCBI_ID))] <- 'unknown'
     df <- df[df$Parent_NCBI_ID != 'unknown',]
@@ -76,13 +78,16 @@ prepareDatForPropagation <- function(df) {
     df_new <- df_new[,cols]
     df_new <- unique(df_new)
 
-    output <- df_new |>
-        resolveAgreements() |>
-        resolveConflicts() |>
-        dplyr::distinct() |>
-        as.data.frame()
-    return(output)
-
+    if (resolve) {
+        output <- df_new |>
+            resolveAgreements() |>
+            resolveConflicts() |>
+            dplyr::distinct() |>
+            as.data.frame()
+        return(output)
+    } else {
+        return(df_new) 
+    }
 }
 
 

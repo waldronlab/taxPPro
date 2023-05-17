@@ -4,10 +4,13 @@
 \alias{prepareDatForPropagation}
 \title{Prepare Data for Propagation}
 \usage{
-prepareDatForPropagation(df)
+prepareDatForPropagation(df, resolve = TRUE)
 }
 \arguments{
 \item{df}{A data.frame.}
+
+\item{resolve}{Logical value. If TRUE (deafulat) resolve agreements,
+conflicts, and double annotations.}
 }
 \value{
 A data.frame
