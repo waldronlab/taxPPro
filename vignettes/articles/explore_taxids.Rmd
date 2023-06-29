@@ -1,0 +1,131 @@
+---
+title: "Explore taxid data"
+output:
+    html_document:
+        toc: true
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, message=FALSE, warning=FALSE}
+library(taxPPro)
+library(purrr)
+library(dplyr)
+library(bugphyzz)
+# taxizedb::db_download_ncbi(verbose = TRUE, overwrite = TRUE)
+```
+
+We need to choose a reference for:
+1) Building the data structure (tree) for bugphyzz.
+2) Calculating completeness.
+
+Based on the [NCBI Taxonomy Statistics page](https://www.ncbi.nlm.nih.gov/Taxonomy/taxonomyhome.html/index.cgi?chapter=statistics&unclassified=hide&uncultured=hide&period=&from=&to=),
+the best option is to exclude unclassified and uncultured organisms to build the
+tree. This will allow us to map most of the taxids annotated in bugphyzz
+(genus, species, and strain levels) to the data structure for propagation
+(ASR and inheritance).
+
+```{r}
+my_ranks <- c('genus', 'species', 'strain')
+fname <- system.file(
+  'extdata/proc_exclude_unclassified_uncultured_06292023.txt',
+  package = 'taxPPro', mustWork = TRUE
+)
+taxids <- read.table(fname, header = FALSE)[[1]]
+taxids_ranks <- taxizedb::taxid2rank(taxids, db = 'ncbi')
+taxids_df <- data.frame(id = taxids, rank = taxids_ranks)
+taxids_separated <- taxids_df |> 
+  {\(y) split(y, factor(y$rank))}() |> 
+  map(~ .x$id) |> 
+  {\(y) y[my_ranks]}()
+map_int(taxids_separated, length)
+```
+
+
+Let's compare the taxids originally annotated in bugphyzz against these sets
+of taxids (excluding unclassified and uncultured).
+
+```{r, message=FALSE, warning=FALSE}
+phys <- physiologies(remove_false = TRUE, full_source = FALSE)
+bpids <- phys |> 
+  map(~ .x$NCBI_ID) |> 
+  unlist(recursive = TRUE, use.names = FALSE) |> 
+  unique() |> 
+  as.integer() |> 
+  {\(y) y[!is.na(y)]}() |> 
+  as.character()
+bpids_ranks <- taxizedb::taxid2rank(bpids, db = 'ncbi')
+bpids_df <- data.frame(id = bpids, rank = bpids_ranks)
+bpids_separated <- bpids_df |> 
+  {\(y) split(y, factor(y$rank))}() |> 
+  map(~ .x$id) |> 
+  {\(y) y[my_ranks]}()
+map_int(bpids_separated, length)
+```
+
+
+```{r}
+map2_dbl(bpids_separated, taxids_separated, ~ mean(.x %in% .y)) * 100
+```
+
+First glance at completeness
+
+```{r}
+map2_dbl(taxids_separated, bpids_separated, ~ mean(.x %in% .y)) * 100
+```
+
+
+
+```{r}
+pos <- which(!bpids_separated$species %in% taxids_separated$species)
+no_bpids <- bpids_separated$species[pos]
+```
+
+
+```{r}
+taxizedb::classification(sample(no_bpids, 10, replace = FALSE), db = 'ncbi')
+```
+
+
+
+
+
+
+
+```{r}
+ranks <- c(
+    'superkingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species'
+)
+```
+
+
+```{r}
+```
+
+
+```{r}
+output <- taxizedb::classification(taxids, db = 'ncbi')
+output_na <- keep(output, ~any(is.na(.x)))
+
+```
+
+```{r}
+id_ranks <- taxizedb::taxid2rank(taxids, db = 'ncbi')
+```
+
+
+```{r}
+
+```
+
+
+
+
+
+
+
