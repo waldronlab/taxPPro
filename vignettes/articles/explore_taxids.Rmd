@@ -71,7 +71,7 @@ str(taxids_ls2, max.level = 2, vec.len = 1)
 
 Import bugphyzz physiologies:
 
-```{r}
+```{r, message=FALSE}
 phys <- physiologies(remove_false = TRUE, full_source = FALSE)
 ```
 
@@ -111,7 +111,13 @@ DT::datatable(
   caption = 'Table 2. Percentage of bugphyzz taxa also annotated in the NCBI sets per rank.'
 )
 ```
-# Creating a data.tree stucture based on strains
+# Creating a data.tree stucture based on strains using the exclude unclassified and uncultured set
+
+We could create a data.tree structure using the strains, but the number of
+species is less. Maybe, because not all of the species have strains in the
+NCBI.
+
+All of the species with strains are represented in all of the NCBI sets:
 
 ```{r}
 uu_strains <- taxids_ls2$exclude_unclassified_uncultured$strain
@@ -122,51 +128,78 @@ uu_strains_sp <- unique(uu_strains_tbl$species)
 map(taxids_ls2, ~ round(mean(uu_strains_sp %in% .x$species) * 100))
 ```
 
-```{r}
-exclude_all_sp <- taxids_ls2$exclude_all$species
-sp_children_strain <- taxizedb::children(exclude_all_sp) |> 
-  discard(~ !nrow(.x)) |> 
-  bind_rows() |> 
-  filter(rank == 'strain')
-nrow(sp_children_strain)
-```
+But not the other way around. Species in the different NCBI sets would not 
+be fully represented in a tree constucted based on strains:
 
 ```{r}
-mean(bp_ids_ls$strain %in% sp_children_strain$id)
+map(taxids_ls2, ~ round(mean(.x$species %in% uu_strains_sp) * 100))
+## the percentage of include_all is so low because it includes so many more
+## species
 ```
-
-```{r}
-ust2 <- drop_na(uu_strains_tbl)
-```
-
-```{r}
-mean(bp_ids_ls$genus %in% ust2$genus)
-```
+# Create a tree based on species using the exlude_all set
 
 
 ```{r}
-mean(bp_ids_ls$species %in% ust2$species)
+exall_sp <- taxids_ls2$exclude_all$species
+exall_sp_class <- taxizedb::classification(exall_sp, db = 'ncbi')
+exall_sp_tbl <- map(exall_sp_class, classif2Table) |> 
+  bind_rows()
+exall_sp_sp <- unique(exall_sp_tbl$species)
+map(taxids_ls2, ~ round(mean(exall_sp_sp %in% .x$species) * 100))
+```
+All parent species are included
+
+```{r}
+mean(uu_strains_sp %in% exall_sp_sp)
+```
+
+Can we get the same result getting children taxa from species?
+
+```{r}
+exall_sp_children <- taxizedb::children(exall_sp_sp, db = 'ncbi')
+exall_sp_children <- discard(exall_sp_children, ~ !nrow(.x))
+exall_sp_children <- map(exall_sp_children, as.data.frame)
+exall_sp_children <- bind_rows(exall_sp_children)
+exall_sp_children_strain <- filter(exall_sp_children, rank == 'strain')
 ```
 
 ```{r}
-mean(bp_ids_ls$strain %in% ust2$strain)
+mean(taxids_ls2$exclude_unclassified_uncultured$strain %in% exall_sp_children_strain$id)
 ```
 
-Creating a data strucutre based on strains is not a good idea. A good chunk
-of genera (from 100 to 63) and species (from 71 to 40) gets dropped.
+The set exclude_unclassified_uncultured has the most coverage of bugphyzz
+annotations: 
+
+```{r}
+mean(bp_ids_ls$strain %in% taxids_ls2$exclude_unclassified_uncultured$strain)
+```
+
+Getting chid strains from species in the exclude all seems a good compromise.
+Still Most of the bugphyzz annotatiosn will be used.
+
+```{r}
+mean(bp_ids_ls$strain %in% exall_sp_children_strain$id)
+```
 
 
-# Creating a tree based on species
+# Final comments
 
+No matter which phhylognetic or taxonomy tree is used, some bugphyzz annotations
+will not be used for the propagation step. The best compromise in size of the
+tree, performance, and number of bugphyzz annotations used would be:
 
++ Create a tree with the exclude all set using the species.
++ Use the taxizedb::children function to get child strains.
++ Add extra genera annotated in bugphyzz (if possible).
++ Add extra species annotated in bugphyzz (if possuible).
++ Add extra strains annotated in bugphyzz (if possible).
++ Save tree as a list in exported data.
 
-Given the information above, the option of excluding the unclassified and 
-uncultured taxa from the NCBI taxonomy gives the most coverage of genera,
-species, and strains without adding too many unclassified taxa.
+Note tha the steps above allow for polytomies, which would not be possible
+with a phylogenetic tree and a formal ASR method.
 
 # Session information
 
 ```{r}
 sessioninfo::session_info()
 ```
-
