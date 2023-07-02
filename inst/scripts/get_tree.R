@@ -40,7 +40,7 @@ merged_sp_st <- left_join(
     distinct() |>
     mutate(strain = ifelse(is.na(strain), '', strain))
 
-phys <- physiologies(remove_false = TRUE, full_source = FALSE)
+phys <- bugphyzz:::physiologies(remove_false = TRUE, full_source = FALSE)
 bp_ids <- map(phys, ~ .x$NCBI_ID) |>
     unlist(use.names = FALSE, recursive = TRUE) |>
     unique() |>
