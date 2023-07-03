@@ -65,7 +65,6 @@ final_tbl <- bind_rows(merged_sp_st, extra_tbl_sp) |>
     distinct()
 
 df <- data.frame(
-
     pathString = paste0(
         'ArcBac|',
         'd__', final_tbl$superkingdom,
