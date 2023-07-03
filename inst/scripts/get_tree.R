@@ -80,3 +80,5 @@ df$pathString <- sub('\\|t__$', '', df$pathString)
 tree <- as.Node(df[, 'pathString', drop = FALSE], pathDelimiter = '|')
 tree_list <- as.list(tree)
 usethis::use_data(tree_list, overwrite = TRUE)
+## This whole procedure takes about 10 minutes (local machine).
+## This is an improvement. It took about 1 hr before.
