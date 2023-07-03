@@ -59,7 +59,8 @@ extra_tbl_sp <- map(extra_class_sp, classif2Table) |>
     distinct()
 
 final_tbl <- bind_rows(merged_sp_st, extra_tbl_sp) |>
-    distinct()
+    distinct() |>
+    mutate(strain = ifelse(is.na(strain), '', strain))
 df <- data.frame(
     pathString = paste0(
         'ArcBac|',
