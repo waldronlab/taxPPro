@@ -33,13 +33,11 @@ exclude_uu_st_tbl <- exclude_uu_st_class |>
     drop_na() |>
     filter(superkingdom %in% c('2', '2157')) |>
     select(species, strain)
-
 merged_sp_st <- left_join(
     exclude_all_sp_tbl, exclude_uu_st_tbl, by = 'species',
 ) |>
     distinct() |>
     mutate(strain = ifelse(is.na(strain), '', strain))
-
 phys <- bugphyzz:::physiologies(remove_false = TRUE, full_source = FALSE)
 bp_ids <- map(phys, ~ .x$NCBI_ID) |>
     unlist(use.names = FALSE, recursive = TRUE) |>
@@ -49,7 +47,6 @@ bp_ids <- map(phys, ~ .x$NCBI_ID) |>
 bp_ranks <- taxizedb::taxid2rank(bp_ids, db = 'ncbi')
 names(bp_ranks) <- bp_ids
 bp_ids_sp <- names(bp_ranks)[which(bp_ranks == 'species')]
-
 extra_ids_sp <- bp_ids_sp[!bp_ids_sp %in% merged_sp_st$species]
 extra_class_sp <- taxizedb::classification(extra_ids_sp, db = 'ncbi')
 extra_tbl_sp <- map(extra_class_sp, classif2Table) |>
@@ -63,7 +60,6 @@ extra_tbl_sp <- map(extra_class_sp, classif2Table) |>
 
 final_tbl <- bind_rows(merged_sp_st, extra_tbl_sp) |>
     distinct()
-
 df <- data.frame(
     pathString = paste0(
         'ArcBac|',
