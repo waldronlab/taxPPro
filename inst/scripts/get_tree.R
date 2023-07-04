@@ -79,12 +79,24 @@ tree <- as.Node(df[, 'pathString', drop = FALSE], pathDelimiter = '|')
 tree_list <- as.list(tree)
 
 tbl_for_tree <- final_tbl |>
-    mutate(root = 'ArcBac') |>
+    rename(domain = superkingdom) |>
+    mutate(
+        root = 'ArcBac',
+        domain = paste0('d__', domain),
+        phylum = paste0('p__', phylum),
+        class = paste0('c__', class),
+        order = paste0('o__', order),
+        family = paste0('f__', family),
+        genus = paste0('g__', genus),
+        species = paste0('s__', species)
+
+    ) |>
     relocate(root) |>
     select(-strain) |>
     distinct()
 
 tree_sp <- TreeSummarizedExperiment::toTree(tbl_for_tree)
+tree_sp$node.label <- sub('^.*:', '', tree_sp$node.label)
 
 usethis::use_data(tree_list, overwrite = TRUE)
 usethis::use_data(tree_sp, overwrite = TRUE)
