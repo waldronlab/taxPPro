@@ -4,6 +4,7 @@ library(taxPPro)
 library(data.tree)
 library(tidyr)
 library(bugphyzz)
+library(treeio)
 
 fname1 <- system.file(
     'extdata/proc_exclude_all_06292023.txt',
@@ -76,6 +77,16 @@ df <- data.frame(
 df$pathString <- sub('\\|t__$', '', df$pathString)
 tree <- as.Node(df[, 'pathString', drop = FALSE], pathDelimiter = '|')
 tree_list <- as.list(tree)
+
+tbl_for_tree <- final_tbl |>
+    mutate(root = 'ArcBac') |>
+    relocate(root) |>
+    select(-strain) |>
+    distinct()
+
+tree_sp <- TreeSummarizedExperiment::toTree(tbl_for_tree)
+
 usethis::use_data(tree_list, overwrite = TRUE)
+usethis::use_data(tree_sp, overwrite = TRUE)
 ## This whole procedure takes about 10 minutes (local machine).
 ## This is an improvement. It took about 1 hr before.
