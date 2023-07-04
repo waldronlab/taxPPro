@@ -96,3 +96,20 @@ x <- tidyr::complete(
 end_time <- Sys.time()
 elapsed_time <- end_time - start_time
 elapsed_time
+
+
+
+
+
+# after -------------------------------------------------------------------
+
+mat <- x |>
+    select(-Evidence) |>
+    pivot_wider(
+        names_from = 'Attribute', values_from = 'Score'
+    ) |>
+    filter(!grepl('^[st]__', NCBI_ID)) |>
+    tibble::column_to_rownames(var = 'NCBI_ID') |>
+    as.matrix()
+
+data('tree_sp')
