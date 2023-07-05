@@ -13,6 +13,13 @@ aer <- physiologies('aerophilicity', remove_false = TRUE, full_source = FALSE)[[
     #     NCBI_ID = paste0(letter, '__', NCBI_ID)
     # ) |>
     prepareDatForPropagation()
+
+aer <- aer |>
+    group_by(NCBI_ID) |>
+    mutate(Score = Score / sum(Score)) |>
+    ungroup()
+
+
 l <- split(aer, factor(aer$NCBI_ID))
 l[['g__561']] <- NULL
 
@@ -85,8 +92,8 @@ tree$Do(myFun, traversal = 'post-order')
 tree$Do(myFun2, traversal = 'pre-order')
 tables <- tree$Get(function(node) node[['table']], simplify = FALSE) |>
     purrr::discard(~ all(is.na(.x)))
-main_table <- dplyr::bind_rows(tables) |>
-    dplyr::filter(Evidence %in% c('asr', 'inh'))
+main_table <- dplyr::bind_rows(tables)
+    # dplyr::filter(Evidence %in% c('asr', 'inh'))
 
 x <- tidyr::complete(
     main_table, NCBI_ID, Attribute, fill = list(Score = 0, Evidence = NA)
@@ -97,19 +104,48 @@ end_time <- Sys.time()
 elapsed_time <- end_time - start_time
 elapsed_time
 
+## Plotting a tree or some branches ####
 
+library(tidytree)
+library(ggtree)
+library(TreeTools)
+library(purrr)
 
+data('tree_sp')
+sub_trees <- ape::subtrees(tree_sp)
+fam_tree <- keep(sub_trees, ~ .x$node.label[1] == 'f__543')[[1]]
+# fam_tree <- keep(sub_trees, ~ .x$node.label[1] == 'g__561')[[1]]
+new_tree <- RRphylo::fix.poly(fam_tree, type = 'resolve')
 
+# new_tree <- fam_tree
 
-# after -------------------------------------------------------------------
-
-mat <- x |>
+stats <- x |>
     select(-Evidence) |>
     pivot_wider(
         names_from = 'Attribute', values_from = 'Score'
     ) |>
-    filter(!grepl('^[st]__', NCBI_ID)) |>
-    tibble::column_to_rownames(var = 'NCBI_ID') |>
-    as.matrix()
+    filter(NCBI_ID %in% fam_tree$node.label) |>
+    # filter(!grepl('^[st]__', NCBI_ID)) |>
+    rename(node = NCBI_ID)
+    # tibble::column_to_rownames(var = 'NCBI_ID') |>
+    # as.matrix()
 
-data('tree_sp')
+
+palette('Tableau 10')
+attrs <- colnames(stats)[2:10]
+cols <- setNames(palette()[1:length(unique(attrs))],sort(unique(attrs)))
+pies <- nodepie(stats, cols = 2:10)
+pies <- lapply(pies, function(g) g + scale_fill_manual(values = cols))
+p <- ggtree(new_tree, branch.length = 'none') +
+    geom_tiplab() +
+    # geom_tippoint(aes(color = stat)) +
+    scale_color_manual(values = cols) +
+    theme(legend.position = "right")
+    # xlim(NA, 8)
+p2 <- p + ggtree::geom_inset(pies, width = 0.1, height = 0.1)
+
+
+# ggsave(filename = 'test.png', p2)
+# fam_tree <- keep(sub_trees, ~ .x$node.label[1] == 'f__543')[[1]]
+# fam_tree <- keep(sub_trees, ~ .x$node.label[1] == 'f__543')[[1]]
+
