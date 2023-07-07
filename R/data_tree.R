@@ -58,7 +58,7 @@ asr <- function(node) {
         ## For higher ranks (root and family and upwards) only perform ASR
         ## if we have information of about a determined percentage of
         ## child nodes
-        min_per <- 1
+        min_per <- 0.1
         cond_1 <- grepl('^(ArcBac|[dpcof]__)', node$name)
         cond_2 <- mean(cond_null) < min_per
         if (cond_1 && cond_2) {
