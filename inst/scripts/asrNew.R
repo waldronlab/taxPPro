@@ -34,6 +34,14 @@ tree$Do(function(node) {
     }
 })
 
+tree$d__2$p__1224$c__1236$o__91347$f__543$g__561$s__562$table
+
+tree$Do(function(node) {
+    node[['table']] <- NULL
+}
+
+)
+
 calcParent <- function(tbl) {
     tbl |>
         dplyr::group_by(NCBI_ID) |>
@@ -90,6 +98,8 @@ myFun2 <- function(node) {
 
 tree$Do(myFun, traversal = 'post-order')
 tree$Do(myFun2, traversal = 'pre-order')
+
+
 tables <- tree$Get(function(node) node[['table']], simplify = FALSE) |>
     purrr::discard(~ all(is.na(.x)))
 main_table <- dplyr::bind_rows(tables)

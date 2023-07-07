@@ -1,4 +1,118 @@
 
+#' Calculate parent score
+#'
+#' \code{calcParentScore} calculates parent score based on taxa children.
+#' First, the score for each attribute is normalized by taxid. Then,
+#' the score is added for all taxa and re-normalized.
+#'
+#' @param tbl A data.frame. This data.frame should be stored in a data.tree
+#' node.
+#'
+#' @return A data.frame
+#' @export
+#'
+calcParentScore <- function(tbl) {
+    tbl |>
+        # dplyr::group_by(NCBI_ID) |>
+        # dplyr::mutate(Score =  Score / sum(Score)) |>
+        # dplyr::mutate(Score = ifelse(is.na(Score), 0, Score)) |>
+        dplyr::group_by(Attribute) |>
+        dplyr::reframe(
+            Score = sum(Score)
+            # Evidence = paste0(Evidence, collapse = '|'),
+        ) |>
+        dplyr::mutate(Score = Score / sum(Score)) |>
+        dplyr::mutate(Score = ifelse(is.na(Score), 0, Score))
+    # dplyr::mutate(Evidence = sub('^(\\|*)', '', Evidence)) |>
+    # dpyr::mutate(Evidence = sub('\\|\\|+', '|', Evidence))
+}
+
+#' asr
+#'
+#' \code{asr} Performs a custom function for ancestral state reconstruction.
+#' It actually is a weighted majority vote for the parent node. This function
+#' is meant to used with transversion functions (Do) in a data.tree object.
+#'
+#' @param node A node from a data.tree object.
+#'
+#' @return None. This functions modifies the data.tree object (R6).
+#' @export
+#'
+asr <- function(node) {
+    ## Only perform ASR if node has no data and is not a leaf
+    cond1 <- is.null(node[['table']])
+    cond2 <- !node$isLeaf
+    if (cond1 && cond2) {
+        children <- names(node$children)
+        output <- vector('list', length(children))
+        for (i in seq_along(output)) {
+            output[[i]] <- node[[children[i]]]$table
+        }
+
+        ## Don't attempt ASR if there is no data about the children
+        cond_null <- purrr::map_lgl(output, is.null)
+        if (all(cond_null)) {
+            return(invisible(NULL))
+        }
+
+        ## For higher ranks (root and family and upwards) only perform ASR
+        ## if we have information of about a determined percentage of
+        ## child nodes
+        min_per <- 1
+        cond_1 <- grepl('^(ArcBac|[dpcof]__)', node$name)
+        cond_2 <- mean(cond_null) < min_per
+        if (cond_1 && cond_2) {
+            return(NULL)
+        }
+
+        if (!all(cond_null)) {
+            df <- purrr::discard(output, is.null) |>
+                dplyr::bind_rows() |>
+                dplyr::select(
+                    NCBI_ID, Attribute, Score, # Evidence #, Attribute_source
+                ) |>
+                calcParentScore() |>
+                dplyr::mutate(
+                    NCBI_ID = node$name,
+                    Evidence = 'asr'
+                ) |>
+                dplyr::relocate(NCBI_ID)
+            node[['table']] <- df
+        }
+    }
+}
+
+#' inh
+#'
+#' \code{inh} inheritance from parent node to children nodes. This functions is
+#' meant to be used with DO while traversing a data.tree object.
+#'
+#' @param node A node from a data.tree object.
+#'
+#' @return None. This functions modifies the data.tree object (R6).
+#' @export
+#'
+inh <- function(node) {
+
+    if (node$isRoot) {
+        return(NULL)
+    }
+
+    if (is.null(node[['parent']][['table']])) {
+        return(NULL)
+    }
+
+    if (is.null(node[['table']])) {
+        df <- node[['parent']][['table']]
+        df <- df |>
+            dplyr::mutate(
+                NCBI_ID = node$name,
+                Evidence = 'inh'
+            )
+        node[['table']] <- df
+    }
+}
+
 ## A function for removing prefix from a character vector x
 removePrefix <- function(x) {
     regex <- '^[dkpcofgst]__'
