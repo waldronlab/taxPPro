@@ -1,22 +1,47 @@
+#' Convert frequency values to numeric scores
+#'
+#' \code{freq2Scores} converts the keywords in the `Frequency`
+#' column of a bugphyzz dataset into numeric scores, which are added in a
+#' additional column named `Score`.
+#'
+#' @param x A  character vector.
+#'
+#' @return A numeric vector.
+#'
+#' @export
+#'
+freq2Scores <- function(x) {
+  # attr_type <- unique(df$Attribute_type)
+  # if (attr_type %in% c('numeric', 'range')) {
+  #   df$Frequency <- ifelse(
+  #     df$Frequency == 'unknown', 'always', df$Frequency
+  #   )
+  # }
+  x <- tolower(x)
+  dplyr::case_when(
+    x == 'always' ~ 1,
+    x == 'usually' ~ 0.8,
+    x == 'sometimes' ~ 0.5,
+    x == 'unknown' ~ 0.1
+  )
+}
 
 #' Scores to frequency
 #'
 #' \code{scores2Freq} performs the opposite of \code{freq2scores}.
 #'
-#' @param Score A numeric vector.
+#' @param x A numeric vector.
 #'
 #' @return A character vector
 #' @export
 #'
-scores2Freq <- function(Score) {
+scores2Freq <- function(x) {
     dplyr::case_when(
-        Score == 1 ~ 'always',
-        Score >= 0.7 & Score < 1 ~ 'usually',
-        Score >= 0.4 & Score < 0.7 ~ 'sometimes',
-        # Score >= 0.1 & Score < 0.4 ~ 'rarely',
-        # Score < 0.1 ~ 'never'
-        Score >= 0.1 & Score < 0.4 ~ 'unknown',
-        Score < 0.1 ~ 'unknown'
+        x == 1 ~ 'always',
+        x >= 0.7 & x < 1 ~ 'usually',
+        x >= 0.4 & x < 0.7 ~ 'sometimes',
+        x >= 0.1 & x < 0.4 ~ 'unknown',
+        x < 0.1 ~ 'unknown'
     )
 }
 

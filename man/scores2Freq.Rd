@@ -4,10 +4,10 @@
 \alias{scores2Freq}
 \title{Scores to frequency}
 \usage{
-scores2Freq(Score)
+scores2Freq(x)
 }
 \arguments{
-\item{Score}{A numeric vector.}
+\item{x}{A numeric vector.}
 }
 \value{
 A character vector
