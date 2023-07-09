@@ -72,7 +72,7 @@ str(taxids_ls2, max.level = 2, vec.len = 1)
 Import bugphyzz physiologies:
 
 ```{r, message=FALSE}
-phys <- physiologies(remove_false = TRUE, full_source = FALSE)
+phys <- physiologies(full_source = FALSE)
 ```
 
 Create a list of bugphyzz taxids:

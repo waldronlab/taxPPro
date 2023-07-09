@@ -29,7 +29,7 @@ Below, we need to normalize the score so that the total score of all
 attributes per taxon is equal to 1:
 
 ```{r import bugphyzz data, message=FALSE}
-phys <- physiologies('aerophilicity', remove_false = TRUE, full_source = FALSE)[[1]] |>
+phys <- physiologies('aerophilicity', full_source = FALSE)[[1]] |>
   prepareDatForPropagation() |>
   group_by(NCBI_ID) |>
   mutate(Score = Score / sum(Score)) |> # Normalize scores
