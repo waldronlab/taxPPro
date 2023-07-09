@@ -1,73 +1,47 @@
-#' Print data.tree attributes
+#' Convert frequency values to numeric scores
 #'
-#' \code{printDataTreeAttributes} prints all of the attributes in a data.tree.
+#' \code{freq2Scores} converts the keywords in the `Frequency`
+#' column of a bugphyzz dataset into numeric scores, which are added in a
+#' additional column named `Score`.
 #'
-#' @param data_tree A data.tree object with attributes.
-#' @param limit The number of nodes to be displayed. Default = 100.
+#' @param x A  character vector.
 #'
-#' @return A data.frame or data on the console. Can use \code{View}.
+#' @return A numeric vector.
+#'
 #' @export
 #'
-printDataTreeAttributes <- function(data_tree, limit = 100) {
-  attrs <- as.list(data_tree$attributesAll)
-  lim = list(limit = limit)
-  args <- c(list(data_tree), attrs)
-  args <- c(args, lim)
-  do.call('print', args = args)
-}
-
-#' toDataFrame
-#'
-#' \code{toDataFrame}
-#'
-#' @param data_tree A data.tree.
-#' @param ncbi_tax NCBI taxonomy. Output of \code{get_ncbi_taxonomy}.
-#'
-#' @return A data.frame.
-#' @export
-#'
-toDataFrame <- function(data_tree, ncbi_tax) {
-  args <- as.list(data_tree$attributesAll)
-  args <- c(list(x = data_tree, row.names = NULL, optional = FALSE), args)
-  df <- do.call('as.data.frame', args)
-  df$levelName <- stringr::str_squish(sub('.*-', '', df$levelName))
-  df <- df[df$levelName != 'ArcBac',]
-  df <- tidyr::separate(
-    df, col = 'levelName', into = c('Rank', 'NCBI_ID'), sep = '__'
+freq2Scores <- function(x) {
+  # attr_type <- unique(df$Attribute_type)
+  # if (attr_type %in% c('numeric', 'range')) {
+  #   df$Frequency <- ifelse(
+  #     df$Frequency == 'unknown', 'always', df$Frequency
+  #   )
+  # }
+  x <- tolower(x)
+  dplyr::case_when(
+    x == 'always' ~ 1,
+    x == 'usually' ~ 0.8,
+    x == 'sometimes' ~ 0.5,
+    x == 'unknown' ~ 0.1
   )
-  dict <- c(
-    d = 'domain', p = 'phylum', c = 'class', o = 'order', f = 'family',
-    g = 'genus', s = 'species', t = 'strain'
-  )
-  df$Rank <- dict[df$Rank]
-  # ncbi_tax <- get_ncbi_taxonomy()
-  if ('Rank' %in% colnames(ncbi_tax)) {
-    ncbi_tax$Rank <- NULL
-  }
-  pos <- which(colnames(ncbi_tax) == 'kingdom')
-  names(ncbi_tax)[pos] <- 'domain'
-  output <- dplyr::left_join(df, ncbi_tax, by = 'NCBI_ID')
-  return(output)
 }
 
 #' Scores to frequency
 #'
 #' \code{scores2Freq} performs the opposite of \code{freq2scores}.
 #'
-#' @param Score A numeric vector.
+#' @param x A numeric vector.
 #'
 #' @return A character vector
 #' @export
 #'
-scores2Freq <- function(Score) {
+scores2Freq <- function(x) {
     dplyr::case_when(
-        Score == 1 ~ 'always',
-        Score >= 0.7 & Score < 1 ~ 'usually',
-        Score >= 0.4 & Score < 0.7 ~ 'sometimes',
-        # Score >= 0.1 & Score < 0.4 ~ 'rarely',
-        # Score < 0.1 ~ 'never'
-        Score >= 0.1 & Score < 0.4 ~ 'unknown',
-        Score < 0.1 ~ 'unknown'
+        x == 1 ~ 'always',
+        x >= 0.7 & x < 1 ~ 'usually',
+        x >= 0.4 & x < 0.7 ~ 'sometimes',
+        x >= 0.1 & x < 0.4 ~ 'unknown',
+        x < 0.1 ~ 'unknown'
     )
 }
 
@@ -109,11 +83,4 @@ classif2Table <- function(x, ranks) {
   colnames(new_df) <- df_filtered$rank
   new_df
 }
-
-
-
-
-
-
-
 

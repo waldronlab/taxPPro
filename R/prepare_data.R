@@ -1,15 +1,3 @@
-# filterDirectParents <- function(df) {
-#     vct <- dplyr::case_when(
-#         df$Rank == 'strain' & df$Parent_rank == 'species' ~ TRUE,
-#         df$Rank == 'species' & df$Parent_rank == 'genus' ~ TRUE,
-#         df$Rank == 'genus' & df$Parent_rank == 'family' ~ TRUE,
-#         df$Rank == 'family' & df$Parent_rank == 'order' ~ TRUE,
-#         df$Rank == 'order' & df$Parent_rank == 'class' ~ TRUE,
-#         df$Rank == 'class' & df$Parent_rank == 'phylum' ~ TRUE,
-#         TRUE ~ FALSE
-#     )
-#     return(df[vct,])
-# }
 
 #' Prepare Data for Propagation
 #'
@@ -86,7 +74,7 @@ prepareDatForPropagation <- function(df, resolve = TRUE) {
             as.data.frame()
         return(output)
     } else {
-        return(df_new) 
+        return(df_new)
     }
 }
 
@@ -293,42 +281,5 @@ resolveConflicts <- function(df) {
             ) |>
             dplyr::distinct()
     }
-    return(output)
-}
-
-#' Convert frequency values to numeric scores
-#'
-#' \code{freq2Scores} converts the keywords in the `Frequency`
-#' column of a bugphyzz dataset into numeric scores, which are added in a
-#' additional column named `Score`.
-#'
-#' @param df  A data frame imported with `bugphyzz::physiologies`.
-#'
-#' @return A data frame. The same data frame with the additional `Score` column.
-#'
-#' @export
-#'
-freq2Scores <- function(df) {
-    attr_type <- unique(df$Attribute_type)
-    if (attr_type %in% c('numeric', 'range')) {
-        df$Frequency <- ifelse(
-            df$Frequency == 'unknown', 'always', df$Frequency
-        )
-    }
-    output <- df |>
-        dplyr::mutate(
-            Frequency = tolower(.data$Frequency),
-            Score = dplyr::case_when(
-                Frequency == 'always' ~ 1,
-                Frequency == 'usually' ~ 0.8,
-                Frequency == 'sometimes' ~ 0.5,
-                # Frequency == 'rarely' ~ 0.2,
-                # Frequency == 'never' ~ 0,
-                # Frequency == 'unknown' ~ NA_real_
-                Frequency == 'unknown' ~ 0.1
-            )
-        ) |>
-        dplyr::filter(!is.na(.data$Score)) |>
-        dplyr::distinct()
     return(output)
 }

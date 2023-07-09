@@ -1,0 +1,168 @@
+---
+title: "Propagation workflow for categorical/logical attributes"
+output:
+    html_document:
+        toc: true
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE
+)
+```
+
+```{r setup, message=FALSE}
+library(taxPPro)
+library(bugphyzz)
+library(data.tree)
+library(dplyr)
+library(purrr)
+```
+
+# Import bugphyzz data
+
+Import a bugphyzz physiology
+
+Below, we need to normalize the score so that the total score of all
+attributes per taxon is equal to 1:
+
+```{r import bugphyzz data, message=FALSE}
+phys <- physiologies('aerophilicity', remove_false = TRUE, full_source = FALSE)[[1]] |>
+  prepareDatForPropagation() |>
+  group_by(NCBI_ID) |>
+  mutate(Score = Score / sum(Score)) |> # Normalize scores
+  ungroup() |> 
+  distinct()
+```
+
+# Create input table
+
+This is the table with data that will be mapped to the data.tree object.
+
+```{r}
+input_tbl <- phys |>
+  select(NCBI_ID, Attribute, Score, Evidence) |>
+  distinct() |> 
+  tidyr::complete(
+    ## Note that Evidence is empty, not NA
+    NCBI_ID, Attribute, fill = list(Score = 0, Evidence = '')
+)
+```
+
+# Import tree from taxPPro package
+
+```{r}
+data("tree_list")
+tree <- as.Node(tree_list)
+tree$totalCount
+```
+
+# Map bugphyzz annotations to the nodes in the tree
+
+```{r tree mapping}
+l <- split(input_tbl, factor(input_tbl$NCBI_ID))
+tree$Do(function(node) {
+    if (!is.null(l[[node$name]])) {
+        node[['table']] <- l[[node$name]]
+    }
+})
+```
+
+```{r, include=FALSE, echo=FALSE, eval=FALSE}
+tree$d__2$p__1224$c__1236$o__91347$f__543$g__561$s__562$table
+tree$d__2$p__1224$c__1236$o__91347$f__543$g__561$table <- l[['g__561']]
+tree$d__2$p__1224$c__1236$o__91347$f__543$g__561$table
+tree$d__2$p__1224$c__1236$o__91347$f__543$g__561$table <- NULL
+tree$d__2$p__1224$c__1236$o__91347$f__543$g__561$s__1182732$table
+```
+
+# Propagate annotations
+
+```{r propagation}
+tree$Do(asr, traversal = 'post-order')
+tree$Do(inh, traversal = 'pre-order')
+```
+
+# Final table
+
+Step1. Convert the data.tree object to a data.frame:
+
+```{r}
+data_tree_tbl <- tree$Get(function(node) node[['table']], simplify = FALSE) |>
+    purrr::discard(~ all(is.na(.x))) |>
+    dplyr::bind_rows() |> 
+    relocate(NCBI_ID) 
+dim(data_tree_tbl)
+```
+
+Step 2. Some nodes were might have been lost above. We need to recover them from the
+tree:
+
+```{r}
+attrs <- unique(phys$Attribute)
+all_node_names <- tree$Get(function(node) node$name, simplify = FALSE) |> 
+  unlist(recursive = TRUE, use.names = FALSE) |> 
+  unique()
+all_node_names <- all_node_names[which(!all_node_names %in% unique(data_tree_tbl$NCBI_ID))]
+empty_df <- data.frame(
+  NCBI_ID = sort(rep(all_node_names, length(attrs))), 
+  Attribute = rep(attrs, length(all_node_names)), 
+  Score = 0,
+  Evidence = NA
+)
+inferred_values <- bind_rows(data_tree_tbl, empty_df)
+dim(inferred_values)
+```
+
+Step 3. Let's merge the data from steps 1 and 2, and the original data in 
+bugphyzz
+
+```{r}
+other_ids <- phys$NCBI_ID[which(!phys$NCBI_ID %in% inferred_values$NCBI_ID)]
+other_ids <- unique(other_ids)
+other_phys <- filter(phys, NCBI_ID %in% other_ids)
+final_table <- bind_rows(inferred_values, other_phys)
+dim(final_table)
+```
+
+# Check if all scores add up to 1 or 0 per taxon
+
+```{r}
+final_table |> 
+  group_by(NCBI_ID) |> 
+  summarise(score = sum(Score)) |> 
+  ungroup() |> 
+  pull(score) |> 
+  table()
+```
+
+# Clean the tree
+
+This is much faster than loading the tree every time with a function call:
+
+```{r}
+tree$Do(function(node) {
+    node[['table']] <- NULL
+})
+```
+
+# Export table
+
+```{r}
+# write.table(
+#   x = final_table, file = 'propagated_data.tsv', sep = '\t', quote = TRUE
+# )
+fname <- "full_dump.csv.bz2"
+unlink(fname)
+con <- bzfile(fname, "w")
+write.csv(final_table, file = con, quote = TRUE, row.names = FALSE)
+close(con)
+```
+
+# Session information
+
+```{r}
+sessioninfo::session_info()
+```

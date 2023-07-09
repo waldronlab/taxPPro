@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 An R package to propagate annotations for bugphyzz.
 
-## Package installation
+# Package installation
 
 ```{r, eval=FALSE}
 if (!require("BiocManager", quietly = TRUE))
@@ -27,9 +27,18 @@ if (!require("BiocManager", quietly = TRUE))
 BiocManager::install('sdgamboa/taxPPro')
 ```
 
-## Load required packages
+# Steps/outline
 
-```{r setup, message=FALSE}
-## library(taxPPro)
-```
+This steps are performed for the prepareDataForPropagation function 
+(I think I need to change this long names). Changes include formatting,
+resolving duplicates, or removing entries that will not be used for propagation.
+Also, perform the first of ASR for strains that couln't be mapped to the
+data.tree structure.
 
+1. Import bugphyzz data.
+2. Remove NAs in the following fields:
+  + Parent_NCBI_ID (remove also unknown).
+  + NCBI_ID remove also unknown).
+  + Evidence (required for ASR/INH).
+  + Frequency (required for ASR/INH).
+  + Confidence in curation (required for resolving duplicates).
