@@ -35,13 +35,10 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/asr1-data-tree.html">Propagation with data.tree</a>
+      <a href="../articles/explore_taxids.html">Explore taxid data</a>
     </li>
     <li>
-      <a href="../articles/asr2-ape-phytools.html">asr2-ape-phytools</a>
-    </li>
-    <li>
-      <a href="../articles/phylo.html">phylo</a>
+      <a href="../articles/propagation_workflow.html">Propagation workflow for categorical/logical attributes</a>
     </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
@@ -69,7 +66,19 @@
       </tr></tbody><tbody><tr><td>
           <p><code><a href="addAttributes.html">addAttributes()</a></code> </p>
         </td>
-        <td><p>Add attributes to data_tree</p></td>
+        <td><p>Add attributes to a data.tree object</p></td>
+      </tr><tr><td>
+          <p><code><a href="addAttributesLogical.html">addAttributesLogical()</a></code> </p>
+        </td>
+        <td><p>Add attributes to a data.tree (numeric)</p></td>
+      </tr><tr><td>
+          <p><code><a href="addAttributesNumeric.html">addAttributesNumeric()</a></code> </p>
+        </td>
+        <td><p>Add attributes to a data.tree object (numeric)</p></td>
+      </tr><tr><td>
+          <p><code><a href="addAttributesRange.html">addAttributesRange()</a></code> </p>
+        </td>
+        <td><p>Add attributes to a data.tree object (range)</p></td>
       </tr><tr><td>
           <p><code><a href="addStrains.html">addStrains()</a></code> </p>
         </td>
@@ -79,13 +88,37 @@
         </td>
         <td><p>Annotate internal nodes</p></td>
       </tr><tr><td>
-          <p><code><a href="asrUpstream.html">asrUpstream()</a></code> </p>
+          <p><code><a href="asr.html">asr()</a></code> </p>
+        </td>
+        <td><p>asr</p></td>
+      </tr><tr><td>
+          <p><code><a href="asrUpstreamLogical.html">asrUpstreamLogical()</a></code> </p>
         </td>
         <td><p>ASR / Upstream</p></td>
+      </tr><tr><td>
+          <p><code><a href="asrUpstreamNumeric.html">asrUpstreamNumeric()</a></code> </p>
+        </td>
+        <td><p>ASR / Upstream (numeric)</p></td>
+      </tr><tr><td>
+          <p><code><a href="asrUpstreamRange.html">asrUpstreamRange()</a></code> </p>
+        </td>
+        <td><p>ASR / Upstream (range)</p></td>
+      </tr><tr><td>
+          <p><code><a href="calcParentScore.html">calcParentScore()</a></code> </p>
+        </td>
+        <td><p>Calculate parent score</p></td>
+      </tr><tr><td>
+          <p><code><a href="calcParentScores.html">calcParentScores()</a></code> </p>
+        </td>
+        <td><p>Calculate parent scores</p></td>
       </tr><tr><td>
           <p><code><a href="chooseColVal.html">chooseColVal()</a></code> </p>
         </td>
         <td><p>Choose column for attribute values</p></td>
+      </tr><tr><td>
+          <p><code><a href="classif2Table.html">classif2Table()</a></code> </p>
+        </td>
+        <td><p>Taxize classification to data frame</p></td>
       </tr><tr><td>
           <p><code><a href="counts_per_attribute_and_rank.html">counts_per_attribute_and_rank()</a></code> </p>
         </td>
@@ -111,10 +144,6 @@
         </td>
         <td><p>Fill NAs</p></td>
       </tr><tr><td>
-          <p><code><a href="filterData.html">filterData()</a></code> </p>
-        </td>
-        <td><p>Filter data for propagation</p></td>
-      </tr><tr><td>
           <p><code><a href="freq2Scores.html">freq2Scores()</a></code> </p>
         </td>
         <td><p>Convert frequency values to numeric scores</p></td>
@@ -122,14 +151,6 @@
           <p><code><a href="getAgreements.html">getAgreements()</a></code> </p>
         </td>
         <td><p>Get agreements</p></td>
-      </tr><tr><td>
-          <p><code><a href="getChildren.html">getChildren()</a></code> </p>
-        </td>
-        <td><p>Get children</p></td>
-      </tr><tr><td>
-          <p><code><a href="getChildrenScores.html">getChildrenScores()</a></code> </p>
-        </td>
-        <td><p>Get scores for children taxa</p></td>
       </tr><tr><td>
           <p><code><a href="getConflicts.html">getConflicts()</a></code> </p>
         </td>
@@ -155,14 +176,6 @@
         </td>
         <td><p>Get NCBI data (tree or table)</p></td>
       </tr><tr><td>
-          <p><code><a href="getParentScores.html">getParentScores()</a></code> </p>
-        </td>
-        <td><p>Calculate parent score</p></td>
-      </tr><tr><td>
-          <p><code><a href="getParents.html">getParents()</a></code> </p>
-        </td>
-        <td><p>Get parents</p></td>
-      </tr><tr><td>
           <p><code><a href="get_ncbi_taxids.html">get_ncbi_taxids()</a></code> </p>
         </td>
         <td><p>Get NCBI taxids</p></td>
@@ -171,21 +184,33 @@
         </td>
         <td><p>get_ncbi_taxonomy</p></td>
       </tr><tr><td>
-          <p><code><a href="inhDownstream.html">inhDownstream()</a></code> </p>
+          <p><code><a href="inh.html">inh()</a></code> </p>
         </td>
-        <td><p>Inheritance / Downstream</p></td>
+        <td><p>inh</p></td>
       </tr><tr><td>
-          <p><code><a href="preSteps.html">preSteps()</a></code> </p>
+          <p><code><a href="inhDownstreamLogical.html">inhDownstreamLogical()</a></code> </p>
         </td>
-        <td><p>Steps previous to propagation</p></td>
+        <td><p>Inheritance / Downstream (logical)</p></td>
+      </tr><tr><td>
+          <p><code><a href="inhDownstreamNumeric.html">inhDownstreamNumeric()</a></code> </p>
+        </td>
+        <td><p>Inheritance / Downstream (numeric)</p></td>
+      </tr><tr><td>
+          <p><code><a href="inhDownstreamRange.html">inhDownstreamRange()</a></code> </p>
+        </td>
+        <td><p>Inheritance / Downstream (range)</p></td>
+      </tr><tr><td>
+          <p><code><a href="prepareDatForPropagation.html">prepareDatForPropagation()</a></code> </p>
+        </td>
+        <td><p>Prepare Data for Propagation</p></td>
+      </tr><tr><td>
+          <p><code><a href="printDataTreeAttributes.html">printDataTreeAttributes()</a></code> </p>
+        </td>
+        <td><p>Print data.tree attributes</p></td>
       </tr><tr><td>
           <p><code><a href="propagate.html">propagate()</a></code> </p>
         </td>
-        <td><p>Propagate annotations</p></td>
-      </tr><tr><td>
-          <p><code><a href="propagateAnnotations.html">propagateAnnotations()</a></code> </p>
-        </td>
-        <td><p>Propagate annotations</p></td>
+        <td><p>propagate</p></td>
       </tr><tr><td>
           <p><code><a href="removeDuplicates.html">removeDuplicates()</a></code> </p>
         </td>
@@ -199,11 +224,19 @@ the `getDuplicates` function).</p></td>
       </tr><tr><td>
           <p><code><a href="resolveConflicts.html">resolveConflicts()</a></code> </p>
         </td>
-        <td><p>Resolve conflicts in a bugphyzz dataset</p></td>
+        <td><p>Resolve conflicts</p></td>
+      </tr><tr><td>
+          <p><code><a href="scores2Freq.html">scores2Freq()</a></code> </p>
+        </td>
+        <td><p>Scores to frequency</p></td>
       </tr><tr><td>
           <p><code><a href="taxname2taxid.html">taxname2taxid()</a></code> </p>
         </td>
         <td><p>Conver taxname to taxid</p></td>
+      </tr><tr><td>
+          <p><code><a href="toDataFrame.html">toDataFrame()</a></code> </p>
+        </td>
+        <td><p>toDataFrame</p></td>
       </tr></tbody></table></div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
