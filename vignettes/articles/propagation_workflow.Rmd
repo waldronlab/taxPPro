@@ -29,8 +29,8 @@ Below, we need to normalize the score so that the total score of all
 attributes per taxon is equal to 1:
 
 ```{r import bugphyzz data, message=FALSE}
-phys <- physiologies('aerophilicity', full_source = FALSE)[[1]] |>
-  prepareDatForPropagation() |>
+phys <- physiologies('aerophilicity', full_source = FALSE)[[1]] |> 
+  prepareDatForPropagation() |> 
   group_by(NCBI_ID) |>
   mutate(Score = Score / sum(Score)) |> # Normalize scores
   ungroup() |> 
@@ -90,7 +90,7 @@ tree$Do(inh, traversal = 'pre-order')
 Step1. Convert the data.tree object to a data.frame:
 
 ```{r}
-data_tree_tbl <- tree$Get(function(node) node[['table']], simplify = FALSE) |>
+data_tree_tbl <- tree$Get(function(node) node[['table']], simplify = FALSE) |> 
     purrr::discard(~ all(is.na(.x))) |>
     dplyr::bind_rows() |> 
     relocate(NCBI_ID) 

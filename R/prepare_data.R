@@ -27,7 +27,7 @@ prepareDatForPropagation <- function(df, resolve = TRUE) {
         dplyr::ungroup() |>
         dplyr::distinct()
     df <- unique(df)
-    df <- freq2Scores(df)
+    df$Score <- freq2Scores(df$Frequency)
     df_yesid <- df[which(df$NCBI_ID != 'unknown'),]
     if (nrow(df_yesid) > 0) {
         df_yesid <- df_yesid |>
