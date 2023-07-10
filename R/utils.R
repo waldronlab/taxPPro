@@ -66,7 +66,6 @@ scores2Freq <- function(x) {
 #' @export
 #'
 classif2Table <- function(x, ranks) {
-
   if (missing(ranks)) {
     valid_ranks <- .validRanks()
   } else {
@@ -83,4 +82,3 @@ classif2Table <- function(x, ranks) {
   colnames(new_df) <- df_filtered$rank
   new_df
 }
-

@@ -7,7 +7,7 @@
 mergeOriginalAndEarlyASR(l)
 }
 \arguments{
-\item{l}{A list. Output of \code{myFun}.}
+\item{l}{A list. Output of \code{prepareDataForPropagation}.}
 }
 \value{
 A data.frame.

@@ -13,7 +13,7 @@ resolveAgreements(df)
 A data.frame.
 }
 \description{
-\code{resolveAgreements} resolve all agreeents in a bugphyzz dataset.
+\code{resolveAgreements} resolve all agreements in a bugphyzz dataset.
 Agreements happen when the same annotations comes from two or more
 sources.
 }

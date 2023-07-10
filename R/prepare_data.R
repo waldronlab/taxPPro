@@ -41,7 +41,8 @@ prepareDataForPropagation <- function(df) {
             as.data.frame()
     }
 
-    ## First step of ASR for entries without taxids (they can't be mapped to the data.tree structure)
+    ## First step of ASR for entries without taxids
+    ## (they can't be mapped to the data.tree structure)
     early_asr <- df[which(df$NCBI_ID == 'unknown'),]
     if (nrow(early_asr) > 0) {
         early_asr <- early_asr |>
@@ -51,6 +52,7 @@ prepareDataForPropagation <- function(df) {
                 Parent_name = paste(unique(.data$Parent_name), collapse = ';')
             ) |>
             dplyr::ungroup() |>
+            dplyr::distinct() |>
             calcParentScores() |>
             removeAccessionAndGenomeID() |>
             dplyr::distinct() |>
@@ -99,7 +101,7 @@ removeAccessionAndGenomeID <- function(df) {
 #' and early ASR entries (those taxids that couldn't be mapped to the
 #' data.tree structures, but their parents could).
 #'
-#' @param l A list. Output of \code{myFun}.
+#' @param l A list. Output of \code{prepareDataForPropagation}.
 #'
 #' @return A data.frame.
 #' @export
@@ -196,7 +198,7 @@ calcParentScores <- function(df) {
 
 #' Resolve agreements
 #'
-#' \code{resolveAgreements} resolve all agreeents in a bugphyzz dataset.
+#' \code{resolveAgreements} resolve all agreements in a bugphyzz dataset.
 #' Agreements happen when the same annotations comes from two or more
 #' sources.
 #'
