@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup, message=FALSE}
-library(taxPPro)
+# library(taxPPro)
 library(bugphyzz)
 library(data.tree)
 library(dplyr)

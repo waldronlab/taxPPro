@@ -45,7 +45,7 @@ prepareDataForPropagation <- function(df) {
     early_asr <- df[which(df$NCBI_ID == 'unknown'),]
     if (nrow(early_asr) > 0) {
         early_asr <- early_asr |>
-            dplyr::group_by(.data$NCBI_ID) |>
+            dplyr::group_by(.data$Parent_NCBI_ID) |>
             dplyr::mutate(
                 Taxon_name = paste(unique(.data$Taxon_name), collapse = ';'),
                 Parent_name = paste(unique(.data$Parent_name), collapse = ';')

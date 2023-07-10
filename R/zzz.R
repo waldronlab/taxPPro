@@ -1,8 +1,8 @@
 
 #' Get NCBI taxids
 #'
-#' \code{get_ncbi_taxids} retrieves the taxids from taxPPro. These taxids
-#' correspond to the sets of the taxonomy statistics in the NCBI.
+# \code{get_ncbi_taxids} retrieves the taxids from taxPPro. These taxids
+# correspond to the sets of the taxonomy statistics in the NCBI.
 #'
 #' @param keyword Default 'all'. Options b = base, i = informal,
 #' l = unclassified, t = uncultured.
@@ -226,10 +226,10 @@
 # }
 
 ## Function to crate a cache
-.get_cache <- function() {
-    cache <- tools::R_user_dir('taxPPro', which = 'cache')
-    BiocFileCache::BiocFileCache(cache)
-}
+# .get_cache <- function() {
+#     cache <- tools::R_user_dir('taxPPro', which = 'cache')
+#     BiocFileCache::BiocFileCache(cache)
+# }
 
 #' Estimate ASR
 #'
