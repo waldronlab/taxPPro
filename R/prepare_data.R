@@ -1,83 +1,127 @@
-
-#' Prepare Data for Propagation
+#' Prepare data for propagation
 #'
-#' \code{prepareDataForPropagation} prepares data to be used in the
-#' propagation method.
+#' \code{prepareDataForPropagation} prepares data for propagation.
 #'
 #' @param df A data.frame.
-#' @param resolve Logical value. If TRUE (default) resolve agreements,
-#' conflicts, and double annotations.
 #'
-#' @return A data.frame
+#' @return A named list.
 #' @export
 #'
-prepareDatForPropagation <- function(df, resolve = TRUE) {
-    df$NCBI_ID[which(is.na(df$NCBI_ID))] <- 'unknown'
-    df$Parent_NCBI_ID[which(is.na(df$Parent_NCBI_ID))] <- 'unknown'
-    df <- df[df$Parent_NCBI_ID != 'unknown',]
+prepareDataForPropagation <- function(df) {
     df <- df[which(!is.na(df$Rank)), ]
     df <- df[which(!is.na(df$Evidence)), ]
     df <- df[which(!is.na(df$Frequency)), ]
     df <- df[which(!is.na(df$Confidence_in_curation)), ]
-    df <- df |>
-        dplyr::group_by(.data$Parent_NCBI_ID) |>
-        dplyr::mutate(
-            Parent_name = paste(unique(.data$Parent_name), collapse = ';')
-        ) |>
-        dplyr::ungroup() |>
-        dplyr::distinct()
-    df <- unique(df)
     df$Score <- freq2Scores(df$Frequency)
-    df_yesid <- df[which(df$NCBI_ID != 'unknown'),]
-    if (nrow(df_yesid) > 0) {
-        df_yesid <- df_yesid |>
+    df$NCBI_ID[which(is.na(df$NCBI_ID))] <- 'unknown'
+
+    ## Original annotations with TAXID
+    original <- df[which(df$NCBI_ID != 'unknown'),]
+    if (nrow(original) > 0) {
+        original <- original |>
+            dplyr::select(
+                -.data$Parent_NCBI_ID, -.data$Parent_name, -.data$Parent_rank
+            ) |>
             dplyr::group_by(.data$NCBI_ID) |>
             dplyr::mutate(
                 Taxon_name = paste(unique(.data$Taxon_name), collapse = ';')
             ) |>
             dplyr::ungroup() |>
-            dplyr::distinct()
-        # df_yesid <- df_yesid[grep(';', df_yesid$Taxon_name),]
-    }
-    df_noid <- df[which(df$NCBI_ID == 'unknown'),]
-    if (nrow(df_noid) > 0) {
-        df_noid_asr <- calcParentScores(df_noid)
-        df_new <- dplyr::bind_rows(df_yesid, df_noid_asr)
-    } else {
-        df_new <- df_yesid
-    }
-    dict <- c(genus = 'g__', species = 's__', strain = 't__')
-    df_new$NCBI_ID <- paste0(dict[df_new$Rank], df_new$NCBI_ID)
-    df_new <- df_new[which(!startsWith(colnames(df_new), 'Parent'))]
-
-    attr_type <- unique(df$Attribute_type)
-    cols <- c(
-        'NCBI_ID', 'Taxon_name', 'Rank',
-        'Attribute', 'Attribute_source',
-        'Evidence', 'Frequency',
-        'Attribute_type', 'Attribute_group',
-        'Confidence_in_curation', 'Score'
-    )
-    if (attr_type == 'logical') {
-        cols <- c(cols, 'Attribute_value')
-    } else if (attr_type == 'range') {
-        cols <- c(cols, c('Attribute_value_min', 'Attribute_value_max'))
-    }
-    df_new <- df_new[,cols]
-    df_new <- unique(df_new)
-
-    if (resolve) {
-        output <- df_new |>
+            dplyr::distinct() |>
+            purrr::discard(~ all(is.na(.x))) |>
+            dplyr::mutate(
+                NCBI_ID = sub('^(\\w)\\w+(__.*)$', '\\1\\2', paste0(Rank, '__', NCBI_ID))
+            ) |>
+            dplyr::select(-.data$Rank) |>
+            removeAccessionAndGenomeID() |>
+            dplyr::distinct() |>
             resolveAgreements() |>
             resolveConflicts() |>
             dplyr::distinct() |>
             as.data.frame()
-        return(output)
-    } else {
-        return(df_new)
     }
+
+    ## First step of ASR for entries without taxids (they can't be mapped to the data.tree structure)
+    early_asr <- df[which(df$NCBI_ID == 'unknown'),]
+    if (nrow(early_asr) > 0) {
+        early_asr <- early_asr |>
+            dplyr::group_by(.data$NCBI_ID) |>
+            dplyr::mutate(
+                Taxon_name = paste(unique(.data$Taxon_name), collapse = ';'),
+                Parent_name = paste(unique(.data$Parent_name), collapse = ';')
+            ) |>
+            dplyr::ungroup() |>
+            calcParentScores() |>
+            removeAccessionAndGenomeID() |>
+            dplyr::distinct() |>
+            purrr::discard(~ all(is.na(.x))) |>
+            dplyr::mutate(
+                NCBI_ID = sub('^(\\w)\\w+(__.*)$', '\\1\\2', paste0(Rank, '__', NCBI_ID))
+            ) |>
+            dplyr::select(-.data$Rank) |>
+            dplyr::distinct() |>
+            as.data.frame()
+    }
+
+    output <- list(
+        original = original, early_asr = early_asr
+    )
+    return(output)
 }
 
+#' Remove Accession_ID and Genome_ID columns
+#'
+#' \code{removeAcccessionAndGenomeID} removes Accession_ID and Genome_ID from
+#' a bugphyzz dataset. The reason is that right now these columns can be
+#' incomplete or inconsistent in some datasets, or just missing in some others.
+#' I think a solution would be to implement a relational database in which we
+#' have a data object (data.frame?) with all of the taxids.
+#'
+#' @param df A data.frame imported from bugphyzz.
+#'
+#' @return A data.frame.
+#' @export
+#'
+removeAccessionAndGenomeID <- function(df) {
+    if ('Accession_ID' %in% colnames(df)) {
+        df <- dplyr::select(df, -.data[['Accession_ID']])
+    }
+    if ('Genome_ID' %in% colnames(df)) {
+        df <- dplyr::select(df, -.data[['Genome_ID']])
+    }
+    dplyr::distinct(df)
+}
+
+
+#' Merge original and early ASR
+#'
+#' \code{mergeOriginalAndEarlyASR} merges original bugphyzz annotations
+#' and early ASR entries (those taxids that couldn't be mapped to the
+#' data.tree structures, but their parents could).
+#'
+#' @param l A list. Output of \code{myFun}.
+#'
+#' @return A data.frame.
+#' @export
+#'
+mergeOriginalAndEarlyASR <- function(l) {
+    df <- l |>
+        dplyr::bind_rows() |>
+        {\(y) split(y, factor(y$NCBI_ID))}() |>
+        purrr::map(~ {
+            if (!all(.x$Evidence == 'asr')) {
+                output <- filter(.x, Evidence != 'asr')
+            } else {
+                output <- .x
+            }
+            return(output)
+        }) |>
+        dplyr::bind_rows() |>
+        dplyr::mutate(Evidence = forcats::fct_relevel(Evidence, 'asr')) |>
+        dplyr::arrange(Evidence) |>
+        dplyr::mutate(Evidence = as.character(Evidence)) |>
+        dplyr::distinct()
+}
 
 #' Calculate parent scores
 #'

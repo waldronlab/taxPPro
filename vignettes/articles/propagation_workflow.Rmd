@@ -139,6 +139,7 @@ final_table |>
   table()
 ```
 
+
 # Clean the tree
 
 This is much faster than loading the tree every time with a function call:
