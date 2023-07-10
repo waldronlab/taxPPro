@@ -30,7 +30,7 @@ attributes per taxon is equal to 1:
 
 ```{r import bugphyzz data, message=FALSE}
 phys <- physiologies('aerophilicity', full_source = FALSE)[[1]] |> 
-  myFun() |> 
+  prepareDataForPropagation() |> 
   mergeOriginalAndEarlyASR() |> 
   group_by(NCBI_ID) |>
   mutate(Score = Score / sum(Score)) |> # Normalize scores
