@@ -43,9 +43,6 @@
     <loc>https://sdgamboa.github.io/taxPPro/reference/addStrains.html</loc>
   </url>
   <url>
-    <loc>https://sdgamboa.github.io/taxPPro/reference/annotateInternalNodes.html</loc>
-  </url>
-  <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/asr.html</loc>
   </url>
   <url>
@@ -70,19 +67,7 @@
     <loc>https://sdgamboa.github.io/taxPPro/reference/classif2Table.html</loc>
   </url>
   <url>
-    <loc>https://sdgamboa.github.io/taxPPro/reference/counts_per_attribute_and_rank.html</loc>
-  </url>
-  <url>
-    <loc>https://sdgamboa.github.io/taxPPro/reference/counts_per_rank.html</loc>
-  </url>
-  <url>
-    <loc>https://sdgamboa.github.io/taxPPro/reference/counts_total.html</loc>
-  </url>
-  <url>
-    <loc>https://sdgamboa.github.io/taxPPro/reference/createEntriesASR.html</loc>
-  </url>
-  <url>
-    <loc>https://sdgamboa.github.io/taxPPro/reference/estimateASR.html</loc>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/dot-get_cache.html</loc>
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/fillNAs.html</loc>
@@ -112,12 +97,6 @@
     <loc>https://sdgamboa.github.io/taxPPro/reference/getNCBI.html</loc>
   </url>
   <url>
-    <loc>https://sdgamboa.github.io/taxPPro/reference/get_ncbi_taxids.html</loc>
-  </url>
-  <url>
-    <loc>https://sdgamboa.github.io/taxPPro/reference/get_ncbi_taxonomy.html</loc>
-  </url>
-  <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/index.html</loc>
   </url>
   <url>
@@ -133,13 +112,16 @@
     <loc>https://sdgamboa.github.io/taxPPro/reference/inhDownstreamRange.html</loc>
   </url>
   <url>
-    <loc>https://sdgamboa.github.io/taxPPro/reference/prepareDatForPropagation.html</loc>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/mergeOriginalAndEarlyASR.html</loc>
   </url>
   <url>
-    <loc>https://sdgamboa.github.io/taxPPro/reference/printDataTreeAttributes.html</loc>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/prepareDataForPropagation.html</loc>
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/propagate.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/removeAccessionAndGenomeID.html</loc>
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/removeDuplicates.html</loc>
@@ -155,8 +137,5 @@
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/taxname2taxid.html</loc>
-  </url>
-  <url>
-    <loc>https://sdgamboa.github.io/taxPPro/reference/toDataFrame.html</loc>
   </url>
 </urlset>
