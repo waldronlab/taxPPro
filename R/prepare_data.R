@@ -5,7 +5,7 @@
 #' propagation method.
 #'
 #' @param df A data.frame.
-#' @param resolve Logical value. If TRUE (deafulat) resolve agreements,
+#' @param resolve Logical value. If TRUE (default) resolve agreements,
 #' conflicts, and double annotations.
 #'
 #' @return A data.frame

@@ -9,7 +9,7 @@ prepareDatForPropagation(df, resolve = TRUE)
 \arguments{
 \item{df}{A data.frame.}
 
-\item{resolve}{Logical value. If TRUE (deafulat) resolve agreements,
+\item{resolve}{Logical value. If TRUE (default) resolve agreements,
 conflicts, and double annotations.}
 }
 \value{
