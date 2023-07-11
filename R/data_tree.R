@@ -40,36 +40,23 @@ calcParentScore <- function(tbl) {
 #'
 asr <- function(node) {
     ## Only perform ASR if node has no data and is not a leaf
-    cond1 <- is.null(node[['table']])
-    cond2 <- !node$isLeaf
-    if (cond1 && cond2) {
-        children <- names(node$children)
-        output <- vector('list', length(children))
-        for (i in seq_along(output)) {
-            output[[i]] <- node[[children[i]]]$table
-        }
+    min_per <- 0.5
+    children <- names(node$children)
+    tbl_scores <- purrr::map(children, ~ node[[.x]]$table)
+    tbl_is_null <- is.null(node$table)
+    node_is_not_leaf <- !node$isLeaf
+    mean_null <- mean(!purrr::map_lgl(tbl_scores, is.null))
+    not_all_child_tbls_are_null <- mean_null > 0
+    min_null_pass <- mean_null >= min_per
+    is_dpcof <- grepl('^(ArcBac|[dpcof]__)', node$name)
+    is_gst <- grepl('^[gst]__', node$name)
 
-        ## Don't attempt ASR if there is no data about the children
-        cond_null <- purrr::map_lgl(output, is.null)
-        if (all(cond_null)) {
-            return(invisible(NULL))
-        }
-
-        ## For higher ranks (root and family and upwards) only perform ASR
-        ## if we have information of about a determined percentage of
-        ## child nodes
-        min_per <- 0.5
-        cond_1 <- grepl('^(ArcBac|[dpcof]__)', node$name)
-        cond_2 <- mean(cond_null) < min_per
-        if (cond_1 && cond_2) {
-            return(NULL)
-        }
-
-        if (!all(cond_null)) {
-            df <- purrr::discard(output, is.null) |>
+    if (node_is_not_leaf && tbl_is_null && not_all_child_tbls_are_null) {
+        if (is_gst || (is_dpcof && min_null_pass)) {
+            df <- purrr::discard(tbl_scores, is.null) |>
                 dplyr::bind_rows() |>
                 dplyr::select(
-                    NCBI_ID, Attribute, Score, # Evidence #, Attribute_source
+                    .data$NCBI_ID, .data$Attribute, .data$Score, # Evidence #, Attribute_source
                 ) |>
                 calcParentScore() |>
                 dplyr::mutate(
@@ -80,6 +67,7 @@ asr <- function(node) {
             node[['table']] <- df
         }
     }
+
 }
 
 #' inh
