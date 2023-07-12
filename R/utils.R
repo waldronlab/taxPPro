@@ -40,8 +40,8 @@ scores2Freq <- function(x) {
         x == 1 ~ 'always',
         x >= 0.7 & x < 1 ~ 'usually',
         x >= 0.4 & x < 0.7 ~ 'sometimes',
-        x >= 0.1 & x < 0.4 ~ 'unknown',
-        x < 0.1 ~ 'unknown'
+        x > 0 & x < 0.4 ~ 'unknown',
+        x == 0  ~ 'never'
     )
 }
 

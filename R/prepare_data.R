@@ -12,6 +12,10 @@ prepareDataForPropagation <- function(df) {
     df <- df[which(!is.na(df$Evidence)), ]
     df <- df[which(!is.na(df$Frequency)), ]
     df <- df[which(!is.na(df$Confidence_in_curation)), ]
+    df <- df[which(!is.na(df$Parent_NCBI_ID)), ]
+    df <- df[which(!is.na(df$Parent_rank)), ]
+    df <- df[which(!is.na(df$Parent_name)), ]
+
     df$Score <- freq2Scores(df$Frequency)
     df$NCBI_ID[which(is.na(df$NCBI_ID))] <- 'unknown'
 
