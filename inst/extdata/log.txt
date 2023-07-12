@@ -2,56 +2,48 @@ Downloading taxids...
 
 Exclude unclassified, uncultured, and informal names (*exclude_all*txt files).
 Query (Bacteria/Archaea): "[SubTree] NOT unclassified[prop] NOT uncultured[prop] AND ("above species level"[prop] OR specified[prop])"
-curl: (22) The requested URL returned error: 400
- ERROR:  curl command failed ( Thu Jun 29 08:29:24 AM EDT 2023 ) with: 22
-https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?query_key=1&WebEnv=MCID_649d7924548186792630e2ad&retstart=0&retmax=1464&db=taxonomy&rettype=uilist&retmode=text&api_key=e4e1283472145daf11a5e038dfca818dbb08&tool=edirect&edirect=17.0&edirect_os=Linux&email=samuel%40pop-os.localdomain
-HTTP/1.1 400 Bad Request
- WARNING:  FAILURE ( Thu Jun 29 08:29:24 AM EDT 2023 )
-nquire -get https://eutils.ncbi.nlm.nih.gov/entrez/eutils/ efetch.fcgi -query_key 1 -WebEnv MCID_649d7924548186792630e2ad -retstart 0 -retmax 1464 -db taxonomy -rettype uilist -retmode text -api_key e4e1283472145daf11a5e038dfca818dbb08 -tool edirect -edirect 17.0 -edirect_os Linux -email samuel@pop-os.localdomain
-EMPTY RESULT
-SECOND ATTEMPT
-  1464 arc_exclude_all_06292023.txt
- 33129 bac_exclude_all_06292023.txt
- 34593 proc_exclude_all_06292023.txt
+  1467 arc_exclude_all_07122023.txt
+ 33175 bac_exclude_all_07122023.txt
+ 34642 proc_exclude_all_07122023.txt
 
 Include unclassified, uncultured, and informal names (*include_all*txt files).
 Query (Bacteria/Archaea): "[SubTree]"
-  14447 arc_include_all_06292023.txt
- 545479 bac_include_all_06292023.txt
- 559926 proc_include_all_06292023.txt
+  14448 arc_include_all_07122023.txt
+ 545762 bac_include_all_07122023.txt
+ 560210 proc_include_all_07122023.txt
 
 Exclude unclassified (*exclude_unclassified*txt files).
 Query (Bacteria/Archaea): "[SubTree] NOT unclassified[prop]"
-   7525 arc_exclude_unclassified_06292023.txt
- 131469 bac_exclude_unclassified_06292023.txt
- 138994 proc_exclude_unclassified_06292023.txt
+   7529 arc_exclude_unclassified_07122023.txt
+ 131533 bac_exclude_unclassified_07122023.txt
+ 139062 proc_exclude_unclassified_07122023.txt
 
 Exclude uncultured (*exclude_uncultured*txt files).
 Query (Bacteria/Archaea): "[SubTree] NOT uncultured[prop]"
-   8850 arc_exclude_uncultured_06292023.txt
- 496672 bac_exclude_uncultured_06292023.txt
- 505522 proc_exclude_uncultured_06292023.txt
+   8851 arc_exclude_uncultured_07122023.txt
+ 496947 bac_exclude_uncultured_07122023.txt
+ 505798 proc_exclude_uncultured_07122023.txt
 
 Exclude informal names (*exclude_informal*txt files).
 Query (Bacteria/Archaea): "[SubTree] AND ("above species level"[prop] OR specified[prop])"
-  2023 arc_exclude_informal_06292023.txt
- 40902 bac_exclude_informal_06292023.txt
- 42925 proc_exclude_informal_06292023.txt
+  2026 arc_exclude_informal_07122023.txt
+ 40956 bac_exclude_informal_07122023.txt
+ 42982 proc_exclude_informal_07122023.txt
 
 Exclude unclassified and informal names (*exclude_unclassified_informal*txt files).
 Query (Bacteria/Archaea): "[SubTree] NOT unclassified[prop] AND ("above species level"[prop] OR specified[prop])"
-  1701 arc_exclude_unclassified_informal_06292023.txt
- 36752 bac_exclude_unclassified_informal_06292023.txt
- 38453 proc_exclude_unclassified_informal_06292023.txt
+  1704 arc_exclude_unclassified_informal_07122023.txt
+ 36803 bac_exclude_unclassified_informal_07122023.txt
+ 38507 proc_exclude_unclassified_informal_07122023.txt
 
 Exclude unclassified and uncultured (*exclude_unclassified_uncultured*txt files).
 Query (Bacteria/Archaea): "[SubTree] NOT unclassified[prop] NOT uncultured[prop]"
-   2030 arc_exclude_unclassified_uncultured_06292023.txt
-  83995 bac_exclude_unclassified_uncultured_06292023.txt
-  86025 proc_exclude_unclassified_uncultured_06292023.txt
+   2034 arc_exclude_unclassified_uncultured_07122023.txt
+  84049 bac_exclude_unclassified_uncultured_07122023.txt
+  86083 proc_exclude_unclassified_uncultured_07122023.txt
 
 Exclude uncultured and informal names (*exclude_uncultured_informal*txt files).
 Query (Bacteria/Archaea): "[SubTree] NOT uncultured[prop] AND ("above species level"[prop] OR specified[prop])"
-  1785 arc_exclude_uncultured_informal_06292023.txt
- 37264 bac_exclude_uncultured_informal_06292023.txt
- 39049 proc_exclude_uncultured_informal_06292023.txt
+  1788 arc_exclude_uncultured_informal_07122023.txt
+ 37314 bac_exclude_uncultured_informal_07122023.txt
+ 39102 proc_exclude_uncultured_informal_07122023.txt
