@@ -6,8 +6,11 @@ library(tidyr)
 library(bugphyzz)
 library(treeio)
 
+
+# taxizedb::db_download_ncbi(overwrite = TRUE)
+
 fname1 <- system.file(
-    'extdata/proc_exclude_all_06292023.txt',
+    'extdata/proc_species_07122023.txt',
     package = 'taxPPro', mustWork = TRUE
 )
 exclude_all_ids <- read.table(fname1, header = FALSE)[[1]]
@@ -21,7 +24,7 @@ exclude_all_sp_tbl <- exclude_all_sp_class |>
     filter(superkingdom %in% c('2', '2157'))
 
 fname2 <- system.file(
-    'extdata/proc_exclude_unclassified_uncultured_06292023.txt',
+    'extdata/proc_strains_07122023.txt',
     package = 'taxPPro', mustWork = TRUE
 )
 exclude_uu_ids <- read.table(fname2, header = FALSE)[[1]]
@@ -39,7 +42,7 @@ merged_sp_st <- left_join(
 ) |>
     distinct() |>
     mutate(strain = ifelse(is.na(strain), '', strain))
-phys <- bugphyzz:::physiologies(remove_false = TRUE, full_source = FALSE)
+phys <- bugphyzz:::physiologies(full_source = FALSE)
 bp_ids <- map(phys, ~ .x$NCBI_ID) |>
     unlist(use.names = FALSE, recursive = TRUE) |>
     unique() |>
@@ -133,5 +136,6 @@ usethis::use_data(tree_sp, overwrite = TRUE)
 # map_int(output, length)
 
 
-
+# domain  phylum   class   order  family   genus species  strain
+#      2      82     172     352     843    4716   27529   41749
 
