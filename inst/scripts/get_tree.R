@@ -102,3 +102,36 @@ usethis::use_data(tree_list, overwrite = TRUE)
 usethis::use_data(tree_sp, overwrite = TRUE)
 ## This whole procedure takes about 10 minutes (local machine).
 ## This is an improvement. It took about 1 hr before.
+
+
+##
+# domain  phylum   class   order  family   genus species  strain
+#      2      82     172     352     843    4716   27495   41707
+
+
+
+# library(data.tree)
+# library(purrr)
+#
+# data(tree_list)
+# tree <- as.Node(tree_list)
+#
+#
+# ranks = c(
+#     domain = 'd__', phylum = 'p__', class = 'c__', order = 'o__',
+#     family = 'f__', genus = 'g__', species = 's__', strain = 't__'
+# )
+# output <- vector('list', length(ranks))
+# for (i in seq_along(output)) {
+#     output[[i]] <- tree$Get(function(node) {
+#         if (grepl(ranks[i], node$name))
+#             node$name
+#     })
+# }
+# names(output) <- names(ranks)
+# output <- map(output, ~ .x[!is.na(.x)])
+# map_int(output, length)
+
+
+
+
