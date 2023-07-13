@@ -116,7 +116,7 @@ extdata directory of the current package (<code>taxPPro</code>):</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">my_ranks</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'genus'</span>, <span class="st">'species'</span>, <span class="st">'strain'</span><span class="op">)</span></span>
 <span><span class="va">dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">'extdata'</span>, package <span class="op">=</span> <span class="st">'taxPPro'</span><span class="op">)</span></span>
-<span><span class="va">fnames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">dir</span>, pattern <span class="op">=</span> <span class="st">'proc.*.txt'</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">fnames</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="va">dir</span>, pattern <span class="op">=</span> <span class="st">'proc_(exclude|include).*.txt'</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">taxids_ls</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">vector</a></span><span class="op">(</span><span class="st">'list'</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">fnames</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">taxids_ls</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">taxids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.table</a></span><span class="op">(</span><span class="va">fnames</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, header <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
@@ -125,28 +125,23 @@ extdata directory of the current package (<code>taxPPro</code>):</p>
 <span>  <span class="va">taxids_ls</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>taxid <span class="op">=</span> <span class="va">taxids</span>, rank <span class="op">=</span> <span class="va">ranks</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">rank</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">my_ranks</span><span class="op">)</span> </span>
 <span><span class="op">}</span></span>
-<span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 2 of</span></span>
-<span><span class="co">#&gt; 34593 taxon IDs. The followings are left unrankd: 2071980, 2679994</span></span>
-<span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 4 of</span></span>
-<span><span class="co">#&gt; 42925 taxon IDs. The followings are left unrankd: 2071980, 2071982, 2640263,</span></span>
-<span><span class="co">#&gt; 2679994</span></span>
-<span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 4 of</span></span>
-<span><span class="co">#&gt; 138994 taxon IDs. The followings are left unrankd: 2071980, 2071982, 2071983,</span></span>
-<span><span class="co">#&gt; 2679994</span></span>
+<span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 1 of</span></span>
+<span><span class="co">#&gt; 34642 taxon IDs. The followings are left unrankd: 759360</span></span>
 <span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 3 of</span></span>
-<span><span class="co">#&gt; 38453 taxon IDs. The followings are left unrankd: 2071980, 2071982, 2679994</span></span>
-<span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 2 of</span></span>
-<span><span class="co">#&gt; 86025 taxon IDs. The followings are left unrankd: 2071980, 2679994</span></span>
-<span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 18 of</span></span>
-<span><span class="co">#&gt; 505522 taxon IDs. The followings are left unrankd: 2071980, 2071981, 2640263,</span></span>
-<span><span class="co">#&gt; 2679994, 2751884, 3016354, 3026156, 3037993, 3042301, 3053483, 3053484,</span></span>
-<span><span class="co">#&gt; 3053485, 3053487, 3053488, 3053489, 3053490, 3053491, 3053492</span></span>
+<span><span class="co">#&gt; 42982 taxon IDs. The followings are left unrankd: 1297800, 2644231, 759360</span></span>
 <span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 3 of</span></span>
-<span><span class="co">#&gt; 39049 taxon IDs. The followings are left unrankd: 2071980, 2640263, 2679994</span></span>
-<span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 20 of</span></span>
-<span><span class="co">#&gt; 559926 taxon IDs. The followings are left unrankd: 2071980, 2071981, 2071982,</span></span>
-<span><span class="co">#&gt; 2071983, 2640263, 2679994, 2751884, 3016354, 3026156, 3037993, 3042301,</span></span>
-<span><span class="co">#&gt; 3053483, 3053484, 3053485, 3053487, 3053488, 3053489, 3053490, 3053491, 3053492</span></span>
+<span><span class="co">#&gt; 139062 taxon IDs. The followings are left unrankd: 1297800, 1297801, 759360</span></span>
+<span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 2 of</span></span>
+<span><span class="co">#&gt; 38507 taxon IDs. The followings are left unrankd: 1297800, 759360</span></span>
+<span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 1 of</span></span>
+<span><span class="co">#&gt; 86083 taxon IDs. The followings are left unrankd: 759360</span></span>
+<span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 3 of</span></span>
+<span><span class="co">#&gt; 505798 taxon IDs. The followings are left unrankd: 2024845, 2644231, 759360</span></span>
+<span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 2 of</span></span>
+<span><span class="co">#&gt; 39102 taxon IDs. The followings are left unrankd: 2644231, 759360</span></span>
+<span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 5 of</span></span>
+<span><span class="co">#&gt; 560210 taxon IDs. The followings are left unrankd: 1297800, 1297801, 2024845,</span></span>
+<span><span class="co">#&gt; 2644231, 759360</span></span>
 <span><span class="va">taxids_summary</span> <span class="op">&lt;-</span> <span class="va">taxids_ls</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span>.id <span class="op">=</span> <span class="st">'set'</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">set</span>, <span class="va">rank</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -159,8 +154,8 @@ extdata directory of the current package (<code>taxPPro</code>):</p>
 <span>  <span class="va">taxids_summary</span>, </span>
 <span>  caption <span class="op">=</span> <span class="st">'Table 1. Number of taxa per rank and NCBI set.'</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-85b26c616c3875e0e01e" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-85b26c616c3875e0e01e">{"x":{"filter":"none","vertical":false,"caption":"<caption>Table 1. Number of taxa per rank and NCBI set.<\/caption>","data":[["1","2","3","4","5","6","7","8"],["exclude_all","exclude_unclassified_informal","exclude_informal","exclude_uncultured_informal","exclude_unclassified_uncultured","exclude_unclassified","exclude_uncultured","include_all"],[5335,5335,5336,5336,5335,5335,5336,5336],[26113,26113,26113,26113,31752,80794,446512,496973],[0,0,0,0,42144,42199,42280,42335],[31448,31448,31449,31449,79231,128328,494128,544644]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>set<\/th>\n      <th>genus<\/th>\n      <th>species<\/th>\n      <th>strain<\/th>\n      <th>total<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3,4,5]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-b279b7d83e2f3c8d674e" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-b279b7d83e2f3c8d674e">{"x":{"filter":"none","vertical":false,"caption":"<caption>Table 1. Number of taxa per rank and NCBI set.<\/caption>","data":[["1","2","3","4","5","6","7","8"],["exclude_all","exclude_informal","exclude_unclassified_informal","exclude_uncultured_informal","exclude_unclassified_uncultured","exclude_unclassified","exclude_uncultured","include_all"],[5340,5340,5340,5340,5340,5340,5340,5340],[26156,26156,26156,26156,31793,80840,446786,497251],[0,0,0,0,42150,42205,42281,42336],[31496,31496,31496,31496,79283,128385,494407,544927]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>set<\/th>\n      <th>genus<\/th>\n      <th>species<\/th>\n      <th>strain<\/th>\n      <th>total<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3,4,5]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div class="section level2">
 <h2 id="percentage-of-bugphyzz-taxids-annotated-in-the-ncbi">Percentage of bugphyzz taxids annotated in the NCBI:<a class="anchor" aria-label="anchor" href="#percentage-of-bugphyzz-taxids-annotated-in-the-ncbi"></a>
@@ -173,33 +168,33 @@ extdata directory of the current package (<code>taxPPro</code>):</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">taxids_ls2</span>, max.level <span class="op">=</span> <span class="fl">2</span>, vec.len <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="co">#&gt; List of 8</span></span>
 <span><span class="co">#&gt;  $ exclude_all                    :List of 2</span></span>
-<span><span class="co">#&gt;   ..$ genus  : int [1:5335] 10 1000999 ...</span></span>
-<span><span class="co">#&gt;   ..$ species: int [1:26113] 100 100053 ...</span></span>
+<span><span class="co">#&gt;   ..$ genus  : int [1:5340] 10 1000999 ...</span></span>
+<span><span class="co">#&gt;   ..$ species: int [1:26156] 100 100053 ...</span></span>
 <span><span class="co">#&gt;  $ exclude_informal               :List of 2</span></span>
-<span><span class="co">#&gt;   ..$ genus  : int [1:5336] 10 1000999 ...</span></span>
-<span><span class="co">#&gt;   ..$ species: int [1:26113] 100 100053 ...</span></span>
+<span><span class="co">#&gt;   ..$ genus  : int [1:5340] 10 1000999 ...</span></span>
+<span><span class="co">#&gt;   ..$ species: int [1:26156] 100 100053 ...</span></span>
 <span><span class="co">#&gt;  $ exclude_unclassified           :List of 3</span></span>
-<span><span class="co">#&gt;   ..$ genus  : int [1:5335] 10 1000999 ...</span></span>
-<span><span class="co">#&gt;   ..$ species: int [1:80794] 100 1000028 ...</span></span>
-<span><span class="co">#&gt;   ..$ strain : int [1:42199] 1000560 1000561 ...</span></span>
+<span><span class="co">#&gt;   ..$ genus  : int [1:5340] 10 1000999 ...</span></span>
+<span><span class="co">#&gt;   ..$ species: int [1:80840] 100 1000028 ...</span></span>
+<span><span class="co">#&gt;   ..$ strain : int [1:42205] 1000560 1000561 ...</span></span>
 <span><span class="co">#&gt;  $ exclude_unclassified_informal  :List of 2</span></span>
-<span><span class="co">#&gt;   ..$ genus  : int [1:5335] 10 1000999 ...</span></span>
-<span><span class="co">#&gt;   ..$ species: int [1:26113] 100 100053 ...</span></span>
+<span><span class="co">#&gt;   ..$ genus  : int [1:5340] 10 1000999 ...</span></span>
+<span><span class="co">#&gt;   ..$ species: int [1:26156] 100 100053 ...</span></span>
 <span><span class="co">#&gt;  $ exclude_unclassified_uncultured:List of 3</span></span>
-<span><span class="co">#&gt;   ..$ genus  : int [1:5335] 10 1000999 ...</span></span>
-<span><span class="co">#&gt;   ..$ species: int [1:31752] 100 100053 ...</span></span>
-<span><span class="co">#&gt;   ..$ strain : int [1:42144] 1000560 1000561 ...</span></span>
+<span><span class="co">#&gt;   ..$ genus  : int [1:5340] 10 1000999 ...</span></span>
+<span><span class="co">#&gt;   ..$ species: int [1:31793] 100 100053 ...</span></span>
+<span><span class="co">#&gt;   ..$ strain : int [1:42150] 1000560 1000561 ...</span></span>
 <span><span class="co">#&gt;  $ exclude_uncultured             :List of 3</span></span>
-<span><span class="co">#&gt;   ..$ genus  : int [1:5336] 10 1000999 ...</span></span>
-<span><span class="co">#&gt;   ..$ species: int [1:446512] 100 100000 ...</span></span>
-<span><span class="co">#&gt;   ..$ strain : int [1:42280] 1000560 1000561 ...</span></span>
+<span><span class="co">#&gt;   ..$ genus  : int [1:5340] 10 1000999 ...</span></span>
+<span><span class="co">#&gt;   ..$ species: int [1:446786] 100 100000 ...</span></span>
+<span><span class="co">#&gt;   ..$ strain : int [1:42281] 1000560 1000561 ...</span></span>
 <span><span class="co">#&gt;  $ exclude_uncultured_informal    :List of 2</span></span>
-<span><span class="co">#&gt;   ..$ genus  : int [1:5336] 10 1000999 ...</span></span>
-<span><span class="co">#&gt;   ..$ species: int [1:26113] 100 100053 ...</span></span>
+<span><span class="co">#&gt;   ..$ genus  : int [1:5340] 10 1000999 ...</span></span>
+<span><span class="co">#&gt;   ..$ species: int [1:26156] 100 100053 ...</span></span>
 <span><span class="co">#&gt;  $ include_all                    :List of 3</span></span>
-<span><span class="co">#&gt;   ..$ genus  : int [1:5336] 10 1000999 ...</span></span>
-<span><span class="co">#&gt;   ..$ species: int [1:496973] 100 100000 ...</span></span>
-<span><span class="co">#&gt;   ..$ strain : int [1:42335] 1000560 1000561 ...</span></span></code></pre></div>
+<span><span class="co">#&gt;   ..$ genus  : int [1:5340] 10 1000999 ...</span></span>
+<span><span class="co">#&gt;   ..$ species: int [1:497251] 100 100000 ...</span></span>
+<span><span class="co">#&gt;   ..$ strain : int [1:42336] 1000560 1000561 ...</span></span></code></pre></div>
 <p>Import bugphyzz physiologies:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">phys</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/bugphyzz/man/physiologies.html" class="external-link">physiologies</a></span><span class="op">(</span>full_source <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
@@ -272,8 +267,8 @@ extdata directory of the current package (<code>taxPPro</code>):</p>
 <span>  <span class="va">bp_ids_summary</span>,</span>
 <span>  caption <span class="op">=</span> <span class="st">'Table 2. Percentage of bugphyzz taxa also annotated in the NCBI sets per rank.'</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-50c20177d2cae8dc0bab" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-50c20177d2cae8dc0bab">{"x":{"filter":"none","vertical":false,"caption":"<caption>Table 2. Percentage of bugphyzz taxa also annotated in the NCBI sets per rank.<\/caption>","data":[["1","2","3","4","5","6","7","8"],["exclude_all","exclude_unclassified_informal","exclude_informal","exclude_uncultured_informal","exclude_unclassified_uncultured","exclude_unclassified","exclude_uncultured","include_all"],[100,100,100,100,100,100,100,100],[71,71,71,71,71,72,99,99],[0,0,0,0,100,100,100,100],[31448,31448,31449,31449,79231,128328,494128,544644]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>set<\/th>\n      <th>genus<\/th>\n      <th>species<\/th>\n      <th>strain<\/th>\n      <th>total<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3,4,5]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-ab01d61d3d6d29069726" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-ab01d61d3d6d29069726">{"x":{"filter":"none","vertical":false,"caption":"<caption>Table 2. Percentage of bugphyzz taxa also annotated in the NCBI sets per rank.<\/caption>","data":[["1","2","3","4","5","6","7","8"],["exclude_all","exclude_informal","exclude_unclassified_informal","exclude_uncultured_informal","exclude_unclassified_uncultured","exclude_unclassified","exclude_uncultured","include_all"],[100,100,100,100,100,100,100,100],[71,71,71,71,71,72,99,99],[0,0,0,0,100,100,100,100],[31496,31496,31496,31496,79283,128385,494407,544927]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>set<\/th>\n      <th>genus<\/th>\n      <th>species<\/th>\n      <th>strain<\/th>\n      <th>total<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3,4,5]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div class="section level2">
 <h2 id="creating-a-data-tree-stucture-based-on-strains-using-the-exclude-unclassified-and-uncultured-set">Creating a data.tree stucture based on strains using the exclude
@@ -381,7 +376,7 @@ strains:</p>
 <p>All parent species are included</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">uu_strains_sp</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">exall_sp_sp</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.990625</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 0.9907925</span></span></code></pre></div>
 <p>Can we get the same result getting children taxa from species?</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">exall_sp_children</span> <span class="op">&lt;-</span> <span class="fu">taxizedb</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/taxizedb/reference/children.html" class="external-link">children</a></span><span class="op">(</span><span class="va">exall_sp_sp</span>, db <span class="op">=</span> <span class="st">'ncbi'</span><span class="op">)</span></span>
@@ -391,7 +386,7 @@ strains:</p>
 <span><span class="va">exall_sp_children_strain</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">exall_sp_children</span>, <span class="va">rank</span> <span class="op">==</span> <span class="st">'strain'</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">taxids_ls2</span><span class="op">$</span><span class="va">exclude_unclassified_uncultured</span><span class="op">$</span><span class="va">strain</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">exall_sp_children_strain</span><span class="op">$</span><span class="va">id</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.8620444</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 0.8620878</span></span></code></pre></div>
 <p>The set exclude_unclassified_uncultured has the most coverage of
 bugphyzz annotations:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
@@ -436,7 +431,7 @@ possible with a phylogenetic tree and a formal ASR method.</p>
 <span><span class="co">#&gt;  collate  en_US.UTF-8</span></span>
 <span><span class="co">#&gt;  ctype    en_US.UTF-8</span></span>
 <span><span class="co">#&gt;  tz       Etc/UTC</span></span>
-<span><span class="co">#&gt;  date     2023-07-12</span></span>
+<span><span class="co">#&gt;  date     2023-07-13</span></span>
 <span><span class="co">#&gt;  pandoc   3.1.1 @ /usr/local/bin/ (via rmarkdown)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">─ Packages ───────────────────────────────────────────────────────────────────</span></span></span>
@@ -447,7 +442,7 @@ possible with a phylogenetic tree and a formal ASR method.</p>
 <span><span class="co">#&gt;  blob          1.2.4   <span style="color: #555555;">2023-03-17</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.1)</span></span></span>
 <span><span class="co">#&gt;  bold          1.3.0   <span style="color: #555555;">2023-05-02</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.1)</span></span></span>
 <span><span class="co">#&gt;  bslib         0.5.0   <span style="color: #555555;">2023-06-09</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.1)</span></span></span>
-<span><span class="co">#&gt;  bugphyzz    * 0.0.1.3 <span style="color: #555555;">2023-07-12</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">Github (waldronlab/bugphyzz@abef23b)</span></span></span>
+<span><span class="co">#&gt;  bugphyzz    * 0.0.1.3 <span style="color: #555555;">2023-07-13</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">Github (waldronlab/bugphyzz@abef23b)</span></span></span>
 <span><span class="co">#&gt;  cachem        1.0.8   <span style="color: #555555;">2023-05-01</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.1)</span></span></span>
 <span><span class="co">#&gt;  cli           3.6.1   <span style="color: #555555;">2023-03-23</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.1)</span></span></span>
 <span><span class="co">#&gt;  codetools     0.2-19  <span style="color: #555555;">2023-02-01</span> <span style="color: #555555;">[2]</span> <span style="color: #555555;">CRAN (R 4.3.1)</span></span></span>
@@ -506,7 +501,7 @@ possible with a phylogenetic tree and a formal ASR method.</p>
 <span><span class="co">#&gt;  systemfonts   1.0.4   <span style="color: #555555;">2022-02-11</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.1)</span></span></span>
 <span><span class="co">#&gt;  taxize        0.9.100 <span style="color: #555555;">2022-04-22</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.1)</span></span></span>
 <span><span class="co">#&gt;  taxizedb      0.3.1   <span style="color: #555555;">2023-04-03</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.1)</span></span></span>
-<span><span class="co">#&gt;  taxPPro     * 0.1.0   <span style="color: #555555;">2023-07-12</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">local</span></span></span>
+<span><span class="co">#&gt;  taxPPro     * 0.1.0   <span style="color: #555555;">2023-07-13</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">local</span></span></span>
 <span><span class="co">#&gt;  textshaping   0.3.6   <span style="color: #555555;">2021-10-13</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.1)</span></span></span>
 <span><span class="co">#&gt;  tibble        3.2.1   <span style="color: #555555;">2023-03-20</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.1)</span></span></span>
 <span><span class="co">#&gt;  tidyr       * 1.3.0   <span style="color: #555555;">2023-01-24</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.1)</span></span></span>
