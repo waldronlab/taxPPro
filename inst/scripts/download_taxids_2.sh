@@ -15,7 +15,7 @@ echo -e "Downloading taxids..."
 
 echo
 fnamekey=species # needs update
-query='[SubTree] AND species[Rank] NOT unclassified[prop] NOT uncultured[prop] AND ("above species level"[prop] OR specified[prop]) ' # needs update
+query='[SubTree] AND species[Rank] NOT unclassified[prop] NOT uncultured[prop] AND ("above species level"[prop] OR specified[prop])' # needs update
 echo -e "Getting species (*$fnamekey*txt files)." # needs update
 getTaxID "$fnamekey" "$query"
 
