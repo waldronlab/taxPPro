@@ -35,7 +35,7 @@ directory of the current package (`taxPPro`):
 ```{r import sets of taxids}
 my_ranks <- c('genus', 'species', 'strain')
 dir <- system.file('extdata', package = 'taxPPro')
-fnames <- list.files(dir, pattern = 'proc.*.txt', full.names = TRUE)
+fnames <- list.files(dir, pattern = 'proc_(exclude|include).*.txt', full.names = TRUE)
 taxids_ls <- vector('list', length(fnames))
 for (i in seq_along(taxids_ls)) {
   taxids <- read.table(fnames[i], header = FALSE)[[1]]
