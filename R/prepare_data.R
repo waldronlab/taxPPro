@@ -33,8 +33,17 @@ prepareDataForPropagation <- function(df) {
             dplyr::ungroup() |>
             dplyr::distinct() |>
             purrr::discard(~ all(is.na(.x))) |>
+            # dplyr::mutate(
+            #     NCBI_ID = sub('^(\\w)\\w+(__.*)$', '\\1\\2', paste0(Rank, '__', NCBI_ID))
+            # ) |>
+            #
             dplyr::mutate(
-                NCBI_ID = sub('^(\\w)\\w+(__.*)$', '\\1\\2', paste0(Rank, '__', NCBI_ID))
+                NCBI_ID = dplyr::case_when(
+                    .data$Rank == 'genus' ~ paste0('g__', .data$NCBI_ID),
+                    .data$Rank == 'species' ~ paste0('s__', .data$NCBI_ID),
+                    .data$Rank == 'strain' ~ paste0('t__', .data$NCBI_ID),
+                    TRUE ~ .data$NCBI_ID
+                )
             ) |>
             dplyr::select(-.data$Rank) |>
             removeAccessionAndGenomeID() |>
