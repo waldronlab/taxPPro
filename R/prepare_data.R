@@ -16,6 +16,8 @@ prepareDataForPropagation <- function(df) {
     df <- df[which(!is.na(df$Parent_rank)), ]
     df <- df[which(!is.na(df$Parent_name)), ]
 
+    df <- dplyr::filter(df, .data$Rank %in% c('genus', 'species', 'strain'))
+
     df$Score <- freq2Scores(df$Frequency)
     df$NCBI_ID[which(is.na(df$NCBI_ID))] <- 'unknown'
 
