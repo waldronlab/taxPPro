@@ -20,7 +20,7 @@ freq2Scores <- function(x) {
   x <- tolower(x)
   dplyr::case_when(
     x == 'always' ~ 1,
-    x == 'usually' ~ 0.8,
+    x == 'usually' ~ 0.9,
     x == 'sometimes' ~ 0.5,
     x == 'unknown' ~ 0.1
   )
@@ -38,9 +38,13 @@ freq2Scores <- function(x) {
 scores2Freq <- function(x) {
     dplyr::case_when(
         x == 1 ~ 'always',
-        x >= 0.7 & x < 1 ~ 'usually',
-        x >= 0.4 & x < 0.7 ~ 'sometimes',
-        x > 0 & x < 0.4 ~ 'unknown',
+        x >= 0.9 & x < 1 ~ 'usually',
+        ## often is missing here, which is 70%. That's why I
+        ## previously lowered the threshold to 0.8.
+        ## Now sometimes range is between 0.5 and 0.8999999999999
+        ## Which means that we're not really using grammarist ranges (our source)
+        x >= 0.5 & x < 0.9 ~ 'sometimes',
+        x > 0 & x < 0.5 ~ 'rarely',
         x == 0  ~ 'never'
     )
 }
