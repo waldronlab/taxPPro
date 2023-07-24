@@ -8,7 +8,7 @@
 #' @export
 #'
 prepareDataForPropagation <- function(df) {
-    df <- df[which(!is.na(df$Rank)), ]
+    # df <- df[which(!is.na(df$Rank)), ]
     df <- df[which(!is.na(df$Evidence)), ]
     df <- df[which(!is.na(df$Frequency)), ]
     df <- df[which(!is.na(df$Confidence_in_curation)), ]
@@ -16,13 +16,14 @@ prepareDataForPropagation <- function(df) {
     df <- df[which(!is.na(df$Parent_rank)), ]
     df <- df[which(!is.na(df$Parent_name)), ]
 
-    df <- dplyr::filter(df, .data$Rank %in% c('genus', 'species', 'strain'))
+    # df <- dplyr::filter(df, .data$Rank %in% c('genus', 'species', 'strain'))
 
     df$Score <- freq2Scores(df$Frequency)
     df$NCBI_ID[which(is.na(df$NCBI_ID))] <- 'unknown'
 
     ## Original annotations with TAXID
     original <- df[which(df$NCBI_ID != 'unknown'),]
+    original <- dplyr::filter(original, Rank %in% c('genus', 'species', 'strain'))
     if (nrow(original) > 0) {
         original <- original |>
             dplyr::select(
@@ -47,7 +48,7 @@ prepareDataForPropagation <- function(df) {
                     TRUE ~ .data$NCBI_ID
                 )
             ) |>
-            dplyr::select(-.data$Rank) |>
+            # dplyr::select(-.data$Rank) |>
             removeAccessionAndGenomeID() |>
             dplyr::distinct() |>
             resolveAgreements() |>
@@ -75,14 +76,20 @@ prepareDataForPropagation <- function(df) {
             dplyr::mutate(
                 NCBI_ID = sub('^(\\w)\\w+(__.*)$', '\\1\\2', paste0(Rank, '__', NCBI_ID))
             ) |>
-            dplyr::select(-.data$Rank) |>
+            # dplyr::select(-.data$Rank) |>
             dplyr::distinct() |>
             as.data.frame()
     }
 
     output <- list(
         original = original, early_asr = early_asr
-    )
+    ) |>
+        purrr::map( ~ {
+            .x |>
+                dplyr::filter(.data$Rank %in% c('genus', 'species', 'strain')) |>
+                dplyr::select(-.data$Rank) |>
+                dplyr::distinct()
+        })
     return(output)
 }
 
