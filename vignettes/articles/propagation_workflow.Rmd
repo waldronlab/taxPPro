@@ -106,14 +106,18 @@ attrs <- unique(phys$Attribute)
 all_node_names <- tree$Get(function(node) node$name, simplify = FALSE) |> 
   unlist(recursive = TRUE, use.names = FALSE) |> 
   unique()
-all_node_names <- all_node_names[which(!all_node_names %in% unique(data_tree_tbl$NCBI_ID))]
-empty_df <- data.frame(
-  NCBI_ID = sort(rep(all_node_names, length(attrs))), 
-  Attribute = rep(attrs, length(all_node_names)), 
-  Score = 0,
-  Evidence = NA
-)
-inferred_values <- bind_rows(data_tree_tbl, empty_df)
+missing_nodes <- all_node_names[which(!all_node_names %in% unique(data_tree_tbl$NCBI_ID))]
+if (length(missing_nodes) > 0) {
+  empty_df <- data.frame(
+    NCBI_ID = sort(rep(missing_nodes, length(attrs))), 
+    Attribute = rep(attrs, length(missong_nodes)), 
+    Score = 0,
+    Evidence = NA
+  )
+  inferred_values <- bind_rows(data_tree_tbl, empty_df)
+} else {
+  inferred_values <- data_tree_tbl  
+}
 dim(inferred_values)
 ```
 
