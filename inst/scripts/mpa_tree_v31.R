@@ -89,10 +89,11 @@ mpa_data <- left_join(mpa_data, new_taxonomy, by = 'original_taxid')
 sp_taxid_dups <- mpa_data$species_taxid[which(duplicated(mpa_data$species_taxid))]
 
 new_mpa_data <- mpa_data |>
-    mutate(dup = ifelse(species_taxid %in% sp_taxid_dups, 'dup', NA)) |>
+    # mutate(dup = ifelse(species_taxid %in% sp_taxid_dups, 'dup', NA)) |>
     mutate(no_gca = as.double(sub('^GCA_', '', assembly_accession))) |>
     slice_max(no_gca, n = 1, by = species_taxid) |>
-    select(-no_gca, -dup) |>
+    # select(-no_gca, -dup) |>
+    select(-no_gca) |>
     mutate(
         old_tip_label = tip_label,
         tip_label = as.character(species_taxid)
