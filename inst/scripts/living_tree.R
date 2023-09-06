@@ -5,37 +5,31 @@
 ## url <- 'https://imedea.uib-csic.es/mmg/ltp/wp-content/uploads/ltp/LTP_all_06_2022.ntree'
 
 library(ape)
-library(ggtree)
 library(taxonomizr)
-library(taxPPro)
-library(data.tree)
-library(bugphyzz)
-library(dplyr)
 
-data('tree_list')
-data_tree <- as.Node(tree_list)
-
-nodes <- data_tree$Get(function(node) {
-    if (grepl('s__', node$name)) return(node$name)
-})
-nodes <- unname(nodes)
-nodes <- sub('^\\w__', '', nodes)
-nodes <- nodes[-1]
-nodes <- nodes[!is.na(nodes)]
-
-t_file <- system.file(
-    'extdata', 'LTP_all_06_2022.ntree', package = 'taxPPro', mustWork = TRUE
-)
-t <- read.tree(t_file)
-p <- ggtree(t, layout = 'circular', size = 0.025)
-
+tree <- read.tree('https://imedea.uib-csic.es/mmg/ltp/wp-content/uploads/ltp/LTP_all_06_2022.ntree')
 tip_labels <- t$tip.label
 node_labesl <- t$node.label
-
 sql <- '~/accessionTaxa.sql' # this takes a while - date Aug 29, 2023
 acc <- sub("^'([^,]+).*", "\\1", tip_labels)
 taxids <- accessionToTaxa(accessions = acc, sqlFile = sql, version = 'base')
 names(taxids) <- acc
+
+tree_data <- data.frame(
+    tip_label = tip_labels,
+    accesion = acc,
+    taxid = unname(taxids)
+
+)
+
+fix(tree_data)
+
+
+
+
+
+
+
 names(taxids)[which(is.na(taxids))]
 
 x <- taxids[which(!is.na(taxids))]
