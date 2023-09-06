@@ -125,69 +125,70 @@ extdata directory of the current package (<code>taxPPro</code>):</p>
 <span>  <span class="va">taxids_ls</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>taxid <span class="op">=</span> <span class="va">taxids</span>, rank <span class="op">=</span> <span class="va">ranks</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">rank</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">my_ranks</span><span class="op">)</span> </span>
 <span><span class="op">}</span></span>
-<span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 16 of</span></span>
+<span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 17 of</span></span>
 <span><span class="co">#&gt; 34642 taxon IDs. The followings are left unrankd: 1400058, 1573059, 1763447,</span></span>
-<span><span class="co">#&gt; 1963271, 1968878, 1968882, 2211268, 2751472, 2817139, 2823376, 2837505,</span></span>
-<span><span class="co">#&gt; 3037992, 3038074, 393617, 67334, 759360</span></span>
-<span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 34 of</span></span>
+<span><span class="co">#&gt; 1963032, 1963271, 1968878, 1968882, 2211268, 2751472, 2817139, 2823376,</span></span>
+<span><span class="co">#&gt; 2837505, 3037992, 3038074, 393617, 67334, 759360</span></span>
+<span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 35 of</span></span>
 <span><span class="co">#&gt; 42982 taxon IDs. The followings are left unrankd: 1297800, 1400058, 1573059,</span></span>
-<span><span class="co">#&gt; 1739785, 1763447, 1763448, 1963271, 1968878, 1968882, 2093796, 2211268,</span></span>
-<span><span class="co">#&gt; 2623658, 2627207, 2629579, 2643532, 2644231, 2678888, 2751472, 2771474,</span></span>
-<span><span class="co">#&gt; 2817139, 2817140, 2817142, 2823376, 2837505, 2847319, 2858887, 2904534,</span></span>
-<span><span class="co">#&gt; 2993938, 3018742, 3037992, 3038074, 393617, 67334, 759360</span></span>
-<span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 28 of</span></span>
+<span><span class="co">#&gt; 1739785, 1763447, 1763448, 1963032, 1963271, 1968878, 1968882, 2093796,</span></span>
+<span><span class="co">#&gt; 2211268, 2623658, 2627207, 2629579, 2643532, 2644231, 2678888, 2751472,</span></span>
+<span><span class="co">#&gt; 2771474, 2817139, 2817140, 2817142, 2823376, 2837505, 2847319, 2858887,</span></span>
+<span><span class="co">#&gt; 2904534, 2993938, 3018742, 3037992, 3038074, 393617, 67334, 759360</span></span>
+<span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 29 of</span></span>
 <span><span class="co">#&gt; 139062 taxon IDs. The followings are left unrankd: 1297800, 1297801, 1400058,</span></span>
-<span><span class="co">#&gt; 1573059, 1739785, 1739786, 1763447, 1763448, 1763449, 1928915, 1963271,</span></span>
-<span><span class="co">#&gt; 1968878, 1968882, 2211268, 2751472, 2817139, 2817142, 2817143, 2823376,</span></span>
-<span><span class="co">#&gt; 2837505, 2904534, 2904535, 3037992, 3038074, 393617, 549795, 67334, 759360</span></span>
-<span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 21 of</span></span>
-<span><span class="co">#&gt; 38507 taxon IDs. The followings are left unrankd: 1297800, 1400058, 1573059,</span></span>
-<span><span class="co">#&gt; 1739785, 1763447, 1763448, 1963271, 1968878, 1968882, 2211268, 2751472,</span></span>
-<span><span class="co">#&gt; 2817139, 2817142, 2823376, 2837505, 2904534, 3037992, 3038074, 393617, 67334,</span></span>
+<span><span class="co">#&gt; 1573059, 1739785, 1739786, 1763447, 1763448, 1763449, 1928915, 1963032,</span></span>
+<span><span class="co">#&gt; 1963271, 1968878, 1968882, 2211268, 2751472, 2817139, 2817142, 2817143,</span></span>
+<span><span class="co">#&gt; 2823376, 2837505, 2904534, 2904535, 3037992, 3038074, 393617, 549795, 67334,</span></span>
 <span><span class="co">#&gt; 759360</span></span>
-<span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 18 of</span></span>
+<span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 22 of</span></span>
+<span><span class="co">#&gt; 38507 taxon IDs. The followings are left unrankd: 1297800, 1400058, 1573059,</span></span>
+<span><span class="co">#&gt; 1739785, 1763447, 1763448, 1963032, 1963271, 1968878, 1968882, 2211268,</span></span>
+<span><span class="co">#&gt; 2751472, 2817139, 2817142, 2823376, 2837505, 2904534, 3037992, 3038074, 393617,</span></span>
+<span><span class="co">#&gt; 67334, 759360</span></span>
+<span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 19 of</span></span>
 <span><span class="co">#&gt; 86083 taxon IDs. The followings are left unrankd: 1400058, 1573059, 1763447,</span></span>
-<span><span class="co">#&gt; 1928915, 1963271, 1968878, 1968882, 2211268, 2751472, 2817139, 2823376,</span></span>
-<span><span class="co">#&gt; 2837505, 3037992, 3038074, 393617, 549795, 67334, 759360</span></span>
-<span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 109 of</span></span>
+<span><span class="co">#&gt; 1928915, 1963032, 1963271, 1968878, 1968882, 2211268, 2751472, 2817139,</span></span>
+<span><span class="co">#&gt; 2823376, 2837505, 3037992, 3038074, 393617, 549795, 67334, 759360</span></span>
+<span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 110 of</span></span>
 <span><span class="co">#&gt; 505798 taxon IDs. The followings are left unrankd: 1301626, 1400058, 1419266,</span></span>
 <span><span class="co">#&gt; 1573059, 1684659, 1763447, 1769156, 1769157, 1769158, 1783512, 1899020,</span></span>
-<span><span class="co">#&gt; 1899428, 1928915, 1935118, 1935138, 1963271, 1963337, 1968878, 1968882,</span></span>
-<span><span class="co">#&gt; 2024845, 2045443, 2093796, 2093797, 2211268, 2518984, 2615039, 2623658,</span></span>
-<span><span class="co">#&gt; 2627207, 2629579, 2643532, 2644231, 2654172, 2654173, 2678888, 2709397,</span></span>
-<span><span class="co">#&gt; 2730918, 2736876, 2736877, 2736878, 2736879, 2736880, 2736881, 2736882,</span></span>
-<span><span class="co">#&gt; 2736883, 2736884, 2746320, 2751472, 2763046, 2764574, 2764575, 2764577,</span></span>
-<span><span class="co">#&gt; 2764582, 2764594, 2771474, 2817139, 2817140, 2817141, 2817373, 2823376,</span></span>
-<span><span class="co">#&gt; 2827029, 2837505, 2847319, 2858887, 2879649, 2881259, 2881270, 2881273,</span></span>
-<span><span class="co">#&gt; 2881274, 2881275, 2881277, 2881278, 2885265, 2885349, 2885350, 2885355,</span></span>
-<span><span class="co">#&gt; 2885359, 2912189, 2927225, 2935778, 2935781, 2935782, 2935783, 2935784,</span></span>
-<span><span class="co">#&gt; 2935785, 2935789, 2950376, 2950378, 2962770, 2984200, 2984201, 2984202,</span></span>
-<span><span class="co">#&gt; 2984203, 2984204, 2984205, 2991419, 2991710, 2993938, 2995302, 2995307,</span></span>
-<span><span class="co">#&gt; 3015310, 3016894, 3018742, 3029201, 3037992, 3038074, 393617, 549795, 67334,</span></span>
-<span><span class="co">#&gt; 759360</span></span>
-<span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 29 of</span></span>
+<span><span class="co">#&gt; 1899428, 1928915, 1935118, 1935138, 1963032, 1963271, 1963337, 1968878,</span></span>
+<span><span class="co">#&gt; 1968882, 2024845, 2045443, 2093796, 2093797, 2211268, 2518984, 2615039,</span></span>
+<span><span class="co">#&gt; 2623658, 2627207, 2629579, 2643532, 2644231, 2654172, 2654173, 2678888,</span></span>
+<span><span class="co">#&gt; 2709397, 2730918, 2736876, 2736877, 2736878, 2736879, 2736880, 2736881,</span></span>
+<span><span class="co">#&gt; 2736882, 2736883, 2736884, 2746320, 2751472, 2763046, 2764574, 2764575,</span></span>
+<span><span class="co">#&gt; 2764577, 2764582, 2764594, 2771474, 2817139, 2817140, 2817141, 2817373,</span></span>
+<span><span class="co">#&gt; 2823376, 2827029, 2837505, 2847319, 2858887, 2879649, 2881259, 2881270,</span></span>
+<span><span class="co">#&gt; 2881273, 2881274, 2881275, 2881277, 2881278, 2885265, 2885349, 2885350,</span></span>
+<span><span class="co">#&gt; 2885355, 2885359, 2912189, 2927225, 2935778, 2935781, 2935782, 2935783,</span></span>
+<span><span class="co">#&gt; 2935784, 2935785, 2935789, 2950376, 2950378, 2962770, 2984200, 2984201,</span></span>
+<span><span class="co">#&gt; 2984202, 2984203, 2984204, 2984205, 2991419, 2991710, 2993938, 2995302,</span></span>
+<span><span class="co">#&gt; 2995307, 3015310, 3016894, 3018742, 3029201, 3037992, 3038074, 393617, 549795,</span></span>
+<span><span class="co">#&gt; 67334, 759360</span></span>
+<span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 30 of</span></span>
 <span><span class="co">#&gt; 39102 taxon IDs. The followings are left unrankd: 1400058, 1573059, 1763447,</span></span>
-<span><span class="co">#&gt; 1963271, 1968878, 1968882, 2093796, 2211268, 2623658, 2627207, 2629579,</span></span>
-<span><span class="co">#&gt; 2643532, 2644231, 2678888, 2751472, 2771474, 2817139, 2817140, 2823376,</span></span>
-<span><span class="co">#&gt; 2837505, 2847319, 2858887, 2993938, 3018742, 3037992, 3038074, 393617, 67334,</span></span>
-<span><span class="co">#&gt; 759360</span></span>
-<span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 119 of</span></span>
+<span><span class="co">#&gt; 1963032, 1963271, 1968878, 1968882, 2093796, 2211268, 2623658, 2627207,</span></span>
+<span><span class="co">#&gt; 2629579, 2643532, 2644231, 2678888, 2751472, 2771474, 2817139, 2817140,</span></span>
+<span><span class="co">#&gt; 2823376, 2837505, 2847319, 2858887, 2993938, 3018742, 3037992, 3038074, 393617,</span></span>
+<span><span class="co">#&gt; 67334, 759360</span></span>
+<span><span class="co">#&gt; Warning in taxizedb::taxid2rank(taxids, db = "ncbi"): No rank found for 120 of</span></span>
 <span><span class="co">#&gt; 560210 taxon IDs. The followings are left unrankd: 1297800, 1297801, 1301626,</span></span>
 <span><span class="co">#&gt; 1400058, 1419266, 1573059, 1684659, 1739785, 1739786, 1763447, 1763448,</span></span>
 <span><span class="co">#&gt; 1763449, 1769156, 1769157, 1769158, 1783512, 1899020, 1899428, 1928915,</span></span>
-<span><span class="co">#&gt; 1935118, 1935138, 1963271, 1963337, 1968878, 1968882, 2024845, 2045443,</span></span>
-<span><span class="co">#&gt; 2093796, 2093797, 2211268, 2518984, 2615039, 2623658, 2627207, 2629579,</span></span>
-<span><span class="co">#&gt; 2643532, 2644231, 2654172, 2654173, 2678888, 2709397, 2730918, 2736876,</span></span>
-<span><span class="co">#&gt; 2736877, 2736878, 2736879, 2736880, 2736881, 2736882, 2736883, 2736884,</span></span>
-<span><span class="co">#&gt; 2746320, 2751472, 2763046, 2764574, 2764575, 2764577, 2764582, 2764594,</span></span>
-<span><span class="co">#&gt; 2771474, 2817139, 2817140, 2817141, 2817142, 2817143, 2817373, 2823376,</span></span>
-<span><span class="co">#&gt; 2827029, 2837505, 2847319, 2858887, 2879649, 2881259, 2881270, 2881273,</span></span>
-<span><span class="co">#&gt; 2881274, 2881275, 2881277, 2881278, 2885265, 2885349, 2885350, 2885355,</span></span>
-<span><span class="co">#&gt; 2885359, 2904534, 2904535, 2912189, 2927225, 2935778, 2935781, 2935782,</span></span>
-<span><span class="co">#&gt; 2935783, 2935784, 2935785, 2935789, 2950376, 2950378, 2962770, 2984200,</span></span>
-<span><span class="co">#&gt; 2984201, 2984202, 2984203, 2984204, 2984205, 2991419, 2991710, 2993938,</span></span>
-<span><span class="co">#&gt; 2995302, 2995307, 3015310, 3016894, 3018742, 3029201, 3037992, 3038074, 393617,</span></span>
-<span><span class="co">#&gt; 549795, 67334, 759360</span></span>
+<span><span class="co">#&gt; 1935118, 1935138, 1963032, 1963271, 1963337, 1968878, 1968882, 2024845,</span></span>
+<span><span class="co">#&gt; 2045443, 2093796, 2093797, 2211268, 2518984, 2615039, 2623658, 2627207,</span></span>
+<span><span class="co">#&gt; 2629579, 2643532, 2644231, 2654172, 2654173, 2678888, 2709397, 2730918,</span></span>
+<span><span class="co">#&gt; 2736876, 2736877, 2736878, 2736879, 2736880, 2736881, 2736882, 2736883,</span></span>
+<span><span class="co">#&gt; 2736884, 2746320, 2751472, 2763046, 2764574, 2764575, 2764577, 2764582,</span></span>
+<span><span class="co">#&gt; 2764594, 2771474, 2817139, 2817140, 2817141, 2817142, 2817143, 2817373,</span></span>
+<span><span class="co">#&gt; 2823376, 2827029, 2837505, 2847319, 2858887, 2879649, 2881259, 2881270,</span></span>
+<span><span class="co">#&gt; 2881273, 2881274, 2881275, 2881277, 2881278, 2885265, 2885349, 2885350,</span></span>
+<span><span class="co">#&gt; 2885355, 2885359, 2904534, 2904535, 2912189, 2927225, 2935778, 2935781,</span></span>
+<span><span class="co">#&gt; 2935782, 2935783, 2935784, 2935785, 2935789, 2950376, 2950378, 2962770,</span></span>
+<span><span class="co">#&gt; 2984200, 2984201, 2984202, 2984203, 2984204, 2984205, 2991419, 2991710,</span></span>
+<span><span class="co">#&gt; 2993938, 2995302, 2995307, 3015310, 3016894, 3018742, 3029201, 3037992,</span></span>
+<span><span class="co">#&gt; 3038074, 393617, 549795, 67334, 759360</span></span>
 <span><span class="va">taxids_summary</span> <span class="op">&lt;-</span> <span class="va">taxids_ls</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span>.id <span class="op">=</span> <span class="st">'set'</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">set</span>, <span class="va">rank</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -200,8 +201,8 @@ extdata directory of the current package (<code>taxPPro</code>):</p>
 <span>  <span class="va">taxids_summary</span>, </span>
 <span>  caption <span class="op">=</span> <span class="st">'Table 1. Number of taxa per rank and NCBI set.'</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-4a40f79b02d901e41d5f" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-4a40f79b02d901e41d5f">{"x":{"filter":"none","vertical":false,"caption":"<caption>Table 1. Number of taxa per rank and NCBI set.<\/caption>","data":[["1","2","3","4","5","6","7","8"],["exclude_all","exclude_informal","exclude_unclassified_informal","exclude_uncultured_informal","exclude_unclassified_uncultured","exclude_unclassified","exclude_uncultured","include_all"],[5332,5332,5332,5332,5332,5332,5332,5332],[26151,26151,26151,26151,31789,80762,446698,497089],[0,0,0,0,42148,42273,42286,42411],[31483,31483,31483,31483,79269,128367,494316,544832]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>set<\/th>\n      <th>genus<\/th>\n      <th>species<\/th>\n      <th>strain<\/th>\n      <th>total<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3,4,5]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-d34d90c0f06f1a6653e7" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-d34d90c0f06f1a6653e7">{"x":{"filter":"none","vertical":false,"caption":"<caption>Table 1. Number of taxa per rank and NCBI set.<\/caption>","data":[["1","2","3","4","5","6","7","8"],["exclude_all","exclude_informal","exclude_unclassified_informal","exclude_uncultured_informal","exclude_unclassified_uncultured","exclude_unclassified","exclude_uncultured","include_all"],[5332,5332,5332,5332,5332,5332,5332,5332],[26150,26150,26150,26150,31788,80761,446697,497088],[0,0,0,0,42148,42273,42286,42411],[31482,31482,31482,31482,79268,128366,494315,544831]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>set<\/th>\n      <th>genus<\/th>\n      <th>species<\/th>\n      <th>strain<\/th>\n      <th>total<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3,4,5]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div class="section level2">
 <h2 id="percentage-of-bugphyzz-taxids-annotated-in-the-ncbi">Percentage of bugphyzz taxids annotated in the NCBI:<a class="anchor" aria-label="anchor" href="#percentage-of-bugphyzz-taxids-annotated-in-the-ncbi"></a>
@@ -215,31 +216,31 @@ extdata directory of the current package (<code>taxPPro</code>):</p>
 <span><span class="co">#&gt; List of 8</span></span>
 <span><span class="co">#&gt;  $ exclude_all                    :List of 2</span></span>
 <span><span class="co">#&gt;   ..$ genus  : int [1:5332] 10 1000999 ...</span></span>
-<span><span class="co">#&gt;   ..$ species: int [1:26151] 100 100053 ...</span></span>
+<span><span class="co">#&gt;   ..$ species: int [1:26150] 100 100053 ...</span></span>
 <span><span class="co">#&gt;  $ exclude_informal               :List of 2</span></span>
 <span><span class="co">#&gt;   ..$ genus  : int [1:5332] 10 1000999 ...</span></span>
-<span><span class="co">#&gt;   ..$ species: int [1:26151] 100 100053 ...</span></span>
+<span><span class="co">#&gt;   ..$ species: int [1:26150] 100 100053 ...</span></span>
 <span><span class="co">#&gt;  $ exclude_unclassified           :List of 3</span></span>
 <span><span class="co">#&gt;   ..$ genus  : int [1:5332] 10 1000999 ...</span></span>
-<span><span class="co">#&gt;   ..$ species: int [1:80762] 100 1000028 ...</span></span>
+<span><span class="co">#&gt;   ..$ species: int [1:80761] 100 1000028 ...</span></span>
 <span><span class="co">#&gt;   ..$ strain : int [1:42273] 1000560 1000561 ...</span></span>
 <span><span class="co">#&gt;  $ exclude_unclassified_informal  :List of 2</span></span>
 <span><span class="co">#&gt;   ..$ genus  : int [1:5332] 10 1000999 ...</span></span>
-<span><span class="co">#&gt;   ..$ species: int [1:26151] 100 100053 ...</span></span>
+<span><span class="co">#&gt;   ..$ species: int [1:26150] 100 100053 ...</span></span>
 <span><span class="co">#&gt;  $ exclude_unclassified_uncultured:List of 3</span></span>
 <span><span class="co">#&gt;   ..$ genus  : int [1:5332] 10 1000999 ...</span></span>
-<span><span class="co">#&gt;   ..$ species: int [1:31789] 100 100053 ...</span></span>
+<span><span class="co">#&gt;   ..$ species: int [1:31788] 100 100053 ...</span></span>
 <span><span class="co">#&gt;   ..$ strain : int [1:42148] 1000560 1000561 ...</span></span>
 <span><span class="co">#&gt;  $ exclude_uncultured             :List of 3</span></span>
 <span><span class="co">#&gt;   ..$ genus  : int [1:5332] 10 1000999 ...</span></span>
-<span><span class="co">#&gt;   ..$ species: int [1:446698] 100 100000 ...</span></span>
+<span><span class="co">#&gt;   ..$ species: int [1:446697] 100 100000 ...</span></span>
 <span><span class="co">#&gt;   ..$ strain : int [1:42286] 1000560 1000561 ...</span></span>
 <span><span class="co">#&gt;  $ exclude_uncultured_informal    :List of 2</span></span>
 <span><span class="co">#&gt;   ..$ genus  : int [1:5332] 10 1000999 ...</span></span>
-<span><span class="co">#&gt;   ..$ species: int [1:26151] 100 100053 ...</span></span>
+<span><span class="co">#&gt;   ..$ species: int [1:26150] 100 100053 ...</span></span>
 <span><span class="co">#&gt;  $ include_all                    :List of 3</span></span>
 <span><span class="co">#&gt;   ..$ genus  : int [1:5332] 10 1000999 ...</span></span>
-<span><span class="co">#&gt;   ..$ species: int [1:497089] 100 100000 ...</span></span>
+<span><span class="co">#&gt;   ..$ species: int [1:497088] 100 100000 ...</span></span>
 <span><span class="co">#&gt;   ..$ strain : int [1:42411] 1000560 1000561 ...</span></span></code></pre></div>
 <p>Import bugphyzz physiologies:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -313,8 +314,8 @@ extdata directory of the current package (<code>taxPPro</code>):</p>
 <span>  <span class="va">bp_ids_summary</span>,</span>
 <span>  caption <span class="op">=</span> <span class="st">'Table 2. Percentage of bugphyzz taxa also annotated in the NCBI sets per rank.'</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-bbfc107f925fb6ec1c60" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-bbfc107f925fb6ec1c60">{"x":{"filter":"none","vertical":false,"caption":"<caption>Table 2. Percentage of bugphyzz taxa also annotated in the NCBI sets per rank.<\/caption>","data":[["1","2","3","4","5","6","7","8"],["exclude_all","exclude_informal","exclude_unclassified_informal","exclude_uncultured_informal","exclude_unclassified_uncultured","exclude_unclassified","exclude_uncultured","include_all"],[100,100,100,100,100,100,100,100],[70,70,70,70,71,71,99,99],[0,0,0,0,100,100,100,100],[31483,31483,31483,31483,79269,128367,494316,544832]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>set<\/th>\n      <th>genus<\/th>\n      <th>species<\/th>\n      <th>strain<\/th>\n      <th>total<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3,4,5]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<div class="datatables html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-54cc44d20aab7d0c25ea" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-54cc44d20aab7d0c25ea">{"x":{"filter":"none","vertical":false,"caption":"<caption>Table 2. Percentage of bugphyzz taxa also annotated in the NCBI sets per rank.<\/caption>","data":[["1","2","3","4","5","6","7","8"],["exclude_all","exclude_informal","exclude_unclassified_informal","exclude_uncultured_informal","exclude_unclassified_uncultured","exclude_unclassified","exclude_uncultured","include_all"],[100,100,100,100,100,100,100,100],[70,70,70,70,71,71,99,99],[0,0,0,0,100,100,100,100],[31482,31482,31482,31482,79268,128366,494315,544831]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>set<\/th>\n      <th>genus<\/th>\n      <th>species<\/th>\n      <th>strain<\/th>\n      <th>total<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":[2,3,4,5]},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div class="section level2">
 <h2 id="creating-a-data-tree-stucture-based-on-strains-using-the-exclude-unclassified-and-uncultured-set">Creating a data.tree stucture based on strains using the exclude
