@@ -1,3 +1,7 @@
+
+## This code is for converting the tips of the metaphlan tree v3.1 from
+## genome ids (GCA) to taxids
+
 library(ape)
 library(tidyr)
 library(purrr)
