@@ -6,47 +6,38 @@
 
 library(ape)
 library(taxonomizr)
+library(dplyr)
 
 tree <- read.tree('https://imedea.uib-csic.es/mmg/ltp/wp-content/uploads/ltp/LTP_all_06_2022.ntree')
-tip_labels <- t$tip.label
-node_labesl <- t$node.label
+tip_labels <- tree$tip.label
 sql <- '~/accessionTaxa.sql' # this takes a while - date Aug 29, 2023
 acc <- sub("^'([^,]+).*", "\\1", tip_labels)
 taxids <- accessionToTaxa(accessions = acc, sqlFile = sql, version = 'base')
-names(taxids) <- acc
+tax_names <- sub('^.+, (.+), .+, .+, .+$'  ,'\\1', tip_labels) |>
+    {\(y) gsub('"', '', y)}()
+pos <- which(is.na(taxids))
+missing_taxids <- taxizedb::name2taxid(tax_names[pos], db = 'ncbi')
+taxids[pos] <- missing_taxids
 
 tree_data <- data.frame(
     tip_label = tip_labels,
     accesion = acc,
-    taxid = unname(taxids)
+    taxid = unname(taxids),
+    taxname = tax_names
 
 )
+names(taxids) <- tip_labels
+new_tip_labels <- taxids[tree$tip.label]
+tree$tip.label <- new_tip_labels
 
-fix(tree_data)
+tree_data <- tree_data |>
+    arrange(match(taxid, tree$tip_label))
 
+tree_data_fname <- file.path('inst', 'extdata', 'livingTree.tsv')
+write.table(
+    x = tree_data, file = tree_data_fname, sep = '\t',
+    quote = TRUE, row.names = FALSE
+)
 
-
-
-
-
-
-names(taxids)[which(is.na(taxids))]
-
-x <- taxids[which(!is.na(taxids))]
-ranks <- taxizedb::taxid2rank(x, db = 'ncbi')
-
-t$tip.label <- taxids
-
-
-bp <- importBugphyzz()
-bp2 <- bp |>
-    filter(
-        !Evidence %in% c('asr', 'inh'),
-        !Rank %in% c('genus', 'strain')
-    )
-bp_ids <- unique(bp2$NCBI_ID)
-sum(bp_ids %in% nodes)
-sum(bp_ids %in% taxids)
-
-mean(taxids %in% nodes)
-mean(nodes %in% taxids)
+tree_fname <- file.path('inst', 'extdata', 'livingTree.newick')
+write.tree(phy = tree, file = tree_fname)
