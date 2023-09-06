@@ -111,8 +111,6 @@ new_mpa_tree$tip.label <- new_tip_labels
 new_mpa_data <- new_mpa_data |>
     arrange(match(tip_label, new_tip_labels))
 
-
-
 # new_mpa_data2 <- new_mpa_data |>
 #     drop_na()
 
