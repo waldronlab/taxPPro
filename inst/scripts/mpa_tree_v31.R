@@ -20,6 +20,7 @@ mpa_data <- data.frame(tip_label = mpa_tree$tip.label) |>
     modify(~ sub('^\\w__', '', .x))
 
 ## I downloaded these data from https://ftp.ncbi.nlm.nih.gov/genomes/ASSEMBLY_REPORTS/ on 08292023
+## I should add some code here to save the file to a temporary location rather than using paths
 assembly_data_current_fname <- '~/assembly_summary_genbank.txt'
 assembly_data_historical_fname <- '~/assembly_summary_genbank_historical.txt'
 assembly_data_current <- readr::read_tsv(
@@ -39,30 +40,33 @@ assembly_data <- bind_rows(assembly_data_current, assembly_data_historical) |>
 mpa_data <- left_join(mpa_data, assembly_data, by = 'genome_id') |>
     slice_max(order_by = version, n = 1, by = genome_id)
 
+sp_taxid_dups <- mpa_data$species_taxid[which(duplicated(mpa_data$species_taxid))]
 
+new_mpa_data <- mpa_data |>
+    mutate(dup = ifelse(species_taxid %in% sp_taxid_dups, 'dup', NA)) |>
+    mutate(no_gca = as.double(sub('^GCA_', '', assembly_accession))) |>
+    slice_max(no_gca, n = 1, by = species_taxid) |>
+    select(-no_gca, -dup) |>
+    mutate(
+        old_tip_label = tip_label,
+        tip_label = species_taxid
+    ) |>
+    relocate(tip_label)
 
+tip_labels <- new_mpa_data$tip_label
+names(tip_labels) <- new_mpa_data$old_tip_label
+new_mpa_tree <- keep.tip(phy = mpa_tree, tip = names(tip_labels))
+new_tip_labels <- unname(tip_labels[new_mpa_tree$tip.label])
+new_mpa_tree$tip.label <- new_tip_labels
 
-mpa_data[which(mpa_data$taxid != mpa_data$species_taxid),] |> View()
+new_mpa_tree_fname <- file.path('inst', 'extdata', 'mpav31.newick')
+ape::write.tree(new_mpa_tree, new_mpa_tree_fname)
 
+new_mpa_data <- new_mpa_data |>
+    arrange(match(tip_label, new_tip_labels))
 
-
-sp_dups <- mpa_data$species[which(duplicated(mpa_data$species))]
-
-mpa_data |>
-    filter(species %in% sp_dups) |>
-    View()
-
-
-
-mpa_data[which(duplicated(mpa_data$species_taxids)),] |> View()
-mpa_data[which(duplicated(mpa_data$species_taxid)),] |> View()
-
-
-
-output_fname <- file.path('inst', 'extdata', 'mpa_v31_CHOCOPhlAn_201901_species_tree.tsv')
-
+new_mpa_data_fname <- file.path('inst', 'extdata', 'mpvav31.tsv')
 write.table(
-    x = df, file = output_fname,
-    sep = '\t', row.names = FALSE, quote = FALSE
+    new_mpa_data, new_mpa_data_fname, sep = '\t', quote = TRUE,
+    row.names = FALSE
 )
-
