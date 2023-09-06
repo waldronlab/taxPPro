@@ -108,8 +108,12 @@ names(tip_labels) <- new_mpa_data$old_tip_label
 new_mpa_tree <- keep.tip(phy = mpa_tree, tip = names(tip_labels))
 new_tip_labels <- unname(tip_labels[new_mpa_tree$tip.label])
 new_mpa_tree$tip.label <- new_tip_labels
-new_mpa_data <- new_mpa_data |>
-    arrange(match(tip_label, new_tip_labels))
+new_mpa_data <- new_mpa_data[match(new_mpa_tree$tip.label, new_mpa_data$tip_label),]
+
+# all(new_mpa_data$tip_label == new_mpa_tree$tip.label)
+
+
+
 
 # new_mpa_data2 <- new_mpa_data |>
 #     drop_na()
