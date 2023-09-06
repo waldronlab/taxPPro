@@ -26,18 +26,28 @@ tree_data <- data.frame(
     taxname = tax_names
 
 )
-names(taxids) <- tip_labels
-new_tip_labels <- taxids[tree$tip.label]
-tree$tip.label <- new_tip_labels
 
-tree_data <- tree_data |>
-    arrange(match(taxid, tree$tip_label))
+new_tree_data <- tree_data |>
+    arrange(taxid, tip_label) |>
+    slice_head(n = 1, by = 'taxid')
+
+new_tree <- ape:::keep.tip(tree, tip = new_tree_data$tip_label)
+new_tree_data <- new_tree_data[match(new_tree$tip.label, new_tree_data$tip_label),]
+
+# all(new_tree_data$tip_label == new_tree$tip.label)
+
+new_tree$tip.label <- new_tree_data$taxid
+new_tree_data <- new_tree_data |>
+    mutate(
+        old_tip_label = tip_label,
+        tip_label = taxid
+    )
 
 tree_data_fname <- file.path('inst', 'extdata', 'livingTree.tsv')
 write.table(
-    x = tree_data, file = tree_data_fname, sep = '\t',
+    x = new_tree_data, file = tree_data_fname, sep = '\t',
     quote = TRUE, row.names = FALSE
 )
 
 tree_fname <- file.path('inst', 'extdata', 'livingTree.newick')
-write.tree(phy = tree, file = tree_fname)
+write.tree(phy = new_tree, file = tree_fname)
