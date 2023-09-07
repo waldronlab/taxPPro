@@ -22,11 +22,20 @@ library(tidyr)
 Load bugphyzz data (one physiology: aerophilicity):
 
 ```{r import physiology data}
-aer <- physiologies('aerophilicity')[[1]] 
+select_cols <- c(
+    'NCBI_ID', 'Taxon_name', 'Attribute', 'Attribute_value', 'Attribute_source',
+    'Frequency', 'Parent_NCBI_ID'
+)
+
+aer <- physiologies('aerophilicity')[[1]]
 phys_data <- aer |> 
     as_tibble() |> 
+    select(all_of(select_cols)) |> 
     filter(Attribute_value == TRUE) |> # only use TRUE values for this one
-    filter(!((is.na(NCBI_ID) | NCBI_ID == 'unknown') & is.na(Parent_NCBI_ID)))
+    filter(
+        !((is.na(NCBI_ID) | NCBI_ID == 'unknown') & is.na(Parent_NCBI_ID))
+    ) |> 
+    distinct()
 dim(phys_data)
 ```
 
@@ -37,7 +46,12 @@ use these annotations.
 
 ```{r}
 lgl_vct <- is.na(phys_data$NCBI_ID) | phys_data$NCBI_ID == 'unknown'
-set_with_ids <- filter(phys_data, !lgl_vct) # this will be used as_is
+set_with_ids <- phys_data |> 
+    filter(!lgl_vct) |> 
+    group_by(NCBI_ID) |> 
+    mutate(Taxon_name = paste0(sort(unique(Taxon_name)), collapse = '|')) |> 
+    ungroup() |> 
+    distinct()
 dim(set_with_ids)
 ```
 
