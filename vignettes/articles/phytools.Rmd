@@ -10,9 +10,62 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup, message=FALSE}
+library(bugphyzz)
+library(taxPPro)
+library(data.tree)
 library(phytools)
-
+library(dplyr)
+library(purrr)
+library(tidyr)
 ```
+
+Load bugphyzz data (one physiology: aerophilicity):
+
+```{r import physiology data}
+aer <- physiologies('aerophilicity')[[1]] 
+phys_data <- aer |> 
+    as_tibble() |> 
+    filter(Attribute_value == TRUE) |> # only use TRUE values for this one
+    filter(!((is.na(NCBI_ID) | NCBI_ID == 'unknown') & is.na(Parent_NCBI_ID)))
+dim(phys_data)
+```
+
+Some of these annotations cannot be mapped to a phylogenetic/taxonomic tree
+because they don't have an NCBI taxonomy ID (taxid). They have Parent NCBI_IDs,
+however. Let's use them for that. I call this 'early ASR', we cannot really
+use these annotations.
+
+```{r}
+lgl_vct <- is.na(phys_data$NCBI_ID) | phys_data$NCBI_ID == 'unknown'
+set_with_ids <- filter(phys_data, !lgl_vct) # this will be used as_is
+dim(set_with_ids)
+```
+
+```{r}
+set_without_ids <- filter(phys_data, lgl_vct) # this will be used for ASR
+dim(set_without_ids)
+```
+
+```{r}
+set_without_ids |> 
+    
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Load data:
 
