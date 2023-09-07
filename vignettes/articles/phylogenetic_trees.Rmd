@@ -1,0 +1,76 @@
+---
+title: "phylogenetic_trees"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(taxPPro)
+library(ape)
+library(data.tree)
+```
+
+Import MetaPhlan tree:
+
+```{r}
+mpaTreeFile <- system.file(
+    'extdata', 'mpav31.newick', package = 'taxPPro', mustWork = TRUE
+)
+mpaTree <- read.tree(mpaTreeFile)
+mpaTree
+```
+
+Import living tree:
+
+```{r}
+livingTreeFile <- system.file(
+    'extdata', 'livingTree.newick', package = 'taxPPro', mustWork = TRUE
+)
+livingTree <- read.tree(livingTreeFile)
+livingTree
+```
+
+Import taxonomic tree:
+
+```{r}
+data('tree_list')
+dataTree <- as.Node(tree_list)
+dataTree <- as.phylo.Node(x = dataTree, heightAttribute = NULL)
+dataTree$tip.label <- sub('^\\w__(\\d+)$', '\\1', dataTree$tip.label)
+dataTree$node.label <- sub('^\\w__(\\d+)$', '\\1', dataTree$node.label)
+dataTree
+```
+
+
+```{r}
+mean(mpaTree$tip.label %in% dataTree$tip.label)
+```
+
+```{r}
+mean(livingTree$tip.label %in% dataTree$tip.label)
+```
+
+
+```{r}
+mean(dataTree$tip.label %in% mpaTree$tip.label)
+```
+
+
+```{r}
+mean(dataTree$tip.label %in% livingTree$tip.label)
+```
+
+It seems that the living tree could be better (more completeness)
+
+
+
+
+
+
+
+
