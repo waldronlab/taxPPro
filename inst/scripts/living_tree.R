@@ -100,6 +100,7 @@ tree_fname <- file.path('inst', 'extdata', 'livingTree.newick')
 
 ltree <- read.tree(tree_fname)
 ldata <- read.table(tree_data_fname, sep = '\t', header = TRUE, row.names = NULL)
+ldata <- modify(ldata, as.character)
 
 getMRCA <- function(t, df) {
     res <- phytools::findMRCA(t, tips = df[['tip_label']])
@@ -108,17 +109,70 @@ getMRCA <- function(t, df) {
     res
 }
 
+taxRanks <- c(
+    'kingdom', 'phylum', 'class', 'order', 'family', 'genus'
+) |>
+    {\(y) sub("$", "_taxid", y)}()
+
+mrcas <- map(taxRanks, ~ {
+    splitted_df <- split(ldata, factor(ldata[[.x]]))
+    output <- map_chr(splitted_df, \(y) as.character(getMRCA(t = ltree, df = y)))
+    return(output)
+})
+names(mrcas) <- taxRanks
+mrcas <- map(mrcas, ~ {
+    v <- .x[!is.na(.x)]
+    df <- data.frame(names = names(v), nodes = unname(v))
+    df |>
+        group_by(nodes) |>
+        mutate(names = paste0(names, collapse = '+')) |>
+        ungroup() |>
+        distinct()
+
+})
+
+mrcas_df <- bind_rows(mrcas) |>
+        group_by(nodes) |>
+        mutate(names = paste0(names, collapse = '+')) |>
+        ungroup() |>
+        distinct()
+original_labels_df <- data.frame(
+    nodes = as.character(length(ltree$tip.label) + 1:ltree$Nnode),
+    names_original = ltree$node.label
+)
+
+new_labels_df <- left_join(original_labels_df, mrcas_df, by = 'nodes')
+new_node_labels <- ifelse(is.na(new_labels_df$names), "", new_labels_df$names)
+
+ltree$node.label <- new_node_labels
+
+
+
+# Export data again -------------------------------------------------------
+
+tree_data_fname <- file.path('inst', 'extdata', 'livingTree.tsv')
+write.table(
+    x = ldata, file = tree_data_fname, sep = '\t',
+    quote = TRUE, row.names = FALSE
+)
+
+tree_fname <- file.path('inst', 'extdata', 'livingTree.newick')
+write.tree(phy = ltree, file = tree_fname)
 
 
 
 
-
-
-
-
-
-
-
+## just some code to check that I get the same using MRCA
+# ltree$node.label
+# original_labels_df <- data.frame(names_original = ltree$node.label, nodes = as.character(length(ltree$tip.label) + 1:ltree$Nnode))
+# testdf <- left_join(mrcas_df, original_labels_df, by = 'nodes')
+#
+# vec <- as.integer(testdf$names)
+# vec <- vec[!is.na(vec)]
+# vec_names <- taxizedb::taxid2name(vec, db = 'ncbi')
+# test2 <- data.frame(names = as.character(vec), new_names = vec_names)
+#
+# test3 <- left_join(testdf, test2, by = 'names')
 
 
 
