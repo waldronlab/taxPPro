@@ -19,22 +19,27 @@ library(purrr)
 library(tidyr)
 ```
 
-Load bugphyzz data (one physiology - aerophilicity):
+Import physiology data (1 physiology - aerophilicity)
 
-```{r import physiology data}
-aer <- physiologies('aerophilicity')[[1]]
+```{r import physiology, message=FALSE}
+phys <- physiologies('aerophilicity')
+```
+
+Filter data:
+
+```{r filter data}
 select_cols <- c(
-    ## Columns with information really needed
-    'NCBI_ID', 'Taxon_name', 'Attribute', 'Attribute_value', 'Attribute_source',
-    'Frequency', 'Parent_NCBI_ID', 'Confidence_in_curation',
-    ## Columns only used for controlling the behaviour of the code
-    'Attribute_type', 'Attribute_group'
+    ## Columns with information needed for propagation
+    'NCBI_ID', 'Taxon_name', 'Attribute', 'Attribute_source',
+    'Frequency', 'Score', 'Parent_NCBI_ID', 'Confidence_in_curation',
+    ## Columns only used for controlling the behavior of the code
+    'Attribute_type', 'Attribute_group' # I might need one or two more!
 )
-phys_data <- aer |> 
+valid_ranks <- c('genus', 'species', 'strain')
+phys_data <- phys[[1]] |> 
     as_tibble() |> 
-    select(all_of(select_cols)) |> 
     filter(Attribute_value == TRUE) |> # only use TRUE values for this physiology (non-binary and represents an intersection)
-    select(-Attribute_value) |> 
+    filter(!is.na(Rank), Rank %in% valid_ranks) |> 
     filter(
         ## Only rows with NCBI_ID or Parent_NCBI_ID if NCBI absent can be used
         !((is.na(NCBI_ID) | NCBI_ID == 'unknown') & is.na(Parent_NCBI_ID))
@@ -48,11 +53,14 @@ phys_data <- aer |>
             Frequency == 'unknown' ~ 0.1 ## arbitrary value
         )
     ) |> 
+    select(all_of(select_cols)) |> 
     distinct()
 
-n_dropped_rows <- nrow(aer) - nrow(phys_data)
+n_dropped_rows <- nrow(phys[[1]]) - nrow(phys_data)
 message(format(n_dropped_rows, big.mark = ','), ' rows were dropped.')
 ```
+
+#> TODO - add code for dealing with duplicates, etc.
 
 The phylogenetic and taxonomic trees used for propagation with
 ASR and inheritance have NCBI IDs at the node and tip labels.
@@ -66,37 +74,82 @@ an 'early' version of ASR (before applying a formal ASR method).
 This early version of ASR is just the normalization of scores among the
 child nodes of a parent node.
 
-```{r}
+```{r divide data in sets 1 and 2}
 lgl_vct <- is.na(phys_data$NCBI_ID) | phys_data$NCBI_ID == 'unknown'
 set_with_ids <- phys_data |> 
     filter(!lgl_vct) |> 
     group_by(NCBI_ID) |> 
     mutate(Taxon_name = paste0(sort(unique(Taxon_name)), collapse = '|')) |> 
     ungroup() |> 
+    distinct() |> 
+    group_by(NCBI_ID) |> 
+    mutate(
+        n = dplyr::n(),
+    ) |> 
+    ungroup() |> 
+    group_by(NCBI_ID, Attribute) |> 
+    mutate(Normalized_score = sum(Score) / n) |> 
+    ungroup() |> 
+    select(-Score, -n) |> 
+    rename(Score = Normalized_score) |> 
     distinct()
-dim(set_with_ids) # no need for early ASR
+dim(set_with_ids) # these data don't need to go through early ASR
 ```
 
-```{r}
+```{r set2 for asr}
+## this will be used for early ASR
 set_without_ids <- phys_data |> 
     filter(lgl_vct) |> 
     select(-NCBI_ID, -Taxon_name, -Frequency) |> 
-    relocate(NCBI_ID = Parent_NCBI_ID)
-    # this will be used for early ASR
+    relocate(NCBI_ID = Parent_NCBI_ID) |> 
+    distinct()
+
+if (nrow(set_with_ids) > 0) {
+    set_without_ids <- set_without_ids |> 
+        filter(!NCBI_ID %in% unique(set_with_ids$NCBI_ID))
+}
 dim(set_without_ids)
 ```
 
+Let's just add up the scores
+
+
+#> set_without_ids |> filter(NCBI_ID %in% set_without_ids$NCBI_ID[which(duplicated(set_without_ids$NCBI_ID))])
+#> x |> filter(NCBI_ID %in% x$NCBI_ID[which(duplicated(x$NCBI_ID))])
+
 ```{r}
-
-
-
-    
+## 55565
+set_without_ids <- set_without_ids |> 
+    group_by(NCBI_ID) |> 
+    mutate(
+        n = dplyr::n(),
+    ) |> 
+    ungroup() |> 
+    group_by(NCBI_ID, Attribute) |> 
+    mutate(Normalized_score = sum(Score) / n) |> 
+    ungroup() |> 
+    select(-Score, -n) |> 
+    rename(Score = Normalized_score) |> 
+    distinct()
+phys_data_ready <- left_join(set_with_ids, set_without_ids)
 ```
 
+I need a matrix of prior probabilites
 
-
-
-
+```{r}
+phys_data_ready <- phys_data_ready |> 
+    group_by(NCBI_ID, Attribute) |> 
+    slice_head(n = 1) |> 
+    ungroup()
+input_mat <- phys_data_ready |> 
+    select(NCBI_ID, Attribute, Score) |> 
+    pivot_wider(
+        names_from = Attribute, values_from = Score, values_fill = 0
+    ) |> 
+    tibble::column_to_rownames(var = 'NCBI_ID') |> 
+    as.matrix()
+sum(rowSums(input_mat))
+```
 
 
 
