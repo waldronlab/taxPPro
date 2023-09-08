@@ -5,13 +5,13 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>phytools • taxPPro</title>
+<title>A propagation workflow • taxPPro</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="phytools">
+<script src="../pkgdown.js"></script><meta property="og:title" content="A propagation workflow">
 <meta property="og:description" content="taxPPro">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -59,7 +59,7 @@
       <a href="../articles/phylogenetic_trees.html">phylogenetic_trees</a>
     </li>
     <li>
-      <a href="../articles/phytools.html">phytools</a>
+      <a href="../articles/phytools.html">A propagation workflow</a>
     </li>
     <li>
       <a href="../articles/propagation_workflow.html">Propagation workflow for categorical/logical attributes</a>
@@ -87,7 +87,7 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>phytools</h1>
+      <h1 data-toc-skip>A propagation workflow</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/sdgamboa/taxPPro/blob/HEAD/vignettes/articles/phytools.Rmd" class="external-link"><code>vignettes/articles/phytools.Rmd</code></a></small>
@@ -98,9 +98,77 @@
     
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/liamrevell/phytools" class="external-link">phytools</a></span><span class="op">)</span></span></code></pre></div>
-<p>Load data:</p>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/waldronlab/bugphyzz" class="external-link">bugphyzz</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/sdgamboa/taxPPro" class="external-link">taxPPro</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://github.com/gluc/data.tree" class="external-link">data.tree</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/liamrevell/phytools" class="external-link">phytools</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://purrr.tidyverse.org/" class="external-link">purrr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span></code></pre></div>
+<p>Load bugphyzz data (one physiology - aerophilicity):</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">aer</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/bugphyzz/man/physiologies.html" class="external-link">physiologies</a></span><span class="op">(</span><span class="st">'aerophilicity'</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="co">#&gt; Finished aerophilicity.</span></span>
+<span><span class="va">select_cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="co">## Columns with information really needed</span></span>
+<span>    <span class="st">'NCBI_ID'</span>, <span class="st">'Taxon_name'</span>, <span class="st">'Attribute'</span>, <span class="st">'Attribute_value'</span>, <span class="st">'Attribute_source'</span>,</span>
+<span>    <span class="st">'Frequency'</span>, <span class="st">'Parent_NCBI_ID'</span>, <span class="st">'Confidence_in_curation'</span>,</span>
+<span>    <span class="co">## Columns only used for controlling the behaviour of the code</span></span>
+<span>    <span class="st">'Attribute_type'</span>, <span class="st">'Attribute_group'</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">phys_data</span> <span class="op">&lt;-</span> <span class="va">aer</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html" class="external-link">all_of</a></span><span class="op">(</span><span class="va">select_cols</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Attribute_value</span> <span class="op">==</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="co"># only use TRUE values for this physiology (non-binary and represents an intersection)</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">Attribute_value</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
+<span>        <span class="co">## Only rows with NCBI_ID or Parent_NCBI_ID if NCBI absent can be used</span></span>
+<span>        <span class="op">!</span><span class="op">(</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">NCBI_ID</span><span class="op">)</span> <span class="op">|</span> <span class="va">NCBI_ID</span> <span class="op">==</span> <span class="st">'unknown'</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">Parent_NCBI_ID</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="st">'Attribute_source'</span><span class="op">)</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="st">'Frequency'</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>        Score <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
+<span>            <span class="va">Frequency</span> <span class="op">==</span> <span class="st">'always'</span> <span class="op">~</span> <span class="fl">1</span>,</span>
+<span>            <span class="va">Frequency</span> <span class="op">==</span> <span class="st">'usually'</span> <span class="op">~</span> <span class="fl">0.9</span>,</span>
+<span>            <span class="va">Frequency</span> <span class="op">==</span> <span class="st">'sometimes'</span> <span class="op">~</span> <span class="fl">0.5</span>,</span>
+<span>            <span class="va">Frequency</span> <span class="op">==</span> <span class="st">'unknown'</span> <span class="op">~</span> <span class="fl">0.1</span> <span class="co">## arbitrary value</span></span>
+<span>        <span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">n_dropped_rows</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">aer</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">phys_data</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">n_dropped_rows</span>, big.mark <span class="op">=</span> <span class="st">','</span><span class="op">)</span>, <span class="st">' rows were dropped.'</span><span class="op">)</span></span>
+<span><span class="co">#&gt; 3,969 rows were dropped.</span></span></code></pre></div>
+<p>The phylogenetic and taxonomic trees used for propagation with ASR
+and inheritance have NCBI IDs at the node and tip labels. Therefore,
+only annotations with NCBI IDs can be mapped for propagation (ASR and
+Inheritance).</p>
+<p>The annotations of taxa without NCBI ID (usually strains) can be used
+to infer the annotations of their parents (with NCBI ID and usually
+species) through an ‘early’ version of ASR (before applying a formal ASR
+method).</p>
+<p>This early version of ASR is just the normalization of scores among
+the child nodes of a parent node.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">lgl_vct</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">phys_data</span><span class="op">$</span><span class="va">NCBI_ID</span><span class="op">)</span> <span class="op">|</span> <span class="va">phys_data</span><span class="op">$</span><span class="va">NCBI_ID</span> <span class="op">==</span> <span class="st">'unknown'</span></span>
+<span><span class="va">set_with_ids</span> <span class="op">&lt;-</span> <span class="va">phys_data</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="va">lgl_vct</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">NCBI_ID</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Taxon_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">Taxon_name</span><span class="op">)</span><span class="op">)</span>, collapse <span class="op">=</span> <span class="st">'|'</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">set_with_ids</span><span class="op">)</span> <span class="co"># no need for early ASR</span></span>
+<span><span class="co">#&gt; [1] 10345    10</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">set_without_ids</span> <span class="op">&lt;-</span> <span class="va">phys_data</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">lgl_vct</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">NCBI_ID</span>, <span class="op">-</span><span class="va">Taxon_name</span>, <span class="op">-</span><span class="va">Frequency</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/relocate.html" class="external-link">relocate</a></span><span class="op">(</span>NCBI_ID <span class="op">=</span> <span class="va">Parent_NCBI_ID</span><span class="op">)</span></span>
+<span>    <span class="co"># this will be used for early ASR</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">set_without_ids</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 15140     7</span></span></code></pre></div>
+<p>Load data:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"primate.tree"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"primate.data"</span><span class="op">)</span></span>
 <span><span class="va">tree</span> <span class="op">&lt;-</span> <span class="va">primate.tree</span></span>
@@ -121,11 +189,11 @@
 <span><span class="op">)</span></span>
 <span><span class="va">ace</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/ancr.html" class="external-link">ancr</a></span><span class="op">(</span><span class="va">fit</span>, tips <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">res</span> <span class="op">&lt;-</span> <span class="va">ace</span><span class="op">$</span><span class="va">ace</span></span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ace</span>, args.plotTree <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>direction <span class="op">=</span> <span class="st">"upwards"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">tips</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">labs</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">y</span> <span class="op">==</span> <span class="va">x</span><span class="op">)</span>, y <span class="op">=</span> <span class="va">tree</span><span class="op">$</span><span class="va">tip.label</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/phytools/man/add.arrow.html" class="external-link">add.arrow</a></span><span class="op">(</span><span class="va">tree</span>, <span class="va">tips</span>, arrl <span class="op">=</span> <span class="fl">3</span>, offset <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">2</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palette.html" class="external-link">palette</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<p><img src="phytools_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
+<p><img src="phytools_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
