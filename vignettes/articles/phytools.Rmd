@@ -1,5 +1,5 @@
 ---
-title: "phytools"
+title: "A propagation workflow"
 ---
 
 ```{r, include = FALSE}
@@ -19,30 +19,52 @@ library(purrr)
 library(tidyr)
 ```
 
-Load bugphyzz data (one physiology: aerophilicity):
+Load bugphyzz data (one physiology - aerophilicity):
 
 ```{r import physiology data}
-select_cols <- c(
-    'NCBI_ID', 'Taxon_name', 'Attribute', 'Attribute_value', 'Attribute_source',
-    'Frequency', 'Parent_NCBI_ID'
-)
-
 aer <- physiologies('aerophilicity')[[1]]
+select_cols <- c(
+    ## Columns with information really needed
+    'NCBI_ID', 'Taxon_name', 'Attribute', 'Attribute_value', 'Attribute_source',
+    'Frequency', 'Parent_NCBI_ID', 'Confidence_in_curation',
+    ## Columns only used for controlling the behaviour of the code
+    'Attribute_type', 'Attribute_group'
+)
 phys_data <- aer |> 
     as_tibble() |> 
     select(all_of(select_cols)) |> 
-    filter(Attribute_value == TRUE) |> # only use TRUE values for this one
+    filter(Attribute_value == TRUE) |> # only use TRUE values for this physiology (non-binary and represents an intersection)
+    select(-Attribute_value) |> 
     filter(
+        ## Only rows with NCBI_ID or Parent_NCBI_ID if NCBI absent can be used
         !((is.na(NCBI_ID) | NCBI_ID == 'unknown') & is.na(Parent_NCBI_ID))
     ) |> 
+    filter(!is.na('Attribute_source'), !is.na('Frequency')) |> 
+    mutate(
+        Score = case_when(
+            Frequency == 'always' ~ 1,
+            Frequency == 'usually' ~ 0.9,
+            Frequency == 'sometimes' ~ 0.5,
+            Frequency == 'unknown' ~ 0.1 ## arbitrary value
+        )
+    ) |> 
     distinct()
-dim(phys_data)
+
+n_dropped_rows <- nrow(aer) - nrow(phys_data)
+message(format(n_dropped_rows, big.mark = ','), ' rows were dropped.')
 ```
 
-Some of these annotations cannot be mapped to a phylogenetic/taxonomic tree
-because they don't have an NCBI taxonomy ID (taxid). They have Parent NCBI_IDs,
-however. Let's use them for that. I call this 'early ASR', we cannot really
-use these annotations.
+The phylogenetic and taxonomic trees used for propagation with
+ASR and inheritance have NCBI IDs at the node and tip labels.
+Therefore, only annotations with NCBI IDs can be mapped for propagation
+(ASR and Inheritance).
+
+The annotations of taxa without NCBI ID (usually strains) can be used to infer
+the annotations of their parents (with NCBI ID and usually species) through
+an 'early' version of ASR (before applying a formal ASR method).
+
+This early version of ASR is just the normalization of scores among the
+child nodes of a parent node.
 
 ```{r}
 lgl_vct <- is.na(phys_data$NCBI_ID) | phys_data$NCBI_ID == 'unknown'
@@ -52,16 +74,22 @@ set_with_ids <- phys_data |>
     mutate(Taxon_name = paste0(sort(unique(Taxon_name)), collapse = '|')) |> 
     ungroup() |> 
     distinct()
-dim(set_with_ids)
+dim(set_with_ids) # no need for early ASR
 ```
 
 ```{r}
-set_without_ids <- filter(phys_data, lgl_vct) # this will be used for ASR
+set_without_ids <- phys_data |> 
+    filter(lgl_vct) |> 
+    select(-NCBI_ID, -Taxon_name, -Frequency) |> 
+    relocate(NCBI_ID = Parent_NCBI_ID)
+    # this will be used for early ASR
 dim(set_without_ids)
 ```
 
 ```{r}
-set_without_ids |> 
+
+
+
     
 ```
 
