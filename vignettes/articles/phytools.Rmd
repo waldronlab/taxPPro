@@ -146,3 +146,20 @@ tips <- sapply(labs, function(x, y) which(y == x), y = tree$tip.label)
 add.arrow(tree, tips, arrl = 3, offset = 2, lwd = 2, col = palette()[4])
 ```
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
