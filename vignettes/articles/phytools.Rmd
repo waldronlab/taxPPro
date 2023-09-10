@@ -152,11 +152,24 @@ sum(rowSums(prior_prob_mat)) == nrow(prior_prob_mat)
 Import phylogenetic tree (living tree project):
 
 ```{r}
-fname <- system.file(
-    'extdata', 'livingTree.newick', package = 'taxPPro', mustWork = TRUE
-)
-tree <- read.tree(fname)
+# fname <- system.file(
+#     'extdata', 'livingTree.newick', package = 'taxPPro', mustWork = TRUE
+# )
+# tree <- read.tree(fname)
+# tree
+data('tree_list')
+data_tree <- as.Node(tree_list)
+tree <- as.phylo.Node(data_tree, heightAttribute = NULL)
+tree <- multi2di(tree)
+tree <- collapse.singles(tree)
+tree$tip.label <- sub('\\w__', '', tree$tip.label)
+tree$node.label <- sub('\\w__', '', tree$node.label)
 tree
+```
+
+
+```{r}
+is.binary(tree)
 ```
 
 
@@ -184,7 +197,6 @@ for(i in seq_along(nodes)){
 )
 ```
 
-
 Let's fit a model of evolution
 
 ```{r fit model}
@@ -195,34 +207,16 @@ rownames(mat2) <- missing_tips
 colnames(mat2) <- colnames(mat)
 mat3 <- rbind(mat, mat2)
 mat3 <- mat3[temp$tip.label,]
-
-system.time(
-    fit <- fitMk(
+fit <- fitMk(
         # extended Mk (hidden markov) model (used for discrete traits)
-        tree = temp, 
-        x = mat3, 
-        model = 'ARD',  # all rates different
-        pi = "fitzjohn",  # pror distribution at the root this seems to have a significant effect in the root
-        logscale = TRUE, 
-        lik.func = "pruning" # Falstein pruning
-    )
+    tree = temp, 
+    x = mat3, 
+    model = 'ARD',  # all rates different
+    pi = "fitzjohn",  # pror distribution at the root this seems to have a significant effect in the root
+    logscale = TRUE, 
+    lik.func = "pruning",
 )
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 Load data:
 
@@ -251,30 +245,9 @@ res <- ace$ace
 ```
 
 
-
-
-
-
 ```{r}
 plot(ace, args.plotTree = list(direction = "upwards"))
 tips <- sapply(labs, function(x, y) which(y == x), y = tree$tip.label)
 add.arrow(tree, tips, arrl = 3, offset = 2, lwd = 2, col = palette()[4])
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
