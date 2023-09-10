@@ -164,6 +164,7 @@ Add internal nodes (if any):
 
 ```{r add internal nodes}
 temp <- tree
+temp$edge.length[which(temp$edge.length == 0)] <- head(sort(unique(temp$edge.length)))[2]
 node_labels <- unique(temp$node.label)
 node_labels <- node_labels[node_labels != '']
 node_labels <- unlist(strsplit(node_labels, '\\+'))
@@ -186,7 +187,7 @@ for(i in seq_along(nodes)){
 
 Let's fit a model of evolution
 
-```{r}
+```{r fit model}
 missing_tips <- temp$tip.label[!(temp$tip.label %in% rownames(mat))]
 values <- rep(1/ncol(mat), ncol(mat))
 mat2 <- matrix(rep(values, length(missing_tips)), ncol = ncol(mat), byrow = TRUE)
@@ -194,11 +195,12 @@ rownames(mat2) <- missing_tips
 colnames(mat2) <- colnames(mat)
 mat3 <- rbind(mat, mat2)
 mat3 <- mat3[temp$tip.label,]
+
 system.time(
     fit <- fitMk(
         # extended Mk (hidden markov) model (used for discrete traits)
         tree = temp, 
-        x = mat, 
+        x = mat3, 
         model = 'ARD',  # all rates different
         pi = "fitzjohn",  # pror distribution at the root this seems to have a significant effect in the root
         logscale = TRUE, 
