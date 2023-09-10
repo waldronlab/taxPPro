@@ -86,3 +86,13 @@ classif2Table <- function(x, ranks) {
   colnames(new_df) <- df_filtered$rank
   new_df
 }
+
+
+myFun <- function(x, adjF = 0.1) {
+    n <- length(x)
+    target_scores <- rep(1 / n, n)
+    score_diff <- x - target_scores
+    res <- x - adjF * score_diff
+    return(res)
+}
+

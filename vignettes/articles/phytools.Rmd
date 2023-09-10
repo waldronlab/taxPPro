@@ -39,13 +39,13 @@ valid_ranks <- c('genus', 'species', 'strain')
 phys_data <- phys[[1]] |> 
     as_tibble() |> 
     filter(Attribute_value == TRUE) |> # only use TRUE values for this physiology (non-binary and represents an intersection)
-    filter(!is.na(Rank), Rank %in% valid_ranks) |> 
+    filter(!is.na(Rank), Rank %in% valid_ranks) |> # need valid ranks
     filter(
-        ## Only rows with NCBI_ID or Parent_NCBI_ID if NCBI absent can be used
+        ## Only rows with NCBI_ID or Parent_NCBI_ID if NCBI is missing can be used
         !((is.na(NCBI_ID) | NCBI_ID == 'unknown') & is.na(Parent_NCBI_ID))
     ) |> 
-    filter(!is.na('Attribute_source'), !is.na('Frequency')) |> 
-    mutate(
+    filter(!is.na('Attribute_source'), !is.na('Frequency')) |>  # need source and frequency
+    mutate( # Frequency keywords shold be converted to numeric scores. 
         Score = case_when(
             Frequency == 'always' ~ 1,
             Frequency == 'usually' ~ 0.9,
@@ -55,7 +55,6 @@ phys_data <- phys[[1]] |>
     ) |> 
     select(all_of(select_cols)) |> 
     distinct()
-
 n_dropped_rows <- nrow(phys[[1]]) - nrow(phys_data)
 message(format(n_dropped_rows, big.mark = ','), ' rows were dropped.')
 ```
@@ -78,20 +77,22 @@ child nodes of a parent node.
 lgl_vct <- is.na(phys_data$NCBI_ID) | phys_data$NCBI_ID == 'unknown'
 set_with_ids <- phys_data |> 
     filter(!lgl_vct) |> 
+    ## I need to do this here (when rows with NCBI IDs have been
+    ## separated from rows without NCBI_IDs). Maybe I can do this before
+    ## separated with mutate_if or other code.
     group_by(NCBI_ID) |> 
     mutate(Taxon_name = paste0(sort(unique(Taxon_name)), collapse = '|')) |> 
     ungroup() |> 
     distinct() |> 
-    group_by(NCBI_ID) |> 
-    mutate(
-        n = dplyr::n(),
-    ) |> 
-    ungroup() |> 
     group_by(NCBI_ID, Attribute) |> 
-    mutate(Normalized_score = sum(Score) / n) |> 
+    slice_head(n = 1) |> 
     ungroup() |> 
-    select(-Score, -n) |> 
-    rename(Score = Normalized_score) |> 
+    group_by(NCBI_ID) |>
+    mutate(
+        Total_score = sum(Score),
+        Score = Score / Total_score
+    ) |>
+    ungroup() |> 
     distinct()
 dim(set_with_ids) # these data don't need to go through early ASR
 ```
@@ -108,48 +109,107 @@ if (nrow(set_with_ids) > 0) {
     set_without_ids <- set_without_ids |> 
         filter(!NCBI_ID %in% unique(set_with_ids$NCBI_ID))
 }
+## add some code here in case all of the NCBI_IDs were alredy present in
+## the original data
 dim(set_without_ids)
 ```
 
 Let's just add up the scores
-
 
 #> set_without_ids |> filter(NCBI_ID %in% set_without_ids$NCBI_ID[which(duplicated(set_without_ids$NCBI_ID))])
 #> x |> filter(NCBI_ID %in% x$NCBI_ID[which(duplicated(x$NCBI_ID))])
 
 ```{r}
 ## 55565
-set_without_ids <- set_without_ids |> 
-    group_by(NCBI_ID) |> 
-    mutate(
-        n = dplyr::n(),
-    ) |> 
-    ungroup() |> 
+set_without_ids <- set_without_ids |>    
     group_by(NCBI_ID, Attribute) |> 
-    mutate(Normalized_score = sum(Score) / n) |> 
+    slice_head(n = 1) |> 
     ungroup() |> 
-    select(-Score, -n) |> 
-    rename(Score = Normalized_score) |> 
+    group_by(NCBI_ID) |>
+    mutate(
+        Total_score = sum(Score),
+        Score = Score / Total_score
+    ) |>
+    ungroup() |>
     distinct()
 phys_data_ready <- left_join(set_with_ids, set_without_ids)
 ```
 
-I need a matrix of prior probabilites
+I need a matrix of prior  probabilites
 
 ```{r}
-phys_data_ready <- phys_data_ready |> 
-    group_by(NCBI_ID, Attribute) |> 
-    slice_head(n = 1) |> 
-    ungroup()
-input_mat <- phys_data_ready |> 
+prior_prob_mat <- phys_data_ready |> 
     select(NCBI_ID, Attribute, Score) |> 
     pivot_wider(
         names_from = Attribute, values_from = Score, values_fill = 0
     ) |> 
     tibble::column_to_rownames(var = 'NCBI_ID') |> 
     as.matrix()
-sum(rowSums(input_mat))
+sum(rowSums(prior_prob_mat)) == nrow(prior_prob_mat)
 ```
+
+
+Import phylogenetic tree (living tree project):
+
+```{r}
+fname <- system.file(
+    'extdata', 'livingTree.newick', package = 'taxPPro', mustWork = TRUE
+)
+tree <- read.tree(fname)
+tree
+```
+
+
+Add internal nodes (if any):
+
+```{r add internal nodes}
+temp <- tree
+node_labels <- unique(temp$node.label)
+node_labels <- node_labels[node_labels != '']
+node_labels <- unlist(strsplit(node_labels, '\\+'))
+mat <- prior_prob_mat[which(rownames(prior_prob_mat) %in% node_labels), , drop = TRUE]
+nodes <- rownames(mat)
+system.time(
+for(i in seq_along(nodes)){
+    regex <- paste0('\\b', nodes[i], '\\b')
+    tipsAndNodes <- c(temp$tip.label, temp$node.label)
+    pos <- grep(regex, tipsAndNodes)
+    if (!length(pos))
+        next
+    temp <- bind.tip(
+        tree = temp, tip.label = nodes[i], edge.length = 0, where = pos
+    )
+}
+)
+```
+
+
+Let's fit a model of evolution
+
+```{r}
+missing_tips <- temp$tip.label[!(temp$tip.label %in% rownames(mat))]
+values <- rep(1/ncol(mat), ncol(mat))
+mat2 <- matrix(rep(values, length(missing_tips)), ncol = ncol(mat), byrow = TRUE)
+rownames(mat2) <- missing_tips
+colnames(mat2) <- colnames(mat)
+mat3 <- rbind(mat, mat2)
+mat3 <- mat3[temp$tip.label,]
+system.time(
+    fit <- fitMk(
+        # extended Mk (hidden markov) model (used for discrete traits)
+        tree = temp, 
+        x = mat, 
+        model = 'ARD',  # all rates different
+        pi = "fitzjohn",  # pror distribution at the root this seems to have a significant effect in the root
+        logscale = TRUE, 
+        lik.func = "pruning" # Falstein pruning
+    )
+)
+```
+
+
+
+
 
 
 
