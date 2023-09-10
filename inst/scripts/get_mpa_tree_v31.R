@@ -3,13 +3,16 @@
 ## genome ids (GCA) to taxids
 
 library(ape)
-library(tidyr)
 library(purrr)
 library(dplyr)
 
 column_names <- c(
     'genome_id', 'kingdom', 'phylum', 'class', 'order', 'family', 'genus',
     'species'
+)
+
+taxonomic_ranks <- c(
+    'superkingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species', 'strain'
 )
 
 getMRCA <- function(t, df) {
@@ -36,80 +39,99 @@ assembly_data_current <- readr::read_tsv(
     assembly_data_current_fname, show_col_types = FALSE, skip = 1,
 ) |>
     {\(y) set_names(y, sub('#', '', colnames(y)))}() |>
-    select(assembly_accession, taxid, species_taxid, organism_name)
+    select(assembly_accession, taxid)
+    # select(assembly_accession, taxid, species_taxid, organism_name)
 assembly_data_historical <- readr::read_tsv(
     assembly_data_historical_fname, show_col_types = FALSE, skip = 1
 ) |>
     {\(y) set_names(y, sub('#', '', colnames(y)))}() |>
-    select(assembly_accession, taxid, species_taxid, organism_name)
+    select(assembly_accession, taxid)
+    # select(assembly_accession, taxid, species_taxid, organism_name)
 assembly_data <- bind_rows(assembly_data_current, assembly_data_historical) |>
-    mutate(genome_id = sub('\\.\\d+', '', assembly_accession)) |>
-    mutate(version = as.integer(sub('^.*\\.(\\d+)$', '\\1', assembly_accession)))
+    mutate(genome_id = sub('\\.\\d+', '', assembly_accession))
+    # mutate(version = as.integer(sub('^.*\\.(\\d+)$', '\\1', assembly_accession)))
 
 mpa_data <- data.frame(tip_label = mpa_tree$tip.label) |>
     separate(
         col = 'tip_label', into = column_names, sep = '\\|', remove = FALSE
     ) |>
-    modify(~ sub('^\\w__', '', .x)) |>
+    # modify(~ sub('^\\w__', '', .x)) |>
     left_join(assembly_data, by = 'genome_id') |>
-    slice_max(order_by = version, n = 1, by = genome_id) |>
-    select(
-        tip_label, genome_id, assembly_accession, original_taxid = taxid,
-        original_species_taxid = species_taxid
-    ) |>
-    mutate(original_taxid = as.character(original_taxid))
+    ## the next line of code filters only the most recent version of genome ID
+    ## I could have done this in the code chunk above, but the dataset was
+    ## too big (I think), so better do it here after the left join.
+    slice_max(order_by = assembly_accession, n = 1, by = genome_id) |>
+    select(tip_label, genome_id, taxid)
+    # select(
+    #     tip_label, genome_id, assembly_accession, taxid,
+    #     original_species_taxid = species_taxid
+    # ) |>
+    # mutate(original_taxid = as.character(original_taxid))
 
-taxonomy <- taxizedb::classification(x = unique(mpa_data$original_taxid), db = 'ncbi')
-missing <- which(map_lgl(taxonomy, ~ all(is.na(.x))))
-no_missing_anymore <- taxize::classification(names(missing), db = 'ncbi')
-for (i in seq_along(missing)) {
-    taxonomy[[missing[i]]] <- no_missing_anymore[[i]]
+## Update taxonomy information with the most recent one
+taxonomy <- taxizedb::classification(x = unique(mpa_data$taxid), db = 'ncbi')
+missing_taxids <- which(map_lgl(taxonomy, ~ all(is.na(.x)))) # need position below
+not_missing_anymore_taxids <- taxize::classification(names(missing_taxids), db = 'ncbi')
+for (i in seq_along(missing_taxids)) {
+    taxon_info <- not_missing_anymore_taxids[[i]]
+    new_taxon_name <- taxon_info |>
+        filter(rank %in% taxonomic_ranks) |>
+        pull(id) |>
+        tail(1)
+    taxonomy[[missing_taxids[i]]] <- taxon_info ## I need position here
+    names(taxonomy)[[missing_taxids[i]]] <- new_taxon_name ## update taxid name to most recent
+    mpa_data[mpa_data$taxid == names(missing_taxids)[i], 'taxid'] <- new_taxon_name
+
 }
-
 new_taxonomy <- map(taxonomy, ~ {
-    ranks_ <- c(
-        'superkingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species'
-    )
-    .x |>
-        filter(rank %in% ranks_) |>
-        select(rank, id) |>
-        tidyr::pivot_wider(
-            names_from = 'rank', values_from = 'id'
-        ) |>
-        {\(y) set_names(y, sub("$", "_taxid", colnames(y)))}()
+    x <- .x
+    x <- x[which(x$rank %in% taxonomic_ranks),]
+    m <- matrix(x$id, byrow = TRUE, nrow = 1)
+    colnames(m) <- x$rank
+    d <- as.data.frame(m)
+    colnames(d) <- sub("$", "_taxid", colnames(d))
+    d
 }) |>
-    bind_rows(.id = 'original_taxid') |>
+    bind_rows(.id = 'taxid') |>
     relocate(
-        original_taxid, kingdom_taxid = superkingdom_taxid, phylum_taxid, class_taxid,
+        taxid, kingdom_taxid = superkingdom_taxid, phylum_taxid, class_taxid,
         order_taxid, family_taxid, genus_taxid, species_taxid
     )
+mpa_data <- left_join(mpa_data, new_taxonomy, by = 'taxid')
+new_mpa_tree <- mpa_tree
 
-mpa_data <- left_join(mpa_data, new_taxonomy, by = 'original_taxid')
 
-sp_taxid_dups <- mpa_data$species_taxid[which(duplicated(mpa_data$species_taxid))]
 
-new_mpa_data <- mpa_data |>
-    # mutate(dup = ifelse(species_taxid %in% sp_taxid_dups, 'dup', NA)) |>
-    mutate(no_gca = as.double(sub('^GCA_', '', assembly_accession))) |>
-    slice_max(no_gca, n = 1, by = species_taxid) |>
-    # select(-no_gca, -dup) |>
-    select(-no_gca) |>
-    mutate(
-        old_tip_label = tip_label,
-        tip_label = as.character(species_taxid)
-    ) |>
-    select(
-        tip_label, genome_id, assembly_accession, old_tip_label,
-        kingdom_taxid, phylum_taxid, class_taxid, order_taxid, family_taxid,
-        genus_taxid, species_taxid
-    )
 
-tip_labels <- new_mpa_data$tip_label
-names(tip_labels) <- new_mpa_data$old_tip_label
-new_mpa_tree <- keep.tip(phy = mpa_tree, tip = names(tip_labels))
-new_tip_labels <- unname(tip_labels[new_mpa_tree$tip.label])
-new_mpa_tree$tip.label <- new_tip_labels
-new_mpa_data <- new_mpa_data[match(new_mpa_tree$tip.label, new_mpa_data$tip_label),]
+## all(mpa_data$tip_label == mpa_tree$tip.label) # just making sure the order is the same
+
+
+
+
+# sp_taxid_dups <- mpa_data$species_taxid[which(duplicated(mpa_data$species_taxid))]
+#
+# new_mpa_data <- mpa_data |>
+#     # mutate(dup = ifelse(species_taxid %in% sp_taxid_dups, 'dup', NA)) |>
+#     mutate(no_gca = as.double(sub('^GCA_', '', assembly_accession))) |>
+#     slice_max(no_gca, n = 1, by = species_taxid) |>
+#     # select(-no_gca, -dup) |>
+#     select(-no_gca) |>
+#     mutate(
+#         old_tip_label = tip_label,
+#         tip_label = as.character(species_taxid)
+#     ) |>
+#     select(
+#         tip_label, genome_id, assembly_accession, old_tip_label,
+#         kingdom_taxid, phylum_taxid, class_taxid, order_taxid, family_taxid,
+#         genus_taxid, species_taxid
+#     )
+#
+# tip_labels <- new_mpa_data$tip_label
+# names(tip_labels) <- new_mpa_data$old_tip_label
+# new_mpa_tree <- keep.tip(phy = mpa_tree, tip = names(tip_labels))
+# new_tip_labels <- unname(tip_labels[new_mpa_tree$tip.label])
+# new_mpa_tree$tip.label <- new_tip_labels
+# new_mpa_data <- new_mpa_data[match(new_mpa_tree$tip.label, new_mpa_data$tip_label),]
 
 # all(new_mpa_data$tip_label == new_mpa_tree$tip.label)
 
@@ -136,10 +158,10 @@ new_mpa_data <- new_mpa_data[match(new_mpa_tree$tip.label, new_mpa_data$tip_labe
 
 # Export data -------------------------------------------------------------
 new_mpa_tree_fname <- file.path('inst', 'extdata', 'mpav31.newick')
-ape::write.tree(new_mpa_tree, new_mpa_tree_fname)
+ape::write.tree(mpa_tree, new_mpa_tree_fname)
 
 new_mpa_data_fname <- file.path('inst', 'extdata', 'mpav31.tsv')
 write.table(
-    new_mpa_data, new_mpa_data_fname, sep = '\t', quote = TRUE,
+    mpa_data, new_mpa_data_fname, sep = '\t', quote = TRUE,
     row.names = FALSE
 )
