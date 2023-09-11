@@ -139,12 +139,8 @@ phys_data_ready <- left_join(set_with_ids, set_without_ids)
 
 
 
-```{r}
-tree <- ltp()
-system.time(
-    data_tree <- as.Node(tree, heightName = NULL)
-)
-```
+
+
 
 
 
@@ -275,4 +271,3 @@ plot(ace, args.plotTree = list(direction = "upwards"))
 tips <- sapply(labs, function(x, y) which(y == x), y = tree$tip.label)
 add.arrow(tree, tips, arrl = 3, offset = 2, lwd = 2, col = palette()[4])
 ```
-

@@ -26,7 +26,6 @@ not_missing_anymore_taxa <- taxizedb::name2taxid(missing_taxa, db = 'ncbi')
 taxids[which(is.na(taxids))] <- not_missing_anymore_taxa
 
 taxonomy <- taxizedb::classification(unique(taxids), db = 'ncbi')
-x <- taxonomy
 missing_taxonomy_positions <- which(map_lgl(taxonomy, ~ all(is.na(.x))))
 not_missing_anymore_taxonomy <- taxize::classification(
     names(missing_taxonomy_positions), db =  'ncbi'
@@ -99,8 +98,8 @@ mrcas_df <- mrcas_df |>
 nodes <- data.frame(node = length(tree$tip.label) + 1:tree$Nnode) |>
     left_join(mrcas_df, by = 'node') |>
     mutate(
-        node_label = ifelse(is.na(node_label), '', node_label),
-        n_labels = ifelse(is.na(n_labels), 0, n_labels)
+        node_label = ifelse(is.na(node_label), paste0('n', node), node_label),
+        n_labels = ifelse(is.na(n_labels), 0, n_labels),
     )
 
 tree$node.label <- nodes$node_label
