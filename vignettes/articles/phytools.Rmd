@@ -135,6 +135,31 @@ set_without_ids <- set_without_ids |>
 phys_data_ready <- left_join(set_with_ids, set_without_ids)
 ```
 
+
+
+
+
+```{r}
+tree <- ltp()
+system.time(
+    data_tree <- as.Node(tree, heightName = NULL)
+)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 I need a matrix of prior  probabilites
 
 ```{r}
