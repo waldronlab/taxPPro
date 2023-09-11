@@ -5,6 +5,7 @@
 library(ape)
 library(purrr)
 library(dplyr)
+library(tidyr)
 
 column_names <- c(
     'genome_id', 'kingdom', 'phylum', 'class', 'order', 'family', 'genus',
@@ -15,8 +16,8 @@ taxonomic_ranks <- c(
     'superkingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species', 'strain'
 )
 
-getMRCA <- function(t, df) {
-    res <- phytools::findMRCA(t, tips = df[['tip_label']])
+getMRCA <- function(tree, tips) {
+    res <- phytools::findMRCA(tree = tree, tips = tips)
     if (is.null(res))
         res <- NA
     res
@@ -100,12 +101,29 @@ new_taxonomy <- map(taxonomy, ~ {
 mpa_data <- left_join(mpa_data, new_taxonomy, by = 'taxid')
 new_mpa_tree <- mpa_tree
 
+tx <- paste0(taxonomic_ranks, '_taxid')
+tx[which(tx == 'superkingdom_taxid')] <- 'kingdom_taxid'
 
+mrcas <- flatten(map(tx, ~ split(mpa_data, factor(mpa_data[[.x]]))))
+mrcas <-map(mrcas, ~ .x[['tip_label']])
+mrcas <- map_int(mrcas, ~ getMRCA(mpa_tree, .x))
+mrcas <- mrcas[!is.na(mrcas)]
+mrcas_df <- data.frame(node = unname(mrcas), node_label = names(mrcas))
+mrcas_df <- mrcas_df |>
+    group_by(node) |>
+    mutate(n_labels = length(unique(node_label))) |>
+    mutate(node_label = paste0(unique(node_label), collapse = '+')) |>
+    ungroup() |>
+    distinct()
 
+nodes <- data.frame(node = length(mpa_tree$tip.label) + 1:mpa_tree$Nnode) |>
+    left_join(mrcas_df, by = 'node') |>
+    mutate(
+        node_label = ifelse(is.na(node_label), '', node_label),
+        n_labels = ifelse(is.na(n_labels), 0, n_labels)
+    )
 
-## all(mpa_data$tip_label == mpa_tree$tip.label) # just making sure the order is the same
-
-
+mpa_tree$node.label <- nodes$node_label
 
 
 # sp_taxid_dups <- mpa_data$species_taxid[which(duplicated(mpa_data$species_taxid))]
