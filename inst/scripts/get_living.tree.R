@@ -106,22 +106,14 @@ nodes <- data.frame(node = length(tree$tip.label) + 1:tree$Nnode) |>
 tree$node.label <- nodes$node_label
 
 # Export data -------------------------------------------------------------
-tree_fname <- file.path('inst', 'extdata', 'mpav31.newick')
+tree_fname <- file.path('inst', 'extdata', 'livingTree.newick')
 ape::write.tree(tree, tree_fname)
 
-tree_data_fname <- file.path('inst', 'extdata', 'mpav31.tsv')
+tree_data_fname <- file.path('inst', 'extdata', 'livingTree.tsv')
 write.table(
     tree_data, tree_data_fname, sep = '\t', quote = TRUE,
     row.names = FALSE
 )
-
-
-
-
-
-
-
-
 
 # taxids_ranks <- taxizedb::taxid2rank(taxids, db = 'ncbi')
 # pos2 <- which(is.na(taxids_ranks))
