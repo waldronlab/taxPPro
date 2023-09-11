@@ -10,154 +10,250 @@ library(dplyr)
 library(purrr)
 
 
-## I need to get taxid information from the accession IDs with taxononmizr.
-## This is not enough for all tips, so I also need to get taxids from the organisms names with taxizedb.
-## Still, I need to get some missing taxids with taxize.
-
+sql <- '~/accessionTaxa.sql'
 tree <- read.tree('https://imedea.uib-csic.es/mmg/ltp/wp-content/uploads/ltp/LTP_all_06_2022.ntree')
+
 tip_labels <- tree$tip.label
-sql <- '~/accessionTaxa.sql' # this takes a while - date Aug 29, 2023 between 70 and 80 GB - Got it with taxonomizr
-
-acc <- sub("^'([^,]+).*", "\\1", tip_labels)
-tax_names <- sub('^.+, (.+), .+, .+, .+$'  ,'\\1', tip_labels) |>
+accessions <- sub("^'([^,]+).*", "\\1", tip_labels)
+taxnames <- sub('^.+, (.+), .+, .+, .+$'  ,'\\1', tip_labels) |>
     {\(y) gsub('"', '', y)}()
-
-taxids <- accessionToTaxa(accessions = acc, sqlFile = sql, version = 'base')
-pos <- which(is.na(taxids))
-missing_taxids <- taxizedb::name2taxid(tax_names[pos], db = 'ncbi')
-taxids[pos] <- missing_taxids
-
-taxids_ranks <- taxizedb::taxid2rank(taxids, db = 'ncbi')
-pos2 <- which(is.na(taxids_ranks))
-taxids[pos2] <- as.character(taxize::get_uid(tax_names[pos2], db = 'ncbi')) # luckily, tax names were unique
-taxids_ranks[pos2] <- flatten_chr(taxize::tax_rank(taxids[pos2], db = 'ncbi'))
-
-tree_data <- data.frame(
-    tip_label = tip_labels,
-    accesion = acc,
-    taxid = unname(taxids),
-    taxname = tax_names,
-    taxrank = taxids_ranks
-
+taxids <- accessionToTaxa(
+    accessions = accessions, sqlFile = sql, version = 'base'
 )
 
-new_tree_data <- tree_data |>
-    filter(taxrank == 'species') |> ## only species in the tree
-    arrange(taxid, tip_label) |>
-    slice_head(n = 1, by = 'taxid') ## Remove duplicated taxids
+missing_taxa <- taxnames[which(is.na(taxids))]
+not_missing_anymore_taxa <- taxizedb::name2taxid(missing_taxa, db = 'ncbi')
+taxids[which(is.na(taxids))] <- not_missing_anymore_taxa
 
-new_tree <- ape:::keep.tip(tree, tip = new_tree_data$tip_label)
-new_tree_data <- new_tree_data[match(new_tree$tip.label, new_tree_data$tip_label),]
+taxonomy <- taxizedb::classification(unique(taxids), db = 'ncbi')
+x <- taxonomy
+missing_taxonomy_positions <- which(map_lgl(taxonomy, ~ all(is.na(.x))))
+not_missing_anymore_taxonomy <- taxize::classification(
+    names(missing_taxonomy_positions), db =  'ncbi'
+)
+chr_vct <- map_chr(not_missing_anymore_taxonomy, ~ tail(.x$id, 1))
 
-# all(new_tree_data$tip_label == new_tree$tip.label)
-
-new_tree$tip.label <- new_tree_data$taxid
-new_tree_data <- new_tree_data |>
-    mutate(
-        old_tip_label = tip_label,
-        tip_label = taxid
+for (i in seq_along(chr_vct)) {
+    pos <- which(taxids == names(chr_vct[i]))
+    message(
+        'Replacing ', unique(taxids[pos]), ' with ', chr_vct[i]
     )
+    taxids[pos] <- chr_vct[i]
+}
 
-taxonomy <- taxizedb::classification(new_tree_data$tip_label, db = 'ncbi')
+chr_vct2 <- chr_vct[!chr_vct %in% names(taxonomy)]
+not_missing_anymore_taxonomy <- not_missing_anymore_taxonomy[names(chr_vct2)]
+taxonomy[names(chr_vct2)] <- not_missing_anymore_taxonomy
+names(taxonomy[names(chr_vct2)]) <- chr_vct2
+taxonomy <- taxonomy[which(!map_lgl(taxonomy, ~ all(is.na(.x))))]
+
+taxonomic_ranks <- c(
+    'superkingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species', 'strain'
+)
+
 new_taxonomy <- map(taxonomy, ~ {
-    ranks_ <- c(
-        'superkingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species'
-    )
-    .x |>
-        filter(rank %in% ranks_) |>
-        select(rank, id) |>
-        tidyr::pivot_wider(
-            names_from = 'rank', values_from = 'id'
-        ) |>
-        {\(y) set_names(y, sub("$", "_taxid", colnames(y)))}()
+    x <- .x
+    x <- x[which(x$rank %in% taxonomic_ranks),]
+    m <- matrix(x$id, byrow = TRUE, nrow = 1)
+    colnames(m) <- x$rank
+    d <- as.data.frame(m)
+    colnames(d) <- sub("$", "_taxid", colnames(d))
+    d
 }) |>
-    bind_rows(.id = 'original_taxid') |>
+    bind_rows(.id = 'taxid') |>
     relocate(
-        original_taxid, kingdom_taxid = superkingdom_taxid, phylum_taxid, class_taxid,
+        taxid, kingdom_taxid = superkingdom_taxid, phylum_taxid, class_taxid,
         order_taxid, family_taxid, genus_taxid, species_taxid
     )
 
-new_tree_data <- left_join(
-    new_tree_data, new_taxonomy, by = c('tip_label' = 'original_taxid')
-)
+tree_data <- data.frame(
+    tip_label = tip_labels,
+    accession = accessions,
+    taxid = taxids,
+    taxname = taxnames
+) |>
+    left_join(new_taxonomy, by = 'taxid')
 
-
-# export data -------------------------------------------------------------
-tree_data_fname <- file.path('inst', 'extdata', 'livingTree.tsv')
-write.table(
-    x = new_tree_data, file = tree_data_fname, sep = '\t',
-    quote = TRUE, row.names = FALSE
-)
-
-tree_fname <- file.path('inst', 'extdata', 'livingTree.newick')
-write.tree(phy = new_tree, file = tree_fname)
-
-
-
-# Add labels to internal nodes --------------------------------------------
-tree_data_fname <- file.path('inst', 'extdata', 'livingTree.tsv')
-tree_fname <- file.path('inst', 'extdata', 'livingTree.newick')
-
-ltree <- read.tree(tree_fname)
-ldata <- read.table(tree_data_fname, sep = '\t', header = TRUE, row.names = NULL)
-ldata <- modify(ldata, as.character)
-
-getMRCA <- function(t, df) {
-    res <- phytools::findMRCA(t, tips = df[['tip_label']])
+getMRCA <- function(tree, tips) {
+    res <- phytools::findMRCA(tree = tree, tips = tips)
     if (is.null(res))
         res <- NA
     res
 }
 
-taxRanks <- c(
-    'kingdom', 'phylum', 'class', 'order', 'family', 'genus'
-) |>
-    {\(y) sub("$", "_taxid", y)}()
+tx <- paste0(taxonomic_ranks, '_taxid')
+tx[which(tx == 'superkingdom_taxid')] <- 'kingdom_taxid'
 
-mrcas <- map(taxRanks, ~ {
-    splitted_df <- split(ldata, factor(ldata[[.x]]))
-    output <- map_chr(splitted_df, \(y) as.character(getMRCA(t = ltree, df = y)))
-    return(output)
-})
-names(mrcas) <- taxRanks
-mrcas <- map(mrcas, ~ {
-    v <- .x[!is.na(.x)]
-    df <- data.frame(names = names(v), nodes = unname(v))
-    df |>
-        group_by(nodes) |>
-        mutate(names = paste0(names, collapse = '+')) |>
-        ungroup() |>
-        distinct()
+mrcas <- flatten(map(tx, ~ split(tree_data, factor(tree_data[[.x]]))))
+mrcas <-map(mrcas, ~ .x[['tip_label']])
+mrcas <- map_int(mrcas, ~ getMRCA(tree, .x))
+mrcas <- mrcas[!is.na(mrcas)]
+mrcas_df <- data.frame(node = unname(mrcas), node_label = names(mrcas))
+mrcas_df <- mrcas_df |>
+    group_by(node) |>
+    mutate(n_labels = length(unique(node_label))) |>
+    mutate(node_label = paste0(unique(node_label), collapse = '+')) |>
+    ungroup() |>
+    distinct()
 
-})
+nodes <- data.frame(node = length(tree$tip.label) + 1:tree$Nnode) |>
+    left_join(mrcas_df, by = 'node') |>
+    mutate(
+        node_label = ifelse(is.na(node_label), '', node_label),
+        n_labels = ifelse(is.na(n_labels), 0, n_labels)
+    )
 
-mrcas_df <- bind_rows(mrcas) |>
-        group_by(nodes) |>
-        mutate(names = paste0(names, collapse = '+')) |>
-        ungroup() |>
-        distinct()
-original_labels_df <- data.frame(
-    nodes = as.character(length(ltree$tip.label) + 1:ltree$Nnode),
-    names_original = ltree$node.label
+tree$node.label <- nodes$node_label
+
+# Export data -------------------------------------------------------------
+tree_fname <- file.path('inst', 'extdata', 'mpav31.newick')
+ape::write.tree(tree, tree_fname)
+
+tree_data_fname <- file.path('inst', 'extdata', 'mpav31.tsv')
+write.table(
+    tree_data, tree_data_fname, sep = '\t', quote = TRUE,
+    row.names = FALSE
 )
 
-new_labels_df <- left_join(original_labels_df, mrcas_df, by = 'nodes')
-new_node_labels <- ifelse(is.na(new_labels_df$names), "", new_labels_df$names)
 
-ltree$node.label <- new_node_labels
+
+
+
+
+
+
+
+# taxids_ranks <- taxizedb::taxid2rank(taxids, db = 'ncbi')
+# pos2 <- which(is.na(taxids_ranks))
+# taxids[pos2] <- as.character(taxize::get_uid(tax_names[pos2], db = 'ncbi')) # luckily, tax names were unique
+# taxids_ranks[pos2] <- flatten_chr(taxize::tax_rank(taxids[pos2], db = 'ncbi'))
+#
+# tree_data <- data.frame(
+#     tip_label = tip_labels,
+#     accesion = acc,
+#     taxid = unname(taxids),
+#     taxname = tax_names,
+#     taxrank = taxids_ranks
+#
+# )
+
+# new_tree_data <- tree_data |>
+#     filter(taxrank == 'species') |> ## only species in the tree
+#     arrange(taxid, tip_label) |>
+#     slice_head(n = 1, by = 'taxid') ## Remove duplicated taxids
+#
+# new_tree <- ape:::keep.tip(tree, tip = new_tree_data$tip_label)
+# new_tree_data <- new_tree_data[match(new_tree$tip.label, new_tree_data$tip_label),]
+#
+# # all(new_tree_data$tip_label == new_tree$tip.label)
+#
+# new_tree$tip.label <- new_tree_data$taxid
+# new_tree_data <- new_tree_data |>
+#     mutate(
+#         old_tip_label = tip_label,
+#         tip_label = taxid
+#     )
+#
+# taxonomy <- taxizedb::classification(new_tree_data$tip_label, db = 'ncbi')
+# new_taxonomy <- map(taxonomy, ~ {
+#     ranks_ <- c(
+#         'superkingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species'
+#     )
+#     .x |>
+#         filter(rank %in% ranks_) |>
+#         select(rank, id) |>
+#         tidyr::pivot_wider(
+#             names_from = 'rank', values_from = 'id'
+#         ) |>
+#         {\(y) set_names(y, sub("$", "_taxid", colnames(y)))}()
+# }) |>
+#     bind_rows(.id = 'original_taxid') |>
+#     relocate(
+#         original_taxid, kingdom_taxid = superkingdom_taxid, phylum_taxid, class_taxid,
+#         order_taxid, family_taxid, genus_taxid, species_taxid
+#     )
+#
+# new_tree_data <- left_join(
+#     new_tree_data, new_taxonomy, by = c('tip_label' = 'original_taxid')
+# )
+
+
+# export data -------------------------------------------------------------
+# tree_data_fname <- file.path('inst', 'extdata', 'livingTree.tsv')
+# write.table(
+#     x = new_tree_data, file = tree_data_fname, sep = '\t',
+#     quote = TRUE, row.names = FALSE
+# )
+
+# tree_fname <- file.path('inst', 'extdata', 'livingTree.newick')
+# write.tree(phy = new_tree, file = tree_fname)
+
+
+
+# Add labels to internal nodes --------------------------------------------
+# tree_data_fname <- file.path('inst', 'extdata', 'livingTree.tsv')
+# tree_fname <- file.path('inst', 'extdata', 'livingTree.newick')
+
+# ltree <- read.tree(tree_fname)
+# ldata <- read.table(tree_data_fname, sep = '\t', header = TRUE, row.names = NULL)
+# ldata <- modify(ldata, as.character)
+
+# getMRCA <- function(t, df) {
+#     res <- phytools::findMRCA(t, tips = df[['tip_label']])
+#     if (is.null(res))
+#         res <- NA
+#     res
+# }
+
+# taxRanks <- c(
+#     'kingdom', 'phylum', 'class', 'order', 'family', 'genus'
+# ) |>
+#     {\(y) sub("$", "_taxid", y)}()
+
+# mrcas <- map(taxRanks, ~ {
+#     splitted_df <- split(ldata, factor(ldata[[.x]]))
+#     output <- map_chr(splitted_df, \(y) as.character(getMRCA(t = ltree, df = y)))
+#     return(output)
+# })
+# names(mrcas) <- taxRanks
+# mrcas <- map(mrcas, ~ {
+#     v <- .x[!is.na(.x)]
+#     df <- data.frame(names = names(v), nodes = unname(v))
+#     df |>
+#         group_by(nodes) |>
+#         mutate(names = paste0(names, collapse = '+')) |>
+#         ungroup() |>
+#         distinct()
+#
+# })
+#
+# mrcas_df <- bind_rows(mrcas) |>
+#         group_by(nodes) |>
+#         mutate(names = paste0(names, collapse = '+')) |>
+#         ungroup() |>
+#         distinct()
+# original_labels_df <- data.frame(
+#     nodes = as.character(length(ltree$tip.label) + 1:ltree$Nnode),
+#     names_original = ltree$node.label
+# )
+#
+# new_labels_df <- left_join(original_labels_df, mrcas_df, by = 'nodes')
+# new_node_labels <- ifelse(is.na(new_labels_df$names), "", new_labels_df$names)
+#
+# ltree$node.label <- new_node_labels
 
 
 
 # Export data again -------------------------------------------------------
-
-tree_data_fname <- file.path('inst', 'extdata', 'livingTree.tsv')
-write.table(
-    x = ldata, file = tree_data_fname, sep = '\t',
-    quote = TRUE, row.names = FALSE
-)
-
-tree_fname <- file.path('inst', 'extdata', 'livingTree.newick')
-write.tree(phy = ltree, file = tree_fname)
+#
+# tree_data_fname <- file.path('inst', 'extdata', 'livingTree.tsv')
+# write.table(
+#     x = ldata, file = tree_data_fname, sep = '\t',
+#     quote = TRUE, row.names = FALSE
+# )
+#
+# tree_fname <- file.path('inst', 'extdata', 'livingTree.newick')
+# write.tree(phy = ltree, file = tree_fname)
 
 
 
