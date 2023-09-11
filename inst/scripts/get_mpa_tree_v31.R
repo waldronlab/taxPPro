@@ -71,7 +71,7 @@ mpa_data <- data.frame(tip_label = mpa_tree$tip.label) |>
 
 ## Update taxonomy information with the most recent one
 taxonomy <- taxizedb::classification(x = unique(mpa_data$taxid), db = 'ncbi')
-missing_taxids <- which(map_lgl(taxonomy, ~ all(is.na(.x)))) # need position below
+missing_taxids <- which(map_lgl(taxonomy, ~ all(is.na(.x)))) # need this positon info in a few lines below
 not_missing_anymore_taxids <- taxize::classification(names(missing_taxids), db = 'ncbi')
 for (i in seq_along(missing_taxids)) {
     taxon_info <- not_missing_anymore_taxids[[i]]
@@ -119,7 +119,7 @@ mrcas_df <- mrcas_df |>
 nodes <- data.frame(node = length(mpa_tree$tip.label) + 1:mpa_tree$Nnode) |>
     left_join(mrcas_df, by = 'node') |>
     mutate(
-        node_label = ifelse(is.na(node_label), '', node_label),
+        node_label = ifelse(is.na(node_label), paste0('n', node), node_label),
         n_labels = ifelse(is.na(n_labels), 0, n_labels)
     )
 
