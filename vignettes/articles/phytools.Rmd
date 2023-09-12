@@ -137,13 +137,62 @@ phys_data_ready <- left_join(set_with_ids, set_without_ids)
 
 ```{r}
 tree = mpa()
-tree_data = mpa(data = TRUE)
 ```
 
 
+```{r}
+tree_data <- as_tibble(mpa(data = TRUE)) |> 
+    modify(as.character)
+head(tree_data)
+```
 
 
+```{r}
 
+tip_data <- left_join(
+    tree_data, phys_data_ready, by = c('taxid' = 'NCBI_ID'),
+    relationship = 'many-to-many'
+)
+m1 <- tip_data |> 
+    filter(!is.na(Attribute)) |> 
+    select(tip_label, Attribute, Score) |> 
+    pivot_wider(
+        names_from = Attribute, values_from = 'Score', values_fill = 0
+    ) |> 
+    tibble::column_to_rownames(var = 'tip_label') |> 
+    as.matrix()
+
+no_annotated_tips <- tip_data |> 
+    filter(!tip_label %in% rownames(m1)) |> 
+    pull(tip_label)
+
+m2 <- matrix(
+    data = rep(rep(1/ncol(m1), ncol(m1)), length(no_annotated_tips)),
+    nrow = length((no_annotated_tips)),
+    byrow = TRUE,
+    dimnames = list(rownames = no_annotated_tips, colnames = colnames(m1))
+)
+
+m3 <- rbind(m1, m2)
+m3 <- m3[tree$tip.label,]
+
+
+```
+
+
+```{r}
+system.time(
+    fit <- fitMk(
+        tree = tree, 
+        x = m3, 
+        model = 'ARD', 
+        pi = "fitzjohn", 
+        logscale = TRUE, 
+        lik.func = "pruning"
+    )
+)
+
+```
 
 
 
