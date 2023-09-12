@@ -135,6 +135,10 @@ set_without_ids <- set_without_ids |>
 phys_data_ready <- left_join(set_with_ids, set_without_ids)
 ```
 
+```{r}
+tree = mpa()
+tree_data = mpa(data = TRUE)
+```
 
 
 
