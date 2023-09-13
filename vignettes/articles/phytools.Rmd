@@ -194,9 +194,36 @@ system.time(
 
 ```
 
+```{r}
+system.time(
+    ace <- ancr(fit, tips = TRUE)
+)
+```
+
+
+```{r}
+res <- ace$ace |> 
+    as.data.frame() |> 
+    tibble::rownames_to_column(var = 'tip_label') |> 
+    left_join(tree_data, by = 'tip_label') |> 
+    as_tibble()
+
+```
 
 
 
+```{r}
+
+```
+
+
+
+```{r}
+plot(ace, args.plotTree = list(direction = "upwards"))
+# tips <- sapply(labs, function(x, y) which(y == x), y = tree$tip.label)
+# add.arrow(tree, tips, arrl = 3, offset = 2, lwd = 2, col = palette()[4])
+
+```
 
 
 
@@ -315,6 +342,7 @@ fit <- fitMk(
 )
 ace <- ancr(fit, tips = TRUE)
 res <- ace$ace
+
 
 ```
 

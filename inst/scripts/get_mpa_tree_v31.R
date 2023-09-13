@@ -125,6 +125,29 @@ nodes <- data.frame(node = length(mpa_tree$tip.label) + 1:mpa_tree$Nnode) |>
 
 mpa_tree$node.label <- nodes$node_label
 
+nodes_with_taxid <- nodes |>
+    filter(!grepl('^n', node_label)) |>
+    separate_longer_delim(node_label, delim = '+')
+
+nodes_taxonomy <- taxizedb::classification(
+    x = unique(nodes_with_taxid$node_label), db = 'ncbi'
+)
+nodes_new_taxonomy <- map(nodes_taxonomy, ~ {
+    x <- .x
+    x <- x[which(x$rank %in% taxonomic_ranks),]
+    m <- matrix(x$id, byrow = TRUE, nrow = 1)
+    colnames(m) <- x$rank
+    d <- as.data.frame(m)
+    colnames(d) <- sub("$", "_taxid", colnames(d))
+    d
+}) |>
+    bind_rows(.id = 'taxid') |>
+    relocate(
+        taxid, kingdom_taxid = superkingdom_taxid, phylum_taxid, class_taxid,
+        order_taxid, family_taxid, genus_taxid, species_taxid
+    ) |>
+    discard(~ all(is.na(.x)))
+
 
 # sp_taxid_dups <- mpa_data$species_taxid[which(duplicated(mpa_data$species_taxid))]
 #
@@ -178,8 +201,15 @@ mpa_tree$node.label <- nodes$node_label
 new_mpa_tree_fname <- file.path('inst', 'extdata', 'mpav31.newick')
 ape::write.tree(mpa_tree, new_mpa_tree_fname)
 
-new_mpa_data_fname <- file.path('inst', 'extdata', 'mpav31.tsv')
+new_mpa_data_fname <- file.path('inst', 'extdata', 'mpav31_tips.tsv')
 write.table(
     mpa_data, new_mpa_data_fname, sep = '\t', quote = TRUE,
     row.names = FALSE
 )
+
+node_mpa_data_fname <- file.path('inst', 'extdata', 'mpav31_nodes.tsv')
+write.table(
+    nodes_new_taxonomy, node_mpa_data_fname, sep = '\t', quote = TRUE,
+    row.names = FALSE
+)
+
