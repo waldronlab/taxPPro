@@ -128,10 +128,16 @@ mpa_tree$node.label <- nodes$node_label
 
 nodes_with_taxid <- nodes |>
     filter(!grepl('^n', node_label)) |>
-    separate_longer_delim(node_label, delim = '+')
+    separate_longer_delim(node_label, delim = '+') |>
+    rename(taxid = node_label) |>
+    group_by(node) |>
+    mutate(node_label = paste0(taxid, collapse = '+')) |>
+    ungroup()
+
+all(nodes_with_taxid$node_label %in% mpa_tree$node.label)
 
 nodes_taxonomy <- taxizedb::classification(
-    x = unique(nodes_with_taxid$node_label), db = 'ncbi'
+    x = unique(nodes_with_taxid$taxid), db = 'ncbi'
 )
 nodes_new_taxonomy <- map(nodes_taxonomy, ~ {
     x <- .x
@@ -148,8 +154,12 @@ nodes_new_taxonomy <- map(nodes_taxonomy, ~ {
         order_taxid, family_taxid, genus_taxid, species_taxid
     ) |>
     discard(~ all(is.na(.x)))
-nodes_new_taxonomy <- nodes_new_taxonomy |>
-    rename(node_label = taxid)
+
+node_data <- left_join(nodes_with_taxid, nodes_new_taxonomy, by= 'taxid')
+
+
+
+
 
 # sp_taxid_dups <- mpa_data$species_taxid[which(duplicated(mpa_data$species_taxid))]
 #
@@ -209,9 +219,9 @@ write.table(
     row.names = FALSE
 )
 
-node_mpa_data_fname <- file.path('inst', 'extdata', 'mpav31_nodes.tsv')
+node_data_fname <- file.path('inst', 'extdata', 'mpav31_nodes.tsv')
 write.table(
-    nodes_new_taxonomy, node_mpa_data_fname, sep = '\t', quote = TRUE,
+    node_data, node_data_fname, sep = '\t', quote = TRUE,
     row.names = FALSE
 )
 

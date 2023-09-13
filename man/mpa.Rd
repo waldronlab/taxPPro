@@ -10,9 +10,8 @@ mpa(x = "tree")
 \item{x}{A character string: tree, tips, or nodes. Default is tree.}
 }
 \value{
-A phylo or data.frame (see the `data` param)
+A phylo or data.frame (see the `x` param)
 }
 \description{
-\code{mpa} gets the metaphlan tree or data v31. In the case of nodes,
-the node_label is the same as taxid.
+\code{mpa} gets the metaphlan tree or data v31.
 }

@@ -4,13 +4,13 @@
 \alias{ltp}
 \title{Get living tree project (LTP) tree or data}
 \usage{
-ltp(data = FALSE)
+ltp(x = "tree")
 }
 \arguments{
-\item{data}{TRUE for data. FALSE for tree. Default is FALSE.}
+\item{x}{A character string. tree, tips, or nodes. Default is tree.}
 }
 \value{
-A phylo or data.frame (see the `data` param)
+A phylo or data.frame (see the `x` param)
 }
 \description{
 \code{ltp} gets the LTP tree or data.
