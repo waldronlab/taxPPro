@@ -4,6 +4,11 @@
 ## I also backed up the file in this package (to make things faster).
 ## url <- 'https://imedea.uib-csic.es/mmg/ltp/wp-content/uploads/ltp/LTP_all_06_2022.ntree'
 
+
+# coreurl <- 'https://imedea.uib-csic.es/mmg/ltp/?smd_process_download=1&download_id=459'
+# allurl <- 'https://imedea.uib-csic.es/mmg/ltp/?smd_process_download=1&download_id=458'
+
+
 library(ape)
 library(taxonomizr)
 library(dplyr)
@@ -12,18 +17,31 @@ library(tidyr)
 
 
 sql <- '~/accessionTaxa.sql'
-tree <- read.tree('https://imedea.uib-csic.es/mmg/ltp/wp-content/uploads/ltp/LTP_all_06_2022.ntree')
+# tree <- read.tree('https://imedea.uib-csic.es/mmg/ltp/wp-content/uploads/ltp/LTP_all_06_2022.ntree')
+
+# coreurl <- 'https://imedea.uib-csic.es/mmg/ltp/?smd_process_download=1&download_id=459'
+allurl <- 'https://imedea.uib-csic.es/mmg/ltp/?smd_process_download=1&download_id=458'
+tree <- read.tree(allurl)
+
 
 tip_labels <- tree$tip.label
 accessions <- sub("^'([^,]+).*", "\\1", tip_labels)
-taxnames <- sub('^.+, (.+), .+, .+, .+$'  ,'\\1', tip_labels) |>
-    {\(y) gsub('"', '', y)}()
+# taxnames <- sub('^.+, (.+), .+, .+, .+$'  ,'\\1', tip_labels) |>
+#     {\(y) gsub('"', '', y)}()
+
+taxnames <- sub("^[^,]*,([^,]*),.*$",'\\1', tip_labels) |>
+    {\(y) gsub('"', '', y)}() |>
+    stringr::str_squish()
+
 taxids <- accessionToTaxa(
     accessions = accessions, sqlFile = sql, version = 'base'
 )
 
 missing_taxa <- taxnames[which(is.na(taxids))]
+missing_taxa[which(missing_taxa == 'Micromonospora okii')] <- 'Micromonospora sp. TP-A0468'
+missing_taxa[which(missing_taxa == 'Sala cibi')] <- 'Salella cibi'
 not_missing_anymore_taxa <- taxizedb::name2taxid(missing_taxa, db = 'ncbi')
+
 taxids[which(is.na(taxids))] <- not_missing_anymore_taxa
 
 taxonomy <- taxizedb::classification(unique(taxids), db = 'ncbi')
