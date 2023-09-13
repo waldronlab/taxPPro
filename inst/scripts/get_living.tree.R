@@ -8,6 +8,7 @@ library(ape)
 library(taxonomizr)
 library(dplyr)
 library(purrr)
+library(tidyr)
 
 
 sql <- '~/accessionTaxa.sql'
@@ -104,13 +105,52 @@ nodes <- data.frame(node = length(tree$tip.label) + 1:tree$Nnode) |>
 
 tree$node.label <- nodes$node_label
 
+nodes_with_taxid <- nodes |>
+    filter(!grepl('^n', node_label)) |>
+    separate_longer_delim(node_label, delim = '+') |>
+    rename(taxid = node_label) |>
+    group_by(node) |>
+    mutate(node_label = paste0(taxid, collapse = '+')) |>
+    ungroup()
+
+all(nodes_with_taxid$node_label %in% tree$node.label)
+
+nodes_taxonomy <- taxizedb::classification(
+    x = unique(nodes_with_taxid$taxid), db = 'ncbi'
+)
+nodes_new_taxonomy <- map(nodes_taxonomy, ~ {
+    x <- .x
+    x <- x[which(x$rank %in% taxonomic_ranks),]
+    m <- matrix(x$id, byrow = TRUE, nrow = 1)
+    colnames(m) <- x$rank
+    d <- as.data.frame(m)
+    colnames(d) <- sub("$", "_taxid", colnames(d))
+    d
+}) |>
+    bind_rows(.id = 'taxid') |>
+    relocate(
+        taxid, kingdom_taxid = superkingdom_taxid, phylum_taxid, class_taxid,
+        order_taxid, family_taxid, genus_taxid, species_taxid
+    ) |>
+    discard(~ all(is.na(.x)))
+
+node_data <- left_join(nodes_with_taxid, nodes_new_taxonomy, by= 'taxid')
+
+
+
 # Export data -------------------------------------------------------------
 tree_fname <- file.path('inst', 'extdata', 'livingTree.newick')
 ape::write.tree(tree, tree_fname)
 
-tree_data_fname <- file.path('inst', 'extdata', 'livingTree.tsv')
+tree_data_fname <- file.path('inst', 'extdata', 'livingTree_tips.tsv')
 write.table(
     tree_data, tree_data_fname, sep = '\t', quote = TRUE,
+    row.names = FALSE
+)
+
+node_data_fname <- file.path('inst', 'extdata', 'livingTree_nodes.tsv')
+write.table(
+    node_data, node_data_fname, sep = '\t', quote = TRUE,
     row.names = FALSE
 )
 

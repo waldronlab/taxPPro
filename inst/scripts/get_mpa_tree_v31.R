@@ -6,6 +6,7 @@ library(ape)
 library(purrr)
 library(dplyr)
 library(tidyr)
+library(tidyr)
 
 column_names <- c(
     'genome_id', 'kingdom', 'phylum', 'class', 'order', 'family', 'genus',
