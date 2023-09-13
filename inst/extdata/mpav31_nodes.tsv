@@ -1,4 +1,4 @@
-"taxid"	"kingdom_taxid"	"phylum_taxid"	"class_taxid"	"order_taxid"	"family_taxid"	"genus_taxid"	"species_taxid"	"strain_taxid"
+"node_label"	"kingdom_taxid"	"phylum_taxid"	"class_taxid"	"order_taxid"	"family_taxid"	"genus_taxid"	"species_taxid"	"strain_taxid"
 "2157"	"2157"	NA	NA	NA	NA	NA	NA	NA
 "1801616"	"2157"	"1801616"	NA	NA	NA	NA	NA	NA
 "28890"	"2157"	"28890"	NA	NA	NA	NA	NA	NA

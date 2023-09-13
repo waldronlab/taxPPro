@@ -147,7 +147,8 @@ nodes_new_taxonomy <- map(nodes_taxonomy, ~ {
         order_taxid, family_taxid, genus_taxid, species_taxid
     ) |>
     discard(~ all(is.na(.x)))
-
+nodes_new_taxonomy <- nodes_new_taxonomy |>
+    rename(node_label = taxid)
 
 # sp_taxid_dups <- mpa_data$species_taxid[which(duplicated(mpa_data$species_taxid))]
 #

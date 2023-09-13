@@ -4,14 +4,15 @@
 \alias{mpa}
 \title{Get metphlan tree or data v31}
 \usage{
-mpa(data = FALSE)
+mpa(x = "tree")
 }
 \arguments{
-\item{data}{TRUE for data. FALSE for tree. Default is FALSE.}
+\item{x}{A character string: tree, tips, or nodes. Default is tree.}
 }
 \value{
 A phylo or data.frame (see the `data` param)
 }
 \description{
-\code{mpa} gets the metaphlan tree or data v31
+\code{mpa} gets the metaphlan tree or data v31. In the case of nodes,
+the node_label is the same as taxid.
 }
