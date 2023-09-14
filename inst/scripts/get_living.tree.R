@@ -155,6 +155,21 @@ nodes_new_taxonomy <- map(nodes_taxonomy, ~ {
 node_data <- left_join(nodes_with_taxid, nodes_new_taxonomy, by= 'taxid')
 
 
+## ape write.tree won't allow commas and spaces when writin tree name
+tree_data$tip_label <- gsub(' ', '_', tree_data$tip_label)
+tree_data$tip_label <- gsub('[,;]', '-', tree_data$tip_label)
+tree_data$tip_label <- gsub('"', '', tree_data$tip_label)
+tree_data$tip_label <- gsub("'", '', tree_data$tip_label)
+tree_data$tip_label <- gsub("\\[T\\]", '', tree_data$tip_label)
+
+tree$tip.label<- gsub(' ', '_', tree$tip.label)
+tree$tip.label <- gsub('[,;]', '-', tree$tip.label)
+tree$tip.label <- gsub('"', '', tree$tip.label)
+tree$tip.label <- gsub("'", '', tree$tip.label)
+tree$tip.label <- gsub("\\[T\\]", '', tree$tip.label)
+
+
+all(tree$tip.label %in% tree_data$tip_label)
 
 # Export data -------------------------------------------------------------
 tree_fname <- file.path('inst', 'extdata', 'livingTree.newick')

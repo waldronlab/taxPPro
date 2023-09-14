@@ -136,23 +136,23 @@ phys_data_ready <- left_join(set_with_ids, set_without_ids)
 ```
 
 ```{r}
-tree = mpa()
+tree <- ltp()
+tree
 ```
 
 
 ```{r}
-tree_data <- as_tibble(mpa(data = TRUE)) |> 
+tip_data <- as_tibble(ltp('tips')) |> 
     modify(as.character)
-head(tree_data)
-```
-
-
-```{r}
-
 tip_data <- left_join(
     tree_data, phys_data_ready, by = c('taxid' = 'NCBI_ID'),
     relationship = 'many-to-many'
 )
+head(tip_data)
+```
+
+
+```{r}
 m1 <- tip_data |> 
     filter(!is.na(Attribute)) |> 
     select(tip_label, Attribute, Score) |> 
