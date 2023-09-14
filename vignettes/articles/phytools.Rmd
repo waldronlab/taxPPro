@@ -180,7 +180,7 @@ m3 <- m3[tree$tip.label,]
 
 
 ```{r}
-pruned_tree <- ape::keep.tip(phy = tree, tip = rownames(m1))
+# pruned_tree <- ape::keep.tip(phy = tree, tip = rownames(m1))
 ```
 
 
