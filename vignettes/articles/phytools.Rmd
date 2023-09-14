@@ -136,16 +136,16 @@ phys_data_ready <- left_join(set_with_ids, set_without_ids)
 ```
 
 ```{r}
-tree <- ltp()
+tree <- mpa()
 tree
 ```
 
 
 ```{r}
-tip_data <- as_tibble(ltp('tips')) |> 
+tip_data <- as_tibble(mpa('tips')) |> 
     modify(as.character)
 tip_data <- left_join(
-    tree_data, phys_data_ready, by = c('taxid' = 'NCBI_ID'),
+    tip_data, phys_data_ready, by = c('taxid' = 'NCBI_ID'),
     relationship = 'many-to-many'
 )
 head(tip_data)
@@ -162,36 +162,42 @@ m1 <- tip_data |>
     tibble::column_to_rownames(var = 'tip_label') |> 
     as.matrix()
 
-no_annotated_tips <- tip_data |> 
-    filter(!tip_label %in% rownames(m1)) |> 
-    pull(tip_label)
+# no_annotated_tips <- tip_data |> 
+#     filter(!tip_label %in% rownames(m1)) |> 
+#     pull(tip_label)
 
-m2 <- matrix(
-    data = rep(rep(1/ncol(m1), ncol(m1)), length(no_annotated_tips)),
-    nrow = length((no_annotated_tips)),
-    byrow = TRUE,
-    dimnames = list(rownames = no_annotated_tips, colnames = colnames(m1))
-)
+# m2 <- matrix(
+#     data = rep(rep(1/ncol(m1), ncol(m1)), length(no_annotated_tips)),
+#     nrow = length((no_annotated_tips)),
+#     byrow = TRUE,
+#     dimnames = list(rownames = no_annotated_tips, colnames = colnames(m1))
+# )
 
-m3 <- rbind(m1, m2)
-m3 <- m3[tree$tip.label,]
-
+# m3 <- rbind(m1, m2)
+# m3 <- m3[tree$tip.label,]
 
 ```
 
 
 ```{r}
+pruned_tree <- ape::keep.tip(phy = tree, tip = rownames(m1))
+```
+
+
+
+```{r}
 system.time(
-    fit <- fitMk(
-        tree = tree, 
-        x = m3, 
-        model = 'ARD', 
+    fit <- fitMk.parallel(
+        tree = pruned_tree, 
+        x = m1, 
+        model = 'ER', 
         pi = "fitzjohn", 
         logscale = TRUE, 
-        lik.func = "pruning"
+        lik.func = "pruning",
+        ncores = 16
     )
 )
-
+## Took close to 1 hour the fitMK
 ```
 
 ```{r}
