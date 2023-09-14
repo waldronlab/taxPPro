@@ -162,19 +162,19 @@ m1 <- tip_data |>
     tibble::column_to_rownames(var = 'tip_label') |> 
     as.matrix()
 
-# no_annotated_tips <- tip_data |> 
-#     filter(!tip_label %in% rownames(m1)) |> 
-#     pull(tip_label)
+no_annotated_tips <- tip_data |>
+    filter(!tip_label %in% rownames(m1)) |>
+    pull(tip_label)
 
-# m2 <- matrix(
-#     data = rep(rep(1/ncol(m1), ncol(m1)), length(no_annotated_tips)),
-#     nrow = length((no_annotated_tips)),
-#     byrow = TRUE,
-#     dimnames = list(rownames = no_annotated_tips, colnames = colnames(m1))
-# )
+m2 <- matrix(
+    data = rep(rep(1/ncol(m1), ncol(m1)), length(no_annotated_tips)),
+    nrow = length((no_annotated_tips)),
+    byrow = TRUE,
+    dimnames = list(rownames = no_annotated_tips, colnames = colnames(m1))
+)
 
-# m3 <- rbind(m1, m2)
-# m3 <- m3[tree$tip.label,]
+m3 <- rbind(m1, m2)
+m3 <- m3[tree$tip.label,]
 
 ```
 
@@ -188,37 +188,75 @@ pruned_tree <- ape::keep.tip(phy = tree, tip = rownames(m1))
 ```{r}
 system.time(
     fit <- fitMk.parallel(
-        tree = pruned_tree, 
-        x = m1, 
+        tree = tree, 
+        x = m3, 
         model = 'ER', 
         pi = "fitzjohn", 
         logscale = TRUE, 
-        lik.func = "pruning",
-        ncores = 16
+        lik.func = "pruning"
     )
 )
 ## Took close to 1 hour the fitMK
+## Took about 7 seconds with parallel, but I got some NaNs warnings.
 ```
 
 ```{r}
 system.time(
-    ace <- ancr(fit, tips = TRUE)
+    ace <- ancr(fit)
 )
 ```
 
 
-```{r}
-res <- ace$ace |> 
-    as.data.frame() |> 
-    tibble::rownames_to_column(var = 'tip_label') |> 
-    left_join(tree_data, by = 'tip_label') |> 
-    as_tibble()
 
+
+```{r}
+# node_data <- mpa('nodes')
+
+res <- ace$ace
+rownames(res) <- tree$node.label
+res <- res |> 
+    as.data.frame() |> 
+    tibble::rownames_to_column(var = 'node_label') |> 
+    left_join(node_data, by = 'node_label') |> 
+    as_tibble() |> 
+    filter(!is.na(taxid))
+dim(res)
+```
+
+```{r}
+data('tree_list')
+data_tree <- as.Node(tree_list)
+data_tree$Do(function(node) {
+    node$name <- sub('\\w__', '', node$name)
+})
+
+data_tree_node_names <- unname(data_tree$Get('name'))
+mean(res$taxid %in% data_tree_node_names)
 ```
 
 
+```{r}
+l <- split(res, factor(res$taxid))
+l <- map(l, ~ {
+    .x |> 
+    select(
+        aerobic, anaerobic, `facultatively anaerobic`, `facultative aerobe`
+    ) |> 
+        pivot_longer(
+            names_to = 'attribute', values_to = 'score',
+            cols = c('aerobic', 'anaerobic', 'facultatively anaerobic', 'facultative aerobe')
+        )
+})
+```
 
 ```{r}
+data_tree$Do(function(node) {
+    if (node$name %in% names(l)) {
+        node$attribute_tbl <- l[[node$name]]
+    } else {
+        NULL
+    }
+})
 
 ```
 
