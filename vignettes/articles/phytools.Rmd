@@ -247,26 +247,28 @@ data_tree$d__2$p__1224$c__1236$o__91347$f__543$g__561$attribute_tbl
 
 ```{r}
 inh1 <- function(node) {
+    ## This one has no penalty
+    if (node$isRoot) {
+        return(NULL)
+    }
     
+
+    if (is.null(node$parent$attribute_tbl)) {
+        return(NULL)
+    }
+
+    if (is.null(node$attribute_tbl) && grepl('^[st]__', node$name)) {
+        df <- node$parent$attribute_tbl
+        df <- df |>
+            dplyr::mutate(
+                NCBI_ID = node$name,
+                Evidence = 'inh'
+            )
+        node$attribute_tbl <- df
+    }
 }
-
-
-data_tree$Do()
+data_tree$Do(inh1, traversal = 'pre-order')
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ```{r}
@@ -281,10 +283,10 @@ new_data <-  new_nodes |>
     bind_rows() |> 
     arrange(NCBI_ID, Attribute) |> 
     mutate(taxid = sub('^\\w__', '', NCBI_ID))
-## just a slight increase. More useful in datasets with only genus
-## and strain information, but no species, I think.
 mean(mpa_tip_data$taxid %in% new_data$taxid)
 ```
+
+
 ```{r}
 tip <- left_join(
     mpa_tip_data, new_data, by = 'taxid', relationship = 'many-to-many'
@@ -327,6 +329,7 @@ m3 <- rbind(m1, m2)
 m3 <- m3[mpa_tree$tip.label,]
 dim(m3)
 ```
+
 ```{r}
 system.time(
     fit <- fitMk.parallel(
@@ -339,7 +342,7 @@ system.time(
     )
 )
 ## Took close to 1 hour the fitMK
-## Took about 4 min with parallel, but I got some NaNs warnings.
+## A few seconds or minutes with fitMK.parellel
 ```
 
 ```{r}
@@ -350,10 +353,8 @@ system.time(
 ```
 
 
-
-
 ```{r}
-node_data <- mpa('nodes')
+node_data <- as_tibble(modify(mpa('nodes'), as.character))
 res <- ace$ace
 rownames(res) <- mpa_tree$node.label
 res <- res |> 
@@ -367,194 +368,95 @@ dim(res)
 
 
 ```{r}
-select()
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-```{r}
-data('tree_list')
-data_tree <- as.Node(tree_list)
-data_tree$Do(function(node) {
-    node$name <- sub('\\w__', '', node$name)
-})
-
-data_tree_node_names <- unname(data_tree$Get('name'))
-mean(res$taxid %in% data_tree_node_names)
+## It seems that at least half of the nodes would have new annotations,
+## which I think it's ok, since this should be the nodes of higher
+## ranks in the taxonomic tree
+mean(!res$taxid %in% new_data$taxid)
 ```
 
 
 ```{r}
-l <- split(res, factor(res$taxid))
-l <- map(l, ~ {
-    .x |> 
-    select(
-        aerobic, anaerobic, `facultatively anaerobic`, `facultative aerobe`
+data_for_inh2 <- filter(res, !taxid %in% new_data$taxid)
+dim(data_for_inh2)
+```
+
+
+```{r}
+input_for_inh2 <- data_for_inh2 |> 
+    select(-ends_with('_taxid'), -node_label, -node, -n_labels) |> 
+    relocate(NCBI_ID = taxid) |>
+    pivot_longer(
+        names_to = 'Attribute', values_to = 'Score', cols = 2:last_col()
     ) |> 
-        pivot_longer(
-            names_to = 'attribute', values_to = 'score',
-            cols = c('aerobic', 'anaerobic', 'facultatively anaerobic', 'facultative aerobe')
-        )
-})
+    complete(Attribute, Score, fill = list(Score = 0)) |> 
+    relocate(NCBI_ID) |> 
+    arrange(NCBI_ID, Attribute) |> 
+    mutate(Evidence = 'asr2') |> 
+    {\(y) split(y, factor(y$NCBI_ID))}()
+length(input_for_inh2)
 ```
+
+Add more nodes
 
 ```{r}
 data_tree$Do(function(node) {
-    if (node$name %in% names(l)) {
-        node$attribute_tbl <- l[[node$name]]
-    } else {
-        NULL
+    cond1 <- is.null(node$attribute_tbl)
+    taxid <- sub('^\\w__', '', node$name)
+    cond2 <- taxid %in% names(input_for_inh2)
+    if (cond1 && cond2) {
+        # message('Adding ', node$name, ' to the tree')
+        node$attribute_tbl <- input_for_inh2[[taxid]]
     }
 })
-
+data_tree$d__2$attribute_tbl
 ```
 
-
-
-```{r}
-plot(ace, args.plotTree = list(direction = "upwards"))
-# tips <- sapply(labs, function(x, y) which(y == x), y = tree$tip.label)
-# add.arrow(tree, tips, arrl = 3, offset = 2, lwd = 2, col = palette()[4])
-
-```
-
-
-
-
-
-
-
-
-
-
-
-
-I need a matrix of prior  probabilites
+Now, let's proceed to inheritance (this time let's add a penalty)
 
 ```{r}
-prior_prob_mat <- phys_data_ready |> 
-    select(NCBI_ID, Attribute, Score) |> 
-    pivot_wider(
-        names_from = Attribute, values_from = Score, values_fill = 0
-    ) |> 
-    tibble::column_to_rownames(var = 'NCBI_ID') |> 
-    as.matrix()
-sum(rowSums(prior_prob_mat)) == nrow(prior_prob_mat)
-```
-
-
-Import phylogenetic tree (living tree project):
-
-```{r}
-# fname <- system.file(
-#     'extdata', 'livingTree.newick', package = 'taxPPro', mustWork = TRUE
-# )
-# tree <- read.tree(fname)
-# tree
-data('tree_list')
-data_tree <- as.Node(tree_list)
-tree <- as.phylo.Node(data_tree, heightAttribute = NULL)
-tree <- multi2di(tree)
-tree <- collapse.singles(tree)
-tree$tip.label <- sub('\\w__', '', tree$tip.label)
-tree$node.label <- sub('\\w__', '', tree$node.label)
-tree
+inh2 <- function(node, adjF = 0.1) {
+    cond1 <- !node$isRoot # don't apply this to the root
+    cond2 <- is.null(node$attribute_tbl) # attribute_tbl must be empty
+    cond3 <- !is.null(node$parent$attribute_tbl) # parent must have data
+    if (cond1 && cond2 && cond3) {
+        # message('Adding ', node$name, '.')
+        tbl <- node$parent$attribute_tbl  
+        n <- nrow(tbl)
+        res <- tbl |> 
+            mutate(
+                target_scores = rep(1 / n, n),
+                score_diff = Score - target_scores,
+                Score = Score - adjF * score_diff,
+                NCBI_ID = node$name,
+                Evidence = 'inh2'
+            ) |>
+            select(-target_scores, -score_diff) |> 
+            relocate(NCBI_ID)
+        node$attribute_tbl <- res
+    }
+}
+data_tree$Do(inh2, traversal = 'pre-order')
 ```
 
 
 ```{r}
-is.binary(tree)
+data_tree$d__2$p__1224$c__28211$o__356$f__335928$attribute_tbl
 ```
 
+Get all the tables
 
-Add internal nodes (if any):
-
-```{r add internal nodes}
-temp <- tree
-temp$edge.length[which(temp$edge.length == 0)] <- head(sort(unique(temp$edge.length)))[2]
-node_labels <- unique(temp$node.label)
-node_labels <- node_labels[node_labels != '']
-node_labels <- unlist(strsplit(node_labels, '\\+'))
-mat <- prior_prob_mat[which(rownames(prior_prob_mat) %in% node_labels), , drop = TRUE]
-nodes <- rownames(mat)
-system.time(
-for(i in seq_along(nodes)){
-    regex <- paste0('\\b', nodes[i], '\\b')
-    tipsAndNodes <- c(temp$tip.label, temp$node.label)
-    pos <- grep(regex, tipsAndNodes)
-    if (!length(pos))
-        next
-    temp <- bind.tip(
-        tree = temp, tip.label = nodes[i], edge.length = 0, where = pos
+```{r}
+output <- data_tree$Get(
+    attribute = 'attribute_tbl', simplify = FALSE,
+    filterFun = function(node) node$name != 'ArcBac'
     )
-}
-)
+output <- bind_rows(output)
+head(output)
 ```
 
-Let's fit a model of evolution
-
-```{r fit model}
-missing_tips <- temp$tip.label[!(temp$tip.label %in% rownames(mat))]
-values <- rep(1/ncol(mat), ncol(mat))
-mat2 <- matrix(rep(values, length(missing_tips)), ncol = ncol(mat), byrow = TRUE)
-rownames(mat2) <- missing_tips
-colnames(mat2) <- colnames(mat)
-mat3 <- rbind(mat, mat2)
-mat3 <- mat3[temp$tip.label,]
-fit <- fitMk(
-        # extended Mk (hidden markov) model (used for discrete traits)
-    tree = temp, 
-    x = mat3, 
-    model = 'ARD',  # all rates different
-    pi = "fitzjohn",  # pror distribution at the root this seems to have a significant effect in the root
-    logscale = TRUE, 
-    lik.func = "pruning",
-)
-```
-
-Load data:
+## Session information
 
 ```{r}
-data("primate.tree")
-data("primate.data")
-tree <- primate.tree
-data <- primate.data
-rm(primate.tree)
-rm(primate.data)
-activity <- data$Activity_pattern
-names(activity) <- rownames(data)
-m <- to.matrix(activity, levels(activity))
-m[,] <- rep(1/ncol(m), ncol(m))
-labs <- rownames(m)[which(grepl('Galago', rownames(m)))]
-for (i in seq_along(labs)) {
-    m[labs[i],] <- c(0, 0, 1)
-}
-fit <- fitMk(
-    tree = tree, x = m, model = 'ARD', pi = "fitzjohn", logscale = TRUE, 
-    lik.func = "pruning"
-)
-ace <- ancr(fit, tips = TRUE)
-res <- ace$ace
-
-
+sessioninfo::session_info()
 ```
 
-
-```{r}
-plot(ace, args.plotTree = list(direction = "upwards"))
-tips <- sapply(labs, function(x, y) which(y == x), y = tree$tip.label)
-add.arrow(tree, tips, arrl = 3, offset = 2, lwd = 2, col = palette()[4])
-```
