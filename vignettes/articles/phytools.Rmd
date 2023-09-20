@@ -19,7 +19,7 @@ library(purrr)
 library(tidyr)
 ```
 
-Import physiology data (1 physiology - aerophilicity)
+Import physiology data (one physiology - aerophilicity):
 
 ```{r import physiology, message=FALSE}
 phys <- physiologies('aerophilicity')
@@ -33,20 +33,22 @@ select_cols <- c(
     'NCBI_ID', 'Taxon_name', 'Attribute', 'Attribute_source',
     'Frequency', 'Score', 'Parent_NCBI_ID', 'Confidence_in_curation',
     'Rank', 'Evidence',
+    
     ## Columns only used for controlling the behavior of the code
-    'Attribute_type', 'Attribute_group' # I might need one or two more!
+    'Attribute_type', 'Attribute_group'
 )
 valid_ranks <- c('genus', 'species', 'strain')
 phys_data <- phys[[1]] |> 
     as_tibble() |> 
-    filter(Attribute_value == TRUE) |> # only use TRUE values for this physiology (non-binary and represents an intersection)
-    filter(!is.na(Rank), Rank %in% valid_ranks) |> # need valid ranks
+    filter(Attribute_value == TRUE) |> # only for discrete traits with multiple states 
+    filter(!is.na(Rank), Rank %in% valid_ranks) |>
     filter(
-        ## Only rows with NCBI_ID or Parent_NCBI_ID if NCBI is missing can be used
+        ## Filter rows with NCBI_ID.
+        ## If NCBI_ID is missing, Parent_NCBI_ID must be present
         !((is.na(NCBI_ID) | NCBI_ID == 'unknown') & is.na(Parent_NCBI_ID))
     ) |> 
-    filter(!is.na('Attribute_source'), !is.na('Frequency')) |>  # need source and frequency
-    mutate( # Frequency keywords shold be converted to numeric scores. 
+    filter(!is.na('Attribute_source'), !is.na('Frequency')) |>
+    mutate( 
         Score = case_when(
             Frequency == 'always' ~ 1,
             Frequency == 'usually' ~ 0.9,
@@ -166,7 +168,7 @@ mean(names(phys_data_list) %in% get_all_nodes)
 How many tips included in the mpa tree
 
 ```{r}
-mpa_tip_data <- mpa(x = 'tips') |> 
+mpa_tip_data <- ltp(x = 'tips') |> 
     modify(as.character) |> 
     as_tibble()
 mean(mpa_tip_data$taxid %in% sub('^\\w__', '', phys_data_ready$NCBI_ID))
@@ -303,7 +305,7 @@ table(tip$Evidence)
 
 
 ```{r}
-mpa_tree <- mpa()
+mpa_tree <- ltp()
 m1 <- tip |> 
     select(tip_label, Attribute, Score) |> 
     filter(!is.na(Attribute)) |> 
@@ -341,7 +343,6 @@ system.time(
         lik.func = "pruning"
     )
 )
-## Took close to 1 hour the fitMK
 ## A few seconds or minutes with fitMK.parellel
 ```
 
