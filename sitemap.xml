@@ -22,9 +22,6 @@
     <loc>https://sdgamboa.github.io/taxPPro/articles/phytools.html</loc>
   </url>
   <url>
-    <loc>https://sdgamboa.github.io/taxPPro/articles/propagation_workflow.html</loc>
-  </url>
-  <url>
     <loc>https://sdgamboa.github.io/taxPPro/articles/taxPPro.html</loc>
   </url>
   <url>
@@ -115,7 +112,13 @@
     <loc>https://sdgamboa.github.io/taxPPro/reference/inhDownstreamRange.html</loc>
   </url>
   <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/ltp.html</loc>
+  </url>
+  <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/mergeOriginalAndEarlyASR.html</loc>
+  </url>
+  <url>
+    <loc>https://sdgamboa.github.io/taxPPro/reference/mpa.html</loc>
   </url>
   <url>
     <loc>https://sdgamboa.github.io/taxPPro/reference/prepareDataForPropagation.html</loc>

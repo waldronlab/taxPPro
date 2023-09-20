@@ -61,9 +61,6 @@
     <li>
       <a href="../articles/phytools.html">A propagation workflow</a>
     </li>
-    <li>
-      <a href="../articles/propagation_workflow.html">Propagation workflow for categorical/logical attributes</a>
-    </li>
   </ul>
 </li>
       </ul>
@@ -109,10 +106,12 @@
 <span><span class="va">mpaTree</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ape/man/read.tree.html" class="external-link">read.tree</a></span><span class="op">(</span><span class="va">mpaTreeFile</span><span class="op">)</span></span>
 <span><span class="va">mpaTree</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Phylogenetic tree with 12358 tips and 12357 internal nodes.</span></span>
+<span><span class="co">#&gt; Phylogenetic tree with 12428 tips and 12427 internal nodes.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Tip labels:</span></span>
-<span><span class="co">#&gt;   1974406, 1974461, 1974451, 1974465, 1974462, 1974449, ...</span></span>
+<span><span class="co">#&gt;   GCA_002763225|k__Archaea|p__Candidatus_Diapherotrites|c__Candidatus_Diapherotrites_unclassified|o__Candidatus_Diapherotrites_unclassified|f__Candidatus_Diapherotrites_unclassified|g__Candidatus_Diapherotrites_unclassified|s__Candidatus_Diapherotrites_archaeon_CG10_big_fil_rev_8_21_14_0_10_31_34, GCA_002762855|k__Archaea|p__Candidatus_Woesearchaeota|c__Candidatus_Woesearchaeota_unclassified|o__Candidatus_Woesearchaeota_unclassified|f__Candidatus_Woesearchaeota_unclassified|g__Candidatus_Woesearchaeota_unclassified|s__Candidatus_Woesearchaeota_archaeon_CG10_big_fil_rev_8_21_14_0_10_34_8, GCA_002784405|k__Archaea|p__Candidatus_Woesearchaeota|c__Candidatus_Woesearchaeota_unclassified|o__Candidatus_Woesearchaeota_unclassified|f__Candidatus_Woesearchaeota_unclassified|g__Candidatus_Woesearchaeota_unclassified|s__Candidatus_Woesearchaeota_archaeon_CG_4_10_14_0_8_um_filter_47_5, GCA_002762785|k__Archaea|p__Candidatus_Woesearchaeota|c__Candidatus_Woesearchaeota_unclassified|o__Candidatus_Woesearchaeota_unclassified|f__Candidatus_Woesearchaeota_unclassified|g__Candidatus_Woesearchaeota_unclassified|s__Candidatus_Woesearchaeota_archaeon_CG10_big_fil_rev_8_21_14_0_10_45_16, GCA_002762845|k__Archaea|p__Candidatus_Woesearchaeota|c__Candidatus_Woesearchaeota_unclassified|o__Candidatus_Woesearchaeota_unclassified|f__Candidatus_Woesearchaeota_unclassified|g__Candidatus_Woesearchaeota_unclassified|s__Candidatus_Woesearchaeota_archaeon_CG10_big_fil_rev_8_21_14_0_10_36_11, GCA_002792115|k__Archaea|p__Candidatus_Woesearchaeota|c__Candidatus_Woesearchaeota_unclassified|o__Candidatus_Woesearchaeota_unclassified|f__Candidatus_Woesearchaeota_unclassified|g__Candidatus_Woesearchaeota_unclassified|s__Candidatus_Woesearchaeota_archaeon_CG_4_10_14_0_2_um_filter_33_13, ...</span></span>
+<span><span class="co">#&gt; Node labels:</span></span>
+<span><span class="co">#&gt;   n12429, 2157, n12431, 1801616, n12433, n12434, ...</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Rooted; includes branch lengths.</span></span></code></pre></div>
 <p>Import living tree:</p>
@@ -123,12 +122,12 @@
 <span><span class="va">livingTree</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ape/man/read.tree.html" class="external-link">read.tree</a></span><span class="op">(</span><span class="va">livingTreeFile</span><span class="op">)</span></span>
 <span><span class="va">livingTree</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Phylogenetic tree with 16161 tips and 16160 internal nodes.</span></span>
+<span><span class="co">#&gt; Phylogenetic tree with 19452 tips and 19451 internal nodes.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Tip labels:</span></span>
-<span><span class="co">#&gt;   576, 451513, 1691903, 1529639, 158852, 379893, ...</span></span>
+<span><span class="co">#&gt;   AE006468-_Salmonella_enterica_subsp._enterica-_Bacteria-Pseudomonadota-Gammaproteobacteria-Enterobacterales-Enterobacteriaceae-Salmonella-_c-_type_sp., AF008580-_Salmonella_enterica_subsp._arizonae-_Bacteria-Pseudomonadota-Gammaproteobacteria-Enterobacterales-Enterobacteriaceae-Salmonella-_c, MK942857-_Klebsiella_indica-_Bacteria-Pseudomonadota-Gammaproteobacteria-Enterobacterales-Enterobacteriaceae-Klebsiella-_c, EU014680-_Salmonella_enterica_subsp._indica-_Bacteria-Pseudomonadota-Gammaproteobacteria-Enterobacterales-Enterobacteriaceae-Salmonella-_c, EU014684-_Salmonella_enterica_subsp._houtenae-_Bacteria-Pseudomonadota-Gammaproteobacteria-Enterobacterales-Enterobacteriaceae-Salmonella-_c, EU014685-_Salmonella_enterica_subsp._salamae-_Bacteria-Pseudomonadota-Gammaproteobacteria-Enterobacterales-Enterobacteriaceae-Salmonella-_c, ...</span></span>
 <span><span class="co">#&gt; Node labels:</span></span>
-<span><span class="co">#&gt;   , 2+48381, , , 57723+533205, 1239+186801+91061+1385+3039167+68295+186814+3039168+539003, ...</span></span>
+<span><span class="co">#&gt;   2157, n19454, 2+48381, n19456, n19457, 200940+57723+533205, ...</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Rooted; includes branch lengths.</span></span></code></pre></div>
 <p>Import taxonomic tree:</p>
@@ -150,16 +149,16 @@
 <span><span class="co">#&gt; Rooted; no branch lengths.</span></span></code></pre></div>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">mpaTree</span><span class="op">$</span><span class="va">tip.label</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">dataTree</span><span class="op">$</span><span class="va">tip.label</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.3639748</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 0</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">livingTree</span><span class="op">$</span><span class="va">tip.label</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">dataTree</span><span class="op">$</span><span class="va">tip.label</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.8274859</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 0</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">dataTree</span><span class="op">$</span><span class="va">tip.label</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">mpaTree</span><span class="op">$</span><span class="va">tip.label</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.07094413</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 0</span></span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">dataTree</span><span class="op">$</span><span class="va">tip.label</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">livingTree</span><span class="op">$</span><span class="va">tip.label</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.2109239</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 0</span></span></code></pre></div>
 <p>It seems that the living tree could be better (more completeness)</p>
   </div>
 

@@ -5,9 +5,8 @@ articles:
   explore_taxids: explore_taxids.html
   phylogenetic_trees: phylogenetic_trees.html
   phytools: phytools.html
-  propagation_workflow: propagation_workflow.html
   taxPPro: taxPPro.html
-last_built: 2023-09-08T23:51Z
+last_built: 2023-09-20T02:41Z
 urls:
   reference: https://sdgamboa.github.io/taxPPro/reference
   article: https://sdgamboa.github.io/taxPPro/articles
