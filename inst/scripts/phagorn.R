@@ -1,5 +1,8 @@
+library(phangorn)
 
 x <- m3
+
+
 x[x > 0] <- 1
 x <- x[,sort(colnames(x))]
 rownames(x) <- NULL
@@ -12,6 +15,7 @@ for (i in seq_along(output)) {
     output[[i]] <- paste0(attr_names, collapse = ':')
 }
 rownames(y) <- output
+
 
 trait_mat <- m3[, sort(colnames(m3))]
 trait_mat[trait_mat > 0] <- 1
@@ -46,9 +50,28 @@ system.time(
     {
         ## This one takes too long
         fit <- pml(mpa_tree, myData)
-        fit <- optim.pml(fit, model = NULL, control = pml.control(trace=0))
+        # fit <- optim.pml(fit, model = NULL, control = pml.control(trace=0))
     }
 )
+
+system.time(
+    anc.ml <- ancestral.pml(fit, "ml")
+)
+
+
+system.time(
+    anc.ml <- ancestral.pml(fit, "ml")
+)
+
+system.time(
+    anc.bayes <- ancestral.pml(fit, "bayes")
+)
+
+
+
+
+
+
 
 anc_pars_data <- vector('list', length(anc_pars))
 for (i in seq_along(anc_pars_data)) {
