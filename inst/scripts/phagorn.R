@@ -37,10 +37,21 @@ myData <- phyDat(
 
 myData
 
+system.time(
+    anc_pars <- ancestral.pars(mpa_tree, myData, type="MPR")
+)
 
 
+anc_pars_data <- vector('list', length(anc_pars))
+for (i in seq_along(anc_pars_data)) {
+    anc_pars_data[[i]] <- as.data.frame(unname(anc_pars[[i]]))
+}
 
 
+row_names <- c(mpa_tree$tip.label, mpa_tree$node.label)
+col_names <-
+final <- bind_rows(anc_pars_data)
+rownames(final) <- row_names
+colnames(final) <- colnames(y)
 
-
-
+hist(as.matrix(final))
