@@ -42,6 +42,14 @@ system.time(
 )
 
 
+system.time(
+    {
+        ## This one takes too long
+        fit <- pml(mpa_tree, myData)
+        fit <- optim.pml(fit, model = NULL, control = pml.control(trace=0))
+    }
+)
+
 anc_pars_data <- vector('list', length(anc_pars))
 for (i in seq_along(anc_pars_data)) {
     anc_pars_data[[i]] <- as.data.frame(unname(anc_pars[[i]]))
