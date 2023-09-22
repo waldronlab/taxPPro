@@ -368,22 +368,9 @@ phyData
 ```
 
 ```{r}
-system.time({
-    fit <- pml(pruned_tree, phyData)
-    asr_output <- ancestral.pml(fit, 'ml')
-})
+fit <- pml(pruned_tree, phyData)
+asr_output <- ancestral.pml(fit, 'ml')
 ```
-
-
-
-
-
-
-
-
-
-
-
 
 ```{r}
 system.time(
