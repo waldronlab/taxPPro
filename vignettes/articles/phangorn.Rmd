@@ -367,35 +367,39 @@ phyData <- phyDat(
 phyData
 ```
 
+Maximum parsimony:
+
 ```{r}
-fit <- pml(pruned_tree, phyData)
+## Super fast. Branch lengths are ignored
+asr_pars <- ancestral.pars(pruned_tree, phyData, type = 'MPR')
+```
+
+
+```{r}
+is.ultrametric(pruned_tree)
+```
+
+
+```{r}
+ultra <- chronoMPL(pruned_tree)
+is.ultrametric(ultra)
+```
+
+```{r}
+fit <- pml(ultra, phyData)
 asr_output <- ancestral.pml(fit, 'ml')
 ```
 
-```{r}
-system.time(
-    fit <- fitMk.parallel(
-        tree = mpa_tree, 
-        x = m3, 
-        model = 'ER', 
-        pi = "fitzjohn", 
-        logscale = TRUE, 
-        lik.func = "pruning"
-    )
-)
-## A few seconds or minutes with fitMK.parellel
-```
 
-```{r}
-system.time(
-    # ace <- ancr(fit, type = 'marginal', tips = TRUE) 
-    ace <- ancr(fit, type = 'marginal') # don't include tips
-)
-```
+
+
+
+
+
 
 
 ```{r}
-node_data <- as_tibble(modify(mpa('nodes'), as.character))
+node_data <- as_tibble(modify(ltp('nodes'), as.character))
 res <- ace$ace
 rownames(res) <- mpa_tree$node.label
 res <- res |> 

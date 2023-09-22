@@ -69,6 +69,27 @@ system.time(
 
 
 
+system.time(
+    fit <- pml(pruned_tree, phyData)
+)
+
+
+library(taxPPro)
+library(ape)
+library(dispRity)
+tree <- mpa()
+tree2 <- remove.zero.brlen(tree)
+is.ultrametric(tree2)
+ultra <- chronoMPL(tree2)
+
+is.ultrametric(pruned_tree)
+ultra <- chronoMPL(pruned_tree)
+is.ultrametric(ultra)
+
+fit <- pml(ultra, phyData)
+asr_output <- ancestral.pml(fit, 'ml')
+
+
 
 
 
