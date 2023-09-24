@@ -158,13 +158,22 @@ tree_data$tip_label <- gsub('[,;]', '-', tree_data$tip_label)
 tree_data$tip_label <- gsub('"', '', tree_data$tip_label)
 tree_data$tip_label <- gsub("'", '', tree_data$tip_label)
 tree_data$tip_label <- gsub("\\[T\\]", '', tree_data$tip_label)
+tree_data$tip_label <- gsub("\\(", '|', tree_data$tip_label)
+tree_data$tip_label <- gsub("\\)", '|', tree_data$tip_label)
+tree_data$tip_label <- gsub("\\[", '|', tree_data$tip_label)
+tree_data$tip_label <- gsub("\\]", '|', tree_data$tip_label)
+tree_data$tip_label <- gsub(":", '-', tree_data$tip_label)
 
 tree$tip.label<- gsub(' ', '_', tree$tip.label)
 tree$tip.label <- gsub('[,;]', '-', tree$tip.label)
 tree$tip.label <- gsub('"', '', tree$tip.label)
 tree$tip.label <- gsub("'", '', tree$tip.label)
 tree$tip.label <- gsub("\\[T\\]", '', tree$tip.label)
-
+tree$tip.label <- gsub("\\(", '|', tree$tip.label)
+tree$tip.label <- gsub("\\)", '|', tree$tip.label)
+tree$tip.label <- gsub("\\]", '|', tree$tip.label)
+tree$tip.label <- gsub("\\[", '|', tree$tip.label)
+tree$tip.label <- gsub(":", '-', tree$tip.label)
 
 all(tree$tip.label %in% tree_data$tip_label)
 

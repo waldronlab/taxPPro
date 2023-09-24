@@ -168,7 +168,7 @@ mean(names(phys_data_list) %in% get_all_nodes)
 How many tips included in the mpa tree
 
 ```{r}
-mpa_tip_data <- mpa(x = 'tips') |> 
+mpa_tip_data <- ltp(x = 'tips') |> 
     modify(as.character) |> 
     as_tibble()
 mean(mpa_tip_data$taxid %in% sub('^\\w__', '', phys_data_ready$NCBI_ID))
@@ -305,7 +305,7 @@ table(tip$Evidence)
 
 
 ```{r}
-mpa_tree <- mpa()
+mpa_tree <- ltp()
 m1 <- tip |> 
     select(tip_label, Attribute, Score) |> 
     filter(!is.na(Attribute)) |> 
@@ -334,7 +334,7 @@ dim(m3)
 
 ```{r}
 system.time(
-    fit <- fitMk.parallel(
+    fit <- fitMk(
         tree = mpa_tree, 
         x = m3, 
         model = 'ER', 
@@ -355,7 +355,7 @@ system.time(
 
 
 ```{r}
-node_data <- as_tibble(modify(mpa('nodes'), as.character))
+node_data <- as_tibble(modify(ltp('nodes'), as.character))
 res <- ace$ace
 rownames(res) <- mpa_tree$node.label
 res <- res |> 
