@@ -45,12 +45,12 @@ mpa <- function(x = 'tree') {
 ltp <- function(x = 'tree') {
     if (x == 'tree') {
         fname <- system.file(
-            'extdata', 'livingTree.newick', package = 'taxPPro'
+            'extdata', 'livingTree_2022.newick', package = 'taxPPro'
         )
         output <- ape::read.tree(fname)
     } else if (x == 'tips') {
         fname <- system.file(
-            'extdata', 'livingTree_tips.tsv', package = 'taxPPro'
+            'extdata', 'livingTree_tips_2022.tsv', package = 'taxPPro'
         )
         output <- utils::read.table(
             file = fname, header = TRUE, sep = '\t',
@@ -58,7 +58,7 @@ ltp <- function(x = 'tree') {
         )
     } else if (x == 'nodes') {
         fname <- system.file(
-            'extdata', 'livingTree_nodes.tsv', package = 'taxPPro'
+            'extdata', 'livingTree_nodes_2022.tsv', package = 'taxPPro'
         )
         output <- utils::read.table(
             file = fname, header = TRUE, sep = '\t',
