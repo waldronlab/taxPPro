@@ -19,13 +19,15 @@ library(purrr)
 library(tidyr)
 ```
 
-Import physiology data (one physiology - aerophilicity):
+This workflow is for categorical attributes
+
+## Import physiology data
 
 ```{r import physiology, message=FALSE}
 phys <- physiologies('aerophilicity')
 ```
 
-Filter data:
+## Filter data
 
 ```{r filter data}
 select_cols <- c(
@@ -62,27 +64,14 @@ n_dropped_rows <- nrow(phys[[1]]) - nrow(phys_data)
 message(format(n_dropped_rows, big.mark = ','), ' rows were dropped.')
 ```
 
-#> TODO - add code for dealing with duplicates, etc.
+## First round of ASR (taxonomic binning) for taxa withoud NCBI ID (taxid)
 
-The phylogenetic and taxonomic trees used for propagation with
-ASR and inheritance have NCBI IDs at the node and tip labels.
-Therefore, only annotations with NCBI IDs can be mapped for propagation
-(ASR and Inheritance).
-
-The annotations of taxa without NCBI ID (usually strains) can be used to infer
-the annotations of their parents (with NCBI ID and usually species) through
-an 'early' version of ASR (before applying a formal ASR method).
-
-This early version of ASR is just the normalization of scores among the
-child nodes of a parent node.
+Divide data into two sets: 1) with taxids and 2) without taxids.
 
 ```{r divide data in sets 1 and 2}
 lgl_vct <- is.na(phys_data$NCBI_ID) | phys_data$NCBI_ID == 'unknown'
 set_with_ids <- phys_data |> 
     filter(!lgl_vct) |> 
-    ## I need to do this here (when rows with NCBI IDs have been
-    ## separated from rows without NCBI_IDs). Maybe I can do this before
-    ## separated with mutate_if or other code.
     group_by(NCBI_ID) |> 
     mutate(Taxon_name = paste0(sort(unique(Taxon_name)), collapse = '|')) |> 
     ungroup() |> 
@@ -91,17 +80,20 @@ set_with_ids <- phys_data |>
     slice_head(n = 1) |> 
     ungroup() |> 
     group_by(NCBI_ID) |>
+    ## Attribute score per taxon must add up to 1
     mutate(
         Total_score = sum(Score),
         Score = Score / Total_score
     ) |>
     ungroup() |> 
     distinct()
-dim(set_with_ids) # these data don't need to go through early ASR
+dim(set_with_ids)
 ```
 
+We need to use taxonomic binning to the NCBI IDs for the parentes of the
+rows without taxid
+
 ```{r set2 for asr}
-## this will be used for early ASR
 set_without_ids <- phys_data |> 
     filter(lgl_vct) |> 
     select(-NCBI_ID, -Taxon_name, -Frequency) |> 
@@ -112,15 +104,10 @@ if (nrow(set_with_ids) > 0) {
     set_without_ids <- set_without_ids |> 
         filter(!NCBI_ID %in% unique(set_with_ids$NCBI_ID))
 }
-## add some code here in case all of the NCBI_IDs were alredy present in
-## the original data
 dim(set_without_ids)
 ```
 
-Let's just add up the scores
-
-#> set_without_ids |> filter(NCBI_ID %in% set_without_ids$NCBI_ID[which(duplicated(set_without_ids$NCBI_ID))])
-#> x |> filter(NCBI_ID %in% x$NCBI_ID[which(duplicated(x$NCBI_ID))])
+All attribute scores per taxon must add up to 1
 
 ```{r}
 ## 55565
@@ -130,6 +117,7 @@ set_without_ids <- set_without_ids |>
     ungroup() |> 
     group_by(NCBI_ID) |>
     mutate(
+        ## All attribute scores per taxon must add up to 1
         Total_score = sum(Score),
         Score = Score / Total_score
     ) |>
@@ -148,9 +136,15 @@ phys_data_list <- split(phys_data_ready, factor(phys_data_ready$NCBI_ID))
 length(phys_data_list)
 ```
 
-## First part of ASR/INH
+## More taxonomic binning (ASR and Inhertiance)
 
-Map all nodes to the data_tree file
+This time taxonomic binning and inheritance are done to increase the
+proportion of tips with annotations in the phylogenetic tree
+
+### Map all NCBI IDs to the NCBI taxonomic tree.
+
+At this point only genus, species, and strain annotations are present.
+I think we can safely use the scores based on taxonomic binning.
 
 ```{r}
 data("tree_list")
@@ -158,22 +152,27 @@ data_tree <- as.Node(tree_list)
 print(data_tree, limit = 10)
 ```
 
-How many tips/nodes included in the NCBI taxonomy
+Taxa with annotations in the NCBI taxonomic tree:
 
 ```{r}
 get_all_nodes <- unname(data_tree$Get('name'))
 mean(names(phys_data_list) %in% get_all_nodes)
 ```
 
-How many tips included in the mpa tree
+Porcentage of tips in the LTP tree with annotations:
 
 ```{r}
-mpa_tip_data <- ltp(x = 'tips') |> 
+tip_data <- ltp(x = 'tips') |> 
     modify(as.character) |> 
     as_tibble()
-mean(mpa_tip_data$taxid %in% sub('^\\w__', '', phys_data_ready$NCBI_ID))
+mean(tip_data$taxid %in% sub('^\\w__', '', phys_data_ready$NCBI_ID))
 ```
-Add nodes to the tree
+
+So, only 24% of the tips have annoations. This could be affect the performance
+of the ASR. Let's incrase the number of tips with annotations using the
+NCBI taxonomy and taxonomic binnnig:
+
+Add taxa annotations to the NCBI taxonomic tree:
 
 ```{r}
 data_tree$Do(function(node) {
@@ -183,18 +182,22 @@ data_tree$Do(function(node) {
         NULL
     }
 })
+## An example:
 data_tree$d__2$p__1224$c__1236$o__91347$f__543$g__561$s__562$attribute_tbl
 ```
 
+The example above clearly shows an example of a tip than can have more
+annotations. For this example workflow, let's remove its annotations:
 
 ```{r}
 data_tree$d__2$p__1224$c__1236$o__91347$f__543$g__561$attribute_tbl <- NULL
 data_tree$d__2$p__1224$c__1236$o__91347$f__543$g__561$attribute_tbl
 ```
 
-ASR - post-order
+Lest perform some kind of ASR (acutally we could call this taxonomic binning):
 
 ```{r}
+## ASR - post-order
 asr1 <- function(node) {
     if (!node$isLeaf) {
         children_names <- names(node$children)
@@ -246,19 +249,23 @@ asr1 <- function(node) {
 data_tree$Do(asr1, traversal = 'post-order')
 data_tree$d__2$p__1224$c__1236$o__91347$f__543$g__561$attribute_tbl
 ```
+From the output above, we can see that the E. coli example now has attribute
+values. This won't happen at higer taxonomic ranks (familiy and above):
 
 ```{r}
+data_tree$d__2$p__1224$c__1236$o__91347$f__543$attribute_tbl
+```
+
+Child taxa of  E. coli with unobserved annotations can inherit these
+values directly:
+
+```{r}
+## Inheritance - pre-order
 inh1 <- function(node) {
-    ## This one has no penalty
-    if (node$isRoot) {
+    if (node$isRoot)
         return(NULL)
-    }
-    
-
-    if (is.null(node$parent$attribute_tbl)) {
+    if (is.null(node$parent$attribute_tbl))
         return(NULL)
-    }
-
     if (is.null(node$attribute_tbl) && grepl('^[st]__', node$name)) {
         df <- node$parent$attribute_tbl
         df <- df |>
@@ -272,22 +279,30 @@ inh1 <- function(node) {
 data_tree$Do(inh1, traversal = 'pre-order')
 ```
 
+It seems that about 0.78 percent of the nodes at the genus, species, and strain
+level have annotations now:
 
 ```{r}
-new_nodes <- data_tree$Get('attribute_tbl', simplify = FALSE)
-new_nodes_not_na <- map_lgl(new_nodes, ~ !all(is.na(.x)))
-mean(new_nodes_not_na)
+new_data_tree_nodes <- data_tree$Get('attribute_tbl', simplify = FALSE)
+index <- grepl('^[gst]__', names(new_data_tree_nodes))
+new_data_tree_nodes <- new_data_tree_nodes[index]
+lgl_vct <- map_lgl(new_data_tree_nodes, ~ !all(is.na(.x)))
+mean(lgl_vct)
 ```
 
+Now the number of tip annotations has increased considerably
+(for this physiology at least):
+
 ```{r}
-new_data <-  new_nodes |> 
+new_tip_annotations <-  new_data_tree_nodes |> 
     discard(~ all(is.na(.x))) |> 
     bind_rows() |> 
     arrange(NCBI_ID, Attribute) |> 
     mutate(taxid = sub('^\\w__', '', NCBI_ID))
-mean(mpa_tip_data$taxid %in% new_data$taxid)
+mean(tip_data$taxid %in% new_tip_annotations$taxid)
 ```
 
+Total number of tips with annotations is about 80%
 
 ```{r}
 tip <- left_join(
