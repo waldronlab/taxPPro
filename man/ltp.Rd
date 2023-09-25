@@ -4,16 +4,15 @@
 \alias{ltp}
 \title{Get living tree project (LTP) tree or data}
 \usage{
-ltp(x = "tree", remove_zero_tips = TRUE)
+ltp(remove_zero_tips = TRUE)
 }
 \arguments{
-\item{x}{A character string. tree, tips, or nodes. Default is tree.}
-
 \item{remove_zero_tips}{Remove or not tips with zero branch lengths.
 These tips could cause trouble.}
 }
 \value{
-A phylo or data.frame (see the `x` param)
+A list with a phylo (the ltp tree) and a data.frame (tip_data)
+objects.
 }
 \description{
 \code{ltp} gets the LTP tree or data.

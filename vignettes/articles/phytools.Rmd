@@ -133,156 +133,106 @@ phys_data_ready <- left_join(set_with_ids, set_without_ids) |>
         )
     ) |> 
     mutate(taxid = sub('^\\w__', '', NCBI_ID))
+## Split in lists to use with the NCBI taxonoomic tree
 phys_data_list <- split(phys_data_ready, factor(phys_data_ready$NCBI_ID))
 length(phys_data_list)
 ```
 
 
-## Tree (living tree project tree 2023)
+## Tree data
 
-Tree as phylo object:
+### Taxonomic tree
 
 ```{r}
-tree <- ltp()
+data('tree_list')
+ncbi_tree <- as.Node(tree_list)
+ncbi_tree_nodes <- unname(ncbi_tree$Get('name'))
+print(ncbi_tree, limit = 10)
+```
+
+### Phylogenecti tree
+
+```{r}
+ltp <- ltp()
+tree <- ltp$tree
 tree
 ```
 
-Tip data:
+### Phylogenetic tree (tip data)
 
 ```{r}
-tip_data <- ltp('tips')
+tip_data <- ltp$tip_data
+dim(tip_data)
 ```
 
-About 24% of tips have annotations. Let's use this for ASR:
+### Some completeness stats
+
+Annotations from sources than can be mapped to the NCBI tree:
+
+```{r}
+ncbi_tree_nodes_gst <- ncbi_tree_nodes[which(grepl('^[wst]__', ncbi_tree_nodes))]
+mean(phys_data_ready$NCBI_ID %in% ncbi_tree_nodes_gst)
+```
+
+Proportion of NCBI tree nodes (gst) with annotations:
+
+```{r}
+mean(ncbi_tree_nodes_gst %in% phys_data_ready$NCBI_ID)
+```
+
+Annotations from sources than can me mapped to the phylogenetic tree tips:
+
+```{r}
+mean(phys_data_ready$taxid %in% tip_data$taxid)
+```
+
+Proportion of tips in the phylogenetic tree with annotations:
 
 ```{r}
 mean(tip_data$taxid %in% phys_data_ready$taxid)
 ```
 
+## Increase number of tips with annotations
 
-```{r}
-tip <- left_join(tip_data, phys_data_ready, by = 'taxid')
-```
-
-
-
-
-
-We need a matrix of probabilites:
-
-```{r}
-m1 <- tip |> 
-    select(tip_label, Attribute, Score) |> 
-    filter(!is.na(Attribute)) |> 
-    # complete(NCB_ID, Attribute, fill = list(Score = 0)) |> 
-    pivot_wider(
-        names_from = Attribute, values_from = 'Score', values_fill = 0
-    ) |> 
-    tibble::column_to_rownames(var = 'tip_label') |> 
-    as.matrix()
-
-no_annotated_tips <- tip |>
-    filter(!tip_label %in% rownames(m1)) |>
-    pull(tip_label)
-
-m2 <- matrix(
-    data = rep(rep(1/ncol(m1), ncol(m1)), length(no_annotated_tips)),
-    nrow = length((no_annotated_tips)),
-    byrow = TRUE,
-    dimnames = list(rownames = no_annotated_tips, colnames = colnames(m1))
-)
-
-m3 <- rbind(m1, m2)
-m3 <- m3[mpa_tree$tip.label,]
-dim(m3)
-```
-
-
-
-
-```{r}
-fit <- fitMk(
-    tree = tre, x = 
-)
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## More taxonomic binning (ASR and Inhertiance)
-
-This time taxonomic binning and inheritance are done to increase the
-proportion of tips with annotations in the phylogenetic tree
-
-### Map all NCBI IDs to the NCBI taxonomic tree.
+### Map NCBI IDs to the NCBI taxonomic tree
 
 At this point only genus, species, and strain annotations are present.
-I think we can safely use the scores based on taxonomic binning.
 
 ```{r}
-data("tree_list")
-data_tree <- as.Node(tree_list)
-print(data_tree, limit = 10)
-```
-
-Taxa with annotations in the NCBI taxonomic tree:
-
-```{r}
-get_all_nodes <- unname(data_tree$Get('name'))
-mean(names(phys_data_list) %in% get_all_nodes)
-```
-
-Porcentage of tips in the LTP tree with annotations:
-
-```{r}
-tip_data <- ltp(x = 'tips') |> 
-    modify(as.character) |> 
-    as_tibble()
-mean(tip_data$taxid %in% sub('^\\w__', '', phys_data_ready$NCBI_ID))
-```
-
-So, only 24% of the tips have annoations. This could be affect the performance
-of the ASR. Let's incrase the number of tips with annotations using the
-NCBI taxonomy and taxonomic binnnig:
-
-Add taxa annotations to the NCBI taxonomic tree:
-
-```{r}
-data_tree$Do(function(node) {
+ncbi_tree$Do(function(node) {
     if (node$name %in% names(phys_data_list)) {
         node$attribute_tbl <- phys_data_list[[node$name]]
     } else {
         NULL
     }
 })
-## An example:
-data_tree$d__2$p__1224$c__1236$o__91347$f__543$g__561$s__562$attribute_tbl
+## An example (E. coli):
+ncbi_tree$d__2$p__1224$c__1236$o__91347$f__543$g__561$s__562$attribute_tbl
 ```
 
-The example above clearly shows an example of a tip than can have more
-annotations. For this example workflow, let's remove its annotations:
+
 
 ```{r}
-data_tree$d__2$p__1224$c__1236$o__91347$f__543$g__561$attribute_tbl <- NULL
-data_tree$d__2$p__1224$c__1236$o__91347$f__543$g__561$attribute_tbl
+ncbi_attr_gst <- ncbi_tree$Get(
+    'attribute_tbl', filterFun = function(node) grepl('^[gst]__', node$name)
+)
+mean(!map_lgl(ncbi_attr_gst, ~ all(is.na(.x))))
 ```
 
-Lest perform some kind of ASR (acutally we could call this taxonomic binning):
+
+Removing annotations just to compare with result after propagation
+
+```{r}
+ncbi_tree$d__2$p__1224$c__1236$o__91347$f__543$g__561$attribute_tbl <- NULL
+ncbi_tree$d__2$p__1224$c__1236$o__91347$f__543$g__561$attribute_tbl
+```
+
+Lest pool and normalize attribute scores at each taxonomic rank (gst) for
+child taxa
 
 ```{r}
 ## ASR - post-order
-asr1 <- function(node) {
+taxPool <- function(node) {
     if (!node$isLeaf) {
         children_names <- names(node$children)
         attribute_tbls <- children_names |> 
@@ -330,15 +280,30 @@ asr1 <- function(node) {
         } 
     }
 }
-data_tree$Do(asr1, traversal = 'post-order')
-data_tree$d__2$p__1224$c__1236$o__91347$f__543$g__561$attribute_tbl
+ncbi_tree$Do(taxPool, traversal = 'post-order')
+## Same E. coli example:
+ncbi_tree$d__2$p__1224$c__1236$o__91347$f__543$g__561$attribute_tbl
 ```
-From the output above, we can see that the E. coli example now has attribute
-values. This won't happen at higer taxonomic ranks (familiy and above):
+
+How many nodes family and above with attribute table?
 
 ```{r}
-data_tree$d__2$p__1224$c__1236$o__91347$f__543$attribute_tbl
+ncbi_attr_kpcof <- ncbi_tree$Get(
+    'attribute_tbl', filterFun = function(node) grepl('^[kpcor]__', node$name)
+)
+mean(!map_lgl(ncbi_attr_kpcof, ~ all(is.na(.x))))
 ```
+
+How many nodes genus and below with attribute table?
+
+```{r}
+ncbi_attr_gst <- ncbi_tree$Get(
+    'attribute_tbl', filterFun = function(node) grepl('^[gst]__', node$name)
+)
+## A slight increase 12 to 15%
+mean(!map_lgl(ncbi_attr_gst, ~ all(is.na(.x))))
+```
+
 
 Child taxa of  E. coli with unobserved annotations can inherit these
 values directly:
@@ -352,30 +317,51 @@ inh1 <- function(node) {
         return(NULL)
     if (is.null(node$attribute_tbl) && grepl('^[st]__', node$name)) {
         df <- node$parent$attribute_tbl
+        n <- nrow(tbl)
         df <- df |>
             dplyr::mutate(
+                target_scores = rep(1 / n, n),
+                score_diff = Score - target_scores,
+                Score = Score - adjF * score_diff,
                 NCBI_ID = node$name,
                 Evidence = 'inh'
             )
         node$attribute_tbl <- df
     }
 }
-data_tree$Do(inh1, traversal = 'pre-order')
+ncbi_tree$Do(inh1, traversal = 'pre-order')
 ```
 
-It seems that about 0.78 percent of the nodes at the genus, species, and strain
-level have annotations now:
+Proportion of nodes at the family level and above with attributes:
 
 ```{r}
-new_data_tree_nodes <- data_tree$Get('attribute_tbl', simplify = FALSE)
-index <- grepl('^[gst]__', names(new_data_tree_nodes))
-new_data_tree_nodes <- new_data_tree_nodes[index]
-lgl_vct <- map_lgl(new_data_tree_nodes, ~ !all(is.na(.x)))
-mean(lgl_vct)
+ncbi_attr_kpcof <- ncbi_tree$Get(
+    'attribute_tbl', filterFun = function(node) grepl('^[kpcor]__', node$name)
+)
+mean(!map_lgl(ncbi_attr_kpcof, ~ all(is.na(.x))))
 ```
 
-Now the number of tip annotations has increased considerably
-(for this physiology at least):
+Proportion of nodes at the genus, species, and strain levels with attributes:
+
+```{r}
+ncbi_attr_gst <- ncbi_tree$Get(
+    'attribute_tbl', filterFun = function(node) grepl('^[gst]__', node$name)
+)
+## Major increase 15 to 78%
+mean(!map_lgl(ncbi_attr_gst, ~ all(is.na(.x))))
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 ```{r}
 new_tip_annotations <-  new_data_tree_nodes |> 

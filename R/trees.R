@@ -37,51 +37,78 @@ mpa <- function(x = 'tree') {
 #'
 #' \code{ltp} gets the LTP tree or data.
 #'
-#' @param x A character string. tree, tips, or nodes. Default is tree.
 #' @param remove_zero_tips Remove or not tips with zero branch lengths.
 #' These tips could cause trouble.
 #'
-#' @return A phylo or data.frame (see the `x` param)
+#' @return A list with a phylo (the ltp tree) and a data.frame (tip_data)
+#' objects.
 #' @export
 #'
-ltp <- function(x = 'tree', remove_zero_tips = TRUE) {
+ltp <- function(remove_zero_tips = TRUE) {
     tree_fname <- system.file(
         'extdata', 'livingTree.newick', package = 'taxPPro'
     )
+    tip_data_fname <- system.file(
+        'extdata', 'livingTree_tips.tsv', package = 'taxPPro'
+    )
     tree <- ape::read.tree(tree_fname)
+    message('Initial number of tips in LTP tree: ', length(tree$tip.label))
+    tip_data <- utils::read.table(
+        file = tip_data_fname, header = TRUE, sep = '\t', row.names = NULL
+    ) |>
+        purrr::modify(as.character) |>
+        as.data.frame()
+    rownames(tip_data) <- tip_data$tip_label
+
     if (remove_zero_tips) {
         ntips1 <- length(tree$tip.label)
         zero_edges <- which(tree$edge.length == 0)
         nodes_with_zero_edges <- tree$edge[zero_edges, 2]
         remove_tips <- nodes_with_zero_edges[nodes_with_zero_edges <= length(tree$tip.label)]
         remove_tips_names <- tree$tip.label[remove_tips]
-        tree <- drop.tip(tree, remove_tips_names)
+        tree <- ape::drop.tip(phy = tree, tip = remove_tips_names)
         ntips2 <- length(tree$tip.label)
+        tip_data <- tip_data[tree$tip.label,]
         message('Dropping ', ntips1 - ntips2, ' tips with zero length branches.')
-        message(ntips2, ' tips remaining in the tree.')
     }
-    if (x == 'tree') {
-        output <- tree
-    } else if (x == 'tips') {
-        fname <- system.file(
-            'extdata', 'livingTree_tips.tsv', package = 'taxPPro'
-        )
-        output <- utils::read.table(
-            file = fname, header = TRUE, sep = '\t',
-            row.names = NULL
-        ) |>
-            purrr::modify(as.character)
-        rownames(output) <- output$tip_label
-        output <- output[tree$tip.label,]
-    } else if (x == 'nodes') {
-        fname <- system.file(
-            'extdata', 'livingTree_nodes.tsv', package = 'taxPPro'
-        )
-        output <- utils::read.table(
-            file = fname, header = TRUE, sep = '\t',
-            row.names = NULL
-        ) |>
-            purrr::modify(as.character)
-    }
-    return(output)
+
+    ntips3 <- nrow(tip_data)
+    tip_data <- tip_data |>
+        dplyr::group_by(taxid) |>
+        dplyr::slice_head(n = 1) |>
+        dplyr::ungroup() |>
+        as.data.frame()
+    rownames(tip_data) <- tip_data$tip_label
+    ntips4 <- nrow(tip_data)
+    tree <- ape::keep.tip(phy = tree, tip = tip_data$tip_label)
+    message('Dropping ', ntips3 - ntips4, ' tips because of duplicated taxids.')
+    tip_data <- tip_data[tree$tip.label,]
+    message('Tips remaining: ', length(tree$tip.label))
+    list(
+        tree = tree, tip_data = tip_data
+    )
+    # if (x == 'tree') {
+    #     output <- tree
+    # } else if (x == 'tips') {
+    #     fname <- system.file(
+    #         'extdata', 'livingTree_tips.tsv', package = 'taxPPro'
+    #     )
+    #     output <- utils::read.table(
+    #         file = fname, header = TRUE, sep = '\t',
+    #         row.names = NULL
+    #     ) |>
+    #         purrr::modify(as.character)
+    #     rownames(output) <- output$tip_label
+    #     output <- output[tree$tip.label,]
+    # } else if (x == 'nodes') {
+    #     fname <- system.file(
+    #         'extdata', 'livingTree_nodes.tsv', package = 'taxPPro'
+    #     )
+    #     output <- utils::read.table(
+    #         file = fname, header = TRUE, sep = '\t',
+    #         row.names = NULL
+    #     ) |>
+    #         purrr::modify(as.character)
+    # }
+    # return(output)
 }
