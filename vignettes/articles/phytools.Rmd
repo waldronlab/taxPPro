@@ -90,7 +90,7 @@ set_with_ids <- phys_data |>
 dim(set_with_ids)
 ```
 
-We need to use taxonomic binning to the NCBI IDs for the parentes of the
+We need to use taxonomic binning to the NCBI IDs for the parents of the
 rows without taxid
 
 ```{r set2 for asr}
@@ -130,11 +130,95 @@ phys_data_ready <- left_join(set_with_ids, set_without_ids) |>
             Rank == 'strain' ~ paste0('t__', NCBI_ID),
             Rank == 'species' ~ paste0('s__', NCBI_ID),
             Rank == 'genus' ~ paste0('g__', NCBI_ID)
-    )
-)
+        )
+    ) |> 
+    mutate(taxid = sub('^\\w__', '', NCBI_ID))
 phys_data_list <- split(phys_data_ready, factor(phys_data_ready$NCBI_ID))
 length(phys_data_list)
 ```
+
+
+## Tree (living tree project tree 2023)
+
+Tree as phylo object:
+
+```{r}
+tree <- ltp()
+tree
+```
+
+Tip data:
+
+```{r}
+tip_data <- ltp('tips')
+```
+
+About 24% of tips have annotations. Let's use this for ASR:
+
+```{r}
+mean(tip_data$taxid %in% phys_data_ready$taxid)
+```
+
+
+```{r}
+tip <- left_join(tip_data, phys_data_ready, by = 'taxid')
+```
+
+
+
+
+
+We need a matrix of probabilites:
+
+```{r}
+m1 <- tip |> 
+    select(tip_label, Attribute, Score) |> 
+    filter(!is.na(Attribute)) |> 
+    # complete(NCB_ID, Attribute, fill = list(Score = 0)) |> 
+    pivot_wider(
+        names_from = Attribute, values_from = 'Score', values_fill = 0
+    ) |> 
+    tibble::column_to_rownames(var = 'tip_label') |> 
+    as.matrix()
+
+no_annotated_tips <- tip |>
+    filter(!tip_label %in% rownames(m1)) |>
+    pull(tip_label)
+
+m2 <- matrix(
+    data = rep(rep(1/ncol(m1), ncol(m1)), length(no_annotated_tips)),
+    nrow = length((no_annotated_tips)),
+    byrow = TRUE,
+    dimnames = list(rownames = no_annotated_tips, colnames = colnames(m1))
+)
+
+m3 <- rbind(m1, m2)
+m3 <- m3[mpa_tree$tip.label,]
+dim(m3)
+```
+
+
+
+
+```{r}
+fit <- fitMk(
+    tree = tre, x = 
+)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## More taxonomic binning (ASR and Inhertiance)
 

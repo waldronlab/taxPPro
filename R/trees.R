@@ -69,7 +69,8 @@ ltp <- function(x = 'tree', remove_zero_tips = TRUE) {
         output <- utils::read.table(
             file = fname, header = TRUE, sep = '\t',
             row.names = NULL
-        )
+        ) |>
+            purrr::modify(as.character)
         rownames(output) <- output$tip_label
         output <- output[tree$tip.label,]
     } else if (x == 'nodes') {
@@ -79,7 +80,8 @@ ltp <- function(x = 'tree', remove_zero_tips = TRUE) {
         output <- utils::read.table(
             file = fname, header = TRUE, sep = '\t',
             row.names = NULL
-        )
+        ) |>
+            purrr::modify(as.character)
     }
     return(output)
 }
