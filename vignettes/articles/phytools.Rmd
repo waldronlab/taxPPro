@@ -40,6 +40,9 @@ select_cols <- c(
     'Attribute_type', 'Attribute_group'
 )
 valid_ranks <- c('genus', 'species', 'strain')
+
+## It's worth checking the ranks
+
 phys_data <- phys[[1]] |> 
     as_tibble() |> 
     filter(Attribute_value == TRUE) |> # only for discrete traits with multiple states 
@@ -87,6 +90,22 @@ set_with_ids <- phys_data |>
     ) |>
     ungroup() |> 
     distinct()
+w <- NULL
+withCallingHandlers(
+    warning = function(cnd) w <<- cnd,
+    set_with_ids$Rank <- taxizedb::taxid2rank(set_with_ids$NCBI_ID, db = 'ncbi')
+)
+taxids_with_missing_rank <- unlist(
+    strsplit(sub('^.*: (.*$)', '\\1', w$message), ', ')
+)
+no_longer_missing_ranks <- unlist(
+    taxize::tax_rank(taxids_with_missing_rank, db = 'ncbi')
+)
+
+for (i in seq_along(no_longer_missing_ranks)) {
+    pos <- set_with_ids$NCBI_ID == names(no_longer_missing_ranks)[i]
+    set_with_ids$Rank[pos] <- no_longer_missing_ranks[i]
+}
 dim(set_with_ids)
 ```
 
@@ -103,6 +122,21 @@ set_without_ids <- phys_data |>
 if (nrow(set_with_ids) > 0) {
     set_without_ids <- set_without_ids |> 
         filter(!NCBI_ID %in% unique(set_with_ids$NCBI_ID))
+}
+w2 <- NULL
+withCallingHandlers(
+    warning = function(cnd) w2 <<- cnd,
+    set_without_ids$Rank <- taxizedb::taxid2rank(set_without_ids$NCBI_ID, db = 'ncbi')
+)
+taxids_with_missing_rank2 <- unlist(
+    strsplit(sub('^.*: (.*$)', '\\1', w2$message), ', ')
+)
+no_longer_missing_ranks2 <- unlist(
+    taxize::tax_rank(taxids_with_missing_rank2, db = 'ncbi')
+)
+for (i in seq_along(no_longer_missing_ranks2)) {
+    pos2 <- set_without_ids$NCBI_ID == names(no_longer_missing_ranks2)[i]
+    set_without_ids$Rank[pos2] <- no_longer_missing_ranks2[i]
 }
 dim(set_without_ids)
 ```
@@ -150,7 +184,7 @@ ncbi_tree_nodes <- unname(ncbi_tree$Get('name'))
 print(ncbi_tree, limit = 10)
 ```
 
-### Phylogenecti tree
+### Phylogenectic tree
 
 ```{r}
 ltp <- ltp()
@@ -210,15 +244,12 @@ ncbi_tree$Do(function(node) {
 ncbi_tree$d__2$p__1224$c__1236$o__91347$f__543$g__561$s__562$attribute_tbl
 ```
 
-
-
 ```{r}
 ncbi_attr_gst <- ncbi_tree$Get(
     'attribute_tbl', filterFun = function(node) grepl('^[gst]__', node$name)
 )
 mean(!map_lgl(ncbi_attr_gst, ~ all(is.na(.x))))
 ```
-
 
 Removing annotations just to compare with result after propagation
 
@@ -306,18 +337,18 @@ mean(!map_lgl(ncbi_attr_gst, ~ all(is.na(.x))))
 
 
 Child taxa of  E. coli with unobserved annotations can inherit these
-values directly:
+values with a slight penalty:
 
 ```{r}
 ## Inheritance - pre-order
-inh1 <- function(node) {
+inh1 <- function(node,  adjF = 0.1) {
     if (node$isRoot)
         return(NULL)
     if (is.null(node$parent$attribute_tbl))
         return(NULL)
     if (is.null(node$attribute_tbl) && grepl('^[st]__', node$name)) {
         df <- node$parent$attribute_tbl
-        n <- nrow(tbl)
+        n <- nrow(df)
         df <- df |>
             dplyr::mutate(
                 target_scores = rep(1 / n, n),
@@ -351,55 +382,49 @@ ncbi_attr_gst <- ncbi_tree$Get(
 mean(!map_lgl(ncbi_attr_gst, ~ all(is.na(.x))))
 ```
 
+The step above actually covered must of the genus, species, and strains,
+but this is one of the datasets with the most annotations, so it's expected
+that most of the taxa would already be covered.
 
+A formal ASR method would be nice, however.
 
-
-
-
-
-
-
-
-
-
+Get new attributes:
 
 ```{r}
-new_tip_annotations <-  new_data_tree_nodes |> 
+new_attributes <- ncbi_attr_gst |> 
     discard(~ all(is.na(.x))) |> 
     bind_rows() |> 
     arrange(NCBI_ID, Attribute) |> 
-    mutate(taxid = sub('^\\w__', '', NCBI_ID))
-mean(tip_data$taxid %in% new_tip_annotations$taxid)
+    filter(!NCBI_ID %in% phys_data_ready$NCBI_ID) |> 
+    mutate(taxid = sub('^\\w__', '', NCBI_ID)) |> 
+    bind_rows(phys_data_ready)
+table(new_attributes$Evidence)
 ```
 
-Total number of tips with annotations is about 80%
+Now almost 80% of the tips have annoations:
 
 ```{r}
-tip <- left_join(
-    mpa_tip_data, new_data, by = 'taxid', relationship = 'many-to-many'
-)  
-tip |> 
-    filter(!is.na(Attribute)) |> 
-    dim()
+mean(tip_data$taxid %in% new_attributes$taxid)
 ```
 
-
 ```{r}
-table(tip$Evidence)
+new_tip_data <- left_join(tip_data, new_attributes, by = 'taxid')  
+table(new_tip_data$Evidence, useNA = 'always')
 ```
 
 
+Let's create an input matrix for ASR with the phylogenetic tree
+
 ```{r}
-mpa_tree <- ltp()
-m1 <- tip |> 
+m1 <- new_tip_data |> 
     select(tip_label, Attribute, Score) |> 
     filter(!is.na(Attribute)) |> 
     # complete(NCB_ID, Attribute, fill = list(Score = 0)) |> 
     pivot_wider(
-        names_from = Attribute, values_from = 'Score', values_fill = 0
-    ) |> 
-    tibble::column_to_rownames(var = 'tip_label') |> 
-    as.matrix()
+        names_from = 'Attribute', values_from = 'Score'
+    )
+    # tibble::column_to_rownames(var = 'tip_label') |> 
+    # as.matrix()
 
 no_annotated_tips <- tip |>
     filter(!tip_label %in% rownames(m1)) |>
