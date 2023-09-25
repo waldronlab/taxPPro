@@ -333,9 +333,12 @@ dim(m3)
 ```
 
 ```{r}
+ultra <- chronoMPL(mpa_tree)
+set.seed(4390)
+new_tree <- dispRity::remove.zero.brlen(mpa_tree)
 system.time(
     fit <- fitMk(
-        tree = mpa_tree, 
+        tree = new_tree, 
         x = m3, 
         model = 'ER', 
         pi = "fitzjohn", 
