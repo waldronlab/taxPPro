@@ -37,12 +37,6 @@
   <ul class="dropdown-menu" role="menu"><li>
       <a href="../articles/explore_taxids.html">Explore taxid data</a>
     </li>
-    <li>
-      <a href="../articles/phylogenetic_trees.html">phylogenetic_trees</a>
-    </li>
-    <li>
-      <a href="../articles/phytools.html">A propagation workflow</a>
-    </li>
   </ul></li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/sdgamboa/taxPPro/" class="external-link">
@@ -69,20 +63,22 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ltp</span><span class="op">(</span>x <span class="op">=</span> <span class="st">"tree"</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ltp</span><span class="op">(</span>remove_zero_tips <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>x</dt>
-<dd><p>A character string. tree, tips, or nodes. Default is tree.</p></dd>
+    <dl><dt>remove_zero_tips</dt>
+<dd><p>Remove or not tips with zero branch lengths.
+These tips could cause trouble.</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
     
 
-<p>A phylo or data.frame (see the `x` param)</p>
+<p>A list with a phylo (the ltp tree) and a data.frame (tip_data)
+objects.</p>
     </div>
 
   </div>

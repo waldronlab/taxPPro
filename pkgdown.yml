@@ -3,10 +3,8 @@ pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   explore_taxids: explore_taxids.html
-  phylogenetic_trees: phylogenetic_trees.html
-  phytools: phytools.html
   taxPPro: taxPPro.html
-last_built: 2023-09-21T20:55Z
+last_built: 2023-09-26T22:15Z
 urls:
   reference: https://sdgamboa.github.io/taxPPro/reference
   article: https://sdgamboa.github.io/taxPPro/articles
