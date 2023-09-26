@@ -554,71 +554,106 @@ new_taxa_from_tips <- res[rownames(m2),] |>
 head(new_taxa_from_tips)
 ```
 
+Most of these new taxa are in the NCBI tree:
 
+```{r}
+ncbi_tree_nodes_empty <- ncbi_tree$Get(
+    'attribute_tbl', filterFun = function(node) {
+        is.null(node$attribute_tbl) || all(is.na(node$attribute_tbl))   
+    }) |> 
+    {\(y) names(y)}()
+mean(new_taxa_from_tips$NCBI_ID %in% ncbi_tree_nodes_empty)
+```
 
-
-
+Let's check nodes
 
 
 ```{r}
-node_data <- as_tibble(modify(ltp('nodes'), as.character))
-res <- ace$ace
-rownames(res) <- mpa_tree$node.label
-res <- res |> 
+nodes_annotated <- res[which(grepl('^\\d+(\\+\\d+)*', rownames(res))),]
+new_taxa_from_nodes <- nodes_annotated |> 
     as.data.frame() |> 
-    tibble::rownames_to_column(var = 'node_label') |> 
-    left_join(node_data, by = 'node_label') |> 
-    as_tibble() |> 
-    filter(!is.na(taxid))
-dim(res)
-```
-
-
-```{r}
-## It seems that at least half of the nodes would have new annotations,
-## which I think it's ok, since this should be the nodes of higher
-## ranks in the taxonomic tree
-mean(!res$taxid %in% new_data$taxid)
-```
-
-
-```{r}
-data_for_inh2 <- filter(res, !taxid %in% new_data$taxid)
-dim(data_for_inh2)
-```
-
-
-```{r}
-input_for_inh2 <- data_for_inh2 |> 
-    select(-ends_with('_taxid'), -node_label, -node, -n_labels) |> 
-    relocate(NCBI_ID = taxid) |>
-    pivot_longer(
-        names_to = 'Attribute', values_to = 'Score', cols = 2:last_col()
+    tibble::rownames_to_column(var = 'NCBI_ID') |> 
+    mutate(NCBI_ID = strsplit(NCBI_ID, '\\+')) |> 
+    tidyr::unnest(NCBI_ID) |> 
+    mutate(Rank = taxizedb::taxid2rank(NCBI_ID)) |> 
+    mutate(Rank = ifelse(Rank == 'superkingdom', 'kingdom', Rank)) |> 
+    mutate(
+        NCBI_ID = case_when(
+            Rank == 'kingdom' ~ paste0('d__', NCBI_ID),
+            Rank == 'phylum' ~ paste0('p__', NCBI_ID),
+            Rank == 'class' ~ paste0('c__', NCBI_ID),
+            Rank == 'order' ~ paste0('o__', NCBI_ID),
+            Rank == 'family' ~ paste0('f__', NCBI_ID),
+            Rank == 'genus' ~ paste0('g__', NCBI_ID),
+            Rank == 'species' ~ paste0('s__', NCBI_ID),
+            Rank == 'strain' ~ paste0('t__', NCBI_ID)
+        )
     ) |> 
-    complete(Attribute, Score, fill = list(Score = 0)) |> 
-    relocate(NCBI_ID) |> 
-    arrange(NCBI_ID, Attribute) |> 
-    mutate(Evidence = 'asr2') |> 
-    {\(y) split(y, factor(y$NCBI_ID))}()
-length(input_for_inh2)
+    filter(
+        Rank %in% c(
+            'kingdom', 'phylum', 'class', 'order', 'family', 'genus',
+            'species', 'strain'
+        )
+    ) |> 
+    mutate(Evidence = 'asr') |> 
+    relocate(NCBI_ID, Rank, Evidence) |> 
+    pivot_longer(
+        cols = 4:last_col(), names_to = 'Attribute', values_to = 'Score'
+    )
+head(new_taxa_from_nodes)
 ```
 
-Add more nodes
+Some new taxa can be added to the empty:
 
 ```{r}
-data_tree$Do(function(node) {
-    cond1 <- is.null(node$attribute_tbl)
-    taxid <- sub('^\\w__', '', node$name)
-    cond2 <- taxid %in% names(input_for_inh2)
+mean(new_taxa_from_nodes$NCBI_ID %in% ncbi_tree_nodes_empty)
+```
+
+Actually most are already in the tree, but we got them throuh taxonomic
+binning (genus, species, and strains)
+
+```{r}
+mean(new_taxa_from_nodes$NCBI_ID %in% ncbi_tree_nodes)
+```
+
+
+Prepare new taxa:
+
+```{r}
+new_taxa_for_ncbi_tree <- new_taxa_from_tips |> 
+    select(-Taxon_name) |> 
+    relocate(NCBI_ID, Rank, Attribute, Score, Evidence) |> 
+    bind_rows(new_taxa_from_nodes)
+new_taxa_for_ncbi_tree_list <- split(
+    new_taxa_for_ncbi_tree, factor(new_taxa_for_ncbi_tree$NCBI_ID)
+)
+```
+
+Let's add some taxa to the tree:
+
+```{r}
+ncbi_tree$Do(function(node) {
+    cond1 <- node$name %in% names(new_taxa_for_ncbi_tree_list)
+    cond2 <- is.null(node$attribute_tbl) || all(is.na(node$attribute_tbl))
     if (cond1 && cond2) {
-        # message('Adding ', node$name, ' to the tree')
-        node$attribute_tbl <- input_for_inh2[[taxid]]
+        node$attribute_tbl <- new_taxa_for_ncbi_tree_list[[node$name]]
     }
 })
-data_tree$d__2$attribute_tbl
 ```
 
-Now, let's proceed to inheritance (this time let's add a penalty)
+How many are empty after this:
+
+```{r}
+ncbi_tree_nodes_empty2 <- ncbi_tree$Get(
+    'attribute_tbl', filterFun = function(node) {
+        is.null(node$attribute_tbl) || all(is.na(node$attribute_tbl))   
+    }) |> 
+    {\(y) names(y)}()
+## There are still some empty nodes that most be filled
+length(ncbi_tree_nodes_empty2)
+```
+
+Inheritance one more time:
 
 ```{r}
 inh2 <- function(node, adjF = 0.1) {
@@ -642,23 +677,45 @@ inh2 <- function(node, adjF = 0.1) {
         node$attribute_tbl <- res
     }
 }
-data_tree$Do(inh2, traversal = 'pre-order')
+ncbi_tree$Do(inh2, traversal = 'pre-order')
 ```
 
 
+How many are empty after this:
+
 ```{r}
-data_tree$d__2$p__1224$c__28211$o__356$f__335928$attribute_tbl
+ncbi_tree_nodes_empty2 <- ncbi_tree$Get(
+    'attribute_tbl', filterFun = function(node) {
+        is.null(node$attribute_tbl) || all(is.na(node$attribute_tbl))   
+    }) |> 
+    {\(y) names(y)}()
+## Only the root (ArcBac) remains empty
+length(ncbi_tree_nodes_empty2)
+```
+
+```{r}
+ncbi_tree$d__2$p__1224$c__28211$o__356$f__335928$attribute_tbl
 ```
 
 Get all the tables
 
 ```{r}
-output <- data_tree$Get(
+output <- ncbi_tree$Get(
     attribute = 'attribute_tbl', simplify = FALSE,
     filterFun = function(node) node$name != 'ArcBac'
     )
 output <- bind_rows(output)
 head(output)
+```
+
+```{r}
+addTaxa1 <- phys_data_ready |> 
+    filter(!is.na(NCBI_ID)) |> # something wroing with the code
+    filter(!NCBI_ID %in% unique(output$NCBI_ID))
+addTaxa2 <- new_taxa_for_ncbi_tree|> 
+    filter(!NCBI_ID %in% unique(output$NCBI_ID))
+final_output <- bind_rows(list(output, addTaxa1, addTaxa2))
+dim(final_output)
 ```
 
 ## Session information
