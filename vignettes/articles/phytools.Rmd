@@ -17,6 +17,7 @@ library(phytools)
 library(dplyr)
 library(purrr)
 library(tidyr)
+library(ggplot2)
 ```
 
 This workflow is for categorical attributes
@@ -171,7 +172,6 @@ phys_data_ready <- left_join(set_with_ids, set_without_ids) |>
 phys_data_list <- split(phys_data_ready, factor(phys_data_ready$NCBI_ID))
 length(phys_data_list)
 ```
-
 
 ## Tree data
 
@@ -401,7 +401,7 @@ new_attributes <- ncbi_attr_gst |>
 table(new_attributes$Evidence)
 ```
 
-Now almost 80% of the tips have annoations:
+Now almost 80% of the tips have annotations:
 
 ```{r}
 mean(tip_data$taxid %in% new_attributes$taxid)
@@ -416,19 +416,24 @@ table(new_tip_data$Evidence, useNA = 'always')
 Let's create an input matrix for ASR with the phylogenetic tree
 
 ```{r}
-m1 <- new_tip_data |> 
+new_tip_data_completed <- new_tip_data |> 
     select(tip_label, Attribute, Score) |> 
     filter(!is.na(Attribute)) |> 
-    # complete(NCB_ID, Attribute, fill = list(Score = 0)) |> 
+    complete(tip_label, Attribute, fill = list(Score = 0))
+m1 <- new_tip_data_completed |> 
+    # select(tip_label, Attribute, Score) |> 
+    # filter(!is.na(Attribute)) |> 
+    # complete(tip_label, Attribute, fill = list(Score = 0)) |>
     pivot_wider(
         names_from = 'Attribute', values_from = 'Score'
-    )
-    # tibble::column_to_rownames(var = 'tip_label') |> 
-    # as.matrix()
+    ) |> 
+    tibble::column_to_rownames(var = 'tip_label') |>
+    as.matrix()
 
-no_annotated_tips <- tip |>
+no_annotated_tips <- new_tip_data |>
     filter(!tip_label %in% rownames(m1)) |>
-    pull(tip_label)
+    pull(tip_label) |> 
+    unique()
 
 m2 <- matrix(
     data = rep(rep(1/ncol(m1), ncol(m1)), length(no_annotated_tips)),
@@ -438,33 +443,121 @@ m2 <- matrix(
 )
 
 m3 <- rbind(m1, m2)
-m3 <- m3[mpa_tree$tip.label,]
+m3 <- m3[tree$tip.label,]
 dim(m3)
 ```
 
+Histogram of probabilites for tips with annotations
+
 ```{r}
-ultra <- chronoMPL(mpa_tree)
-set.seed(4390)
-new_tree <- dispRity::remove.zero.brlen(mpa_tree)
-system.time(
-    fit <- fitMk(
-        tree = new_tree, 
-        x = m3, 
-        model = 'ER', 
-        pi = "fitzjohn", 
-        logscale = TRUE, 
-        lik.func = "pruning"
-    )
-)
-## A few seconds or minutes with fitMK.parellel
+x <- m1
+dim(x) <- NULL
+data.frame(prob = x) |> 
+    ggplot(aes(prob)) +
+    geom_histogram(binwidth = 0.1) +
+    ggtitle('Tips with annotations, all probabilities')
 ```
 
 ```{r}
-system.time(
-    # ace <- ancr(fit, type = 'marginal', tips = TRUE) 
-    ace <- ancr(fit, type = 'marginal') # don't include tips
-)
+y <- as.double(apply(m1, 1, max))
+data.frame(prob = y) |> 
+    ggplot(aes(prob)) +
+    geom_histogram(binwidth = 0.1) +
+    ggtitle('Tips with annotations, max probabilities')
 ```
+
+```{r}
+z <- m3
+dim(z) <- NULL
+data.frame(prob = z) |> 
+    ggplot(aes(prob)) +
+    geom_histogram(binwidth = 0.1) +
+    ggtitle('All tips, all probabilities')
+```
+
+## ASR with phytools
+
+```{r}
+system.time({
+    fit <- fitMk(
+        tree = tree, x = m3, model = 'ER', pi = 'fitzjohn', 
+        lik.func = 'pruning', logscale = TRUE
+    )
+    asr <- ancr(object = fit, tips = TRUE)
+})
+```
+
+
+```{r}
+res <- asr$ace
+node_rows <- length(tree$tip.label) + 1:tree$Nnode
+rownames(res)[node_rows] <- tree$node.label
+```
+
+Probabiliites of internal nodes
+
+```{r}
+data.frame(prob = as.double(res[tree$node.label,])) |> 
+    ggplot(aes(prob)) +
+    geom_histogram(binwidth = 0.1) +
+    ggtitle('Internal nodes, all probabilities')
+```
+
+
+Probabilities of tips
+
+```{r}
+data.frame(prob = as.double(res[tree$tip.label,])) |> 
+    ggplot(aes(prob)) +
+    geom_histogram(binwidth = 0.1) +
+    ggtitle('Tips, all probabilities (after ASR)')
+
+```
+```{r}
+maxRes <- unlist(apply(res, 1, max))
+data.frame(prob = maxRes[tree$node.label]) |> 
+    ggplot(aes(prob)) +
+    geom_histogram(binwidth = 0.1) +
+    ggtitle('Internal nodes, max probabilities')
+```
+
+```{r}
+data.frame(prob = maxRes[rownames(m2)]) |> 
+    ggplot(aes(prob)) +
+    geom_histogram(binwidth = 0.1) +
+    ggtitle('New nodes, max probabilities')
+```
+
+```{r}
+new_taxa_from_tips <- res[rownames(m2),] |> 
+    as.data.frame() |> 
+    tibble::rownames_to_column(var = 'tip_label') |> 
+    left_join(tip_data, by = 'tip_label') |> 
+    mutate(
+        Rank = taxizedb::taxid2rank(taxid, db = 'ncbi')
+    ) |> 
+    filter(Rank %in% c('genus', 'species', 'strain')) |> 
+    mutate(
+        NCBI_ID = case_when(
+            Rank == 'genus' ~ paste0('g__', taxid),
+            Rank == 'species' ~ paste0('s__', taxid),
+            Rank == 'strain' ~ paste0('t__', taxid)
+        )
+    ) |> 
+    rename(Taxon_name = taxname) |> 
+    select(-ends_with('_taxid'), -tip_label, -taxid, -accession) |> 
+    relocate(NCBI_ID, Taxon_name, Rank) |> 
+    pivot_longer(
+        names_to = 'Attribute', values_to = 'Score', cols = 4:last_col()
+    ) |> 
+    mutate(Evidence = 'asr')
+head(new_taxa_from_tips)
+```
+
+
+
+
+
 
 
 ```{r}
