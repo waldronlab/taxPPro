@@ -14,15 +14,13 @@ Depends:
 Remotes:
     waldronlab/bugphyzz
 Suggests: 
-    bugsigdbr,
-    DT,
     knitr,
     rmarkdown,
     tibble,
-    ete3r,
     sessioninfo,
-    ape
+    ggplot2
 Imports:
+    ape,
     BiocFileCache,
     dplyr,
     magrittr,
@@ -37,8 +35,7 @@ Imports:
     forcats,
     bugphyzz,
     phytools,
-    tidyr,
-    ggplot2
+    tidyr
 VignetteBuilder: knitr
 URL: https://github.com/sdgamboa/taxPPro
 BugReports: https://github.com/sdgamboa/taxPPro/issues/
