@@ -96,3 +96,18 @@ myFun <- function(x, adjF = 0.1) {
     return(res)
 }
 
+#' Clean node
+#'
+#' {cleanNode} deletes the `attribute_tbl` slot in a data.tree node.
+#'
+#' @param node A node in a data.tree object.
+#'
+#' @return NULL (assigned to the node)
+#' @export
+#'
+cleanNode <- function(node) {
+    node$attribute_tbl <- NULL
+}
+
+
+
