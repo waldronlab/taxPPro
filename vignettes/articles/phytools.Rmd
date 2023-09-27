@@ -1,5 +1,5 @@
 ---
-title: "A propagation workflow with phytools"
+title: "A propagation workflow with taxonomic pooling, asr (phytools), and inhertiance"
 output:
     html_document:
         toc: true
@@ -34,9 +34,10 @@ phys <- physiologies('aerophilicity')
 ```{r filter data}
 select_cols <- c(
     ## Columns with information needed for propagation
-    'NCBI_ID', 'Taxon_name', 'Attribute', 'Attribute_source',
-    'Frequency', 'Score', 'Parent_NCBI_ID', 'Confidence_in_curation',
-    'Rank', 'Evidence',
+    'NCBI_ID', 'Taxon_name', 'Attribute',
+    'Frequency', 'Score', 'Evidence', 
+    'Attribute_source', 'Confidence_in_curation',
+    'Parent_NCBI_ID',
     
     ## Columns only used for controlling the behavior of the code
     'Attribute_type', 'Attribute_group'
@@ -52,12 +53,10 @@ valid_attributes <- attributes |>
     unique()
 phys_data <- phys[[1]] |> 
     as_tibble() |> 
+    # filter(!is.na(Rank), Rank %in% valid_ranks) |>
     filter(Attribute_value == TRUE) |> # only for discrete traits with multiple states 
     filter(Attribute %in% valid_attributes) |> 
-    filter(!is.na(Rank), Rank %in% valid_ranks) |>
     filter(
-        ## Filter rows with NCBI_ID.
-        ## If NCBI_ID is missing, Parent_NCBI_ID must be present
         !((is.na(NCBI_ID) | NCBI_ID == 'unknown') & is.na(Parent_NCBI_ID))
     ) |> 
     filter(!is.na('Attribute_source'), !is.na('Frequency')) |>
@@ -79,13 +78,15 @@ message(format(n_dropped_rows, big.mark = ','), ' rows were dropped.')
 
 Divide data in two sets between taxa with or without NCBI_ID:
 
-```{r}
+```{r, warning=TRUE}
 lgl_vct <- is.na(phys_data$NCBI_ID) | phys_data$NCBI_ID == 'unknown'
 set_with_ids <- phys_data |> 
     filter(!lgl_vct) |> 
-    group_by(NCBI_ID) |> 
-    mutate(Taxon_name = paste0(sort(unique(Taxon_name)), collapse = '|')) |> 
-    ungroup() |> 
+    mutate(
+        Rank = taxizedb::taxid2rank(NCBI_ID, db = 'ncbi')
+    ) |> 
+    filter(Rank %in% valid_ranks) |> 
+    mutate(Taxon_name = taxizedb::taxid2name(NCBI_ID, db = 'ncbi')) |> 
     distinct() |> 
     group_by(NCBI_ID, Attribute) |> 
     slice_head(n = 1) |> 
@@ -96,24 +97,8 @@ set_with_ids <- phys_data |>
         Score = Score / Total_score
     ) |>
     ungroup() |> 
+    select(-Parent_NCBI_ID, -Total_score) |> 
     distinct()
-w <- NULL
-withCallingHandlers(
-    warning = function(cnd) w <<- cnd,
-    set_with_ids$Rank <- taxizedb::taxid2rank(set_with_ids$NCBI_ID, db = 'ncbi')
-)
-if (!is.null(w)) {
-    taxids_with_missing_rank <- unlist(
-        strsplit(sub('^.*: (.*$)', '\\1', w$message), ', ')
-    )
-    no_longer_missing_ranks <- unlist(
-        taxize::tax_rank(taxids_with_missing_rank, db = 'ncbi')
-    )
-    for (i in seq_along(no_longer_missing_ranks)) {
-        pos <- set_with_ids$NCBI_ID == names(no_longer_missing_ranks)[i]
-        set_with_ids$Rank[pos] <- no_longer_missing_ranks[i]
-    }
-}
 dim(set_with_ids)
 ```
 
@@ -124,29 +109,12 @@ set_without_ids <- phys_data |>
     filter(lgl_vct) |> 
     select(-NCBI_ID, -Taxon_name, -Frequency) |> 
     relocate(NCBI_ID = Parent_NCBI_ID) |> 
-    distinct()
-if (nrow(set_with_ids) > 0) {
-    set_without_ids <- set_without_ids |> 
-        filter(!NCBI_ID %in% unique(set_with_ids$NCBI_ID))
-}
-w2 <- NULL
-withCallingHandlers(
-    warning = function(cnd) w2 <<- cnd,
-    set_without_ids$Rank <- taxizedb::taxid2rank(set_without_ids$NCBI_ID, db = 'ncbi')
-)
-if (!is.null(w2)) {
-    taxids_with_missing_rank2 <- unlist(
-        strsplit(sub('^.*: (.*$)', '\\1', w2$message), ', ')
-    )
-    no_longer_missing_ranks2 <- unlist(
-        taxize::tax_rank(taxids_with_missing_rank2, db = 'ncbi')
-    )
-    for (i in seq_along(no_longer_missing_ranks2)) {
-        pos2 <- set_without_ids$NCBI_ID == names(no_longer_missing_ranks2)[i]
-        set_without_ids$Rank[pos2] <- no_longer_missing_ranks2[i]
-    }
-}
-set_without_ids <- set_without_ids |>    
+    mutate(
+        Rank = taxizedb::taxid2rank(NCBI_ID, db = 'ncbi')
+    ) |> 
+    filter(Rank %in% valid_ranks) |> 
+    mutate(Taxon_name = taxizedb::taxid2name(NCBI_ID, db = 'ncbi')) |> 
+    distinct() |> 
     group_by(NCBI_ID, Attribute) |> 
     slice_head(n = 1) |> 
     ungroup() |> 
@@ -157,13 +125,13 @@ set_without_ids <- set_without_ids |>
     ) |>
     mutate(Evidence = 'tax') |> 
     ungroup() |>
+    select(-Total_score) |> 
     distinct()
 dim(set_without_ids)
 ```
 
 ```{r}
 phys_data_ready <- bind_rows(set_with_ids, set_without_ids) |> 
-    select(-Total_score, -Parent_NCBI_ID) |> 
     mutate(
         NCBI_ID = case_when(
             Rank == 'strain' ~ paste0('t__', NCBI_ID),
@@ -172,12 +140,8 @@ phys_data_ready <- bind_rows(set_with_ids, set_without_ids) |>
             TRUE ~ NA
         )
     ) |> 
-    filter(!is.na(NCBI_ID)) |> 
+    filter(!is.na(NCBI_ID)) |> # NAs migth be added because of the mutate call above
     mutate(taxid = sub('^\\w__', '', NCBI_ID))
-    # complete(
-    #     NCBI_ID, Taxon_name, Rank, Attribute, Attribute_type, Attribute_group,
-    #     fill = list(Score = 0, Frequency = 'neve')
-    # ) 
 ## Split in lists to use with the NCBI taxonomic tree
 phys_data_list <- split(phys_data_ready, factor(phys_data_ready$NCBI_ID))
 length(phys_data_list)
@@ -185,13 +149,13 @@ length(phys_data_list)
 
 ## Tree data
 
-### Taxonomic tree
+### Taxonomic tree 
 
 ```{r}
 data('tree_list')
 ncbi_tree <- as.Node(tree_list)
 ncbi_tree_nodes <- unname(ncbi_tree$Get('name'))
-print(ncbi_tree, limit = 10)
+class(ncbi_tree)
 ```
 
 ### Phylogenectic tree
