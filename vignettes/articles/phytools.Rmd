@@ -74,6 +74,18 @@ n_dropped_rows <- nrow(phys[[1]]) - nrow(phys_data)
 message(format(n_dropped_rows, big.mark = ','), ' rows were dropped.')
 ```
 
+Some variables that I need
+
+```{r}
+Attribute_group_var <- unique(phys[[1]]$Attribute_group)
+Attribute_group_var
+```
+
+```{r}
+Attribute_type_var <- unique(phys[[1]]$Attribute_type)
+Attribute_type_var
+```
+
 ## Taxonomic pooling for taxa without NCBI_ID (taxid)
 
 Divide data in two sets between taxa with or without NCBI_ID:
@@ -86,16 +98,37 @@ set_with_ids <- phys_data |>
         Rank = taxizedb::taxid2rank(NCBI_ID, db = 'ncbi')
     ) |> 
     filter(Rank %in% valid_ranks) |> 
-    mutate(Taxon_name = taxizedb::taxid2name(NCBI_ID, db = 'ncbi')) |> 
+    mutate(Taxon_name = taxizedb::taxid2name(NCBI_ID, db = 'ncbi')) |>
     distinct() |> 
-    group_by(NCBI_ID, Attribute) |> 
-    slice_head(n = 1) |> 
+    mutate(
+        Confidence_in_curation = factor(
+            Confidence_in_curation, 
+            levels = c('low', 'medium', 'high'), ordered = TRUE
+        )
+    ) |> 
+    group_by(NCBI_ID) |> 
+    slice_max(Confidence_in_curation, n = 1, with_ties = TRUE) |> 
     ungroup() |> 
+    group_by(NCBI_ID, Attribute) |> 
+    slice_max(Attribute_source, n = 1, with_ties = FALSE) |> 
+    ungroup() |> 
+    # group_by(NCBI_ID, Attribute) |> 
+    # slice_head(n = 1) |> 
+    # ungroup() |> 
     group_by(NCBI_ID) |>
     mutate(
         Total_score = sum(Score),
         Score = Score / Total_score
     ) |>
+    mutate( # original frequency values need to be replaced. I wonder if this is a good idea.
+        Frequency = case_when(
+            Score == 1 ~ 'always',
+            Score >= 0.9 & Score < 1 ~ 'usually',
+            Score >= 0.5 & Score < 0.9 ~ 'sometimes',
+            Score > 0 & Score < 0.5 ~ 'rarely',
+            Score == 0  ~ 'never' 
+        )
+    ) |> 
     ungroup() |> 
     select(-Parent_NCBI_ID, -Total_score) |> 
     distinct()
@@ -115,15 +148,40 @@ set_without_ids <- phys_data |>
     filter(Rank %in% valid_ranks) |> 
     mutate(Taxon_name = taxizedb::taxid2name(NCBI_ID, db = 'ncbi')) |> 
     distinct() |> 
-    group_by(NCBI_ID, Attribute) |> 
-    slice_head(n = 1) |> 
+        mutate(
+        Confidence_in_curation = factor(
+            Confidence_in_curation, 
+            levels = c('low', 'medium', 'high'), ordered = TRUE
+        )
+    ) |> 
+    group_by(NCBI_ID) |> 
+    slice_max(Confidence_in_curation, n = 1, with_ties = TRUE) |> 
     ungroup() |> 
+    group_by(NCBI_ID, Attribute) |> 
+    slice_max(Attribute_source, n = 1, with_ties = FALSE) |> 
+    ungroup() |> 
+    # group_by(NCBI_ID, Attribute) |> 
+    # slice_head(n = 1) |> 
+    # ungroup() |> 
     group_by(NCBI_ID) |>
     mutate(
         Total_score = sum(Score),
         Score = Score / Total_score
     ) |>
-    mutate(Evidence = 'tax') |> 
+    mutate(
+        Frequency = case_when(
+            Score == 1 ~ 'always',
+            Score >= 0.9 & Score < 1 ~ 'usually',
+            Score >= 0.5 & Score < 0.9 ~ 'sometimes',
+            Score > 0 & Score < 0.5 ~ 'rarely',
+            Score == 0  ~ 'never' 
+        )
+    ) |> 
+    mutate(
+        Evidence = 'tax',
+        Attribute_group = Attribute_group_var,
+        Attribute_type = Attribute_type_var
+    ) |> 
     ungroup() |>
     select(-Total_score) |> 
     filter(!NCBI_ID %in% unique(set_with_ids$NCBI_ID)) |> 
@@ -159,6 +217,17 @@ ncbi_tree_nodes <- unname(ncbi_tree$Get('name'))
 class(ncbi_tree)
 ```
 
+
+Let's add taxid
+
+```{r}
+ncbi_tree$Do(function(node) {
+    if (!node$isRoot)
+        node$taxid <- sub('^\\w__', '', node$name)
+})
+ncbi_tree$d__2$taxid
+```
+
 ### Phylogenectic tree
 
 ```{r}
@@ -179,7 +248,7 @@ dim(tip_data)
 Annotations from sources than can be mapped to the NCBI tree:
 
 ```{r}
-ncbi_tree_nodes_gst <- ncbi_tree_nodes[which(grepl('^[wst]__', ncbi_tree_nodes))]
+ncbi_tree_nodes_gst <- ncbi_tree_nodes[which(grepl('^[gst]__', ncbi_tree_nodes))]
 mean(phys_data_ready$NCBI_ID %in% ncbi_tree_nodes_gst)
 ```
 
@@ -210,7 +279,7 @@ ncbi_tree$Do(function(node) {
     if (node$name %in% names(phys_data_list)) {
         node$attribute_tbl <- phys_data_list[[node$name]]
     } else {
-        NULL
+        node$attribute_tbl <- NULL
     }
 })
 ## An example (E. coli):
@@ -224,7 +293,7 @@ ncbi_attr_gst <- ncbi_tree$Get(
 mean(!map_lgl(ncbi_attr_gst, ~ all(is.na(.x))))
 ```
 
-Removing annotations just to compare with result after propagation
+Removing annotations just to compare with result after taxonomic pooling 
 
 ```{r}
 ncbi_tree$d__2$p__1224$c__1236$o__91347$f__543$g__561$attribute_tbl <- NULL
@@ -257,6 +326,7 @@ taxPool <- function(node) {
                 ) |> 
                 dplyr::mutate(
                     NCBI_ID = node$name,
+                    taxid = node$taxid,
                     Evidence = 'tax'
                 ) |>
                 group_by(NCBI_ID) |>
@@ -277,6 +347,15 @@ taxPool <- function(node) {
                         Score >= 0.5 ~ 'sometimes',
                         Score > 0 & Score < 0.5 ~ 'rarely',
                         Score == 0 ~ 'never'
+                    )
+                ) |> 
+                mutate(
+                    Attribute_source = NA,
+                    Confidence_in_curation = NA,
+                    Rank = case_when(
+                        grepl('^g__', node$name) ~ 'genus',
+                        grepl('^s__', node$name) ~ 'species',
+                        grepl('t__', node$name) ~ 'strain'
                     )
                 ) |> 
                 distinct()
@@ -329,7 +408,8 @@ inh1 <- function(node,  adjF = 0.1) {
                 Score = Score - adjF * score_diff,
                 NCBI_ID = node$name,
                 Evidence = 'inh'
-            )
+            ) |> 
+            dplyr::select(-target_scores)
         node$attribute_tbl <- df
     }
 }

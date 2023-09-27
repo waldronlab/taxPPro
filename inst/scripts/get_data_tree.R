@@ -15,6 +15,14 @@ fname1 <- system.file(
 )
 exclude_all_ids <- read.table(fname1, header = FALSE)[[1]]
 exclude_all_ranks <- taxizedb::taxid2rank(exclude_all_ids, db = 'ncbi')
+
+pos <- which(!is.na(exclude_all_ranks))
+exclude_all_ids <- exclude_all_ids[pos]
+exclude_all_ranks <- exclude_all_ranks[pos]
+names(exclude_all_ranks) <- exclude_all_ids
+exclude_all_names <- taxizedb::taxid2name(exclude_all_ids, db = 'ncbi')
+names(exclude_all_names) <- exclude_all_ids
+
 exclude_all_ids_sp <- exclude_all_ids[which(exclude_all_ranks == 'species')]
 exclude_all_sp_class <- taxizedb::classification(exclude_all_ids_sp, db = 'ncbi')
 exclude_all_sp_tbl <- exclude_all_sp_class |>
@@ -29,6 +37,15 @@ fname2 <- system.file(
 )
 exclude_uu_ids <- read.table(fname2, header = FALSE)[[1]]
 exclude_uu_ranks <- taxizedb::taxid2rank(exclude_uu_ids, db = 'ncbi')
+
+
+pos2 <- which(!is.na(exclude_uu_ranks))
+exclude_uu_ids <- exclude_uu_ids[pos2]
+exclude_uu_ranks <- exclude_uu_ranks[pos2]
+names(exclude_uu_ranks) <- exclude_uu_ids
+exclude_uu_names <- taxizedb::taxid2name(exclude_uu_ids, db = 'ncbi')
+names(exclude_uu_names) <- exclude_uu_ids
+
 exclude_uu_ids_st <- exclude_uu_ids[which(exclude_uu_ranks == 'strain')]
 exclude_uu_st_class <- taxizedb::classification(exclude_uu_ids_st, db = 'ncbi')
 exclude_uu_st_tbl <- exclude_uu_st_class |>
@@ -49,6 +66,14 @@ bp_ids <- map(phys, ~ .x$NCBI_ID) |>
     {\(y) y[y != 'unknown']}() |>
     {\(y) y[!is.na(y)]}()
 bp_ranks <- taxizedb::taxid2rank(bp_ids, db = 'ncbi')
+
+
+pos3 <- which(!is.na(bp_ranks))
+bp_ids <- bp_ids[pos3]
+bp_ranks <- bp_ranks[pos3]
+bp_names <- taxizedb::taxid2name(bp_ids, db = 'ncbi')
+names(bp_names) <- bp_ids
+
 names(bp_ranks) <- bp_ids
 bp_ids_sp <- names(bp_ranks)[which(bp_ranks == 'species')]
 extra_ids_sp <- bp_ids_sp[!bp_ids_sp %in% merged_sp_st$species]
@@ -68,7 +93,7 @@ final_tbl <- bind_rows(merged_sp_st, extra_tbl_sp) |>
 df <- data.frame(
     pathString = paste0(
         'ArcBac|',
-        'd__', final_tbl$superkingdom,
+        'k__', final_tbl$superkingdom,
         '|p__', final_tbl$phylum,
         '|c__', final_tbl$class,
         '|o__', final_tbl$order,
@@ -79,13 +104,41 @@ df <- data.frame(
     ))
 df$pathString <- sub('\\|t__$', '', df$pathString)
 tree <- as.Node(df[, 'pathString', drop = FALSE], pathDelimiter = '|')
+
+
+x <- final_tbl |>
+    rename(kingdom = superkingdom) |>
+    map(unique)
+ranks <- vector('list', length(x))
+for (i in seq_along(x)) {
+    ranks[[i]] <- rep(names(x)[i], length(x[[i]]))
+    names(ranks[[i]]) <- x[[i]]
+
+}
+ranks <- flatten_chr(ranks)
+ranks <- ranks[names(ranks) != '']
+names <- taxizedb::taxid2name(names(ranks), db = 'ncbi')
+names(names) <- names(ranks)
+
+tree$Do(function(node) {
+    if (!node$isRoot) {
+        taxid <- sub('^\\w__', '', node$name)
+        node$Taxon_name <- names[taxid]
+        node$taxid <- taxid
+        node$Rank <- ranks[taxid]
+    }
+})
+
 tree_list <- as.list(tree)
+
+tree_test <- as.Node(tree_list)
+
 
 tbl_for_tree <- final_tbl |>
     rename(domain = superkingdom) |>
     mutate(
         root = 'ArcBac',
-        domain = paste0('d__', domain),
+        domain = paste0('k__', domain),
         phylum = paste0('p__', phylum),
         class = paste0('c__', class),
         order = paste0('o__', order),
