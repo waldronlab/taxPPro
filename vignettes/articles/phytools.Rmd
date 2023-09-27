@@ -220,12 +220,12 @@ class(ncbi_tree)
 
 Let's add taxid
 
-```{r}
-ncbi_tree$Do(function(node) {
-    if (!node$isRoot)
-        node$taxid <- sub('^\\w__', '', node$name)
-})
-ncbi_tree$d__2$taxid
+```{r, echo=FALSE, eval=FALSE, include=FALSE}
+# ncbi_tree$Do(function(node) {
+#     if (!node$isRoot)
+#         node$taxid <- sub('^\\w__', '', node$name)
+# })
+# ncbi_tree$k__2$taxid
 ```
 
 ### Phylogenectic tree
@@ -283,7 +283,7 @@ ncbi_tree$Do(function(node) {
     }
 })
 ## An example (E. coli):
-ncbi_tree$d__2$p__1224$c__1236$o__91347$f__543$g__561$s__562$attribute_tbl
+ncbi_tree$k__2$p__1224$c__1236$o__91347$f__543$g__561$s__562$attribute_tbl
 ```
 
 ```{r}
@@ -296,8 +296,8 @@ mean(!map_lgl(ncbi_attr_gst, ~ all(is.na(.x))))
 Removing annotations just to compare with result after taxonomic pooling 
 
 ```{r}
-ncbi_tree$d__2$p__1224$c__1236$o__91347$f__543$g__561$attribute_tbl <- NULL
-ncbi_tree$d__2$p__1224$c__1236$o__91347$f__543$g__561$attribute_tbl
+ncbi_tree$k__2$p__1224$c__1236$o__91347$f__543$g__561$attribute_tbl <- NULL
+ncbi_tree$k__2$p__1224$c__1236$o__91347$f__543$g__561$attribute_tbl
 ```
 
 Lest pool and normalize attribute scores at each taxonomic rank (gst) for
@@ -327,6 +327,8 @@ taxPool <- function(node) {
                 dplyr::mutate(
                     NCBI_ID = node$name,
                     taxid = node$taxid,
+                    Taxon_name = node$Taxon_name,
+                    Rank = node$Rank,
                     Evidence = 'tax'
                 ) |>
                 group_by(NCBI_ID) |>
@@ -351,12 +353,7 @@ taxPool <- function(node) {
                 ) |> 
                 mutate(
                     Attribute_source = NA,
-                    Confidence_in_curation = NA,
-                    Rank = case_when(
-                        grepl('^g__', node$name) ~ 'genus',
-                        grepl('^s__', node$name) ~ 'species',
-                        grepl('t__', node$name) ~ 'strain'
-                    )
+                    Confidence_in_curation = NA
                 ) |> 
                 distinct()
                 node[['attribute_tbl']] <- res_tbl
@@ -365,7 +362,7 @@ taxPool <- function(node) {
 }
 ncbi_tree$Do(taxPool, traversal = 'post-order')
 ## Same E. coli example:
-ncbi_tree$d__2$p__1224$c__1236$o__91347$f__543$g__561$attribute_tbl
+ncbi_tree$k__2$p__1224$c__1236$o__91347$f__543$g__561$attribute_tbl
 ```
 
 How many nodes family and above with attribute table? (it should be zero)
@@ -407,14 +404,51 @@ inh1 <- function(node,  adjF = 0.1) {
                 score_diff = Score - target_scores,
                 Score = Score - adjF * score_diff,
                 NCBI_ID = node$name,
-                Evidence = 'inh'
+                Evidence = 'inh',
+                Taxon_name = node$Taxon_name,
+                Rank = node$Rank,
+                taxid = node$taxid,
             ) |> 
-            dplyr::select(-target_scores)
+            dplyr::select(-target_scores, -score_diff)
         node$attribute_tbl <- df
     }
 }
 ncbi_tree$Do(inh1, traversal = 'pre-order')
 ```
+
+
+Let's look at one example of inheritance
+
+```{r}
+inh_nodes1 <- ncbi_tree$Get(
+    'attribute_tbl', 
+    simplify = FALSE,
+    filterFun = function(node) {
+        if (!is.null(node$attribute_tbl)) {
+            return('inh' %in% unique(node$attribute_tbl$Evidence))
+        } else {
+            return(FALSE)
+        }
+})
+inh_nodes1_subset <- inh_nodes1[map_int(inh_nodes1, nrow) > 1]
+inh_nodes1_subset[['s__2588497']]
+```
+
+```{r}
+parent1 <- ncbi_tree$Get(
+    'attribute_tbl', 
+    simplify = FALSE,
+    filterFun = function(node) {
+        node$name == 'g__1344552'
+    })
+parent1[[1]]
+```
+
+
+
+
+
+
 
 Proportion of nodes at the family level and above with attributes (it should be zero):
 
@@ -634,7 +668,7 @@ new_taxa_from_nodes <- nodes_annotated |>
     mutate(Rank = ifelse(Rank == 'superkingdom', 'kingdom', Rank)) |> 
     mutate(
         NCBI_ID = case_when(
-            Rank == 'kingdom' ~ paste0('d__', NCBI_ID),
+            Rank == 'kingdom' ~ paste0('k__', NCBI_ID),
             Rank == 'phylum' ~ paste0('p__', NCBI_ID),
             Rank == 'class' ~ paste0('c__', NCBI_ID),
             Rank == 'order' ~ paste0('o__', NCBI_ID),
@@ -749,7 +783,7 @@ length(ncbi_tree_nodes_empty2)
 ```
 
 ```{r}
-ncbi_tree$d__2$p__1224$c__28211$o__356$f__335928$attribute_tbl
+ncbi_tree$k__2$p__1224$c__28211$o__356$f__335928$attribute_tbl
 ```
 
 Get all the tables
