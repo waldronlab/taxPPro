@@ -93,7 +93,7 @@ ltp <- function(remove_zero_tips = TRUE) {
     tip_data <- tip_data[tree$tip.label,]
     message('Tips remaining: ', length(tree$tip.label))
     list(
-        tree = tree, tip_data = tip_data, node_data = node_data
+        tree = tree, tip_data = tip_data
     )
     # if (x == 'tree') {
     #     output <- tree
