@@ -126,6 +126,7 @@ set_without_ids <- phys_data |>
     mutate(Evidence = 'tax') |> 
     ungroup() |>
     select(-Total_score) |> 
+    filter(!NCBI_ID %in% unique(set_with_ids$NCBI_ID)) |> 
     distinct()
 dim(set_without_ids)
 ```
@@ -203,8 +204,6 @@ mean(tip_data$taxid %in% phys_data_ready$taxid)
 ## Increase number of tips with annotations
 
 ### Map NCBI IDs to the NCBI taxonomic tree
-
-At this point only genus, species, and strain annotations are present.
 
 ```{r}
 ncbi_tree$Do(function(node) {
@@ -294,7 +293,7 @@ How many nodes family and above with attribute table? (it should be zero)
 
 ```{r}
 ncbi_attr_kpcof <- ncbi_tree$Get(
-    'attribute_tbl', filterFun = function(node) grepl('^[kpcor]__', node$name)
+    'attribute_tbl', filterFun = function(node) grepl('^[dpcor]__', node$name)
 )
 mean(!map_lgl(ncbi_attr_kpcof, ~ all(is.na(.x))))
 ```
@@ -337,7 +336,7 @@ inh1 <- function(node,  adjF = 0.1) {
 ncbi_tree$Do(inh1, traversal = 'pre-order')
 ```
 
-Proportion of nodes at the family level and above with attributes:
+Proportion of nodes at the family level and above with attributes (it should be zero):
 
 ```{r}
 ncbi_attr_kpcof <- ncbi_tree$Get(
@@ -468,7 +467,7 @@ node_rows <- length(tree$tip.label) + 1:tree$Nnode
 rownames(res)[node_rows] <- tree$node.label
 ```
 
-Probabiliites of internal nodes
+Probabilities of internal nodes
 
 ```{r}
 data.frame(prob = as.double(res[tree$node.label,])) |> 
