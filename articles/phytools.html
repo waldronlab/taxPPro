@@ -146,12 +146,21 @@ asr (phytools), and inhertiance</h1>
 <span><span class="va">n_dropped_rows</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">phys</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">phys_data</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">n_dropped_rows</span>, big.mark <span class="op">=</span> <span class="st">','</span><span class="op">)</span>, <span class="st">' rows were dropped.'</span><span class="op">)</span></span>
 <span><span class="co">#&gt; 3,891 rows were dropped.</span></span></code></pre></div>
+<p>Some variables that I need</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">Attribute_group_var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">phys</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">Attribute_group</span><span class="op">)</span></span>
+<span><span class="va">Attribute_group_var</span></span>
+<span><span class="co">#&gt; [1] "aerophilicity"</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">Attribute_type_var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">phys</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">Attribute_type</span><span class="op">)</span></span>
+<span><span class="va">Attribute_type_var</span></span>
+<span><span class="co">#&gt; [1] "logical"</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="taxonomic-pooling-for-taxa-without-ncbi_id-taxid">Taxonomic pooling for taxa without NCBI_ID (taxid)<a class="anchor" aria-label="anchor" href="#taxonomic-pooling-for-taxa-without-ncbi_id-taxid"></a>
 </h2>
 <p>Divide data in two sets between taxa with or without NCBI_ID:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lgl_vct</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">phys_data</span><span class="op">$</span><span class="va">NCBI_ID</span><span class="op">)</span> <span class="op">|</span> <span class="va">phys_data</span><span class="op">$</span><span class="va">NCBI_ID</span> <span class="op">==</span> <span class="st">'unknown'</span></span>
 <span><span class="va">set_with_ids</span> <span class="op">&lt;-</span> <span class="va">phys_data</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="va">lgl_vct</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -159,16 +168,37 @@ asr (phytools), and inhertiance</h1>
 <span>        Rank <span class="op">=</span> <span class="fu">taxizedb</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/taxizedb/reference/taxid2rank.html" class="external-link">taxid2rank</a></span><span class="op">(</span><span class="va">NCBI_ID</span>, db <span class="op">=</span> <span class="st">'ncbi'</span><span class="op">)</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Rank</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">valid_ranks</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Taxon_name <span class="op">=</span> <span class="fu">taxizedb</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/taxizedb/reference/taxid2name.html" class="external-link">taxid2name</a></span><span class="op">(</span><span class="va">NCBI_ID</span>, db <span class="op">=</span> <span class="st">'ncbi'</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Taxon_name <span class="op">=</span> <span class="fu">taxizedb</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/taxizedb/reference/taxid2name.html" class="external-link">taxid2name</a></span><span class="op">(</span><span class="va">NCBI_ID</span>, db <span class="op">=</span> <span class="st">'ncbi'</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">NCBI_ID</span>, <span class="va">Attribute</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>        Confidence_in_curation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span></span>
+<span>            <span class="va">Confidence_in_curation</span>, </span>
+<span>            levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'low'</span>, <span class="st">'medium'</span>, <span class="st">'high'</span><span class="op">)</span>, ordered <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>        <span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">NCBI_ID</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_max</a></span><span class="op">(</span><span class="va">Confidence_in_curation</span>, n <span class="op">=</span> <span class="fl">1</span>, with_ties <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">NCBI_ID</span>, <span class="va">Attribute</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_max</a></span><span class="op">(</span><span class="va">Attribute_source</span>, n <span class="op">=</span> <span class="fl">1</span>, with_ties <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="co"># group_by(NCBI_ID, Attribute) |&gt; </span></span>
+<span>    <span class="co"># slice_head(n = 1) |&gt; </span></span>
+<span>    <span class="co"># ungroup() |&gt; </span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">NCBI_ID</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>        Total_score <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">Score</span><span class="op">)</span>,</span>
 <span>        Score <span class="op">=</span> <span class="va">Score</span> <span class="op">/</span> <span class="va">Total_score</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span> <span class="co"># original frequency values need to be replaced. I wonder if this is a good idea.</span></span>
+<span>        Frequency <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
+<span>            <span class="va">Score</span> <span class="op">==</span> <span class="fl">1</span> <span class="op">~</span> <span class="st">'always'</span>,</span>
+<span>            <span class="va">Score</span> <span class="op">&gt;=</span> <span class="fl">0.9</span> <span class="op">&amp;</span> <span class="va">Score</span> <span class="op">&lt;</span> <span class="fl">1</span> <span class="op">~</span> <span class="st">'usually'</span>,</span>
+<span>            <span class="va">Score</span> <span class="op">&gt;=</span> <span class="fl">0.5</span> <span class="op">&amp;</span> <span class="va">Score</span> <span class="op">&lt;</span> <span class="fl">0.9</span> <span class="op">~</span> <span class="st">'sometimes'</span>,</span>
+<span>            <span class="va">Score</span> <span class="op">&gt;</span> <span class="fl">0</span> <span class="op">&amp;</span> <span class="va">Score</span> <span class="op">&lt;</span> <span class="fl">0.5</span> <span class="op">~</span> <span class="st">'rarely'</span>,</span>
+<span>            <span class="va">Score</span> <span class="op">==</span> <span class="fl">0</span>  <span class="op">~</span> <span class="st">'never'</span> </span>
+<span>        <span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">Parent_NCBI_ID</span>, <span class="op">-</span><span class="va">Total_score</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -177,10 +207,10 @@ asr (phytools), and inhertiance</h1>
 <span><span class="co">#&gt; Caused by warning in `taxizedb::taxid2rank()`:</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> No rank found for 79 of 10425 taxon IDs. The followings are left unrankd: 65497, 287094, 196083, 136160, 513651, 1606016, 1646339, 126790, 1830421, 1400058, 165807, 134962, 48937, 263820, 1311788, 342610, 166934, 1398496, 307251, 262776, 45461, 211759, 244407, 332057, 332056, 46170, 46170, 68202, 84593, 62153, 109214, 1398560, 355929, 1551, 1560, 86662, 168810, 495036, 1345697, 1166016, 741091, 195041, 140100, 62153, 675810, 65497, 861208, 340044, 335659, 546899, 656024, 440512, 147710, 931223, 420233, 332056, 68570, 68202, 563191, 665937, 469586, 469587, 665938, 469594, 52765, 52766, 699245, 97139, 327817, 644968, 228748, 477693, 652712, 796939, 796940, 36876, 93930, 220622, 1796653</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">set_with_ids</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 9668   11</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 9614   11</span></span></code></pre></div>
 <p>Get attribute annotations and scores for taxa without NCBI_ID from
 sources:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">set_without_ids</span> <span class="op">&lt;-</span> <span class="va">phys_data</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">lgl_vct</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">NCBI_ID</span>, <span class="op">-</span><span class="va">Taxon_name</span>, <span class="op">-</span><span class="va">Frequency</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -191,15 +221,40 @@ sources:</p>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Rank</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">valid_ranks</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Taxon_name <span class="op">=</span> <span class="fu">taxizedb</span><span class="fu">::</span><span class="fu"><a href="https://docs.ropensci.org/taxizedb/reference/taxid2name.html" class="external-link">taxid2name</a></span><span class="op">(</span><span class="va">NCBI_ID</span>, db <span class="op">=</span> <span class="st">'ncbi'</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">NCBI_ID</span>, <span class="va">Attribute</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>        <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>        Confidence_in_curation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span></span>
+<span>            <span class="va">Confidence_in_curation</span>, </span>
+<span>            levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'low'</span>, <span class="st">'medium'</span>, <span class="st">'high'</span><span class="op">)</span>, ordered <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>        <span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">NCBI_ID</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_max</a></span><span class="op">(</span><span class="va">Confidence_in_curation</span>, n <span class="op">=</span> <span class="fl">1</span>, with_ties <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">NCBI_ID</span>, <span class="va">Attribute</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_max</a></span><span class="op">(</span><span class="va">Attribute_source</span>, n <span class="op">=</span> <span class="fl">1</span>, with_ties <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="co"># group_by(NCBI_ID, Attribute) |&gt; </span></span>
+<span>    <span class="co"># slice_head(n = 1) |&gt; </span></span>
+<span>    <span class="co"># ungroup() |&gt; </span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">NCBI_ID</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>        Total_score <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">Score</span><span class="op">)</span>,</span>
 <span>        Score <span class="op">=</span> <span class="va">Score</span> <span class="op">/</span> <span class="va">Total_score</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Evidence <span class="op">=</span> <span class="st">'tax'</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>        Frequency <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
+<span>            <span class="va">Score</span> <span class="op">==</span> <span class="fl">1</span> <span class="op">~</span> <span class="st">'always'</span>,</span>
+<span>            <span class="va">Score</span> <span class="op">&gt;=</span> <span class="fl">0.9</span> <span class="op">&amp;</span> <span class="va">Score</span> <span class="op">&lt;</span> <span class="fl">1</span> <span class="op">~</span> <span class="st">'usually'</span>,</span>
+<span>            <span class="va">Score</span> <span class="op">&gt;=</span> <span class="fl">0.5</span> <span class="op">&amp;</span> <span class="va">Score</span> <span class="op">&lt;</span> <span class="fl">0.9</span> <span class="op">~</span> <span class="st">'sometimes'</span>,</span>
+<span>            <span class="va">Score</span> <span class="op">&gt;</span> <span class="fl">0</span> <span class="op">&amp;</span> <span class="va">Score</span> <span class="op">&lt;</span> <span class="fl">0.5</span> <span class="op">~</span> <span class="st">'rarely'</span>,</span>
+<span>            <span class="va">Score</span> <span class="op">==</span> <span class="fl">0</span>  <span class="op">~</span> <span class="st">'never'</span> </span>
+<span>        <span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>        Evidence <span class="op">=</span> <span class="st">'tax'</span>,</span>
+<span>        Attribute_group <span class="op">=</span> <span class="va">Attribute_group_var</span>,</span>
+<span>        Attribute_type <span class="op">=</span> <span class="va">Attribute_type_var</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">Total_score</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="va">NCBI_ID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">set_with_ids</span><span class="op">$</span><span class="va">NCBI_ID</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -209,8 +264,8 @@ sources:</p>
 <span><span class="co">#&gt; Caused by warning in `taxizedb::taxid2rank()`:</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> No rank found for 4 of 15276 taxon IDs. The followings are left unrankd: 2751472, 2679994, 1704088, 648567</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">set_without_ids</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 6503   10</span></span></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<span><span class="co">#&gt; [1] 6503   11</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">phys_data_ready</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">set_with_ids</span>, <span class="va">set_without_ids</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>        NCBI_ID <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
@@ -233,17 +288,18 @@ sources:</p>
 <div class="section level3">
 <h3 id="taxonomic-tree">Taxonomic tree<a class="anchor" aria-label="anchor" href="#taxonomic-tree"></a>
 </h3>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">'tree_list'</span><span class="op">)</span></span>
 <span><span class="va">ncbi_tree</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.tree/man/as.Node.html" class="external-link">as.Node</a></span><span class="op">(</span><span class="va">tree_list</span><span class="op">)</span></span>
 <span><span class="va">ncbi_tree_nodes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="va">ncbi_tree</span><span class="op">$</span><span class="fu">Get</span><span class="op">(</span><span class="st">'name'</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">ncbi_tree</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "Node" "R6"</span></span></code></pre></div>
+<p>Let’s add taxid</p>
 </div>
 <div class="section level3">
 <h3 id="phylogenectic-tree">Phylogenectic tree<a class="anchor" aria-label="anchor" href="#phylogenectic-tree"></a>
 </h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ltp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ltp.html">ltp</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Initial number of tips in LTP tree: 19452</span></span>
 <span><span class="co">#&gt; Dropping 1038 tips with zero length branches.</span></span>
@@ -264,7 +320,7 @@ sources:</p>
 <div class="section level3">
 <h3 id="phylogenetic-tree-tip-data">Phylogenetic tree (tip data)<a class="anchor" aria-label="anchor" href="#phylogenetic-tree-tip-data"></a>
 </h3>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tip_data</span> <span class="op">&lt;-</span> <span class="va">ltp</span><span class="op">$</span><span class="va">tip_data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">tip_data</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 18325    12</span></span></code></pre></div>
@@ -273,21 +329,21 @@ sources:</p>
 <h3 id="some-completeness-stats">Some completeness stats<a class="anchor" aria-label="anchor" href="#some-completeness-stats"></a>
 </h3>
 <p>Annotations from sources than can be mapped to the NCBI tree:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ncbi_tree_nodes_gst</span> <span class="op">&lt;-</span> <span class="va">ncbi_tree_nodes</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">'^[wst]__'</span>, <span class="va">ncbi_tree_nodes</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ncbi_tree_nodes_gst</span> <span class="op">&lt;-</span> <span class="va">ncbi_tree_nodes</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">'^[gst]__'</span>, <span class="va">ncbi_tree_nodes</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">phys_data_ready</span><span class="op">$</span><span class="va">NCBI_ID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">ncbi_tree_nodes_gst</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.8973471</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 0.9722653</span></span></code></pre></div>
 <p>Proportion of NCBI tree nodes (gst) with annotations:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">ncbi_tree_nodes_gst</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">phys_data_ready</span><span class="op">$</span><span class="va">NCBI_ID</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.2057325</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 0.2080935</span></span></code></pre></div>
 <p>Annotations from sources than can me mapped to the phylogenetic tree
 tips:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">phys_data_ready</span><span class="op">$</span><span class="va">taxid</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">tip_data</span><span class="op">$</span><span class="va">taxid</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.6361388</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 0.6361606</span></span></code></pre></div>
 <p>Proportion of tips in the phylogenetic tree with annotations:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">tip_data</span><span class="op">$</span><span class="va">taxid</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">phys_data_ready</span><span class="op">$</span><span class="va">taxid</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 0.551869</span></span></code></pre></div>
 </div>
@@ -298,38 +354,38 @@ tips:</p>
 <div class="section level3">
 <h3 id="map-ncbi-ids-to-the-ncbi-taxonomic-tree">Map NCBI IDs to the NCBI taxonomic tree<a class="anchor" aria-label="anchor" href="#map-ncbi-ids-to-the-ncbi-taxonomic-tree"></a>
 </h3>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ncbi_tree</span><span class="op">$</span><span class="fu">Do</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">node</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="kw">if</span> <span class="op">(</span><span class="va">node</span><span class="op">$</span><span class="va">name</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">phys_data_list</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>        <span class="va">node</span><span class="op">$</span><span class="va">attribute_tbl</span> <span class="op">&lt;-</span> <span class="va">phys_data_list</span><span class="op">[[</span><span class="va">node</span><span class="op">$</span><span class="va">name</span><span class="op">]</span><span class="op">]</span></span>
 <span>    <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
-<span>        <span class="cn">NULL</span></span>
+<span>        <span class="va">node</span><span class="op">$</span><span class="va">attribute_tbl</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span>
 <span>    <span class="op">}</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span><span class="co">## An example (E. coli):</span></span>
-<span><span class="va">ncbi_tree</span><span class="op">$</span><span class="va">d__2</span><span class="op">$</span><span class="va">p__1224</span><span class="op">$</span><span class="va">c__1236</span><span class="op">$</span><span class="va">o__91347</span><span class="op">$</span><span class="va">f__543</span><span class="op">$</span><span class="va">g__561</span><span class="op">$</span><span class="va">s__562</span><span class="op">$</span><span class="va">attribute_tbl</span></span>
+<span><span class="va">ncbi_tree</span><span class="op">$</span><span class="va">k__2</span><span class="op">$</span><span class="va">p__1224</span><span class="op">$</span><span class="va">c__1236</span><span class="op">$</span><span class="va">o__91347</span><span class="op">$</span><span class="va">f__543</span><span class="op">$</span><span class="va">g__561</span><span class="op">$</span><span class="va">s__562</span><span class="op">$</span><span class="va">attribute_tbl</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 12</span></span></span>
 <span><span class="co">#&gt;   NCBI_ID Taxon_name       Attribute   Frequency Score Evidence Attribute_source</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> s__562  Escherichia coli aerobic     always      0.5 tas      Madin_2020      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> s__562  Escherichia coli facultativ… always      0.5 igc      ProTraits       </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 5 more variables: Confidence_in_curation &lt;chr&gt;, Attribute_type &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> s__562  Escherichia coli aerobic     sometimes   0.5 tas      Madin_2020      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> s__562  Escherichia coli facultativ… sometimes   0.5 igc      ProTraits       </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 5 more variables: Confidence_in_curation &lt;ord&gt;, Attribute_type &lt;chr&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   Attribute_group &lt;chr&gt;, Rank &lt;chr&gt;, taxid &lt;chr&gt;</span></span></span></code></pre></div>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ncbi_attr_gst</span> <span class="op">&lt;-</span> <span class="va">ncbi_tree</span><span class="op">$</span><span class="fu">Get</span><span class="op">(</span></span>
 <span>    <span class="st">'attribute_tbl'</span>, filterFun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">node</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">'^[gst]__'</span>, <span class="va">node</span><span class="op">$</span><span class="va">name</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_lgl</a></span><span class="op">(</span><span class="va">ncbi_attr_gst</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">.x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.2084015</span></span></code></pre></div>
-<p>Removing annotations just to compare with result after
-propagation</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ncbi_tree</span><span class="op">$</span><span class="va">d__2</span><span class="op">$</span><span class="va">p__1224</span><span class="op">$</span><span class="va">c__1236</span><span class="op">$</span><span class="va">o__91347</span><span class="op">$</span><span class="va">f__543</span><span class="op">$</span><span class="va">g__561</span><span class="op">$</span><span class="va">attribute_tbl</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span>
-<span><span class="va">ncbi_tree</span><span class="op">$</span><span class="va">d__2</span><span class="op">$</span><span class="va">p__1224</span><span class="op">$</span><span class="va">c__1236</span><span class="op">$</span><span class="va">o__91347</span><span class="op">$</span><span class="va">f__543</span><span class="op">$</span><span class="va">g__561</span><span class="op">$</span><span class="va">attribute_tbl</span></span>
+<span><span class="co">#&gt; [1] 0.2080935</span></span></code></pre></div>
+<p>Removing annotations just to compare with result after taxonomic
+pooling</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ncbi_tree</span><span class="op">$</span><span class="va">k__2</span><span class="op">$</span><span class="va">p__1224</span><span class="op">$</span><span class="va">c__1236</span><span class="op">$</span><span class="va">o__91347</span><span class="op">$</span><span class="va">f__543</span><span class="op">$</span><span class="va">g__561</span><span class="op">$</span><span class="va">attribute_tbl</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span>
+<span><span class="va">ncbi_tree</span><span class="op">$</span><span class="va">k__2</span><span class="op">$</span><span class="va">p__1224</span><span class="op">$</span><span class="va">c__1236</span><span class="op">$</span><span class="va">o__91347</span><span class="op">$</span><span class="va">f__543</span><span class="op">$</span><span class="va">g__561</span><span class="op">$</span><span class="va">attribute_tbl</span></span>
 <span><span class="co">#&gt; NULL</span></span></code></pre></div>
 <p>Lest pool and normalize attribute scores at each taxonomic rank (gst)
 for child taxa</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## ASR - post-order</span></span>
 <span><span class="va">taxPool</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">node</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="va">node</span><span class="op">$</span><span class="va">isLeaf</span><span class="op">)</span> <span class="op">{</span></span>
@@ -352,6 +408,9 @@ for child taxa</p>
 <span>                <span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>                <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>                    NCBI_ID <span class="op">=</span> <span class="va">node</span><span class="op">$</span><span class="va">name</span>,</span>
+<span>                    taxid <span class="op">=</span> <span class="va">node</span><span class="op">$</span><span class="va">taxid</span>,</span>
+<span>                    Taxon_name <span class="op">=</span> <span class="va">node</span><span class="op">$</span><span class="va">Taxon_name</span>,</span>
+<span>                    Rank <span class="op">=</span> <span class="va">node</span><span class="op">$</span><span class="va">Rank</span>,</span>
 <span>                    Evidence <span class="op">=</span> <span class="st">'tax'</span></span>
 <span>                <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>                <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">NCBI_ID</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -374,6 +433,10 @@ for child taxa</p>
 <span>                        <span class="va">Score</span> <span class="op">==</span> <span class="fl">0</span> <span class="op">~</span> <span class="st">'never'</span></span>
 <span>                    <span class="op">)</span></span>
 <span>                <span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>                <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>                    Attribute_source <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>                    Confidence_in_curation <span class="op">=</span> <span class="cn">NA</span></span>
+<span>                <span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>                <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html" class="external-link">distinct</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>                <span class="va">node</span><span class="op">[[</span><span class="st">'attribute_tbl'</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">res_tbl</span></span>
 <span>        <span class="op">}</span> </span>
@@ -381,32 +444,34 @@ for child taxa</p>
 <span><span class="op">}</span></span>
 <span><span class="va">ncbi_tree</span><span class="op">$</span><span class="fu">Do</span><span class="op">(</span><span class="va">taxPool</span>, traversal <span class="op">=</span> <span class="st">'post-order'</span><span class="op">)</span></span>
 <span><span class="co">## Same E. coli example:</span></span>
-<span><span class="va">ncbi_tree</span><span class="op">$</span><span class="va">d__2</span><span class="op">$</span><span class="va">p__1224</span><span class="op">$</span><span class="va">c__1236</span><span class="op">$</span><span class="va">o__91347</span><span class="op">$</span><span class="va">f__543</span><span class="op">$</span><span class="va">g__561</span><span class="op">$</span><span class="va">attribute_tbl</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 7</span></span></span>
-<span><span class="co">#&gt;   NCBI_ID Attribute      Score Attribute_type Attribute_group Evidence Frequency</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> g__561  aerobic      0.059<span style="text-decoration: underline;">8</span>  logical        aerophilicity   tax      rarely   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> g__561  facultative… 0.936   logical        aerophilicity   tax      usually  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> g__561  anaerobic    0.004<span style="text-decoration: underline;">27</span> logical        aerophilicity   tax      rarely</span></span></code></pre></div>
+<span><span class="va">ncbi_tree</span><span class="op">$</span><span class="va">k__2</span><span class="op">$</span><span class="va">p__1224</span><span class="op">$</span><span class="va">c__1236</span><span class="op">$</span><span class="va">o__91347</span><span class="op">$</span><span class="va">f__543</span><span class="op">$</span><span class="va">g__561</span><span class="op">$</span><span class="va">attribute_tbl</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 12</span></span></span>
+<span><span class="co">#&gt;   NCBI_ID Attribute        Score Attribute_type Attribute_group taxid Taxon_name</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> g__561  aerobic        0.059<span style="text-decoration: underline;">8</span>  logical        aerophilicity   561   Escherich…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> g__561  facultatively… 0.936   logical        aerophilicity   561   Escherich…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> g__561  anaerobic      0.004<span style="text-decoration: underline;">27</span> logical        aerophilicity   561   Escherich…</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 5 more variables: Rank &lt;chr&gt;, Evidence &lt;chr&gt;, Frequency &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   Attribute_source &lt;lgl&gt;, Confidence_in_curation &lt;lgl&gt;</span></span></span></code></pre></div>
 <p>How many nodes family and above with attribute table? (it should be
 zero)</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ncbi_attr_kpcof</span> <span class="op">&lt;-</span> <span class="va">ncbi_tree</span><span class="op">$</span><span class="fu">Get</span><span class="op">(</span></span>
 <span>    <span class="st">'attribute_tbl'</span>, filterFun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">node</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">'^[dpcor]__'</span>, <span class="va">node</span><span class="op">$</span><span class="va">name</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_lgl</a></span><span class="op">(</span><span class="va">ncbi_attr_kpcof</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">.x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 0</span></span></code></pre></div>
 <p>How many nodes genus and below with attribute table?</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ncbi_attr_gst</span> <span class="op">&lt;-</span> <span class="va">ncbi_tree</span><span class="op">$</span><span class="fu">Get</span><span class="op">(</span></span>
 <span>    <span class="st">'attribute_tbl'</span>, filterFun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">node</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">'^[gst]__'</span>, <span class="va">node</span><span class="op">$</span><span class="va">name</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">## A slight increase 12 to 15%</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_lgl</a></span><span class="op">(</span><span class="va">ncbi_attr_gst</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">.x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.2457067</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 0.2453662</span></span></code></pre></div>
 <p>Child taxa of E. coli with unobserved annotations can inherit these
 values with a slight penalty:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Inheritance - pre-order</span></span>
 <span><span class="va">inh1</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">node</span>,  <span class="va">adjF</span> <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="kw">if</span> <span class="op">(</span><span class="va">node</span><span class="op">$</span><span class="va">isRoot</span><span class="op">)</span></span>
@@ -422,15 +487,55 @@ values with a slight penalty:</p>
 <span>                score_diff <span class="op">=</span> <span class="va">Score</span> <span class="op">-</span> <span class="va">target_scores</span>,</span>
 <span>                Score <span class="op">=</span> <span class="va">Score</span> <span class="op">-</span> <span class="va">adjF</span> <span class="op">*</span> <span class="va">score_diff</span>,</span>
 <span>                NCBI_ID <span class="op">=</span> <span class="va">node</span><span class="op">$</span><span class="va">name</span>,</span>
-<span>                Evidence <span class="op">=</span> <span class="st">'inh'</span></span>
-<span>            <span class="op">)</span></span>
+<span>                Evidence <span class="op">=</span> <span class="st">'inh'</span>,</span>
+<span>                Taxon_name <span class="op">=</span> <span class="va">node</span><span class="op">$</span><span class="va">Taxon_name</span>,</span>
+<span>                Rank <span class="op">=</span> <span class="va">node</span><span class="op">$</span><span class="va">Rank</span>,</span>
+<span>                taxid <span class="op">=</span> <span class="va">node</span><span class="op">$</span><span class="va">taxid</span>,</span>
+<span>            <span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>            <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">target_scores</span>, <span class="op">-</span><span class="va">score_diff</span><span class="op">)</span></span>
 <span>        <span class="va">node</span><span class="op">$</span><span class="va">attribute_tbl</span> <span class="op">&lt;-</span> <span class="va">df</span></span>
 <span>    <span class="op">}</span></span>
 <span><span class="op">}</span></span>
 <span><span class="va">ncbi_tree</span><span class="op">$</span><span class="fu">Do</span><span class="op">(</span><span class="va">inh1</span>, traversal <span class="op">=</span> <span class="st">'pre-order'</span><span class="op">)</span></span></code></pre></div>
+<p>Let’s look at one example of inheritance</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">inh_nodes1</span> <span class="op">&lt;-</span> <span class="va">ncbi_tree</span><span class="op">$</span><span class="fu">Get</span><span class="op">(</span></span>
+<span>    <span class="st">'attribute_tbl'</span>, </span>
+<span>    simplify <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    filterFun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">node</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">node</span><span class="op">$</span><span class="va">attribute_tbl</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>            <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="st">'inh'</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">node</span><span class="op">$</span><span class="va">attribute_tbl</span><span class="op">$</span><span class="va">Evidence</span><span class="op">)</span><span class="op">)</span></span>
+<span>        <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>            <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span></span>
+<span>        <span class="op">}</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="va">inh_nodes1_subset</span> <span class="op">&lt;-</span> <span class="va">inh_nodes1</span><span class="op">[</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_int</a></span><span class="op">(</span><span class="va">inh_nodes1</span>, <span class="va">nrow</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">]</span></span>
+<span><span class="va">inh_nodes1_subset</span><span class="op">[[</span><span class="st">'s__2588497'</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 12</span></span></span>
+<span><span class="co">#&gt;   NCBI_ID  Attribute Score Attribute_type Attribute_group taxid Taxon_name Rank </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> s__2588… aerobic   0.612 logical        aerophilicity   2588… Noviherba… spec…</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> s__2588… facultat… 0.388 logical        aerophilicity   2588… Noviherba… spec…</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 4 more variables: Evidence &lt;chr&gt;, Frequency &lt;chr&gt;, Attribute_source &lt;lgl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   Confidence_in_curation &lt;lgl&gt;</span></span></span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">parent1</span> <span class="op">&lt;-</span> <span class="va">ncbi_tree</span><span class="op">$</span><span class="fu">Get</span><span class="op">(</span></span>
+<span>    <span class="st">'attribute_tbl'</span>, </span>
+<span>    simplify <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    filterFun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">node</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="va">node</span><span class="op">$</span><span class="va">name</span> <span class="op">==</span> <span class="st">'g__1344552'</span></span>
+<span>    <span class="op">}</span><span class="op">)</span></span>
+<span><span class="va">parent1</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 12</span></span></span>
+<span><span class="co">#&gt;   NCBI_ID  Attribute Score Attribute_type Attribute_group taxid Taxon_name Rank </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> g__1344… aerobic   0.625 logical        aerophilicity   1344… Noviherba… genus</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> g__1344… facultat… 0.375 logical        aerophilicity   1344… Noviherba… genus</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 4 more variables: Evidence &lt;chr&gt;, Frequency &lt;chr&gt;, Attribute_source &lt;lgl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   Confidence_in_curation &lt;lgl&gt;</span></span></span></code></pre></div>
 <p>Proportion of nodes at the family level and above with attributes (it
 should be zero):</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ncbi_attr_kpcof</span> <span class="op">&lt;-</span> <span class="va">ncbi_tree</span><span class="op">$</span><span class="fu">Get</span><span class="op">(</span></span>
 <span>    <span class="st">'attribute_tbl'</span>, filterFun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">node</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">'^[kpcor]__'</span>, <span class="va">node</span><span class="op">$</span><span class="va">name</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
@@ -438,19 +543,19 @@ should be zero):</p>
 <span><span class="co">#&gt; [1] 0</span></span></code></pre></div>
 <p>Proportion of nodes at the genus, species, and strain levels with
 attributes:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ncbi_attr_gst</span> <span class="op">&lt;-</span> <span class="va">ncbi_tree</span><span class="op">$</span><span class="fu">Get</span><span class="op">(</span></span>
 <span>    <span class="st">'attribute_tbl'</span>, filterFun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">node</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">'^[gst]__'</span>, <span class="va">node</span><span class="op">$</span><span class="va">name</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">## Major increase 15 to 78%</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_lgl</a></span><span class="op">(</span><span class="va">ncbi_attr_gst</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">.x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.821486</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 0.8215899</span></span></code></pre></div>
 <p>The step above actually covered must of the genus, species, and
 strains, but this is one of the datasets with the most annotations, so
 it’s expected that most of the taxa would already be covered.</p>
 <p>A formal ASR method would be nice, however.</p>
 <p>Get new attributes:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">new_attributes</span> <span class="op">&lt;-</span> <span class="va">ncbi_attr_gst</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://purrr.tidyverse.org/reference/keep.html" class="external-link">discard</a></span><span class="op">(</span><span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">.x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -461,19 +566,19 @@ it’s expected that most of the taxa would already be covered.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">new_attributes</span><span class="op">$</span><span class="va">Evidence</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;   exp   igc   inh   nas   tas   tax </span></span>
-<span><span class="co">#&gt;  3562  1102 65321  1282  3722  9508</span></span></code></pre></div>
+<span><span class="co">#&gt;  3829  1377 65207   919  3489  9493</span></span></code></pre></div>
 <p>Now almost 90% of the tips have annotations:</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">tip_data</span><span class="op">$</span><span class="va">taxid</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">new_attributes</span><span class="op">$</span><span class="va">taxid</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.9174898</span></span></code></pre></div>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<span><span class="co">#&gt; [1] 0.9174352</span></span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">new_tip_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">tip_data</span>, <span class="va">new_attributes</span>, by <span class="op">=</span> <span class="st">'taxid'</span><span class="op">)</span>  </span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">new_tip_data</span><span class="op">$</span><span class="va">Evidence</span>, useNA <span class="op">=</span> <span class="st">'always'</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  exp  igc  inh  nas  tas  tax &lt;NA&gt; </span></span>
-<span><span class="co">#&gt; 1044  287 9691  398 2785 6205 1512</span></span></code></pre></div>
+<span><span class="co">#&gt; 1252  396 9623  156 2676 6204 1513</span></span></code></pre></div>
 <p>Let’s create an input matrix for ASR with the phylogenetic tree</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">new_tip_data_completed</span> <span class="op">&lt;-</span> <span class="va">new_tip_data</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">tip_label</span>, <span class="va">Attribute</span>, <span class="va">Score</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">Attribute</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -505,35 +610,35 @@ it’s expected that most of the taxa would already be covered.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">m3</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 18325     4</span></span></code></pre></div>
 <p>Histogram of probabilites for tips with annotations</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">m1</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>prob <span class="op">=</span> <span class="va">x</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">prob</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html" class="external-link">geom_histogram</a></span><span class="op">(</span>binwidth <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'Tips with annotations, all probabilities'</span><span class="op">)</span></span></code></pre></div>
-<p><img src="phytools_files/figure-html/unnamed-chunk-25-1.png" width="700"></p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<p><img src="phytools_files/figure-html/unnamed-chunk-30-1.png" width="700"></p>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/double.html" class="external-link">as.double</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">m1</span>, <span class="fl">1</span>, <span class="va">max</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>prob <span class="op">=</span> <span class="va">y</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">prob</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html" class="external-link">geom_histogram</a></span><span class="op">(</span>binwidth <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'Tips with annotations, max probabilities'</span><span class="op">)</span></span></code></pre></div>
-<p><img src="phytools_files/figure-html/unnamed-chunk-26-1.png" width="700"></p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<p><img src="phytools_files/figure-html/unnamed-chunk-31-1.png" width="700"></p>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">z</span> <span class="op">&lt;-</span> <span class="va">m3</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>prob <span class="op">=</span> <span class="va">z</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">prob</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html" class="external-link">geom_histogram</a></span><span class="op">(</span>binwidth <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'All tips, all probabilities'</span><span class="op">)</span></span></code></pre></div>
-<p><img src="phytools_files/figure-html/unnamed-chunk-27-1.png" width="700"></p>
+<p><img src="phytools_files/figure-html/unnamed-chunk-32-1.png" width="700"></p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="asr-with-phytools">ASR with phytools<a class="anchor" aria-label="anchor" href="#asr-with-phytools"></a>
 </h2>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="op">{</span></span>
 <span>    <span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/fitMk.html" class="external-link">fitMk</a></span><span class="op">(</span></span>
 <span>        tree <span class="op">=</span> <span class="va">tree</span>, x <span class="op">=</span> <span class="va">m3</span>, model <span class="op">=</span> <span class="st">'ER'</span>, pi <span class="op">=</span> <span class="st">'fitzjohn'</span>, </span>
@@ -542,39 +647,39 @@ it’s expected that most of the taxa would already be covered.</p>
 <span>    <span class="va">asr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/ancr.html" class="external-link">ancr</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">fit</span>, tips <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt; 428.557 163.211 303.279</span></span></code></pre></div>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<span><span class="co">#&gt; 396.359 132.475 271.320</span></span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="va">asr</span><span class="op">$</span><span class="va">ace</span></span>
 <span><span class="va">node_rows</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">tree</span><span class="op">$</span><span class="va">tip.label</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span><span class="op">:</span><span class="va">tree</span><span class="op">$</span><span class="va">Nnode</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span><span class="op">[</span><span class="va">node_rows</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">tree</span><span class="op">$</span><span class="va">node.label</span></span></code></pre></div>
 <p>Probabilities of internal nodes</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/double.html" class="external-link">as.double</a></span><span class="op">(</span><span class="va">res</span><span class="op">[</span><span class="va">tree</span><span class="op">$</span><span class="va">node.label</span>,<span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">prob</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html" class="external-link">geom_histogram</a></span><span class="op">(</span>binwidth <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'Internal nodes, all probabilities'</span><span class="op">)</span></span></code></pre></div>
-<p><img src="phytools_files/figure-html/unnamed-chunk-30-1.png" width="700"></p>
+<p><img src="phytools_files/figure-html/unnamed-chunk-35-1.png" width="700"></p>
 <p>Probabilities of tips</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>prob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/double.html" class="external-link">as.double</a></span><span class="op">(</span><span class="va">res</span><span class="op">[</span><span class="va">tree</span><span class="op">$</span><span class="va">tip.label</span>,<span class="op">]</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">prob</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html" class="external-link">geom_histogram</a></span><span class="op">(</span>binwidth <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'Tips, all probabilities (after ASR)'</span><span class="op">)</span></span></code></pre></div>
-<p><img src="phytools_files/figure-html/unnamed-chunk-31-1.png" width="700"></p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<p><img src="phytools_files/figure-html/unnamed-chunk-36-1.png" width="700"></p>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">maxRes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">res</span>, <span class="fl">1</span>, <span class="va">max</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>prob <span class="op">=</span> <span class="va">maxRes</span><span class="op">[</span><span class="va">tree</span><span class="op">$</span><span class="va">node.label</span><span class="op">]</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">prob</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html" class="external-link">geom_histogram</a></span><span class="op">(</span>binwidth <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'Internal nodes, max probabilities'</span><span class="op">)</span></span></code></pre></div>
-<p><img src="phytools_files/figure-html/unnamed-chunk-32-1.png" width="700"></p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<p><img src="phytools_files/figure-html/unnamed-chunk-37-1.png" width="700"></p>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>prob <span class="op">=</span> <span class="va">maxRes</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">m2</span><span class="op">)</span><span class="op">]</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">prob</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html" class="external-link">geom_histogram</a></span><span class="op">(</span>binwidth <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'New tips, max probabilities'</span><span class="op">)</span></span></code></pre></div>
-<p><img src="phytools_files/figure-html/unnamed-chunk-33-1.png" width="700"></p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<p><img src="phytools_files/figure-html/unnamed-chunk-38-1.png" width="700"></p>
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">new_taxa_from_tips</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">m2</span><span class="op">)</span>,<span class="op">]</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">rownames_to_column</a></span><span class="op">(</span>var <span class="op">=</span> <span class="st">'tip_label'</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -597,27 +702,31 @@ it’s expected that most of the taxa would already be covered.</p>
 <span>        names_to <span class="op">=</span> <span class="st">'Attribute'</span>, values_to <span class="op">=</span> <span class="st">'Score'</span>, cols <span class="op">=</span> <span class="fl">4</span><span class="op">:</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">last_col</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Evidence <span class="op">=</span> <span class="st">'asr'</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: There was 1 warning in `mutate()`.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> In argument: `Rank = taxizedb::taxid2rank(taxid, db = "ncbi")`.</span></span>
+<span><span class="co">#&gt; Caused by warning in `taxizedb::taxid2rank()`:</span></span>
+<span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> No rank found for 2 of 1513 taxon IDs. The followings are left unrankd: 1740162, 66898</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">new_taxa_from_tips</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 6</span></span></span>
 <span><span class="co">#&gt;   NCBI_ID    Taxon_name                    Rank    Attribute      Score Evidence</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> s__2899544 Intestinirhabdus alba         species aerobic      0.064<span style="text-decoration: underline;">4</span>  asr     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> s__2899544 Intestinirhabdus alba         species aerotolerant 0.008<span style="text-decoration: underline;">14</span> asr     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> s__2899544 Intestinirhabdus alba         species anaerobic    0.008<span style="text-decoration: underline;">14</span> asr     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> s__2899544 Intestinirhabdus alba         species aerotolerant 0.008<span style="text-decoration: underline;">13</span> asr     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> s__2899544 Intestinirhabdus alba         species anaerobic    0.008<span style="text-decoration: underline;">13</span> asr     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> s__2899544 Intestinirhabdus alba         species facultative… 0.919   asr     </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> s__2799638 Tenebrionibacter intestinalis species aerobic      0.886   asr     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> s__2799638 Tenebrionibacter intestinalis species aerotolerant 0.038<span style="text-decoration: underline;">0</span>  asr</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> s__2799638 Tenebrionibacter intestinalis species aerotolerant 0.037<span style="text-decoration: underline;">9</span>  asr</span></span></code></pre></div>
 <p>Most of these new taxa are in the NCBI tree:</p>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ncbi_tree_nodes_empty</span> <span class="op">&lt;-</span> <span class="va">ncbi_tree</span><span class="op">$</span><span class="fu">Get</span><span class="op">(</span></span>
 <span>    <span class="st">'attribute_tbl'</span>, filterFun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">node</span><span class="op">)</span> <span class="op">{</span></span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">node</span><span class="op">$</span><span class="va">attribute_tbl</span><span class="op">)</span> <span class="op">||</span> <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">node</span><span class="op">$</span><span class="va">attribute_tbl</span><span class="op">)</span><span class="op">)</span>   </span>
 <span>    <span class="op">}</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="op">{</span>\<span class="op">(</span><span class="va">y</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">}</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">new_taxa_from_tips</span><span class="op">$</span><span class="va">NCBI_ID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">ncbi_tree_nodes_empty</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.7801252</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 0.7807361</span></span></code></pre></div>
 <p>Let’s check nodes</p>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nodes_annotated</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">'^\\d+(\\+\\d+)*'</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,<span class="op">]</span></span>
 <span><span class="va">new_taxa_from_nodes</span> <span class="op">&lt;-</span> <span class="va">nodes_annotated</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -628,7 +737,7 @@ it’s expected that most of the taxa would already be covered.</p>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>Rank <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">Rank</span> <span class="op">==</span> <span class="st">'superkingdom'</span>, <span class="st">'kingdom'</span>, <span class="va">Rank</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>        NCBI_ID <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
-<span>            <span class="va">Rank</span> <span class="op">==</span> <span class="st">'kingdom'</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'d__'</span>, <span class="va">NCBI_ID</span><span class="op">)</span>,</span>
+<span>            <span class="va">Rank</span> <span class="op">==</span> <span class="st">'kingdom'</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'k__'</span>, <span class="va">NCBI_ID</span><span class="op">)</span>,</span>
 <span>            <span class="va">Rank</span> <span class="op">==</span> <span class="st">'phylum'</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'p__'</span>, <span class="va">NCBI_ID</span><span class="op">)</span>,</span>
 <span>            <span class="va">Rank</span> <span class="op">==</span> <span class="st">'class'</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'c__'</span>, <span class="va">NCBI_ID</span><span class="op">)</span>,</span>
 <span>            <span class="va">Rank</span> <span class="op">==</span> <span class="st">'order'</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'o__'</span>, <span class="va">NCBI_ID</span><span class="op">)</span>,</span>
@@ -653,23 +762,23 @@ it’s expected that most of the taxa would already be covered.</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
 <span><span class="co">#&gt;   NCBI_ID Rank    Evidence Attribute                   Score</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> d__2157 kingdom asr      aerobic                 0.000<span style="text-decoration: underline;">014</span>2</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> d__2157 kingdom asr      aerotolerant            0.000<span style="text-decoration: underline;">013</span>7</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> d__2157 kingdom asr      anaerobic               1.00     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> d__2157 kingdom asr      facultatively anaerobic 0.000<span style="text-decoration: underline;">013</span>7</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> d__2    kingdom asr      aerobic                 0.000<span style="text-decoration: underline;">195</span> </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> d__2    kingdom asr      aerotolerant            0.000<span style="text-decoration: underline;">026</span>4</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> k__2157 kingdom asr      aerobic                 0.000<span style="text-decoration: underline;">014</span>2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> k__2157 kingdom asr      aerotolerant            0.000<span style="text-decoration: underline;">013</span>6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> k__2157 kingdom asr      anaerobic               1.00     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> k__2157 kingdom asr      facultatively anaerobic 0.000<span style="text-decoration: underline;">013</span>6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> k__2    kingdom asr      aerobic                 0.000<span style="text-decoration: underline;">194</span> </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> k__2    kingdom asr      aerotolerant            0.000<span style="text-decoration: underline;">026</span>3</span></span></code></pre></div>
 <p>Some new taxa can be added to the empty:</p>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">new_taxa_from_nodes</span><span class="op">$</span><span class="va">NCBI_ID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">ncbi_tree_nodes_empty</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.3264547</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 0.3284844</span></span></code></pre></div>
 <p>Actually most are already in the tree, but we got them throuh
 taxonomic binning (genus, species, and strains)</p>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">new_taxa_from_nodes</span><span class="op">$</span><span class="va">NCBI_ID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">ncbi_tree_nodes</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.9719215</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 0.9763194</span></span></code></pre></div>
 <p>Prepare new taxa:</p>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">new_taxa_for_ncbi_tree</span> <span class="op">&lt;-</span> <span class="va">new_taxa_from_tips</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">Taxon_name</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/relocate.html" class="external-link">relocate</a></span><span class="op">(</span><span class="va">NCBI_ID</span>, <span class="va">Rank</span>, <span class="va">Attribute</span>, <span class="va">Score</span>, <span class="va">Evidence</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -678,7 +787,7 @@ taxonomic binning (genus, species, and strains)</p>
 <span>    <span class="va">new_taxa_for_ncbi_tree</span>, <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">new_taxa_for_ncbi_tree</span><span class="op">$</span><span class="va">NCBI_ID</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Let’s add some taxa to the tree:</p>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ncbi_tree</span><span class="op">$</span><span class="fu">Do</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">node</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="va">cond1</span> <span class="op">&lt;-</span> <span class="va">node</span><span class="op">$</span><span class="va">name</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">new_taxa_for_ncbi_tree_list</span><span class="op">)</span></span>
 <span>    <span class="va">cond2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">node</span><span class="op">$</span><span class="va">attribute_tbl</span><span class="op">)</span> <span class="op">||</span> <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">node</span><span class="op">$</span><span class="va">attribute_tbl</span><span class="op">)</span><span class="op">)</span></span>
@@ -687,7 +796,7 @@ taxonomic binning (genus, species, and strains)</p>
 <span>    <span class="op">}</span></span>
 <span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
 <p>How many are empty after this:</p>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ncbi_tree_nodes_empty2</span> <span class="op">&lt;-</span> <span class="va">ncbi_tree</span><span class="op">$</span><span class="fu">Get</span><span class="op">(</span></span>
 <span>    <span class="st">'attribute_tbl'</span>, filterFun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">node</span><span class="op">)</span> <span class="op">{</span></span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">node</span><span class="op">$</span><span class="va">attribute_tbl</span><span class="op">)</span> <span class="op">||</span> <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">node</span><span class="op">$</span><span class="va">attribute_tbl</span><span class="op">)</span><span class="op">)</span>   </span>
@@ -695,9 +804,9 @@ taxonomic binning (genus, species, and strains)</p>
 <span>    <span class="op">{</span>\<span class="op">(</span><span class="va">y</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span><span class="op">}</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">## There are still some empty nodes that most be filled</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">ncbi_tree_nodes_empty2</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 12705</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 12748</span></span></code></pre></div>
 <p>Inheritance one more time:</p>
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">inh2</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">node</span>, <span class="va">adjF</span> <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="va">cond1</span> <span class="op">&lt;-</span> <span class="op">!</span><span class="va">node</span><span class="op">$</span><span class="va">isRoot</span> <span class="co"># don't apply this to the root</span></span>
 <span>    <span class="va">cond2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">node</span><span class="op">$</span><span class="va">attribute_tbl</span><span class="op">)</span> <span class="co"># attribute_tbl must be empty</span></span>
@@ -721,7 +830,7 @@ taxonomic binning (genus, species, and strains)</p>
 <span><span class="op">}</span></span>
 <span><span class="va">ncbi_tree</span><span class="op">$</span><span class="fu">Do</span><span class="op">(</span><span class="va">inh2</span>, traversal <span class="op">=</span> <span class="st">'pre-order'</span><span class="op">)</span></span></code></pre></div>
 <p>How many are empty after this:</p>
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ncbi_tree_nodes_empty2</span> <span class="op">&lt;-</span> <span class="va">ncbi_tree</span><span class="op">$</span><span class="fu">Get</span><span class="op">(</span></span>
 <span>    <span class="st">'attribute_tbl'</span>, filterFun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">node</span><span class="op">)</span> <span class="op">{</span></span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">node</span><span class="op">$</span><span class="va">attribute_tbl</span><span class="op">)</span> <span class="op">||</span> <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">node</span><span class="op">$</span><span class="va">attribute_tbl</span><span class="op">)</span><span class="op">)</span>   </span>
@@ -730,36 +839,35 @@ taxonomic binning (genus, species, and strains)</p>
 <span><span class="co">## Only the root (ArcBac) remains empty</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">ncbi_tree_nodes_empty2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 1</span></span></code></pre></div>
-<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ncbi_tree</span><span class="op">$</span><span class="va">d__2</span><span class="op">$</span><span class="va">p__1224</span><span class="op">$</span><span class="va">c__28211</span><span class="op">$</span><span class="va">o__356</span><span class="op">$</span><span class="va">f__335928</span><span class="op">$</span><span class="va">attribute_tbl</span></span>
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ncbi_tree</span><span class="op">$</span><span class="va">k__2</span><span class="op">$</span><span class="va">p__1224</span><span class="op">$</span><span class="va">c__28211</span><span class="op">$</span><span class="va">o__356</span><span class="op">$</span><span class="va">f__335928</span><span class="op">$</span><span class="va">attribute_tbl</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 5</span></span></span>
 <span><span class="co">#&gt;   NCBI_ID   Rank   Attribute                      Score Evidence</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> f__335928 family aerobic                 1.00         asr     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> f__335928 family aerotolerant            0.000<span style="text-decoration: underline;">000</span>046<span style="text-decoration: underline;">7</span> asr     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> f__335928 family anaerobic               0.000<span style="text-decoration: underline;">001</span>37   asr     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> f__335928 family facultatively anaerobic 0.000<span style="text-decoration: underline;">000</span>107  asr</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> f__335928 family aerotolerant            0.000<span style="text-decoration: underline;">000</span>046<span style="text-decoration: underline;">5</span> asr     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> f__335928 family anaerobic               0.000<span style="text-decoration: underline;">001</span>36   asr     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> f__335928 family facultatively anaerobic 0.000<span style="text-decoration: underline;">000</span>106  asr</span></span></code></pre></div>
 <p>Get all the tables</p>
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="va">ncbi_tree</span><span class="op">$</span><span class="fu">Get</span><span class="op">(</span></span>
 <span>    attribute <span class="op">=</span> <span class="st">'attribute_tbl'</span>, simplify <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>    filterFun <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">node</span><span class="op">)</span> <span class="va">node</span><span class="op">$</span><span class="va">name</span> <span class="op">!=</span> <span class="st">'ArcBac'</span></span>
 <span>    <span class="op">)</span></span>
 <span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">output</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">output</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 14</span></span></span>
-<span><span class="co">#&gt;   NCBI_ID Rank    Attribute        Score Evidence Attribute_type Attribute_group</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> d__2    kingdom aerobic        1.95<span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span> asr      <span style="color: #BB0000;">NA</span>             <span style="color: #BB0000;">NA</span>             </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> d__2    kingdom aerotolerant   2.64<span style="color: #949494;">e</span><span style="color: #BB0000;">-5</span> asr      <span style="color: #BB0000;">NA</span>             <span style="color: #BB0000;">NA</span>             </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> d__2    kingdom anaerobic      1.00<span style="color: #949494;">e</span>+0 asr      <span style="color: #BB0000;">NA</span>             <span style="color: #BB0000;">NA</span>             </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> d__2    kingdom facultatively… 2.64<span style="color: #949494;">e</span><span style="color: #BB0000;">-5</span> asr      <span style="color: #BB0000;">NA</span>             <span style="color: #BB0000;">NA</span>             </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> p__1224 phylum  aerobic        7.70<span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span> asr      <span style="color: #BB0000;">NA</span>             <span style="color: #BB0000;">NA</span>             </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> p__1224 phylum  aerotolerant   4.74<span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span> asr      <span style="color: #BB0000;">NA</span>             <span style="color: #BB0000;">NA</span>             </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 7 more variables: Frequency &lt;chr&gt;, target_scores &lt;dbl&gt;, score_diff &lt;dbl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   Taxon_name &lt;chr&gt;, Attribute_source &lt;chr&gt;, Confidence_in_curation &lt;chr&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   taxid &lt;chr&gt;</span></span></span></code></pre></div>
-<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 12</span></span></span>
+<span><span class="co">#&gt;   NCBI_ID Rank   Attribute   Score Evidence Attribute_type Attribute_group taxid</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> k__2    kingd… aerobic   1.94<span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span> asr      <span style="color: #BB0000;">NA</span>             <span style="color: #BB0000;">NA</span>              <span style="color: #BB0000;">NA</span>   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> k__2    kingd… aerotole… 2.63<span style="color: #949494;">e</span><span style="color: #BB0000;">-5</span> asr      <span style="color: #BB0000;">NA</span>             <span style="color: #BB0000;">NA</span>              <span style="color: #BB0000;">NA</span>   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> k__2    kingd… anaerobic 1.00<span style="color: #949494;">e</span>+0 asr      <span style="color: #BB0000;">NA</span>             <span style="color: #BB0000;">NA</span>              <span style="color: #BB0000;">NA</span>   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> k__2    kingd… facultat… 2.63<span style="color: #949494;">e</span><span style="color: #BB0000;">-5</span> asr      <span style="color: #BB0000;">NA</span>             <span style="color: #BB0000;">NA</span>              <span style="color: #BB0000;">NA</span>   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> p__1224 phylum aerobic   8.42<span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span> asr      <span style="color: #BB0000;">NA</span>             <span style="color: #BB0000;">NA</span>              <span style="color: #BB0000;">NA</span>   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> p__1224 phylum aerotole… 4.27<span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span> asr      <span style="color: #BB0000;">NA</span>             <span style="color: #BB0000;">NA</span>              <span style="color: #BB0000;">NA</span>   </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 4 more variables: Taxon_name &lt;chr&gt;, Frequency &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   Attribute_source &lt;chr&gt;, Confidence_in_curation &lt;ord&gt;</span></span></span></code></pre></div>
+<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">min_thr</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">phys_data_ready</span><span class="op">$</span><span class="va">Attribute</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">addTaxa1</span> <span class="op">&lt;-</span> <span class="va">phys_data_ready</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="va">NCBI_ID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">NCBI_ID</span><span class="op">)</span><span class="op">)</span></span>
@@ -768,12 +876,12 @@ taxonomic binning (genus, species, and strains)</p>
 <span><span class="va">final_output</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">output</span>, <span class="va">addTaxa1</span>, <span class="va">addTaxa2</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Score</span> <span class="op">&gt;</span> <span class="va">min_thr</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">final_output</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 89365    14</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 89397    12</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="session-information">Session information<a class="anchor" aria-label="anchor" href="#session-information"></a>
 </h2>
-<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">sessioninfo</span><span class="fu">::</span><span class="fu"><a href="https://r-lib.github.io/sessioninfo/reference/session_info.html" class="external-link">session_info</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">─ Session info ───────────────────────────────────────────────────────────────</span></span></span>
 <span><span class="co">#&gt;  <span style="color: #555555; font-style: italic;">setting </span> <span style="color: #555555; font-style: italic;">value</span></span></span>
