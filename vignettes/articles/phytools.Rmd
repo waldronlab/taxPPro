@@ -78,7 +78,7 @@ message(format(n_dropped_rows, big.mark = ','), ' rows were dropped.')
 
 Divide data in two sets between taxa with or without NCBI_ID:
 
-```{r, warning=TRUE}
+```{r}
 lgl_vct <- is.na(phys_data$NCBI_ID) | phys_data$NCBI_ID == 'unknown'
 set_with_ids <- phys_data |> 
     filter(!lgl_vct) |> 
