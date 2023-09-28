@@ -1,22 +1,16 @@
-#' Convert frequency values to numeric scores
+#' Frequency to scores
 #'
-#' \code{freq2Scores} converts the keywords in the `Frequency`
-#' column of a bugphyzz dataset into numeric scores, which are added in a
-#' additional column named `Score`.
+#' \code{freq2Scores} converts the keywords in the "Frequency"
+#' column of a bugphyzz dataset into numeric scores, which are interpreted
+#' as probabilities.
 #'
-#' @param x A  character vector.
+#' @param x A character vector.
 #'
 #' @return A numeric vector.
 #'
 #' @export
 #'
 freq2Scores <- function(x) {
-  # attr_type <- unique(df$Attribute_type)
-  # if (attr_type %in% c('numeric', 'range')) {
-  #   df$Frequency <- ifelse(
-  #     df$Frequency == 'unknown', 'always', df$Frequency
-  #   )
-  # }
   x <- tolower(x)
   dplyr::case_when(
     x == 'always' ~ 1,
@@ -28,21 +22,19 @@ freq2Scores <- function(x) {
 
 #' Scores to frequency
 #'
-#' \code{scores2Freq} performs the opposite of \code{freq2scores}.
+#' \code{scores2Freq} converts numeric scores, stored in the "Score" column in
+#' a bugphyzz dataset, into frequency keywords.
 #'
 #' @param x A numeric vector.
 #'
-#' @return A character vector
+#' @return A character vector.
+#'
 #' @export
 #'
 scores2Freq <- function(x) {
     dplyr::case_when(
         x == 1 ~ 'always',
         x >= 0.9 & x < 1 ~ 'usually',
-        ## often is missing here, which is 70%. That's why I
-        ## previously lowered the threshold to 0.8.
-        ## Now sometimes range is between 0.5 and 0.8999999999999
-        ## Which means that we're not really using grammarist ranges (our source)
         x >= 0.5 & x < 0.9 ~ 'sometimes',
         x > 0 & x < 0.5 ~ 'rarely',
         x == 0  ~ 'never'
@@ -108,6 +100,3 @@ myFun <- function(x, adjF = 0.1) {
 cleanNode <- function(node) {
     node$attribute_tbl <- NULL
 }
-
-
-

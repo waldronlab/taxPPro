@@ -10,8 +10,9 @@ scores2Freq(x)
 \item{x}{A numeric vector.}
 }
 \value{
-A character vector
+A character vector.
 }
 \description{
-\code{scores2Freq} performs the opposite of \code{freq2scores}.
+\code{scores2Freq} converts numeric scores, stored in the "Score" column in
+a bugphyzz dataset, into frequency keywords.
 }
