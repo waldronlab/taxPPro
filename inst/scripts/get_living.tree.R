@@ -345,6 +345,22 @@ write.table(
 # test3 <- left_join(testdf, test2, by = 'names')
 
 
+#
+# node_numbers <- length(tree$tip.label) + 1:tree$Nnode
+#
+# nn_node <- node_numbers[which(tree$node.label == '2212440+2212731+125627')]
+#
+# hh <- phytools::getDescendants(tree, nn_node)
+#
+# labels <- tree$tip.label[c(2393, 2394)]
+#
+# tree_data |>
+#     filter(tip_label %in% labels)
+#
+
+
+
+
 
 
 
