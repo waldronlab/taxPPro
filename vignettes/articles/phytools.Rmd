@@ -450,11 +450,6 @@ parent1[[1]]
 ```
 
 
-
-
-
-
-
 Proportion of nodes at the family level and above with attributes (it should be zero):
 
 ```{r}
@@ -503,7 +498,6 @@ mean(tip_data$taxid %in% new_attributes$taxid)
 new_tip_data <- left_join(tip_data, new_attributes, by = 'taxid')  
 table(new_tip_data$Evidence, useNA = 'always')
 ```
-
 
 Let's create an input matrix for ASR with the phylogenetic tree
 
@@ -644,7 +638,21 @@ new_taxa_from_tips <- res[rownames(m2),] |>
     pivot_longer(
         names_to = 'Attribute', values_to = 'Score', cols = 4:last_col()
     ) |> 
-    mutate(Evidence = 'asr')
+    mutate(
+        Evidence = 'asr',
+        Attribute_source = NA,
+        Confidence_in_curation = NA,
+        taxid = sub('\\w__', '', NCBI_ID),
+        Attribute_type = Attribute_type_var,
+        Attribute_group = Attribute_group_var,
+        Frequency = case_when(
+            Score == 1 ~ 'always',
+            Score > 0.9 ~ 'usually',
+            Score >= 0.5 ~ 'sometimes',
+            Score > 0 & Score < 0.5 ~ 'rarely',
+            Score == 0 ~ 'never'
+        )
+    )
 head(new_taxa_from_tips)
 ```
 
@@ -660,7 +668,6 @@ mean(new_taxa_from_tips$NCBI_ID %in% ncbi_tree_nodes_empty)
 ```
 
 Let's check nodes
-
 
 ```{r}
 nodes_annotated <- res[which(grepl('^\\d+(\\+\\d+)*', rownames(res))),]
@@ -693,17 +700,32 @@ new_taxa_from_nodes <- nodes_annotated |>
     relocate(NCBI_ID, Rank, Evidence) |> 
     pivot_longer(
         cols = 4:last_col(), names_to = 'Attribute', values_to = 'Score'
+    ) |> 
+    mutate(
+        Attribute_source = NA,
+        Confidence_in_curation = NA,
+        Attribute_group = Attribute_group_var,
+        Attribute_type = Attribute_type_var,
+        taxid = sub('\\w__', '', NCBI_ID),
+        Taxon_name = taxizedb::taxid2name(taxid, db = 'ncbi'),
+        Frequency = case_when(
+            Score == 1 ~ 'always',
+            Score > 0.9 ~ 'usually',
+            Score >= 0.5 ~ 'sometimes',
+            Score > 0 & Score < 0.5 ~ 'rarely',
+            Score == 0 ~ 'never'
+        )
     )
 head(new_taxa_from_nodes)
 ```
 
-Some new taxa can be added to the empty:
+Some new taxa can be added to the nodes with empty attribute table:
 
 ```{r}
 mean(new_taxa_from_nodes$NCBI_ID %in% ncbi_tree_nodes_empty)
 ```
 
-Actually most are already in the tree, but we got them throuh taxonomic
+Actually most are already in the tree, but we got them through taxonomic
 binning (genus, species, and strains)
 
 ```{r}
@@ -715,7 +737,7 @@ Prepare new taxa:
 
 ```{r}
 new_taxa_for_ncbi_tree <- new_taxa_from_tips |> 
-    select(-Taxon_name) |> 
+    # select(-Taxon_name) |> 
     relocate(NCBI_ID, Rank, Attribute, Score, Evidence) |> 
     bind_rows(new_taxa_from_nodes)
 new_taxa_for_ncbi_tree_list <- split(
@@ -767,7 +789,23 @@ inh2 <- function(node, adjF = 0.1) {
                 Evidence = 'inh2'
             ) |>
             select(-target_scores, -score_diff) |> 
-            relocate(NCBI_ID)
+            relocate(NCBI_ID) |> 
+            mutate(
+                Attribute_source = NA,
+                Confidence_in_curation = NA,
+                Attribute_group = Attribute_group_var,
+                Attribute_type = Attribute_type_var,
+                taxid = node$taxid,
+                Taxon_name = node$Taxon_name,
+                Rank = node$Rank,
+                Frequency = case_when(
+                    Score == 1 ~ 'always',
+                    Score > 0.9 ~ 'usually',
+                    Score >= 0.5 ~ 'sometimes',
+                    Score > 0 & Score < 0.5 ~ 'rarely',
+                    Score == 0 ~ 'never'
+                )
+            )
         node$attribute_tbl <- res
     }
 }
@@ -801,6 +839,26 @@ output <- ncbi_tree$Get(
 output <- bind_rows(output)
 head(output)
 ```
+
+Number of annotations per evidence
+
+```{r}
+table(output$Evidence, useNA = 'always')
+```
+
+
+NAs are the one that were completed with tidyr::complete, so all of them
+have score 0
+
+```{r}
+output |> 
+    filter(is.na(Evidence)) |> 
+    pull(Score) |> 
+    unique()
+```
+
+
+Final annotations passing the min threshold (0.25 for aerophilicity)
 
 ```{r}
 min_thr <- 1 / length(unique(phys_data_ready$Attribute))
