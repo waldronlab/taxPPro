@@ -41,6 +41,22 @@ scores2Freq <- function(x) {
     )
 }
 
+
+#' Confidence in curation to factor
+#'
+#' \code{conf2Fct} converts a vector from the Confidence_in_curation
+#' column in a bugphyzz dataset to a factor.
+#'
+#' @param x A character vector.
+#'
+#' @return A factor.
+#'
+#' @export
+#'
+conf2Fct <- function(x) {
+    factor(x, levels = c('low', 'medium', 'high'), ordered = TRUE)
+}
+
 ## Function with valid ranks for taxa
 .validRanks <- function() {
     c('strain', 'species', 'genus', 'family', 'order', 'class', 'phylum',
