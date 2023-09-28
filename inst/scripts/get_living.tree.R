@@ -171,6 +171,16 @@ tree$tip.label <- gsub("\\[T\\]", '', tree$tip.label)
 
 all(tree$tip.label %in% tree_data$tip_label)
 
+
+tree_data$taxid
+tree_data$Taxon_name <- taxizedb::taxid2name(tree_data$taxid, db = 'ncbi')
+tree_data$Rank <- taxizedb::taxid2rank(tree_data$taxid, db = 'ncbi')
+
+
+node_data$taxid
+node_data$Taxon_name <- taxizedb::taxid2name(node_data$taxid, db = 'ncbi')
+node_data$Rank <- taxizedb::taxid2rank(node_data$taxid, db = 'ncbi')
+
 # Export data -------------------------------------------------------------
 tree_fname <- file.path('inst', 'extdata', 'livingTree.newick')
 ape::write.tree(tree, tree_fname)
