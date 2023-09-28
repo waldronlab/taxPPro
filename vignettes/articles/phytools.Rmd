@@ -200,7 +200,10 @@ phys_data_ready <- bind_rows(set_with_ids, set_without_ids) |>
         )
     ) |> 
     filter(!is.na(NCBI_ID)) |> # NAs migth be added because of the mutate call above
-    mutate(taxid = sub('^\\w__', '', NCBI_ID))
+    mutate(taxid = sub('^\\w__', '', NCBI_ID)) |> 
+    complete(
+        NCBI_ID, Attribute, fill = list(Score = 0)
+    )
 ## Split in lists to use with the NCBI taxonomic tree
 phys_data_list <- split(phys_data_ready, factor(phys_data_ready$NCBI_ID))
 length(phys_data_list)
@@ -321,15 +324,17 @@ taxPool <- function(node) {
             res_tbl <- purrr::discard(attribute_tbls, is.null) |>
                 dplyr::bind_rows() |>
                 dplyr::select(
-                    NCBI_ID, Attribute, Score,
-                    Attribute_type, Attribute_group
+                    NCBI_ID, Attribute, Score
+                    # Attribute_type, Attribute_group
                 ) |> 
                 dplyr::mutate(
                     NCBI_ID = node$name,
                     taxid = node$taxid,
                     Taxon_name = node$Taxon_name,
                     Rank = node$Rank,
-                    Evidence = 'tax'
+                    Evidence = 'tax',
+                    Attribute_group = Attribute_group_var,
+                    Attribute_type = Attribute_type_var
                 ) |>
                 group_by(NCBI_ID) |>
                 mutate(
