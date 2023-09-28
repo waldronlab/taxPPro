@@ -12,3 +12,4 @@ vignettes/.gitignore
 .Rproj.user
 .git
 ^data-raw$
+^images$
