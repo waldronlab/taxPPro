@@ -276,7 +276,10 @@ sources:</p>
 <span>        <span class="op">)</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">NCBI_ID</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="co"># NAs migth be added because of the mutate call above</span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>taxid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span><span class="st">'^\\w__'</span>, <span class="st">''</span>, <span class="va">NCBI_ID</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>taxid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span><span class="st">'^\\w__'</span>, <span class="st">''</span>, <span class="va">NCBI_ID</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://tidyr.tidyverse.org/reference/complete.html" class="external-link">complete</a></span><span class="op">(</span></span>
+<span>        <span class="va">NCBI_ID</span>, <span class="va">Attribute</span>, fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Score <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
 <span><span class="co">## Split in lists to use with the NCBI taxonomic tree</span></span>
 <span><span class="va">phys_data_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/split.html" class="external-link">split</a></span><span class="op">(</span><span class="va">phys_data_ready</span>, <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">phys_data_ready</span><span class="op">$</span><span class="va">NCBI_ID</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">phys_data_list</span><span class="op">)</span></span>
@@ -332,7 +335,7 @@ sources:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ncbi_tree_nodes_gst</span> <span class="op">&lt;-</span> <span class="va">ncbi_tree_nodes</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">'^[gst]__'</span>, <span class="va">ncbi_tree_nodes</span><span class="op">)</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">phys_data_ready</span><span class="op">$</span><span class="va">NCBI_ID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">ncbi_tree_nodes_gst</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.9722653</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 0.9725932</span></span></code></pre></div>
 <p>Proportion of NCBI tree nodes (gst) with annotations:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">ncbi_tree_nodes_gst</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">phys_data_ready</span><span class="op">$</span><span class="va">NCBI_ID</span><span class="op">)</span></span>
@@ -341,7 +344,7 @@ sources:</p>
 tips:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">phys_data_ready</span><span class="op">$</span><span class="va">taxid</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">tip_data</span><span class="op">$</span><span class="va">taxid</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.6361606</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 0.1614951</span></span></code></pre></div>
 <p>Proportion of tips in the phylogenetic tree with annotations:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">tip_data</span><span class="op">$</span><span class="va">taxid</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">phys_data_ready</span><span class="op">$</span><span class="va">taxid</span><span class="op">)</span></span>
@@ -364,11 +367,13 @@ tips:</p>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span><span class="co">## An example (E. coli):</span></span>
 <span><span class="va">ncbi_tree</span><span class="op">$</span><span class="va">k__2</span><span class="op">$</span><span class="va">p__1224</span><span class="op">$</span><span class="va">c__1236</span><span class="op">$</span><span class="va">o__91347</span><span class="op">$</span><span class="va">f__543</span><span class="op">$</span><span class="va">g__561</span><span class="op">$</span><span class="va">s__562</span><span class="op">$</span><span class="va">attribute_tbl</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 12</span></span></span>
-<span><span class="co">#&gt;   NCBI_ID Taxon_name       Attribute   Frequency Score Evidence Attribute_source</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> s__562  Escherichia coli aerobic     sometimes   0.5 tas      Madin_2020      </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> s__562  Escherichia coli facultativ… sometimes   0.5 igc      ProTraits       </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 12</span></span></span>
+<span><span class="co">#&gt;   NCBI_ID Attribute         Taxon_name Frequency Score Evidence Attribute_source</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> s__562  aerobic           Escherich… sometimes   0.5 tas      Madin_2020      </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> s__562  aerotolerant      <span style="color: #BB0000;">NA</span>         <span style="color: #BB0000;">NA</span>          0   <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span>              </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> s__562  anaerobic         <span style="color: #BB0000;">NA</span>         <span style="color: #BB0000;">NA</span>          0   <span style="color: #BB0000;">NA</span>       <span style="color: #BB0000;">NA</span>              </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> s__562  facultatively an… Escherich… sometimes   0.5 igc      ProTraits       </span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 5 more variables: Confidence_in_curation &lt;ord&gt;, Attribute_type &lt;chr&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   Attribute_group &lt;chr&gt;, Rank &lt;chr&gt;, taxid &lt;chr&gt;</span></span></span></code></pre></div>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
@@ -403,15 +408,17 @@ for child taxa</p>
 <span>            <span class="va">res_tbl</span> <span class="op">&lt;-</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/keep.html" class="external-link">discard</a></span><span class="op">(</span><span class="va">attribute_tbls</span>, <span class="va">is.null</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>                <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>                <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span></span>
-<span>                    <span class="va">NCBI_ID</span>, <span class="va">Attribute</span>, <span class="va">Score</span>,</span>
-<span>                    <span class="va">Attribute_type</span>, <span class="va">Attribute_group</span></span>
+<span>                    <span class="va">NCBI_ID</span>, <span class="va">Attribute</span>, <span class="va">Score</span></span>
+<span>                    <span class="co"># Attribute_type, Attribute_group</span></span>
 <span>                <span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>                <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>                    NCBI_ID <span class="op">=</span> <span class="va">node</span><span class="op">$</span><span class="va">name</span>,</span>
 <span>                    taxid <span class="op">=</span> <span class="va">node</span><span class="op">$</span><span class="va">taxid</span>,</span>
 <span>                    Taxon_name <span class="op">=</span> <span class="va">node</span><span class="op">$</span><span class="va">Taxon_name</span>,</span>
 <span>                    Rank <span class="op">=</span> <span class="va">node</span><span class="op">$</span><span class="va">Rank</span>,</span>
-<span>                    Evidence <span class="op">=</span> <span class="st">'tax'</span></span>
+<span>                    Evidence <span class="op">=</span> <span class="st">'tax'</span>,</span>
+<span>                    Attribute_group <span class="op">=</span> <span class="va">Attribute_group_var</span>,</span>
+<span>                    Attribute_type <span class="op">=</span> <span class="va">Attribute_type_var</span></span>
 <span>                <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>                <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">NCBI_ID</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>                <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
@@ -445,13 +452,14 @@ for child taxa</p>
 <span><span class="va">ncbi_tree</span><span class="op">$</span><span class="fu">Do</span><span class="op">(</span><span class="va">taxPool</span>, traversal <span class="op">=</span> <span class="st">'post-order'</span><span class="op">)</span></span>
 <span><span class="co">## Same E. coli example:</span></span>
 <span><span class="va">ncbi_tree</span><span class="op">$</span><span class="va">k__2</span><span class="op">$</span><span class="va">p__1224</span><span class="op">$</span><span class="va">c__1236</span><span class="op">$</span><span class="va">o__91347</span><span class="op">$</span><span class="va">f__543</span><span class="op">$</span><span class="va">g__561</span><span class="op">$</span><span class="va">attribute_tbl</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 12</span></span></span>
-<span><span class="co">#&gt;   NCBI_ID Attribute        Score Attribute_type Attribute_group taxid Taxon_name</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> g__561  aerobic        0.059<span style="text-decoration: underline;">8</span>  logical        aerophilicity   561   Escherich…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> g__561  facultatively… 0.936   logical        aerophilicity   561   Escherich…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> g__561  anaerobic      0.004<span style="text-decoration: underline;">27</span> logical        aerophilicity   561   Escherich…</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 5 more variables: Rank &lt;chr&gt;, Evidence &lt;chr&gt;, Frequency &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 12</span></span></span>
+<span><span class="co">#&gt;   NCBI_ID Attribute        Score taxid Taxon_name Rank  Evidence Attribute_group</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> g__561  aerobic        0.059<span style="text-decoration: underline;">8</span>  561   Escherich… genus tax      aerophilicity  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> g__561  aerotolerant   0       561   Escherich… genus tax      aerophilicity  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> g__561  anaerobic      0.004<span style="text-decoration: underline;">27</span> 561   Escherich… genus tax      aerophilicity  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> g__561  facultatively… 0.936   561   Escherich… genus tax      aerophilicity  </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 4 more variables: Attribute_type &lt;chr&gt;, Frequency &lt;chr&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   Attribute_source &lt;lgl&gt;, Confidence_in_curation &lt;lgl&gt;</span></span></span></code></pre></div>
 <p>How many nodes family and above with attribute table? (it should be
 zero)</p>
@@ -511,13 +519,15 @@ values with a slight penalty:</p>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span><span class="va">inh_nodes1_subset</span> <span class="op">&lt;-</span> <span class="va">inh_nodes1</span><span class="op">[</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map_int</a></span><span class="op">(</span><span class="va">inh_nodes1</span>, <span class="va">nrow</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">]</span></span>
 <span><span class="va">inh_nodes1_subset</span><span class="op">[[</span><span class="st">'s__2588497'</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 12</span></span></span>
-<span><span class="co">#&gt;   NCBI_ID  Attribute Score Attribute_type Attribute_group taxid Taxon_name Rank </span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> s__2588… aerobic   0.612 logical        aerophilicity   2588… Noviherba… spec…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> s__2588… facultat… 0.388 logical        aerophilicity   2588… Noviherba… spec…</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 4 more variables: Evidence &lt;chr&gt;, Frequency &lt;chr&gt;, Attribute_source &lt;lgl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   Confidence_in_curation &lt;lgl&gt;</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 12</span></span></span>
+<span><span class="co">#&gt;   NCBI_ID    Attribute     Score taxid Taxon_name Rank  Evidence Attribute_group</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> s__2588497 aerobic       0.588 2588… Noviherba… spec… inh      aerophilicity  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> s__2588497 aerotolerant  0.025 2588… Noviherba… spec… inh      aerophilicity  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> s__2588497 anaerobic     0.025 2588… Noviherba… spec… inh      aerophilicity  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> s__2588497 facultativel… 0.362 2588… Noviherba… spec… inh      aerophilicity  </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 4 more variables: Attribute_type &lt;chr&gt;, Frequency &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   Attribute_source &lt;lgl&gt;, Confidence_in_curation &lt;lgl&gt;</span></span></span></code></pre></div>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">parent1</span> <span class="op">&lt;-</span> <span class="va">ncbi_tree</span><span class="op">$</span><span class="fu">Get</span><span class="op">(</span></span>
 <span>    <span class="st">'attribute_tbl'</span>, </span>
@@ -526,13 +536,15 @@ values with a slight penalty:</p>
 <span>        <span class="va">node</span><span class="op">$</span><span class="va">name</span> <span class="op">==</span> <span class="st">'g__1344552'</span></span>
 <span>    <span class="op">}</span><span class="op">)</span></span>
 <span><span class="va">parent1</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 12</span></span></span>
-<span><span class="co">#&gt;   NCBI_ID  Attribute Score Attribute_type Attribute_group taxid Taxon_name Rank </span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> g__1344… aerobic   0.625 logical        aerophilicity   1344… Noviherba… genus</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> g__1344… facultat… 0.375 logical        aerophilicity   1344… Noviherba… genus</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 4 more variables: Evidence &lt;chr&gt;, Frequency &lt;chr&gt;, Attribute_source &lt;lgl&gt;,</span></span></span>
-<span><span class="co">#&gt; <span style="color: #949494;">#   Confidence_in_curation &lt;lgl&gt;</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 12</span></span></span>
+<span><span class="co">#&gt;   NCBI_ID    Attribute     Score taxid Taxon_name Rank  Evidence Attribute_group</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> g__1344552 aerobic       0.625 1344… Noviherba… genus tax      aerophilicity  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> g__1344552 aerotolerant  0     1344… Noviherba… genus tax      aerophilicity  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> g__1344552 anaerobic     0     1344… Noviherba… genus tax      aerophilicity  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> g__1344552 facultativel… 0.375 1344… Noviherba… genus tax      aerophilicity  </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 4 more variables: Attribute_type &lt;chr&gt;, Frequency &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   Attribute_source &lt;lgl&gt;, Confidence_in_curation &lt;lgl&gt;</span></span></span></code></pre></div>
 <p>Proportion of nodes at the family level and above with attributes (it
 should be zero):</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
@@ -565,8 +577,8 @@ it’s expected that most of the taxa would already be covered.</p>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">phys_data_ready</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">new_attributes</span><span class="op">$</span><span class="va">Evidence</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   exp   igc   inh   nas   tas   tax </span></span>
-<span><span class="co">#&gt;  3829  1377 65207   919  3489  9493</span></span></code></pre></div>
+<span><span class="co">#&gt;    exp    igc    inh    nas    tas    tax </span></span>
+<span><span class="co">#&gt;   3829   1377 170984    919   3489  17563</span></span></code></pre></div>
 <p>Now almost 90% of the tips have annotations:</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">tip_data</span><span class="op">$</span><span class="va">taxid</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">new_attributes</span><span class="op">$</span><span class="va">taxid</span><span class="op">)</span></span>
@@ -575,8 +587,8 @@ it’s expected that most of the taxa would already be covered.</p>
 <code class="sourceCode R"><span><span class="va">new_tip_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">tip_data</span>, <span class="va">new_attributes</span>, by <span class="op">=</span> <span class="st">'taxid'</span><span class="op">)</span>  </span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">new_tip_data</span><span class="op">$</span><span class="va">Evidence</span>, useNA <span class="op">=</span> <span class="st">'always'</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;  exp  igc  inh  nas  tas  tax &lt;NA&gt; </span></span>
-<span><span class="co">#&gt; 1252  396 9623  156 2676 6204 1513</span></span></code></pre></div>
+<span><span class="co">#&gt;   exp   igc   inh   nas   tas   tax  &lt;NA&gt; </span></span>
+<span><span class="co">#&gt;  1252   396 25072   156  2676  7497  1513</span></span></code></pre></div>
 <p>Let’s create an input matrix for ASR with the phylogenetic tree</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">new_tip_data_completed</span> <span class="op">&lt;-</span> <span class="va">new_tip_data</span> <span class="op">|&gt;</span> </span>
@@ -647,7 +659,7 @@ it’s expected that most of the taxa would already be covered.</p>
 <span>    <span class="va">asr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/ancr.html" class="external-link">ancr</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">fit</span>, tips <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt; 396.359 132.475 271.320</span></span></code></pre></div>
+<span><span class="co">#&gt; 356.163 121.082 244.111</span></span></code></pre></div>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="va">asr</span><span class="op">$</span><span class="va">ace</span></span>
 <span><span class="va">node_rows</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">tree</span><span class="op">$</span><span class="va">tip.label</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span><span class="op">:</span><span class="va">tree</span><span class="op">$</span><span class="va">Nnode</span></span>
@@ -710,12 +722,12 @@ it’s expected that most of the taxa would already be covered.</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 6</span></span></span>
 <span><span class="co">#&gt;   NCBI_ID    Taxon_name                    Rank    Attribute      Score Evidence</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> s__2899544 Intestinirhabdus alba         species aerobic      0.064<span style="text-decoration: underline;">4</span>  asr     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> s__2899544 Intestinirhabdus alba         species aerotolerant 0.008<span style="text-decoration: underline;">13</span> asr     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> s__2899544 Intestinirhabdus alba         species anaerobic    0.008<span style="text-decoration: underline;">13</span> asr     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> s__2899544 Intestinirhabdus alba         species facultative… 0.919   asr     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> s__2799638 Tenebrionibacter intestinalis species aerobic      0.886   asr     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> s__2799638 Tenebrionibacter intestinalis species aerotolerant 0.037<span style="text-decoration: underline;">9</span>  asr</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> s__2899544 Intestinirhabdus alba         species aerobic      0.063<span style="text-decoration: underline;">1</span>  asr     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> s__2899544 Intestinirhabdus alba         species aerotolerant 0.007<span style="text-decoration: underline;">93</span> asr     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> s__2899544 Intestinirhabdus alba         species anaerobic    0.007<span style="text-decoration: underline;">93</span> asr     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> s__2899544 Intestinirhabdus alba         species facultative… 0.921   asr     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> s__2799638 Tenebrionibacter intestinalis species aerobic      0.888   asr     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> s__2799638 Tenebrionibacter intestinalis species aerotolerant 0.037<span style="text-decoration: underline;">1</span>  asr</span></span></code></pre></div>
 <p>Most of these new taxa are in the NCBI tree:</p>
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ncbi_tree_nodes_empty</span> <span class="op">&lt;-</span> <span class="va">ncbi_tree</span><span class="op">$</span><span class="fu">Get</span><span class="op">(</span></span>
@@ -762,12 +774,12 @@ it’s expected that most of the taxa would already be covered.</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
 <span><span class="co">#&gt;   NCBI_ID Rank    Evidence Attribute                   Score</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> k__2157 kingdom asr      aerobic                 0.000<span style="text-decoration: underline;">014</span>2</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> k__2157 kingdom asr      aerotolerant            0.000<span style="text-decoration: underline;">013</span>6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> k__2157 kingdom asr      aerobic                 0.000<span style="text-decoration: underline;">012</span>7</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> k__2157 kingdom asr      aerotolerant            0.000<span style="text-decoration: underline;">012</span>2</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> k__2157 kingdom asr      anaerobic               1.00     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> k__2157 kingdom asr      facultatively anaerobic 0.000<span style="text-decoration: underline;">013</span>6</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> k__2    kingdom asr      aerobic                 0.000<span style="text-decoration: underline;">194</span> </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> k__2    kingdom asr      aerotolerant            0.000<span style="text-decoration: underline;">026</span>3</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> k__2157 kingdom asr      facultatively anaerobic 0.000<span style="text-decoration: underline;">012</span>2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> k__2    kingdom asr      aerobic                 0.000<span style="text-decoration: underline;">180</span> </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> k__2    kingdom asr      aerotolerant            0.000<span style="text-decoration: underline;">024</span>1</span></span></code></pre></div>
 <p>Some new taxa can be added to the empty:</p>
 <div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">new_taxa_from_nodes</span><span class="op">$</span><span class="va">NCBI_ID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">ncbi_tree_nodes_empty</span><span class="op">)</span></span>
@@ -845,9 +857,9 @@ taxonomic binning (genus, species, and strains)</p>
 <span><span class="co">#&gt;   NCBI_ID   Rank   Attribute                      Score Evidence</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> f__335928 family aerobic                 1.00         asr     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> f__335928 family aerotolerant            0.000<span style="text-decoration: underline;">000</span>046<span style="text-decoration: underline;">5</span> asr     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> f__335928 family anaerobic               0.000<span style="text-decoration: underline;">001</span>36   asr     </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> f__335928 family facultatively anaerobic 0.000<span style="text-decoration: underline;">000</span>106  asr</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> f__335928 family aerotolerant            0.000<span style="text-decoration: underline;">000</span>043<span style="text-decoration: underline;">1</span> asr     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> f__335928 family anaerobic               0.000<span style="text-decoration: underline;">001</span>29   asr     </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> f__335928 family facultatively anaerobic 0.000<span style="text-decoration: underline;">000</span>098<span style="text-decoration: underline;">8</span> asr</span></span></code></pre></div>
 <p>Get all the tables</p>
 <div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="va">ncbi_tree</span><span class="op">$</span><span class="fu">Get</span><span class="op">(</span></span>
@@ -857,15 +869,15 @@ taxonomic binning (genus, species, and strains)</p>
 <span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">output</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">output</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 12</span></span></span>
-<span><span class="co">#&gt;   NCBI_ID Rank   Attribute   Score Evidence Attribute_type Attribute_group taxid</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> k__2    kingd… aerobic   1.94<span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span> asr      <span style="color: #BB0000;">NA</span>             <span style="color: #BB0000;">NA</span>              <span style="color: #BB0000;">NA</span>   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> k__2    kingd… aerotole… 2.63<span style="color: #949494;">e</span><span style="color: #BB0000;">-5</span> asr      <span style="color: #BB0000;">NA</span>             <span style="color: #BB0000;">NA</span>              <span style="color: #BB0000;">NA</span>   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> k__2    kingd… anaerobic 1.00<span style="color: #949494;">e</span>+0 asr      <span style="color: #BB0000;">NA</span>             <span style="color: #BB0000;">NA</span>              <span style="color: #BB0000;">NA</span>   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> k__2    kingd… facultat… 2.63<span style="color: #949494;">e</span><span style="color: #BB0000;">-5</span> asr      <span style="color: #BB0000;">NA</span>             <span style="color: #BB0000;">NA</span>              <span style="color: #BB0000;">NA</span>   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> p__1224 phylum aerobic   8.42<span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span> asr      <span style="color: #BB0000;">NA</span>             <span style="color: #BB0000;">NA</span>              <span style="color: #BB0000;">NA</span>   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> p__1224 phylum aerotole… 4.27<span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span> asr      <span style="color: #BB0000;">NA</span>             <span style="color: #BB0000;">NA</span>              <span style="color: #BB0000;">NA</span>   </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 4 more variables: Taxon_name &lt;chr&gt;, Frequency &lt;chr&gt;,</span></span></span>
+<span><span class="co">#&gt;   NCBI_ID Rank    Attribute      Score Evidence taxid Taxon_name Attribute_group</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> k__2    kingdom aerobic      1.80<span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span> asr      <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>         <span style="color: #BB0000;">NA</span>             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> k__2    kingdom aerotolerant 2.41<span style="color: #949494;">e</span><span style="color: #BB0000;">-5</span> asr      <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>         <span style="color: #BB0000;">NA</span>             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> k__2    kingdom anaerobic    1.00<span style="color: #949494;">e</span>+0 asr      <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>         <span style="color: #BB0000;">NA</span>             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> k__2    kingdom facultative… 2.41<span style="color: #949494;">e</span><span style="color: #BB0000;">-5</span> asr      <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>         <span style="color: #BB0000;">NA</span>             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> p__1224 phylum  aerobic      8.46<span style="color: #949494;">e</span><span style="color: #BB0000;">-1</span> asr      <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>         <span style="color: #BB0000;">NA</span>             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> p__1224 phylum  aerotolerant 4.05<span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span> asr      <span style="color: #BB0000;">NA</span>    <span style="color: #BB0000;">NA</span>         <span style="color: #BB0000;">NA</span>             </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 4 more variables: Attribute_type &lt;chr&gt;, Frequency &lt;chr&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   Attribute_source &lt;chr&gt;, Confidence_in_curation &lt;ord&gt;</span></span></span></code></pre></div>
 <div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">min_thr</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">phys_data_ready</span><span class="op">$</span><span class="va">Attribute</span><span class="op">)</span><span class="op">)</span></span>
@@ -876,7 +888,7 @@ taxonomic binning (genus, species, and strains)</p>
 <span><span class="va">final_output</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">output</span>, <span class="va">addTaxa1</span>, <span class="va">addTaxa2</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">Score</span> <span class="op">&gt;</span> <span class="va">min_thr</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">final_output</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 89397    12</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 88686    12</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="session-information">Session information<a class="anchor" aria-label="anchor" href="#session-information"></a>
@@ -893,7 +905,7 @@ taxonomic binning (genus, species, and strains)</p>
 <span><span class="co">#&gt;  collate  en_US.UTF-8</span></span>
 <span><span class="co">#&gt;  ctype    en_US.UTF-8</span></span>
 <span><span class="co">#&gt;  tz       Etc/UTC</span></span>
-<span><span class="co">#&gt;  date     2023-09-27</span></span>
+<span><span class="co">#&gt;  date     2023-09-28</span></span>
 <span><span class="co">#&gt;  pandoc   3.1.1 @ /usr/local/bin/ (via rmarkdown)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">─ Packages ───────────────────────────────────────────────────────────────────</span></span></span>
@@ -904,7 +916,7 @@ taxonomic binning (genus, species, and strains)</p>
 <span><span class="co">#&gt;  blob                1.2.4      <span style="color: #555555;">2023-03-17</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.1)</span></span></span>
 <span><span class="co">#&gt;  bold                1.3.0      <span style="color: #555555;">2023-05-02</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.1)</span></span></span>
 <span><span class="co">#&gt;  bslib               0.5.1      <span style="color: #555555;">2023-08-11</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.1)</span></span></span>
-<span><span class="co">#&gt;  bugphyzz          * 0.0.1.4    <span style="color: #555555;">2023-09-27</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">Github (waldronlab/bugphyzz@4a75c08)</span></span></span>
+<span><span class="co">#&gt;  bugphyzz          * 0.0.1.4    <span style="color: #555555;">2023-09-28</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">Github (waldronlab/bugphyzz@4a75c08)</span></span></span>
 <span><span class="co">#&gt;  cachem              1.0.8      <span style="color: #555555;">2023-05-01</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.1)</span></span></span>
 <span><span class="co">#&gt;  cli                 3.6.1      <span style="color: #555555;">2023-03-23</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.1)</span></span></span>
 <span><span class="co">#&gt;  clusterGeneration   1.3.8      <span style="color: #555555;">2023-08-16</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.1)</span></span></span>
@@ -985,7 +997,7 @@ taxonomic binning (genus, species, and strains)</p>
 <span><span class="co">#&gt;  systemfonts         1.0.4      <span style="color: #555555;">2022-02-11</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.1)</span></span></span>
 <span><span class="co">#&gt;  taxize              0.9.100    <span style="color: #555555;">2022-04-22</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.1)</span></span></span>
 <span><span class="co">#&gt;  taxizedb            0.3.1      <span style="color: #555555;">2023-04-03</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.1)</span></span></span>
-<span><span class="co">#&gt;  taxPPro           * 0.1.0      <span style="color: #555555;">2023-09-27</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">local</span></span></span>
+<span><span class="co">#&gt;  taxPPro           * 0.1.0      <span style="color: #555555;">2023-09-28</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">local</span></span></span>
 <span><span class="co">#&gt;  textshaping         0.3.6      <span style="color: #555555;">2021-10-13</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.1)</span></span></span>
 <span><span class="co">#&gt;  tibble              3.2.1      <span style="color: #555555;">2023-03-20</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.1)</span></span></span>
 <span><span class="co">#&gt;  tidyr             * 1.3.0      <span style="color: #555555;">2023-01-24</span> <span style="color: #555555;">[1]</span> <span style="color: #555555;">CRAN (R 4.3.1)</span></span></span>
