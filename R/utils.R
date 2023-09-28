@@ -41,7 +41,6 @@ scores2Freq <- function(x) {
     )
 }
 
-
 #' Confidence in curation to factor
 #'
 #' \code{conf2Fct} converts a vector from the Confidence_in_curation
@@ -55,6 +54,31 @@ scores2Freq <- function(x) {
 #'
 conf2Fct <- function(x) {
     factor(x, levels = c('low', 'medium', 'high'), ordered = TRUE)
+}
+
+#' Add rank prefix to NCBI_ID
+#'
+#' \code{addRankPrefix} adds a prefix (`'[kpcofgst]__'`) to an NCBI ID (taxid)
+#'
+#' @param id A charecter vector of NCBI IDs (taxids).
+#' @param rank A character vector of ranks
+#'
+#' @return A character vector of IDs with prefix.
+#' @export
+#'
+addRankPrefix <- function(id, rank) {
+    highest_ranks <- c('kingdom', 'superkingdom', 'domain')
+    case_when(
+        rank %in% highest_ranks ~ paste0('k__', id),
+        rank == 'phylum' ~ paste0('p__', id),
+        rank == 'class' ~ paste0('c__', id),
+        rank == 'order' ~ paste0('o__', id),
+        rank == 'family' ~ paste0('f__', id),
+        rank == 'genus' ~ paste0('g__', id),
+        rank == 'species' ~ paste0('s__', id),
+        rank == 'strain' ~ paste0('t__', id),
+        TRUE ~ NA
+    )
 }
 
 ## Function with valid ranks for taxa
