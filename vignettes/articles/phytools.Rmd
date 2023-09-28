@@ -26,20 +26,17 @@ library(ggplot2)
 ## Import physiology data
 
 ```{r import physiology, message=FALSE}
-phys <- physiologies('aerophilicity')
+phys_name <- 'aerophilicity'
+phys <- physiologies(phys_name)
 ```
 
 ## Filter data
 
 ```{r filter data}
 select_cols <- c(
-    ## Columns with information needed for propagation
-    'NCBI_ID', 'Taxon_name', 'Attribute',
+    'NCBI_ID', 'Taxon_name', 'Parent_NCBI_ID',
+    'Attribute','Attribute_source', 'Confidence_in_curation',
     'Frequency', 'Score', 'Evidence', 
-    'Attribute_source', 'Confidence_in_curation',
-    'Parent_NCBI_ID',
-    
-    ## Columns only used for controlling the behavior of the code
     'Attribute_type', 'Attribute_group'
 )
 valid_ranks <- c('genus', 'species', 'strain')
@@ -48,26 +45,18 @@ attributes_fname <- system.file(
 )
 attributes <- read.table(attributes_fname, sep = '\t', header = TRUE)
 valid_attributes <- attributes |> 
-    filter(attribute_group == 'aerophilicity') |> 
+    filter(attribute_group == phys_name) |> 
     pull(attribute) |> 
     unique()
 phys_data <- phys[[1]] |> 
     as_tibble() |> 
-    # filter(!is.na(Rank), Rank %in% valid_ranks) |>
-    filter(Attribute_value == TRUE) |> # only for discrete traits with multiple states 
+    filter(Attribute_value == TRUE) |>
     filter(Attribute %in% valid_attributes) |> 
     filter(
         !((is.na(NCBI_ID) | NCBI_ID == 'unknown') & is.na(Parent_NCBI_ID))
     ) |> 
     filter(!is.na('Attribute_source'), !is.na('Frequency')) |>
-    mutate( 
-        Score = case_when(
-            Frequency == 'always' ~ 1,
-            Frequency == 'usually' ~ 0.9,
-            Frequency == 'sometimes' ~ 0.5,
-            Frequency == 'unknown' ~ 0.1 ## arbitrary value
-        )
-    ) |> 
+    mutate(Score = freq2Scores(Frequency)) |> 
     select(all_of(select_cols)) |> 
     distinct()
 n_dropped_rows <- nrow(phys[[1]]) - nrow(phys_data)
@@ -77,13 +66,23 @@ message(format(n_dropped_rows, big.mark = ','), ' rows were dropped.')
 Some variables that I need
 
 ```{r}
-Attribute_group_var <- unique(phys[[1]]$Attribute_group)
+Attribute_group_var <- unique(phys_data$Attribute_group)
 Attribute_group_var
 ```
 
 ```{r}
-Attribute_type_var <- unique(phys[[1]]$Attribute_type)
+Attribute_type_var <- unique(phys_data$Attribute_type)
 Attribute_type_var
+```
+
+```{r}
+ordered_colnames <- c(
+    'NCBI_ID', 'Taxon_name', 'Rank',
+    'Attribute', 'Attribute_source', 'Confidence_in_curation',
+    'Evidence', 'Frequency', 'Score',
+    'Attribute_group', 'Attribute_type',
+    'taxid'
+)
 ```
 
 ## Taxonomic pooling for taxa without NCBI_ID (taxid)
@@ -94,44 +93,28 @@ Divide data in two sets between taxa with or without NCBI_ID:
 lgl_vct <- is.na(phys_data$NCBI_ID) | phys_data$NCBI_ID == 'unknown'
 set_with_ids <- phys_data |> 
     filter(!lgl_vct) |> 
-    mutate(
-        Rank = taxizedb::taxid2rank(NCBI_ID, db = 'ncbi')
-    ) |> 
+    mutate(Rank = taxizedb::taxid2rank(NCBI_ID, db = 'ncbi')) |> 
     filter(Rank %in% valid_ranks) |> 
     mutate(Taxon_name = taxizedb::taxid2name(NCBI_ID, db = 'ncbi')) |>
     distinct() |> 
-    mutate(
-        Confidence_in_curation = factor(
-            Confidence_in_curation, 
-            levels = c('low', 'medium', 'high'), ordered = TRUE
-        )
-    ) |> 
+    mutate(Confidence_in_curation =  conf2Fct(Confidence_in_curation)) |> 
     group_by(NCBI_ID) |> 
     slice_max(Confidence_in_curation, n = 1, with_ties = TRUE) |> 
     ungroup() |> 
     group_by(NCBI_ID, Attribute) |> 
     slice_max(Attribute_source, n = 1, with_ties = FALSE) |> 
     ungroup() |> 
-    # group_by(NCBI_ID, Attribute) |> 
-    # slice_head(n = 1) |> 
-    # ungroup() |> 
     group_by(NCBI_ID) |>
-    mutate(
-        Total_score = sum(Score),
-        Score = Score / Total_score
-    ) |>
-    mutate( # original frequency values need to be replaced. I wonder if this is a good idea.
-        Frequency = case_when(
-            Score == 1 ~ 'always',
-            Score >= 0.9 & Score < 1 ~ 'usually',
-            Score >= 0.5 & Score < 0.9 ~ 'sometimes',
-            Score > 0 & Score < 0.5 ~ 'rarely',
-            Score == 0  ~ 'never' 
-        )
-    ) |> 
+    mutate(Total_score = sum(Score), Score = Score / Total_score) |>
     ungroup() |> 
+    mutate(Frequency = scores2Freq(Score)) |>
     select(-Parent_NCBI_ID, -Total_score) |> 
-    distinct()
+    mutate(taxid = NCBI_ID) |> 
+    mutate(NCBI_ID = addRankPrefix(NCBI_ID, Rank)) |> 
+    filter(!is.na(NCBI_ID)) |>
+    distinct() |> 
+    arrange(NCBI_ID, Attribute) |> 
+    relocate(all_of(ordered_colnames))
 dim(set_with_ids)
 ```
 
@@ -142,41 +125,21 @@ set_without_ids <- phys_data |>
     filter(lgl_vct) |> 
     select(-NCBI_ID, -Taxon_name, -Frequency) |> 
     relocate(NCBI_ID = Parent_NCBI_ID) |> 
-    mutate(
-        Rank = taxizedb::taxid2rank(NCBI_ID, db = 'ncbi')
-    ) |> 
+    mutate(Rank = taxizedb::taxid2rank(NCBI_ID, db = 'ncbi')) |> 
     filter(Rank %in% valid_ranks) |> 
     mutate(Taxon_name = taxizedb::taxid2name(NCBI_ID, db = 'ncbi')) |> 
     distinct() |> 
-        mutate(
-        Confidence_in_curation = factor(
-            Confidence_in_curation, 
-            levels = c('low', 'medium', 'high'), ordered = TRUE
-        )
-    ) |> 
+    mutate(Confidence_in_curation =  conf2Fct(Confidence_in_curation)) |> 
     group_by(NCBI_ID) |> 
     slice_max(Confidence_in_curation, n = 1, with_ties = TRUE) |> 
     ungroup() |> 
     group_by(NCBI_ID, Attribute) |> 
     slice_max(Attribute_source, n = 1, with_ties = FALSE) |> 
     ungroup() |> 
-    # group_by(NCBI_ID, Attribute) |> 
-    # slice_head(n = 1) |> 
-    # ungroup() |> 
     group_by(NCBI_ID) |>
-    mutate(
-        Total_score = sum(Score),
-        Score = Score / Total_score
+    mutate(Total_score = sum(Score), Score = Score / Total_score
     ) |>
-    mutate(
-        Frequency = case_when(
-            Score == 1 ~ 'always',
-            Score >= 0.9 & Score < 1 ~ 'usually',
-            Score >= 0.5 & Score < 0.9 ~ 'sometimes',
-            Score > 0 & Score < 0.5 ~ 'rarely',
-            Score == 0  ~ 'never' 
-        )
-    ) |> 
+    mutate(Frequency = scores2Freq(Score)) |> 
     mutate(
         Evidence = 'tax',
         Attribute_group = Attribute_group_var,
@@ -185,26 +148,20 @@ set_without_ids <- phys_data |>
     ungroup() |>
     select(-Total_score) |> 
     filter(!NCBI_ID %in% unique(set_with_ids$NCBI_ID)) |> 
-    distinct()
+    distinct() |> 
+    mutate(taxid = NCBI_ID) |> 
+    mutate(NCBI_ID = addRankPrefix(NCBI_ID, Rank)) |> 
+    filter(!is.na(NCBI_ID)) |>
+    distinct() |> 
+    arrange(NCBI_ID, Attribute) |> 
+    relocate(all_of(ordered_colnames))
 dim(set_without_ids)
 ```
 
 ```{r}
 phys_data_ready <- bind_rows(set_with_ids, set_without_ids) |> 
-    mutate(
-        NCBI_ID = case_when(
-            Rank == 'strain' ~ paste0('t__', NCBI_ID),
-            Rank == 'species' ~ paste0('s__', NCBI_ID),
-            Rank == 'genus' ~ paste0('g__', NCBI_ID),
-            TRUE ~ NA
-        )
-    ) |> 
-    filter(!is.na(NCBI_ID)) |> # NAs migth be added because of the mutate call above
-    mutate(taxid = sub('^\\w__', '', NCBI_ID)) |> 
-    complete(
-        NCBI_ID, Attribute, fill = list(Score = 0)
-    )
-## Split in lists to use with the NCBI taxonomic tree
+    complete(NCBI_ID, Attribute, fill = list(Score = 0)) |> 
+    arrange(NCBI_ID, Attribute)
 phys_data_list <- split(phys_data_ready, factor(phys_data_ready$NCBI_ID))
 length(phys_data_list)
 ```
@@ -220,17 +177,6 @@ ncbi_tree_nodes <- unname(ncbi_tree$Get('name'))
 class(ncbi_tree)
 ```
 
-
-Let's add taxid
-
-```{r, echo=FALSE, eval=FALSE, include=FALSE}
-# ncbi_tree$Do(function(node) {
-#     if (!node$isRoot)
-#         node$taxid <- sub('^\\w__', '', node$name)
-# })
-# ncbi_tree$k__2$taxid
-```
-
 ### Phylogenectic tree
 
 ```{r}
@@ -239,7 +185,7 @@ tree <- ltp$tree
 tree
 ```
 
-### Phylogenetic tree (tip data)
+### Phylogenetic tree
 
 ```{r}
 tip_data <- ltp$tip_data
@@ -765,7 +711,6 @@ ncbi_tree_nodes_empty2 <- ncbi_tree$Get(
         is.null(node$attribute_tbl) || all(is.na(node$attribute_tbl))   
     }) |> 
     {\(y) names(y)}()
-## There are still some empty nodes that most be filled
 length(ncbi_tree_nodes_empty2)
 ```
 
@@ -773,11 +718,10 @@ Inheritance one more time:
 
 ```{r}
 inh2 <- function(node, adjF = 0.1) {
-    cond1 <- !node$isRoot # don't apply this to the root
-    cond2 <- is.null(node$attribute_tbl) # attribute_tbl must be empty
-    cond3 <- !is.null(node$parent$attribute_tbl) # parent must have data
+    cond1 <- !node$isRoot
+    cond2 <- is.null(node$attribute_tbl)
+    cond3 <- !is.null(node$parent$attribute_tbl)
     if (cond1 && cond2 && cond3) {
-        # message('Adding ', node$name, '.')
         tbl <- node$parent$attribute_tbl  
         n <- nrow(tbl)
         res <- tbl |> 
@@ -811,7 +755,6 @@ inh2 <- function(node, adjF = 0.1) {
 }
 ncbi_tree$Do(inh2, traversal = 'pre-order')
 ```
-
 
 How many are empty after this:
 
