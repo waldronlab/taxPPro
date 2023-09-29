@@ -51,9 +51,9 @@ ltp <- function(remove_zero_tips = TRUE) {
     tip_data_fname <- system.file(
         'extdata', 'livingTree_tips.tsv', package = 'taxPPro'
     )
-    # node_data_fname <- system.file(
-    #     'extdata', 'livingTree_nodes.tsv', package = 'taxPPro'
-    # )
+    node_data_fname <- system.file(
+        'extdata', 'livingTree_nodes.tsv', package = 'taxPPro'
+    )
     tree <- ape::read.tree(tree_fname)
     message('Initial number of tips in LTP tree: ', length(tree$tip.label))
     tip_data <- utils::read.table(
@@ -62,11 +62,11 @@ ltp <- function(remove_zero_tips = TRUE) {
         purrr::modify(as.character) |>
         as.data.frame()
     rownames(tip_data) <- tip_data$tip_label
-    # node_data <- utils::read.table(
-    #     file = node_data_fname, header = TRUE, sep = '\t', row.names = NULL
-    # ) |>
-    #     purrr::modify(as.character) |>
-    #     as.data.frame()
+    node_data <- utils::read.table(
+        file = node_data_fname, header = TRUE, sep = '\t', row.names = NULL
+    ) |>
+        purrr::modify(as.character) |>
+        as.data.frame()
 
     if (remove_zero_tips) {
         ntips1 <- length(tree$tip.label)
@@ -93,7 +93,7 @@ ltp <- function(remove_zero_tips = TRUE) {
     tip_data <- tip_data[tree$tip.label,]
     message('Tips remaining: ', length(tree$tip.label))
     list(
-        tree = tree, tip_data = tip_data
+        tree = tree, tip_data = tip_data, node_data = node_data
     )
     # if (x == 'tree') {
     #     output <- tree
