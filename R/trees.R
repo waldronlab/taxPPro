@@ -121,9 +121,6 @@ ltp <- function(remove_zero_tips = TRUE) {
     # return(output)
 }
 
-
-
-
 ltp2 <- function(remove_zero_tips = TRUE) {
     tree_fname <- system.file(
         'extdata', 'livingTree.newick', package = 'taxPPro'
