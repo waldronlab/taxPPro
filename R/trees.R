@@ -74,7 +74,7 @@ ltp <- function(remove_zero_tips = TRUE) {
         nodes_with_zero_edges <- tree$edge[zero_edges, 2]
         remove_tips <- nodes_with_zero_edges[nodes_with_zero_edges <= length(tree$tip.label)]
         remove_tips_names <- tree$tip.label[remove_tips]
-        tree <- ape::drop.tip(phy = tree, tip = remove_tips_names, trim.internal = FALSE)
+        tree <- ape::drop.tip(phy = tree, tip = remove_tips_names)
         ntips2 <- length(tree$tip.label)
         tip_data <- tip_data[tree$tip.label,]
         message('Dropping ', ntips1 - ntips2, ' tips with zero length branches.')
@@ -124,17 +124,6 @@ ltp <- function(remove_zero_tips = TRUE) {
 
 
 
-#' Get living tree project (LTP) tree or data
-#'
-#' \code{ltp} gets the LTP tree or data.
-#'
-#' @param remove_zero_tips Remove or not tips with zero branch lengths.
-#' These tips could cause trouble.
-#'
-#' @return A list with a phylo (the ltp tree) and a data.frame (tip_data)
-#' objects.
-#' @export
-#'
 ltp2 <- function(remove_zero_tips = TRUE) {
     tree_fname <- system.file(
         'extdata', 'livingTree.newick', package = 'taxPPro'
