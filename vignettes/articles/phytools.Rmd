@@ -123,19 +123,21 @@ Get attribute annotations and scores for taxa without NCBI_ID from sources:
 ```{r}
 set_without_ids <- phys_data |> 
     filter(lgl_vct) |> 
-    select(-NCBI_ID, -Taxon_name, -Frequency) |> 
+    select(
+        -NCBI_ID, -Taxon_name, -Frequency
+    ) |> 
     relocate(NCBI_ID = Parent_NCBI_ID) |> 
     mutate(Rank = taxizedb::taxid2rank(NCBI_ID, db = 'ncbi')) |> 
     filter(Rank %in% valid_ranks) |> 
     mutate(Taxon_name = taxizedb::taxid2name(NCBI_ID, db = 'ncbi')) |> 
     distinct() |> 
-    mutate(Confidence_in_curation =  conf2Fct(Confidence_in_curation)) |> 
-    group_by(NCBI_ID) |> 
-    slice_max(Confidence_in_curation, n = 1, with_ties = TRUE) |> 
-    ungroup() |> 
-    group_by(NCBI_ID, Attribute) |> 
-    slice_max(Attribute_source, n = 1, with_ties = FALSE) |> 
-    ungroup() |> 
+    mutate(Confidence_in_curation =  conf2Fct(Confidence_in_curation)) |>
+    group_by(NCBI_ID) |>
+    slice_max(Confidence_in_curation, n = 1, with_ties = TRUE) |>
+    ungroup() |>
+    group_by(NCBI_ID, Attribute) |>
+    slice_max(Attribute_source, n = 1, with_ties = FALSE) |>
+    ungroup() |>
     group_by(NCBI_ID) |>
     mutate(Total_score = sum(Score), Score = Score / Total_score
     ) |>
@@ -143,15 +145,16 @@ set_without_ids <- phys_data |>
     mutate(
         Evidence = 'tax',
         Attribute_group = Attribute_group_var,
-        Attribute_type = Attribute_type_var
+        Attribute_type = Attribute_type_var,
+        Attribute_source = NA,
+        Confidence_in_curation = NA
     ) |> 
     ungroup() |>
     select(-Total_score) |> 
-    filter(!NCBI_ID %in% unique(set_with_ids$NCBI_ID)) |> 
-    distinct() |> 
     mutate(taxid = NCBI_ID) |> 
     mutate(NCBI_ID = addRankPrefix(NCBI_ID, Rank)) |> 
     filter(!is.na(NCBI_ID)) |>
+    filter(!NCBI_ID %in% unique(set_with_ids$NCBI_ID)) |> 
     distinct() |> 
     arrange(NCBI_ID, Attribute) |> 
     relocate(all_of(ordered_colnames))
@@ -267,11 +270,11 @@ taxPool <- function(node) {
             not_all_children_tbls_are_null &
             node_is_gst
         if (conds) {
-            res_tbl <- purrr::discard(attribute_tbls, is.null) |>
+            res_tbl <- attribute_tbls |> 
+                purrr::discard(is.null) |>
                 dplyr::bind_rows() |>
                 dplyr::select(
                     NCBI_ID, Attribute, Score
-                    # Attribute_type, Attribute_group
                 ) |> 
                 dplyr::mutate(
                     NCBI_ID = node$name,
