@@ -55,7 +55,7 @@ filterDataMulti <- function(tbl) {
 #' @export
 #'
 getDataReady <- function(tbl) {
-    set_With_ids <- getSetWithIDs(tbl)
+    set_with_ids <- getSetWithIDs(tbl)
     set_without_ids <- getSetWithoutIDs(tbl, set_with_ids = set_with_ids)
     dplyr::bind_rows(set_with_ids, set_without_ids) |>
         tidyr::complete(NCBI_ID, Attribute, fill = list(Score = 0)) |>
