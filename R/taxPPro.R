@@ -221,10 +221,10 @@ taxPool <- function(node, grp, typ) {
                         .data$Score > 0 & .data$Score < 0.5 ~ 'rarely',
                         .data$Score == 0 ~ 'never'
                     )
-                ) |>
-                dplyr::mutate(
-                    Attribute_source = NA,
-                    Confidence_in_curation = NA
+                # ) |>
+                # dplyr::mutate(
+                #     Attribute_source = NA,
+                #     Confidence_in_curation = NA
                 ) |>
                 dplyr::distinct()
             node$attribute_tbl <- res_tbl
