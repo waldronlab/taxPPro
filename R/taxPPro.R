@@ -136,8 +136,8 @@ getSetWithoutIDs <- function(tbl, set_with_ids = NULL) {
         dplyr::mutate(Frequency = scores2Freq(.data$Score)) |>
         dplyr::mutate(
             Evidence = 'tax',
-            Attribute_group = Attribute_group_var,
-            Attribute_type = Attribute_type_var,
+            Attribute_group = attribute_group_var,
+            Attribute_type = attribute_type_var,
             Attribute_source = NA,
             Confidence_in_curation = NA
         ) |>
