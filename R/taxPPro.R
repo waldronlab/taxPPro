@@ -147,7 +147,83 @@ getSetWithoutIDs <- function(tbl, set_with_ids = NULL) {
     )
 }
 
+taxPool <- function(node) {
+    if (!node$isLeaf) {
+        children_names <- names(node$children)
+        attribute_tbls <- children_names |>
+            purrr::map(~ node[[.x]]$attribute_tbl) |>
+            purrr::discard(is.null)
+        not_all_children_tbls_are_null <- length(attribute_tbls) > 0
+        node_attribute_tbl_is_null <- is.null(node$table)
+        node_is_gst <- grepl('^[gst]__', node$name)
+        conds <- node_attribute_tbl_is_null &
+            not_all_children_tbls_are_null &
+            node_is_gst
+        if (conds) {
+            res_tbl <- attribute_tbls |>
+                purrr::discard(is.null) |>
+                dplyr::bind_rows() |>
+                dplyr::select(
+                    .data$NCBI_ID, .data$Attribute, .data$Score,
+                    .data$Attribute_group, .data$Attribute_type
+                ) |>
+                dplyr::mutate(
+                    NCBI_ID = node$name,
+                    taxid = node$taxid,
+                    Taxon_name = node$Taxon_name,
+                    Rank = node$Rank,
+                    Evidence = 'tax',
+                ) |>
+                dplyr::group_by(.data$NCBI_ID) |>
+                dplyr::mutate(
+                    Total_score = sum(.data$Score),
+                    Score = .data$Score / .data$Total_score
+                ) |>
+                dplyr::ungroup() |>
+                dplyr::select(-.data$Total_score) |>
+                dplyr::group_by(.data$NCBI_ID, .data$Attribute) |>
+                dplyr::mutate(Score = sum(.data$Score)) |>
+                dplyr::ungroup() |>
+                dplyr::distinct() |>
+                dplyr::mutate(
+                    Frequency = dplyr::case_when(
+                        .data$Score == 1 ~ 'always',
+                        .data$Score > 0.9 ~ 'usually',
+                        .data$Score >= 0.5 ~ 'sometimes',
+                        .data$Score > 0 & .data$Score < 0.5 ~ 'rarely',
+                        .data$Score == 0 ~ 'never'
+                    )
+                ) |>
+                dplyr::mutate(
+                    Attribute_source = NA,
+                    Confidence_in_curation = NA
+                ) |>
+                dplyr::distinct()
+            node$attribute_tbl <- res_tbl
+        }
+    }
+}
 
-
-
-
+inh1 <- function(node,  adjF = 0.1) {
+    if (node$isRoot)
+        return(NULL)
+    if (is.null(node$parent$attribute_tbl))
+        return(NULL)
+    if (is.null(node$attribute_tbl) && grepl('^[st]__', node$name)) {
+        df <- node$parent$attribute_tbl
+        n <- nrow(df)
+        df <- df |>
+            dplyr::mutate(
+                target_scores = rep(1 / n, n),
+                score_diff = .data$Score - .data$target_scores,
+                Score = .data$Score - adjF * .data$score_diff,
+                NCBI_ID = node$name,
+                Evidence = 'inh',
+                Taxon_name = node$Taxon_name,
+                Rank = node$Rank,
+                taxid = node$taxid,
+            ) |>
+            dplyr::select(-.data$target_scores, -.data$score_diff)
+        node$attribute_tbl <- df
+    }
+}
