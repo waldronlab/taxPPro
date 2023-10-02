@@ -581,7 +581,7 @@ new_taxa_from_tips <- res[rownames(m2),] |>
             Rank == 'strain' ~ paste0('t__', taxid)
         )
     ) |> 
-    rename(Taxon_name = taxname) |> 
+    # rename(Taxon_name = taxname) |> 
     select(-ends_with('_taxid'), -tip_label, -taxid, -accession) |> 
     relocate(NCBI_ID, Taxon_name, Rank) |> 
     pivot_longer(
@@ -680,7 +680,6 @@ binning (genus, species, and strains)
 ```{r}
 mean(new_taxa_from_nodes$NCBI_ID %in% ncbi_tree_nodes)
 ```
-
 
 Prepare new taxa:
 

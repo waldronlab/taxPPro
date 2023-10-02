@@ -60,7 +60,8 @@ ltp <- function(remove_zero_tips = TRUE) {
         file = tip_data_fname, header = TRUE, sep = '\t', row.names = NULL
     ) |>
         purrr::modify(as.character) |>
-        as.data.frame()
+        as.data.frame() |>
+        dplyr::select(-.data$taxname)
     rownames(tip_data) <- tip_data$tip_label
     node_data <- utils::read.table(
         file = node_data_fname, header = TRUE, sep = '\t', row.names = NULL
