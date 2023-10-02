@@ -70,6 +70,8 @@ ncbi_tree$Do(function(node) {
 ## Perform first round of tax/inh1
 
 ```{r}
+Attribute_group_var <- unique(phys_data_ready$Attribute_group)
+Attribute_type_var <- unique(phys_data_ready$Attribute_type)
 ncbi_tree$Do(
     function(node) taxPool(node = node, grp = Attribute_group_var, typ = Attribute_type_var), 
     traversal = 'post-order'
