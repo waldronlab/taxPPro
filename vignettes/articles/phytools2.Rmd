@@ -30,154 +30,20 @@ phys_name <- 'aerophilicity'
 phys <- physiologies(phys_name)
 ```
 
-## Filter data
-
-```{r filter data}
-select_cols <- c(
-    'NCBI_ID', 'Taxon_name', 'Parent_NCBI_ID',
-    'Attribute','Attribute_source', 'Confidence_in_curation',
-    'Frequency', 'Score', 'Evidence', 
-    'Attribute_type', 'Attribute_group'
-)
-valid_ranks <- c('genus', 'species', 'strain')
-attributes_fname <- system.file(
-    'extdata', 'attributes.tsv', package = 'bugphyzz'
-)
-attributes <- read.table(attributes_fname, sep = '\t', header = TRUE)
-valid_attributes <- attributes |> 
-    filter(attribute_group == phys_name) |> 
-    pull(attribute) |> 
-    unique()
-phys_data <- phys[[1]] |> 
-    as_tibble() |> 
-    filter(Attribute_value == TRUE) |>
-    filter(Attribute %in% valid_attributes) |> 
-    filter(
-        !((is.na(NCBI_ID) | NCBI_ID == 'unknown') & is.na(Parent_NCBI_ID))
-    ) |> 
-    filter(!is.na('Attribute_source'), !is.na('Frequency')) |>
-    mutate(Score = freq2Scores(Frequency)) |> 
-    select(all_of(select_cols)) |> 
-    distinct()
-n_dropped_rows <- nrow(phys[[1]]) - nrow(phys_data)
-message(format(n_dropped_rows, big.mark = ','), ' rows were dropped.')
-```
-
-Some variables that I need
+## Prepare data
 
 ```{r}
-Attribute_group_var <- unique(phys_data$Attribute_group)
-Attribute_group_var
-```
-
-```{r}
-Attribute_type_var <- unique(phys_data$Attribute_type)
-Attribute_type_var
-```
-
-```{r}
-ordered_colnames <- c(
-    'NCBI_ID', 'Taxon_name', 'Rank',
-    'Attribute', 'Attribute_source', 'Confidence_in_curation',
-    'Evidence', 'Frequency', 'Score',
-    'Attribute_group', 'Attribute_type',
-    'taxid'
-)
-```
-
-## Taxonomic pooling for taxa without NCBI_ID (taxid)
-
-Divide data in two sets between taxa with or without NCBI_ID:
-
-```{r}
-lgl_vct <- is.na(phys_data$NCBI_ID) | phys_data$NCBI_ID == 'unknown'
-set_with_ids <- phys_data |> 
-    filter(!lgl_vct) |> 
-    mutate(Rank = taxizedb::taxid2rank(NCBI_ID, db = 'ncbi')) |> 
-    filter(Rank %in% valid_ranks) |> 
-    mutate(Taxon_name = taxizedb::taxid2name(NCBI_ID, db = 'ncbi')) |>
-    distinct() |> 
-    mutate(Confidence_in_curation =  conf2Fct(Confidence_in_curation)) |> 
-    group_by(NCBI_ID) |> 
-    slice_max(Confidence_in_curation, n = 1, with_ties = TRUE) |> 
-    ungroup() |> 
-    group_by(NCBI_ID, Attribute) |> 
-    slice_max(Attribute_source, n = 1, with_ties = FALSE) |> 
-    ungroup() |> 
-    group_by(NCBI_ID) |>
-    mutate(Total_score = sum(Score), Score = Score / Total_score) |>
-    ungroup() |> 
-    mutate(Frequency = scores2Freq(Score)) |>
-    select(-Parent_NCBI_ID, -Total_score) |> 
-    mutate(taxid = NCBI_ID) |> 
-    mutate(NCBI_ID = addRankPrefix(NCBI_ID, Rank)) |> 
-    filter(!is.na(NCBI_ID)) |>
-    distinct() |> 
-    arrange(NCBI_ID, Attribute) |> 
-    relocate(all_of(ordered_colnames))
-dim(set_with_ids)
-```
-
-Get attribute annotations and scores for taxa without NCBI_ID from sources:
-
-```{r}
-set_without_ids <- phys_data |> 
-    filter(lgl_vct) |> 
-    select(
-        -NCBI_ID, -Taxon_name, -Frequency
-    ) |> 
-    relocate(NCBI_ID = Parent_NCBI_ID) |> 
-    mutate(Rank = taxizedb::taxid2rank(NCBI_ID, db = 'ncbi')) |> 
-    filter(Rank %in% valid_ranks) |> 
-    mutate(Taxon_name = taxizedb::taxid2name(NCBI_ID, db = 'ncbi')) |> 
-    distinct() |> 
-    mutate(Confidence_in_curation =  conf2Fct(Confidence_in_curation)) |>
-    group_by(NCBI_ID) |>
-    slice_max(Confidence_in_curation, n = 1, with_ties = TRUE) |>
-    ungroup() |>
-    group_by(NCBI_ID, Attribute) |>
-    slice_max(Attribute_source, n = 1, with_ties = FALSE) |>
-    ungroup() |>
-    group_by(NCBI_ID) |>
-    mutate(Total_score = sum(Score), Score = Score / Total_score
-    ) |>
-    mutate(Frequency = scores2Freq(Score)) |> 
-    mutate(
-        Evidence = 'tax',
-        Attribute_group = Attribute_group_var,
-        Attribute_type = Attribute_type_var,
-        Attribute_source = NA,
-        Confidence_in_curation = NA
-    ) |> 
-    ungroup() |>
-    select(-Total_score) |> 
-    mutate(taxid = NCBI_ID) |> 
-    mutate(NCBI_ID = addRankPrefix(NCBI_ID, Rank)) |> 
-    filter(!is.na(NCBI_ID)) |>
-    filter(!NCBI_ID %in% unique(set_with_ids$NCBI_ID)) |> 
-    distinct() |> 
-    arrange(NCBI_ID, Attribute) |> 
-    relocate(all_of(ordered_colnames))
-dim(set_without_ids)
-```
-
-```{r}
-phys_data_ready <- bind_rows(set_with_ids, set_without_ids) |> 
-    complete(NCBI_ID, Attribute, fill = list(Score = 0)) |> 
-    arrange(NCBI_ID, Attribute)
+phys_data_ready <- phys[[1]] |> 
+    filterData() |> 
+    getDataReady()
 phys_data_list <- split(phys_data_ready, factor(phys_data_ready$NCBI_ID))
-length(phys_data_list)
 ```
 
-## Tree data
-
-### Taxonomic tree 
+## Taxonomic tree
 
 ```{r}
 data('tree_list')
 ncbi_tree <- as.Node(tree_list)
-ncbi_tree_nodes <- unname(ncbi_tree$Get('name'))
-class(ncbi_tree)
 ```
 
 ### Phylogenectic tree
@@ -185,15 +51,10 @@ class(ncbi_tree)
 ```{r}
 ltp <- ltp()
 tree <- ltp$tree
-tree
-```
-
-### Phylogenetic tree
-
-```{r}
 tip_data <- ltp$tip_data
-dim(tip_data)
+node_data <- ltp$node_data
 ```
+
 
 ### Some completeness stats
 
