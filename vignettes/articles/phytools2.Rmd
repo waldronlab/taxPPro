@@ -1,5 +1,5 @@
 ---
-title: "A propagation workflow with taxonomic pooling, asr (phytools), and inheritance"
+title: "A propagation workflow with taxonomic pooling, asr (phytools), and inheritance (compact version)"
 output:
     html_document:
         toc: true
@@ -32,7 +32,7 @@ phys <- physiologies(phys_name)
 
 ## Prepare data
 
-```{r}
+```{r, warning=FALSE}
 phys_data_ready <- phys[[1]] |> 
     filterData() |> 
     getDataReady()
@@ -69,68 +69,19 @@ ncbi_tree$Do(function(node) {
 
 
 ```{r}
-ncbi_tree$Do(taxPool, traversal = 'post-order')
+Attribute_group_var <- unique(phys_data$Attribute_group)
+Attribute_type_var <- unique(phys_data$Attribute_type)
+ncbi_tree$Do(
+    function(node) taxPool(node = node, grp = Attribute_group_var, typ = Attribute_type_var), 
+    traversal = 'post-order'
+)
 ncbi_tree$Do(inh1, traversal = 'pre-order')
 ```
-
-
-
-Let's look at one example of inheritance
-
-```{r}
-inh_nodes1 <- ncbi_tree$Get(
-    'attribute_tbl', 
-    simplify = FALSE,
-    filterFun = function(node) {
-        if (!is.null(node$attribute_tbl)) {
-            return('inh' %in% unique(node$attribute_tbl$Evidence))
-        } else {
-            return(FALSE)
-        }
-})
-inh_nodes1_subset <- inh_nodes1[map_int(inh_nodes1, nrow) > 1]
-inh_nodes1_subset[['s__2588497']]
-```
-
-```{r}
-parent1 <- ncbi_tree$Get(
-    'attribute_tbl', 
-    simplify = FALSE,
-    filterFun = function(node) {
-        node$name == 'g__1344552'
-    })
-parent1[[1]]
-```
-
-
-Proportion of nodes at the family level and above with attributes (it should be zero):
-
-```{r}
-ncbi_attr_kpcof <- ncbi_tree$Get(
-    'attribute_tbl', filterFun = function(node) grepl('^[kpcor]__', node$name)
-)
-mean(!map_lgl(ncbi_attr_kpcof, ~ all(is.na(.x))))
-```
-
-Proportion of nodes at the genus, species, and strain levels with attributes:
 
 ```{r}
 ncbi_attr_gst <- ncbi_tree$Get(
     'attribute_tbl', filterFun = function(node) grepl('^[gst]__', node$name)
 )
-## Major increase 15 to 78%
-mean(!map_lgl(ncbi_attr_gst, ~ all(is.na(.x))))
-```
-
-The step above actually covered must of the genus, species, and strains,
-but this is one of the datasets with the most annotations, so it's expected
-that most of the taxa would already be covered.
-
-A formal ASR method would be nice, however.
-
-Get new attributes:
-
-```{r}
 new_attributes <- ncbi_attr_gst |> 
     discard(~ all(is.na(.x))) |> 
     bind_rows() |> 
@@ -138,31 +89,23 @@ new_attributes <- ncbi_attr_gst |>
     filter(!NCBI_ID %in% phys_data_ready$NCBI_ID) |> 
     mutate(taxid = sub('^\\w__', '', NCBI_ID)) |> 
     bind_rows(phys_data_ready)
-table(new_attributes$Evidence)
 ```
 
-Now almost 90% of the tips have annotations:
 
 ```{r}
-mean(tip_data$taxid %in% new_attributes$taxid)
-```
-
-```{r}
-new_tip_data <- left_join(tip_data, new_attributes, by = 'taxid')  
-table(new_tip_data$Evidence, useNA = 'always')
-```
-
-Let's create an input matrix for ASR with the phylogenetic tree
-
-```{r}
-new_tip_data_completed <- new_tip_data |> 
-    select(tip_label, Attribute, Score) |> 
+new_tip_data <- left_join(
+    tip_data, 
+    select(new_attributes, taxid, Attribute, Score), 
+    by = 'taxid'
+    ) |>   
+    select(tip_label, Attribute, Score)
+new_tip_data_completed <- new_tip_data |>
+    select(tip_label, Attribute, Score) |>
     filter(!is.na(Attribute)) |> 
     complete(tip_label, Attribute, fill = list(Score = 0))
-m1 <- new_tip_data_completed |> 
-    # select(tip_label, Attribute, Score) |> 
-    # filter(!is.na(Attribute)) |> 
-    # complete(tip_label, Attribute, fill = list(Score = 0)) |>
+m1 <- new_tip_data_completed |>
+    select(tip_label, Attribute, Score) |> 
+    filter(!is.na(Attribute)) |> 
     pivot_wider(
         names_from = 'Attribute', values_from = 'Score'
     ) |> 
@@ -186,44 +129,14 @@ m3 <- m3[tree$tip.label,]
 dim(m3)
 ```
 
-Histogram of probabilites for tips with annotations
-
-```{r}
-x <- m1
-dim(x) <- NULL
-data.frame(prob = x) |> 
-    ggplot(aes(prob)) +
-    geom_histogram(binwidth = 0.1) +
-    ggtitle('Tips with annotations, all probabilities')
-```
-
-```{r}
-y <- as.double(apply(m1, 1, max))
-data.frame(prob = y) |> 
-    ggplot(aes(prob)) +
-    geom_histogram(binwidth = 0.1) +
-    ggtitle('Tips with annotations, max probabilities')
-```
-
-```{r}
-z <- m3
-dim(z) <- NULL
-data.frame(prob = z) |> 
-    ggplot(aes(prob)) +
-    geom_histogram(binwidth = 0.1) +
-    ggtitle('All tips, all probabilities')
-```
-
 ## ASR with phytools
 
 ```{r}
-system.time({
-    fit <- fitMk(
-        tree = tree, x = m3, model = 'ER', pi = 'fitzjohn', 
-        lik.func = 'pruning', logscale = TRUE
-    )
-    asr <- ancr(object = fit, tips = TRUE)
-})
+fit <- fitMk(
+    tree = tree, x = m3, model = 'ER', pi = 'fitzjohn', 
+    lik.func = 'pruning', logscale = TRUE
+)
+asr <- ancr(object = fit, tips = TRUE)
 ```
 
 
@@ -233,41 +146,6 @@ node_rows <- length(tree$tip.label) + 1:tree$Nnode
 rownames(res)[node_rows] <- tree$node.label
 ```
 
-Probabilities of internal nodes
-
-```{r}
-data.frame(prob = as.double(res[tree$node.label,])) |> 
-    ggplot(aes(prob)) +
-    geom_histogram(binwidth = 0.1) +
-    ggtitle('Internal nodes, all probabilities')
-```
-
-
-Probabilities of tips
-
-```{r}
-data.frame(prob = as.double(res[tree$tip.label,])) |> 
-    ggplot(aes(prob)) +
-    geom_histogram(binwidth = 0.1) +
-    ggtitle('Tips, all probabilities (after ASR)')
-
-```
-
-
-```{r}
-maxRes <- unlist(apply(res, 1, max))
-data.frame(prob = maxRes[tree$node.label]) |> 
-    ggplot(aes(prob)) +
-    geom_histogram(binwidth = 0.1) +
-    ggtitle('Internal nodes, max probabilities')
-```
-
-```{r}
-data.frame(prob = maxRes[rownames(m2)]) |> 
-    ggplot(aes(prob)) +
-    geom_histogram(binwidth = 0.1) +
-    ggtitle('New tips, max probabilities')
-```
 
 ```{r}
 new_taxa_from_tips <- res[rownames(m2),] |> 
@@ -306,21 +184,7 @@ new_taxa_from_tips <- res[rownames(m2),] |>
             Score == 0 ~ 'never'
         )
     )
-head(new_taxa_from_tips)
 ```
-
-Most of these new taxa are in the NCBI tree:
-
-```{r}
-ncbi_tree_nodes_empty <- ncbi_tree$Get(
-    'attribute_tbl', filterFun = function(node) {
-        is.null(node$attribute_tbl) || all(is.na(node$attribute_tbl))   
-    }) |> 
-    {\(y) names(y)}()
-mean(new_taxa_from_tips$NCBI_ID %in% ncbi_tree_nodes_empty)
-```
-
-Let's check nodes
 
 ```{r}
 nodes_annotated <- res[which(grepl('^\\d+(\\+\\d+)*', rownames(res))),]
@@ -372,24 +236,10 @@ new_taxa_from_nodes <- nodes_annotated |>
 head(new_taxa_from_nodes)
 ```
 
-Some new taxa can be added to the nodes with empty attribute table:
-
-```{r}
-mean(new_taxa_from_nodes$NCBI_ID %in% ncbi_tree_nodes_empty)
-```
-
-Actually most are already in the tree, but we got them through taxonomic
-binning (genus, species, and strains)
-
-```{r}
-mean(new_taxa_from_nodes$NCBI_ID %in% ncbi_tree_nodes)
-```
-
 Prepare new taxa:
 
 ```{r}
 new_taxa_for_ncbi_tree <- new_taxa_from_tips |> 
-    # select(-Taxon_name) |> 
     relocate(NCBI_ID, Rank, Attribute, Score, Evidence) |> 
     bind_rows(new_taxa_from_nodes)
 new_taxa_for_ncbi_tree_list <- split(
@@ -409,75 +259,17 @@ ncbi_tree$Do(function(node) {
 })
 ```
 
-How many are empty after this:
-
-```{r}
-ncbi_tree_nodes_empty2 <- ncbi_tree$Get(
-    'attribute_tbl', filterFun = function(node) {
-        is.null(node$attribute_tbl) || all(is.na(node$attribute_tbl))   
-    }) |> 
-    {\(y) names(y)}()
-length(ncbi_tree_nodes_empty2)
-```
 
 ASR and Inheritance one more time:
 
 ```{r}
-inh2 <- function(node, adjF = 0.1) {
-    cond1 <- !node$isRoot
-    cond2 <- is.null(node$attribute_tbl)
-    cond3 <- !is.null(node$parent$attribute_tbl)
-    if (cond1 && cond2 && cond3) {
-        tbl <- node$parent$attribute_tbl  
-        n <- nrow(tbl)
-        res <- tbl |> 
-            mutate(
-                target_scores = rep(1 / n, n),
-                score_diff = Score - target_scores,
-                Score = Score - adjF * score_diff,
-                NCBI_ID = node$name,
-                Evidence = 'inh2'
-            ) |>
-            select(-target_scores, -score_diff) |> 
-            relocate(NCBI_ID) |> 
-            mutate(
-                Attribute_source = NA,
-                Confidence_in_curation = NA,
-                Attribute_group = Attribute_group_var,
-                Attribute_type = Attribute_type_var,
-                taxid = node$taxid,
-                Taxon_name = node$Taxon_name,
-                Rank = node$Rank,
-                Frequency = case_when(
-                    Score == 1 ~ 'always',
-                    Score > 0.9 ~ 'usually',
-                    Score >= 0.5 ~ 'sometimes',
-                    Score > 0 & Score < 0.5 ~ 'rarely',
-                    Score == 0 ~ 'never'
-                )
-            )
-        node$attribute_tbl <- res
-    }
-}
-ncbi_tree$Do(taxPool, traversal = 'post-order')
+ncbi_tree$Do(
+    function(node) taxPool(node = node, grp = Attribute_group_var, typ = Attribute_type_var ), 
+    traversal = 'post-order'
+)
 ncbi_tree$Do(inh2, traversal = 'pre-order')
 ```
 
-How many are empty after this:
-
-```{r}
-ncbi_tree_nodes_empty2 <- ncbi_tree$Get(
-    'attribute_tbl', filterFun = function(node) {
-        is.null(node$attribute_tbl) || all(is.na(node$attribute_tbl))   
-    }) |> 
-    {\(y) names(y)}()
-## Only the root (ArcBac) remains empty
-length(ncbi_tree_nodes_empty2)
-```
-
-```{r}
-ncbi_tree$k__2$p__1224$c__28211$o__356$f__335928$attribute_tbl
-```
 
 Get all the tables
 
@@ -487,26 +279,7 @@ output <- ncbi_tree$Get(
     filterFun = function(node) node$name != 'ArcBac'
     )
 output <- bind_rows(output)
-head(output)
 ```
-
-Number of annotations per evidence
-
-```{r}
-table(output$Evidence, useNA = 'always')
-```
-
-
-NAs are the one that were completed with tidyr::complete, so all of them
-have score 0
-
-```{r}
-output |> 
-    filter(is.na(Evidence)) |> 
-    pull(Score) |> 
-    unique()
-```
-
 
 Final annotations passing the min threshold (0.25 for aerophilicity)
 

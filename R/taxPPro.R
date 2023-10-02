@@ -40,7 +40,7 @@ filterDataMulti <- function(tbl) {
 
 getDataReady <- function(tbl) {
     set_With_ids <- getSetWithIDs(tbl)
-    set_without_ids <- getSetWithoutIDs(tbl)
+    set_without_ids <- getSetWithoutIDs(tbl, set_with_ids = set_with_ids)
     dplyr::bind_rows(set_with_ids, set_without_ids) |>
         tidyr::complete(NCBI_ID, Attribute, fill = list(Score = 0)) |>
         dplyr::arrange(NCBI_ID, Attribute)
@@ -147,7 +147,7 @@ getSetWithoutIDs <- function(tbl, set_with_ids = NULL) {
     )
 }
 
-taxPool <- function(node) {
+taxPool <- function(node, grp, typ) {
     if (!node$isLeaf) {
         children_names <- names(node$children)
         attribute_tbls <- children_names |>
@@ -164,8 +164,7 @@ taxPool <- function(node) {
                 purrr::discard(is.null) |>
                 dplyr::bind_rows() |>
                 dplyr::select(
-                    .data$NCBI_ID, .data$Attribute, .data$Score,
-                    .data$Attribute_group, .data$Attribute_type
+                    .data$NCBI_ID, .data$Attribute, .data$Score
                 ) |>
                 dplyr::mutate(
                     NCBI_ID = node$name,
@@ -173,6 +172,8 @@ taxPool <- function(node) {
                     Taxon_name = node$Taxon_name,
                     Rank = node$Rank,
                     Evidence = 'tax',
+                    Attribute_group = grp,
+                    Attribute_type = typ
                 ) |>
                 dplyr::group_by(.data$NCBI_ID) |>
                 dplyr::mutate(
@@ -225,5 +226,42 @@ inh1 <- function(node,  adjF = 0.1) {
             ) |>
             dplyr::select(-.data$target_scores, -.data$score_diff)
         node$attribute_tbl <- df
+    }
+}
+
+inh2 <- function(node, adjF = 0.1) {
+    cond1 <- !node$isRoot
+    cond2 <- is.null(node$attribute_tbl)
+    cond3 <- !is.null(node$parent$attribute_tbl)
+    if (cond1 && cond2 && cond3) {
+        tbl <- node$parent$attribute_tbl
+        n <- nrow(tbl)
+        res <- tbl |>
+            dplyr::mutate(
+                target_scores = rep(1 / n, n),
+                score_diff = .data$Score - .data$target_scores,
+                Score = .data$Score - adjF * .data$score_diff,
+                NCBI_ID = node$name,
+                Evidence = 'inh2'
+            ) |>
+            dplyr::select(-.data$target_scores, -.data$score_diff) |>
+            dplyr::relocate(.data$NCBI_ID) |>
+            dplyr::mutate(
+                Attribute_source = NA,
+                Confidence_in_curation = NA,
+                # Attribute_group = Attribute_group_var,
+                # Attribute_type = Attribute_type_var,
+                taxid = node$taxid,
+                Taxon_name = node$Taxon_name,
+                Rank = node$Rank,
+                Frequency = dplyr::case_when(
+                    .data$Score == 1 ~ 'always',
+                    .data$Score > 0.9 ~ 'usually',
+                    .data$Score >= 0.5 ~ 'sometimes',
+                    .data$Score > 0 & .data$Score < 0.5 ~ 'rarely',
+                    .data$Score == 0 ~ 'never'
+                )
+            )
+        node$attribute_tbl <- res
     }
 }
