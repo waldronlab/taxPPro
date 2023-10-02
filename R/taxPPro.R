@@ -1,3 +1,12 @@
+#' Filter data
+#'
+#' \code{filterData}
+#'
+#' @param tbl A data.frame.
+#'
+#' @return A data.frame
+#' @export
+#'
 filterData <- function(tbl) {
     attr_type <- unique(tbl$Attribute_type)
     if(attr_type == 'logical'){
@@ -38,6 +47,13 @@ filterDataMulti <- function(tbl) {
     return(phys_data)
 }
 
+#' Get data ready for propagation
+#'
+#' @param tbl A data.frame.
+#'
+#' @return A data.frame.
+#' @export
+#'
 getDataReady <- function(tbl) {
     set_With_ids <- getSetWithIDs(tbl)
     set_without_ids <- getSetWithoutIDs(tbl, set_with_ids = set_with_ids)
@@ -45,7 +61,6 @@ getDataReady <- function(tbl) {
         tidyr::complete(NCBI_ID, Attribute, fill = list(Score = 0)) |>
         dplyr::arrange(NCBI_ID, Attribute)
 }
-
 
 getSetWithIDs <- function(tbl) {
     valid_ranks <- c('genus', 'species', 'strain')
@@ -147,6 +162,18 @@ getSetWithoutIDs <- function(tbl, set_with_ids = NULL) {
     )
 }
 
+#' Perform taxonomic pooling
+#'
+#' \code{taxPool} performs taxonomic pooling at the strain, species, and
+#' genus ranks. Only use in the data.tree NCBI tree.
+#'
+#' @param node A node in a data.tree object.
+#' @param grp  A character string. Attribute group.
+#' @param typ A character string. Attribute_type.
+#'
+#' @return A table for the attribute of a node.
+#' @export
+#'
 taxPool <- function(node, grp, typ) {
     if (!node$isLeaf) {
         children_names <- names(node$children)
@@ -205,6 +232,17 @@ taxPool <- function(node, grp, typ) {
     }
 }
 
+#' Inheritance first round
+#'
+#' \code{inh1} First round of inheritance. Only use with Do in a data.tree
+#' object.
+#'
+#' @param node  A node in a data.tree.
+#' @param adjF Adjustment factor for penalty. Default is 1.0.
+#'
+#' @return A table for a node attribute.
+#' @export
+#'
 inh1 <- function(node,  adjF = 0.1) {
     if (node$isRoot)
         return(NULL)
@@ -229,6 +267,17 @@ inh1 <- function(node,  adjF = 0.1) {
     }
 }
 
+#' Inheritance second round
+#'
+#' \code{inh2} Second round of inheritance. Only use with Do in a data.tree
+#' object.
+#'
+#' @param node  A node in a data.tree.
+#' @param adjF Adjustment factor for penalty. Default is 1.0.
+#'
+#' @return A table for a node attribute.
+#' @export
+#'
 inh2 <- function(node, adjF = 0.1) {
     cond1 <- !node$isRoot
     cond2 <- is.null(node$attribute_tbl)

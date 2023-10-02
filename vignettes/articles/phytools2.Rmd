@@ -252,7 +252,7 @@ ncbi_tree$Do(
 ncbi_tree$Do(inh2, traversal = 'pre-order')
 ```
 
-Generate final output
+## Generate final output
 
 ```{r}
 output <- ncbi_tree$Get(
