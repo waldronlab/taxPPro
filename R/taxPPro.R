@@ -249,8 +249,6 @@ inh2 <- function(node, adjF = 0.1) {
             dplyr::mutate(
                 Attribute_source = NA,
                 Confidence_in_curation = NA,
-                # Attribute_group = Attribute_group_var,
-                # Attribute_type = Attribute_type_var,
                 taxid = node$taxid,
                 Taxon_name = node$Taxon_name,
                 Rank = node$Rank,

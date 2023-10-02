@@ -46,7 +46,7 @@ data('tree_list')
 ncbi_tree <- as.Node(tree_list)
 ```
 
-### Phylogenectic tree
+## Phylogenectic tree
 
 ```{r}
 ltp <- ltp()
@@ -55,7 +55,7 @@ tip_data <- ltp$tip_data
 node_data <- ltp$node_data
 ```
 
-## Map annotations (genus, species, strain) to NCBI taxonomic tree:
+## Map annotations (genus, species, strain) to NCBI taxonomic tree
 
 ```{r}
 ncbi_tree$Do(function(node) {
@@ -67,10 +67,9 @@ ncbi_tree$Do(function(node) {
 })
 ```
 
+## Perform first round of tax/inh1
 
 ```{r}
-Attribute_group_var <- unique(phys_data$Attribute_group)
-Attribute_type_var <- unique(phys_data$Attribute_type)
 ncbi_tree$Do(
     function(node) taxPool(node = node, grp = Attribute_group_var, typ = Attribute_type_var), 
     traversal = 'post-order'
@@ -78,74 +77,64 @@ ncbi_tree$Do(
 ncbi_tree$Do(inh1, traversal = 'pre-order')
 ```
 
+## Create input matrix for ASR
+
 ```{r}
-ncbi_attr_gst <- ncbi_tree$Get(
+new_phys_data <- ncbi_tree$Get(
     'attribute_tbl', filterFun = function(node) grepl('^[gst]__', node$name)
-)
-new_attributes <- ncbi_attr_gst |> 
+) |> 
     discard(~ all(is.na(.x))) |> 
     bind_rows() |> 
     arrange(NCBI_ID, Attribute) |> 
     filter(!NCBI_ID %in% phys_data_ready$NCBI_ID) |> 
     mutate(taxid = sub('^\\w__', '', NCBI_ID)) |> 
     bind_rows(phys_data_ready)
-```
 
-
-```{r}
-new_tip_data <- left_join(
+tip_data_annotated <- left_join(
     tip_data, 
-    select(new_attributes, taxid, Attribute, Score), 
+    select(new_phys_data, taxid, Attribute, Score), 
     by = 'taxid'
-    ) |>   
-    select(tip_label, Attribute, Score)
-new_tip_data_completed <- new_tip_data |>
+    )
+
+annotated_tips <- tip_data_annotated |>
     select(tip_label, Attribute, Score) |>
-    filter(!is.na(Attribute)) |> 
-    complete(tip_label, Attribute, fill = list(Score = 0))
-m1 <- new_tip_data_completed |>
-    select(tip_label, Attribute, Score) |> 
-    filter(!is.na(Attribute)) |> 
+    filter(!is.na(Attribute)) |>
     pivot_wider(
-        names_from = 'Attribute', values_from = 'Score'
+        names_from = 'Attribute', values_from = 'Score', values_fill = 0
     ) |> 
     tibble::column_to_rownames(var = 'tip_label') |>
     as.matrix()
-
-no_annotated_tips <- new_tip_data |>
-    filter(!tip_label %in% rownames(m1)) |>
+no_annotated_tips_chr <- tip_data_annotated |>
+    filter(!tip_label %in% rownames(annotated_tips)) |>
     pull(tip_label) |> 
     unique()
-
-m2 <- matrix(
-    data = rep(rep(1/ncol(m1), ncol(m1)), length(no_annotated_tips)),
-    nrow = length((no_annotated_tips)),
+no_annotated_tips <- matrix(
+    data = rep(rep(1/ncol(m1), ncol(m1)), length(no_annotated_tips_chr)),
+    nrow = length((no_annotated_tips_chr)),
     byrow = TRUE,
-    dimnames = list(rownames = no_annotated_tips, colnames = colnames(m1))
+    dimnames = list(
+        rownames = no_annotated_tips_chr, colnames = colnames(annotated_tips)
+    )
 )
 
-m3 <- rbind(m1, m2)
-m3 <- m3[tree$tip.label,]
-dim(m3)
+input_matrix <- rbind(annotated_tips, no_annotated_tips)
+input_matrix <- input_matrix[tree$tip.label,]
 ```
 
 ## ASR with phytools
 
 ```{r}
 fit <- fitMk(
-    tree = tree, x = m3, model = 'ER', pi = 'fitzjohn', 
+    tree = tree, x = input_matrix, model = 'ER', pi = 'fitzjohn', 
     lik.func = 'pruning', logscale = TRUE
 )
 asr <- ancr(object = fit, tips = TRUE)
-```
-
-
-```{r}
 res <- asr$ace
 node_rows <- length(tree$tip.label) + 1:tree$Nnode
 rownames(res)[node_rows] <- tree$node.label
 ```
 
+## Extract new taxa for second round of tax/inh2
 
 ```{r}
 new_taxa_from_tips <- res[rownames(m2),] |> 
@@ -163,7 +152,6 @@ new_taxa_from_tips <- res[rownames(m2),] |>
             Rank == 'strain' ~ paste0('t__', taxid)
         )
     ) |> 
-    # rename(Taxon_name = taxname) |> 
     select(-ends_with('_taxid'), -tip_label, -taxid, -accession) |> 
     relocate(NCBI_ID, Taxon_name, Rank) |> 
     pivot_longer(
@@ -184,13 +172,12 @@ new_taxa_from_tips <- res[rownames(m2),] |>
             Score == 0 ~ 'never'
         )
     )
-```
 
-```{r}
 nodes_annotated <- res[which(grepl('^\\d+(\\+\\d+)*', rownames(res))),]
 new_taxa_from_nodes <- nodes_annotated |> 
     as.data.frame() |> 
     tibble::rownames_to_column(var = 'NCBI_ID') |> 
+    filter(grepl('^\\d+(\\+\\d+)*', NCBI_ID)) |> 
     mutate(NCBI_ID = strsplit(NCBI_ID, '\\+')) |> 
     tidyr::unnest(NCBI_ID) |> 
     mutate(Rank = taxizedb::taxid2rank(NCBI_ID)) |> 
@@ -233,21 +220,17 @@ new_taxa_from_nodes <- nodes_annotated |>
             Score == 0 ~ 'never'
         )
     )
-head(new_taxa_from_nodes)
-```
 
-Prepare new taxa:
-
-```{r}
 new_taxa_for_ncbi_tree <- new_taxa_from_tips |> 
     relocate(NCBI_ID, Rank, Attribute, Score, Evidence) |> 
     bind_rows(new_taxa_from_nodes)
 new_taxa_for_ncbi_tree_list <- split(
     new_taxa_for_ncbi_tree, factor(new_taxa_for_ncbi_tree$NCBI_ID)
 )
+
 ```
 
-Let's add some taxa to the tree:
+## Add new taxa to NCBI tree
 
 ```{r}
 ncbi_tree$Do(function(node) {
@@ -259,8 +242,7 @@ ncbi_tree$Do(function(node) {
 })
 ```
 
-
-ASR and Inheritance one more time:
+## Second round of tax/inh2
 
 ```{r}
 ncbi_tree$Do(
@@ -270,32 +252,19 @@ ncbi_tree$Do(
 ncbi_tree$Do(inh2, traversal = 'pre-order')
 ```
 
-
-Get all the tables
+Generate final output
 
 ```{r}
 output <- ncbi_tree$Get(
     attribute = 'attribute_tbl', simplify = FALSE,
     filterFun = function(node) node$name != 'ArcBac'
-    )
-output <- bind_rows(output)
-```
-
-Final annotations passing the min threshold (0.25 for aerophilicity)
-
-```{r}
+    ) |> 
+    bind_rows()
 min_thr <- 1 / length(unique(phys_data_ready$Attribute))
-addTaxa1 <- phys_data_ready |> 
+add_taxa1 <- phys_data_ready |> 
     filter(!NCBI_ID %in% unique(output$NCBI_ID))
-addTaxa2 <- new_taxa_for_ncbi_tree|> 
+add_taxa2 <- new_taxa_for_ncbi_tree |> 
     filter(!NCBI_ID %in% unique(output$NCBI_ID))
-final_output <- bind_rows(list(output, addTaxa1, addTaxa2)) |> 
+final_output <- bind_rows(list(output, add_taxa_1, add_taxa_2)) |> 
     filter(Score > min_thr)
-dim(final_output)
-```
-
-## Session information
-
-```{r}
-sessioninfo::session_info()
 ```
