@@ -62,6 +62,15 @@ getDataReady <- function(tbl) {
         dplyr::arrange(NCBI_ID, Attribute)
 }
 
+#' Get set with IDs
+#'
+#' \code{getSetWithIDs}
+#'
+#' @param tbl A data.frame.
+#'
+#' @return A data.frame.
+#' @export
+#'
 getSetWithIDs <- function(tbl) {
     valid_ranks <- c('genus', 'species', 'strain')
     lgl_vct <- is.na(tbl$NCBI_ID) | tbl$NCBI_ID == 'unknown'
@@ -102,6 +111,16 @@ getSetWithIDs <- function(tbl) {
         dplyr::relocate(all_of(.orderedColumns()))
 }
 
+#' Get set without IDs
+#'
+#' \code{getSetWithoutIDs}
+#'
+#' @param tbl A data.frame.
+#' @param set_with_ids  A data.frame
+#'
+#' @return A data.frame.
+#' @export
+#'
 getSetWithoutIDs <- function(tbl, set_with_ids = NULL) {
     attribute_type_var <- unique(tbl$Attribute_type)
     attribute_group_var <- unique(tbl$Attribute_group)
