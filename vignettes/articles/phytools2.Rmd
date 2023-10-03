@@ -113,7 +113,7 @@ no_annotated_tips_chr <- tip_data_annotated |>
     pull(tip_label) |> 
     unique()
 no_annotated_tips <- matrix(
-    data = rep(rep(1/ncol(m1), ncol(m1)), length(no_annotated_tips_chr)),
+    data = rep(rep(1/ncol(annotated_tips), ncol(annotated_tips)), length(no_annotated_tips_chr)),
     nrow = length((no_annotated_tips_chr)),
     byrow = TRUE,
     dimnames = list(
@@ -141,7 +141,7 @@ rownames(res)[node_rows] <- tree$node.label
 ## Extract new taxa for second round of tax/inh2
 
 ```{r}
-new_taxa_from_tips <- res[rownames(m2),] |> 
+new_taxa_from_tips <- res[rownames(no_annotated_tips),] |> 
     as.data.frame() |> 
     tibble::rownames_to_column(var = 'tip_label') |> 
     left_join(tip_data, by = 'tip_label') |> 
@@ -265,9 +265,9 @@ output <- ncbi_tree$Get(
     ) |> 
     bind_rows()
 min_thr <- 1 / length(unique(phys_data_ready$Attribute))
-add_taxa1 <- phys_data_ready |> 
+add_taxa_1 <- phys_data_ready |> 
     filter(!NCBI_ID %in% unique(output$NCBI_ID))
-add_taxa2 <- new_taxa_for_ncbi_tree |> 
+add_taxa_2 <- new_taxa_for_ncbi_tree |> 
     filter(!NCBI_ID %in% unique(output$NCBI_ID))
 final_output <- bind_rows(list(output, add_taxa_1, add_taxa_2)) |> 
     filter(Score > min_thr)
