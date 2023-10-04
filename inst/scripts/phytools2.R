@@ -1,11 +1,4 @@
-## ----include = FALSE-----------------------------------------------------------------------------------------------------
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
 
-
-## ----setup, message=FALSE------------------------------------------------------------------------------------------------
 library(bugphyzz)
 library(taxPPro)
 library(data.tree)
@@ -14,7 +7,7 @@ library(dplyr)
 library(purrr)
 library(tidyr)
 library(ggplot2)
-
+library(ape)
 
 ## ----import physiology, message=FALSE------------------------------------------------------------------------------------
 phys_name <- 'acetate producing'
@@ -35,10 +28,9 @@ ncbi_tree <- as.Node(tree_list)
 
 ## ------------------------------------------------------------------------------------------------------------------------
 ltp <- ltp()
-tree <- ltp$tree
+tree <- reorder(ltp$tree, 'postorder')
 tip_data <- ltp$tip_data
 node_data <- ltp$node_data
-
 
 ## ------------------------------------------------------------------------------------------------------------------------
 ncbi_tree$Do(function(node) {
@@ -104,10 +96,16 @@ input_matrix <- rbind(annotated_tips, no_annotated_tips)
 input_matrix <- input_matrix[tree$tip.label,]
 
 
+## add scode for ASR
+
+tree <- ape::keep.tip(tree, tip = rownames(annotated_tips))
+tree <- reorder(tree, 'postorder')
+input_matrix <- annotated_tips
+
 ## ------------------------------------------------------------------------------------------------------------------------
 system.time({
     fit <- fitMk(
-        tree = tree, x = input_matrix, model = 'ER', pi = 'estimated',
+        tree = tree, x = input_matrix, model = 'ER', pi = 'fitzjohn',
         lik.func = 'pruning', logscale = TRUE
     )
 })
@@ -115,7 +113,6 @@ asr <- ancr(object = fit, tips = TRUE)
 res <- asr$ace
 node_rows <- length(tree$tip.label) + 1:tree$Nnode
 rownames(res)[node_rows] <- tree$node.label
-
 
 ## ------------------------------------------------------------------------------------------------------------------------
 new_taxa_from_tips <- res[rownames(no_annotated_tips),] |>
@@ -205,6 +202,10 @@ new_taxa_from_nodes <- nodes_annotated |>
 new_taxa_for_ncbi_tree <- new_taxa_from_tips |>
     relocate(NCBI_ID, Rank, Attribute, Score, Evidence) |>
     bind_rows(new_taxa_from_nodes)
+
+## Add this
+new_taxa_for_ncbi_tree <- new_taxa_from_nodes
+
 new_taxa_for_ncbi_tree_list <- split(
     new_taxa_for_ncbi_tree, factor(new_taxa_for_ncbi_tree$NCBI_ID)
 )
@@ -232,14 +233,17 @@ ncbi_tree$Do(inh2, traversal = 'pre-order')
 ## ------------------------------------------------------------------------------------------------------------------------
 output <- ncbi_tree$Get(
     attribute = 'attribute_tbl', simplify = FALSE,
-    filterFun = function(node) node$name != 'ArcBac'
+    filterFun = function(node) node$name != 'ArcBac' && !is.null(node$attribute_tbl)
     ) |>
-    bind_rows()
+    bind_rows() |>
+    discard(~ all(is.na(.x)))
 min_thr <- 1 / length(unique(phys_data_ready$Attribute))
 add_taxa_1 <- phys_data_ready |>
-    filter(!NCBI_ID %in% unique(output$NCBI_ID))
+    filter(!NCBI_ID %in% unique(output$NCBI_ID)) |>
+    discard(~ all(is.na(.x)))
 add_taxa_2 <- new_taxa_for_ncbi_tree |>
-    filter(!NCBI_ID %in% unique(output$NCBI_ID))
+    filter(!NCBI_ID %in% unique(output$NCBI_ID)) |>
+    discard(~ all(is.na(.x)))
 final_output <- bind_rows(list(output, add_taxa_1, add_taxa_2)) |>
     filter(Score > min_thr)
 
