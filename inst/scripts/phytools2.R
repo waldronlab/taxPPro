@@ -107,7 +107,7 @@ input_matrix <- input_matrix[tree$tip.label,]
 ## ------------------------------------------------------------------------------------------------------------------------
 system.time({
     fit <- fitMk(
-        tree = tree, x = input_matrix, model = 'ER', pi = 'fitzjohn',
+        tree = tree, x = input_matrix, model = 'ER', pi = 'estimated',
         lik.func = 'pruning', logscale = TRUE
     )
 })
