@@ -105,10 +105,13 @@ input_matrix <- input_matrix[tree$tip.label,]
 
 
 ## ------------------------------------------------------------------------------------------------------------------------
-fit <- fitMk(
-    tree = tree, x = input_matrix, model = 'ER', pi = 'fitzjohn',
-    lik.func = 'pruning', logscale = TRUE
-)
+system.time({
+    fit <- fitMk(
+        tree = tree, x = input_matrix, model = 'ER', pi = 'fitzjohn',
+        lik.func = 'pruning', logscale = TRUE
+    )
+})
+
 asr <- ancr(object = fit, tips = TRUE)
 res <- asr$ace
 node_rows <- length(tree$tip.label) + 1:tree$Nnode
