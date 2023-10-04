@@ -9,19 +9,14 @@ library(tidyr)
 library(ggplot2)
 library(ape)
 
-## ----import physiology, message=FALSE------------------------------------------------------------------------------------
-phys_name <- 'acetate producing'
+phys_name <- 'aerophilicity'
 phys <- physiologies(phys_name)
 
-
-## ----warning=FALSE-------------------------------------------------------------------------------------------------------
 phys_data_ready <- phys[[1]] |>
     filterData() |>
     getDataReady()
 phys_data_list <- split(phys_data_ready, factor(phys_data_ready$NCBI_ID))
 
-
-## ------------------------------------------------------------------------------------------------------------------------
 data('tree_list')
 ncbi_tree <- as.Node(tree_list)
 
@@ -115,41 +110,41 @@ node_rows <- length(tree$tip.label) + 1:tree$Nnode
 rownames(res)[node_rows] <- tree$node.label
 
 ## ------------------------------------------------------------------------------------------------------------------------
-new_taxa_from_tips <- res[rownames(no_annotated_tips),] |>
-    as.data.frame() |>
-    tibble::rownames_to_column(var = 'tip_label') |>
-    left_join(tip_data, by = 'tip_label') |>
-    mutate(
-        Rank = taxizedb::taxid2rank(taxid, db = 'ncbi')
-    ) |>
-    filter(Rank %in% c('genus', 'species', 'strain')) |>
-    mutate(
-        NCBI_ID = case_when(
-            Rank == 'genus' ~ paste0('g__', taxid),
-            Rank == 'species' ~ paste0('s__', taxid),
-            Rank == 'strain' ~ paste0('t__', taxid)
-        )
-    ) |>
-    select(-ends_with('_taxid'), -tip_label, -taxid, -accession) |>
-    relocate(NCBI_ID, Taxon_name, Rank) |>
-    pivot_longer(
-        names_to = 'Attribute', values_to = 'Score', cols = 4:last_col()
-    ) |>
-    mutate(
-        Evidence = 'asr',
-        Attribute_source = NA,
-        Confidence_in_curation = NA,
-        taxid = sub('\\w__', '', NCBI_ID),
-        Attribute_type = Attribute_type_var,
-        Attribute_group = Attribute_group_var,
-        Frequency = case_when(
-            Score == 1 ~ 'always',
-            Score > 0.9 ~ 'usually',
-            Score >= 0.5 ~ 'sometimes',
-            Score > 0 & Score < 0.5 ~ 'rarely',
-            Score == 0 ~ 'never'
-        )
-    )
+# new_taxa_from_tips <- res[rownames(no_annotated_tips),] |>
+#     as.data.frame() |>
+#     tibble::rownames_to_column(var = 'tip_label') |>
+#     left_join(tip_data, by = 'tip_label') |>
+#     mutate(
+#         Rank = taxizedb::taxid2rank(taxid, db = 'ncbi')
+#     ) |>
+#     filter(Rank %in% c('genus', 'species', 'strain')) |>
+#     mutate(
+#         NCBI_ID = case_when(
+#             Rank == 'genus' ~ paste0('g__', taxid),
+#             Rank == 'species' ~ paste0('s__', taxid),
+#             Rank == 'strain' ~ paste0('t__', taxid)
+#         )
+#     ) |>
+#     select(-ends_with('_taxid'), -tip_label, -taxid, -accession) |>
+#     relocate(NCBI_ID, Taxon_name, Rank) |>
+#     pivot_longer(
+#         names_to = 'Attribute', values_to = 'Score', cols = 4:last_col()
+#     ) |>
+#     mutate(
+#         Evidence = 'asr',
+#         Attribute_source = NA,
+#         Confidence_in_curation = NA,
+#         taxid = sub('\\w__', '', NCBI_ID),
+#         Attribute_type = Attribute_type_var,
+#         Attribute_group = Attribute_group_var,
+#         Frequency = case_when(
+#             Score == 1 ~ 'always',
+#             Score > 0.9 ~ 'usually',
+#             Score >= 0.5 ~ 'sometimes',
+#             Score > 0 & Score < 0.5 ~ 'rarely',
+#             Score == 0 ~ 'never'
+#         )
+#     )
 
 nodes_annotated <- res[which(grepl('^\\d+(\\+\\d+)*', rownames(res))),]
 new_taxa_from_nodes <- nodes_annotated |>
@@ -199,18 +194,17 @@ new_taxa_from_nodes <- nodes_annotated |>
         )
     )
 
-new_taxa_for_ncbi_tree <- new_taxa_from_tips |>
-    relocate(NCBI_ID, Rank, Attribute, Score, Evidence) |>
-    bind_rows(new_taxa_from_nodes)
+new_taxa_for_ncbi_tree <- new_taxa_from_nodes |>
+    relocate(NCBI_ID, Rank, Attribute, Score, Evidence)
+# new_taxa_for_ncbi_tree <- new_taxa_from_tips |>
+#     relocate(NCBI_ID, Rank, Attribute, Score, Evidence) |>
+#     bind_rows(new_taxa_from_nodes)
 
 ## Add this
-new_taxa_for_ncbi_tree <- new_taxa_from_nodes
 
 new_taxa_for_ncbi_tree_list <- split(
     new_taxa_for_ncbi_tree, factor(new_taxa_for_ncbi_tree$NCBI_ID)
 )
-
-
 
 ## ------------------------------------------------------------------------------------------------------------------------
 ncbi_tree$Do(function(node) {
@@ -246,4 +240,3 @@ add_taxa_2 <- new_taxa_for_ncbi_tree |>
     discard(~ all(is.na(.x)))
 final_output <- bind_rows(list(output, add_taxa_1, add_taxa_2)) |>
     filter(Score > min_thr)
-
