@@ -60,7 +60,7 @@ conf2Fct <- function(x) {
 #'
 #' \code{addRankPrefix} adds a prefix (`'[kpcofgst]__'`) to an NCBI ID (taxid)
 #'
-#' @param id A charecter vector of NCBI IDs (taxids).
+#' @param id A character vector of NCBI IDs (taxids).
 #' @param rank A character vector of ranks
 #'
 #' @return A character vector of IDs with prefix.
@@ -68,7 +68,7 @@ conf2Fct <- function(x) {
 #'
 addRankPrefix <- function(id, rank) {
     highest_ranks <- c('kingdom', 'superkingdom', 'domain')
-    case_when(
+    dplyr::case_when(
         rank %in% highest_ranks ~ paste0('k__', id),
         rank == 'phylum' ~ paste0('p__', id),
         rank == 'class' ~ paste0('c__', id),

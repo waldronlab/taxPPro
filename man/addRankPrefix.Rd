@@ -7,7 +7,7 @@
 addRankPrefix(id, rank)
 }
 \arguments{
-\item{id}{A charecter vector of NCBI IDs (taxids).}
+\item{id}{A character vector of NCBI IDs (taxids).}
 
 \item{rank}{A character vector of ranks}
 }

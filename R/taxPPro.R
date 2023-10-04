@@ -8,14 +8,27 @@
 #' @export
 #'
 filterData <- function(tbl) {
+    types <- bugphyzz:::.DISCRETE_TYPES
     attr_type <- unique(tbl$Attribute_type)
-    if(attr_type == 'logical'){
-        output <- filterDataMulti(tbl)
+    if (attr_type %in% types){
+        output <- filterDataDiscrete(tbl)
+    } else {
+        output <- NULL
     }
     return(output)
 }
 
-filterDataMulti <- function(tbl) {
+#' Filter attributes with discrete type
+#'
+#' \code{filterDataDiscrete} filters discrete data.
+#'
+#' @param tbl A data.frame.
+#'
+#' @return A data.frame.
+#' @export
+#'
+filterDataDiscrete <- function(tbl) {
+    phys_name <- unique(tbl$Attribute_group)
     select_cols <- c(
         'NCBI_ID', 'Taxon_name', 'Parent_NCBI_ID',
         'Attribute','Attribute_source', 'Confidence_in_curation',
@@ -31,10 +44,28 @@ filterDataMulti <- function(tbl) {
         dplyr::filter(.data$attribute_group == phys_name) |>
         dplyr::pull(.data$attribute) |>
         unique()
+
+    n_rows <- nrow(tbl)
+
+    tbl <- tbl |>
+        dplyr::filter(!is.na(.data$Attribute)) |>
+        dplyr::filter(!is.na(.data$Attribute_value))
+
+    attr_type <- unique(tbl$Attribute_type)
+    if (attr_type == 'multistate-intersection') {
+        tbl <- tbl |>
+            dplyr::filter(.data$Attribute %in% valid_attributes) |>
+            dplyr::filter(.data$Attribute_value == TRUE)
+    } else if (attr_type %in% c('binary', 'multistate-union')) {
+        tbl <- tbl |>
+            dplyr::filter(.data$Attribute %in% valid_attributes) |>
+            dplyr::mutate(
+                Attribute = paste0(.data$Attribute, '--', .data$Attribute_value)
+            )
+    }
+
     phys_data <- tbl |>
         tibble::as_tibble() |>
-        dplyr::filter(.data$Attribute_value == TRUE) |>
-        dplyr::filter(.data$Attribute %in% valid_attributes) |>
         dplyr::filter(
             !((is.na(.data$NCBI_ID) | .data$NCBI_ID == 'unknown') & is.na(.data$Parent_NCBI_ID))
         ) |>
@@ -42,7 +73,7 @@ filterDataMulti <- function(tbl) {
         dplyr::mutate(Score = freq2Scores(.data$Frequency)) |>
         dplyr::select(tidyselect::all_of(select_cols)) |>
         dplyr::distinct()
-    n_dropped_rows <- nrow(tbl) - nrow(phys_data)
+    n_dropped_rows <- n_rows - nrow(phys_data)
     message(format(n_dropped_rows, big.mark = ','), ' rows were dropped.')
     return(phys_data)
 }
@@ -57,9 +88,23 @@ filterDataMulti <- function(tbl) {
 getDataReady <- function(tbl) {
     set_with_ids <- getSetWithIDs(tbl)
     set_without_ids <- getSetWithoutIDs(tbl, set_with_ids = set_with_ids)
-    dplyr::bind_rows(set_with_ids, set_without_ids) |>
-        tidyr::complete(NCBI_ID, Attribute, fill = list(Score = 0)) |>
-        dplyr::arrange(NCBI_ID, Attribute)
+    dataset <- dplyr::bind_rows(set_with_ids, set_without_ids)
+    attr_type <- unique(dataset$Attribute_type)
+    if (attr_type == 'binary') {
+        current_attr <- unique(dataset$Attribute)
+        if (length(current_attr) == 1 && grepl('--TRUE$', current_attr)) {
+            extra_level <- sub('--TRUE$', '--FALSE', current_attr)
+            dataset$Attribute <- factor(dataset$Attribute, levels = c(extra_level, current_attr))
+        }
+        output <- dataset |>
+            tidyr::complete(NCBI_ID, Attribute, fill = list(Score = 0)) |>
+            dplyr::arrange(NCBI_ID, Attribute)
+    } else if (attr_type == 'multistate-intersection') {
+        output <- dataset |>
+            tidyr::complete(NCBI_ID, Attribute, fill = list(Score = 0)) |>
+            dplyr::arrange(NCBI_ID, Attribute)
+    }
+    return(output)
 }
 
 #' Get set with IDs
@@ -108,7 +153,7 @@ getSetWithIDs <- function(tbl) {
         dplyr::filter(!is.na(.data$NCBI_ID)) |>
         dplyr::distinct() |>
         dplyr::arrange(.data$NCBI_ID, .data$Attribute) |>
-        dplyr::relocate(all_of(.orderedColumns()))
+        dplyr::relocate(tidyselect::all_of(.orderedColumns()))
 }
 
 #' Get set without IDs
@@ -130,6 +175,8 @@ getSetWithoutIDs <- function(tbl, set_with_ids = NULL) {
 
     valid_ranks <- c('genus', 'species', 'strain')
     lgl_vct <- is.na(tbl$NCBI_ID) | tbl$NCBI_ID == 'unknown'
+    if (!any(lgl_vct))
+        return(NULL)
     tbl |>
         dplyr::filter(lgl_vct) |>
         dplyr::select(
