@@ -78,6 +78,13 @@ filterDataDiscrete <- function(tbl) {
     return(phys_data)
 }
 
+
+
+filterMultiStateUnion <- function() {
+
+}
+
+
 #' Get data ready for propagation
 #'
 #' @param tbl A data.frame.
@@ -86,25 +93,53 @@ filterDataDiscrete <- function(tbl) {
 #' @export
 #'
 getDataReady <- function(tbl) {
-    set_with_ids <- getSetWithIDs(tbl)
-    set_without_ids <- getSetWithoutIDs(tbl, set_with_ids = set_with_ids)
-    dataset <- dplyr::bind_rows(set_with_ids, set_without_ids)
-    attr_type <- unique(dataset$Attribute_type)
+    attr_type <- unique(tbl$Attribute_type)
+    # set_with_ids <- getSetWithIDs(tbl)
+    # set_without_ids <- getSetWithoutIDs(tbl, set_with_ids = set_with_ids)
+    # dataset <- dplyr::bind_rows(set_with_ids, set_without_ids)
+    # attr_type <- unique(dataset$Attribute_type)
     if (attr_type == 'binary') {
-        current_attr <- unique(dataset$Attribute)
-        if (length(current_attr) == 1 && grepl('--TRUE$', current_attr)) {
-            extra_level <- sub('--TRUE$', '--FALSE', current_attr)
-            dataset$Attribute <- factor(dataset$Attribute, levels = c(extra_level, current_attr))
-        }
-        output <- dataset |>
-            tidyr::complete(NCBI_ID, Attribute, fill = list(Score = 0)) |>
-            dplyr::arrange(NCBI_ID, Attribute)
+        set_with_ids <- getSetWithIDs(tbl) |>
+                purrr::discard(~ all(is.na(.x)))
+        set_without_ids <- getSetWithoutIDs(tbl, set_with_ids) |>
+                purrr::discard(~ all(is.na(.x)))
+        dataset <- dplyr::bind_rows(set_with_ids, set_without_ids)
+        output <- completeBinaryData(dataset)
     } else if (attr_type == 'multistate-intersection') {
+        set_with_ids <- getSetWithIDs(tbl) |>
+                purrr::discard(~ all(is.na(.x)))
+        set_without_ids <- getSetWithoutIDs(tbl, set_with_ids = set_with_ids) |>
+                purrr::discard(~ all(is.na(.x)))
+        dataset <- dplyr::bind_rows(set_with_ids, set_without_ids)
         output <- dataset |>
             tidyr::complete(NCBI_ID, Attribute, fill = list(Score = 0)) |>
             dplyr::arrange(NCBI_ID, Attribute)
+    } else if (attr_type == 'multistate-union') {
+        tbl$Attribute_group_2 <- sub('--(TRUE|FALSE)', '', tbl$Attribute)
+        l <- split(tbl, factor(tbl$Attribute_group_2))
+        output <- vector('list', length(l))
+        for (i in seq_along(output)) {
+            set_with_ids <- getSetWithIDs(l[[i]]) |>
+                purrr::discard(~ all(is.na(.x)))
+            set_without_ids <- getSetWithoutIDs(l[[i]], set_with_ids) |>
+                purrr::discard(~ all(is.na(.x)))
+            dataset <- dplyr::bind_rows(set_with_ids, set_without_ids)
+            output[[i]] <- completeBinaryData(dataset)
+        }
+        names(output) <- names(l)
     }
     return(output)
+}
+
+completeBinaryData <- function(tbl) {
+        current_attr <- unique(tbl$Attribute)
+        if (length(current_attr) == 1 && grepl('--TRUE$', current_attr)) {
+            extra_level <- sub('--TRUE$', '--FALSE', current_attr)
+            tbl$Attribute <- factor(tbl$Attribute, levels = c(extra_level, current_attr))
+        }
+        tbl |>
+            tidyr::complete(.data$NCBI_ID, .data$Attribute, fill = list(Score = 0)) |>
+            dplyr::arrange(.data$NCBI_ID, .data$Attribute)
 }
 
 #' Get set with IDs
@@ -119,8 +154,11 @@ getDataReady <- function(tbl) {
 getSetWithIDs <- function(tbl) {
     valid_ranks <- c('genus', 'species', 'strain')
     lgl_vct <- is.na(tbl$NCBI_ID) | tbl$NCBI_ID == 'unknown'
-    tbl |>
-        dplyr::filter(!lgl_vct) |>
+    tbl <- tbl |>
+        dplyr::filter(!lgl_vct)
+    if (!nrow(tbl))
+        return(NULL)
+     output <- tbl |>
         dplyr::mutate(
             Rank = taxizedb::taxid2rank(.data$NCBI_ID, db = 'ncbi')
         ) |>
@@ -148,7 +186,9 @@ getSetWithIDs <- function(tbl) {
         dplyr::ungroup() |>
         dplyr::mutate(Frequency = scores2Freq(.data$Score)) |>
         dplyr::select(-.data$Parent_NCBI_ID, -.data$Total_score) |>
-        dplyr::mutate(taxid = .data$NCBI_ID) |>
+        dplyr::mutate(taxid = .data$NCBI_ID)
+
+     return(output)
         dplyr::mutate(NCBI_ID = addRankPrefix(.data$NCBI_ID, .data$Rank)) |>
         dplyr::filter(!is.na(.data$NCBI_ID)) |>
         dplyr::distinct() |>

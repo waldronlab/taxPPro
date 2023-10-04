@@ -9,12 +9,18 @@ library(tidyr)
 library(ggplot2)
 library(ape)
 
-phys_name <- 'aerophilicity'
+phys_name <- 'antimicrobial resistance'
+# phys_name <- 'acetate producing'
+# phys_name <- 'aerophilicity'
 phys <- physiologies(phys_name)
 
 phys_data_ready <- phys[[1]] |>
     filterData() |>
     getDataReady()
+
+
+
+
 phys_data_list <- split(phys_data_ready, factor(phys_data_ready$NCBI_ID))
 
 data('tree_list')
