@@ -111,7 +111,6 @@ system.time({
         lik.func = 'pruning', logscale = TRUE
     )
 })
-
 asr <- ancr(object = fit, tips = TRUE)
 res <- asr$ace
 node_rows <- length(tree$tip.label) + 1:tree$Nnode
