@@ -9,14 +9,27 @@ library(tidyr)
 library(ggplot2)
 library(ape)
 
-phys_name <- 'antimicrobial resistance'
+# phys_name <- 'antimicrobial resistance'
 # phys_name <- 'acetate producing'
 # phys_name <- 'aerophilicity'
-phys <- physiologies(phys_name)
 
-phys_data_ready <- phys[[1]] |>
-    filterData() |>
-    getDataReady()
+phys_names <- c(
+    'aerophilicity', 'acetate producing', 'antimicrobial resistance'
+)
+phys <- physiologies(phys_names)
+
+## There might be some warnings due to taxizedb. They can be ignored for now
+## This is due to changes in taxonomy, so the taxonomy might require
+## to be updated from time to time
+phys_data_ready <- vector('list', length(phys))
+for (i in seq_along(phys_data_ready)) {
+    names(phys_data_ready)[i] <- names(phys)[i]
+    res <- getDataReady(filterData(phys[[i]]))
+    if (is.null(res))
+        next
+    phys_data_ready[[i]] <- res
+}
+
 
 
 

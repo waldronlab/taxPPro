@@ -94,10 +94,6 @@ filterMultiStateUnion <- function() {
 #'
 getDataReady <- function(tbl) {
     attr_type <- unique(tbl$Attribute_type)
-    # set_with_ids <- getSetWithIDs(tbl)
-    # set_without_ids <- getSetWithoutIDs(tbl, set_with_ids = set_with_ids)
-    # dataset <- dplyr::bind_rows(set_with_ids, set_without_ids)
-    # attr_type <- unique(dataset$Attribute_type)
     if (attr_type == 'binary') {
         set_with_ids <- getSetWithIDs(tbl) |>
                 purrr::discard(~ all(is.na(.x)))
@@ -124,9 +120,12 @@ getDataReady <- function(tbl) {
             set_without_ids <- getSetWithoutIDs(l[[i]], set_with_ids) |>
                 purrr::discard(~ all(is.na(.x)))
             dataset <- dplyr::bind_rows(set_with_ids, set_without_ids)
+            # output[[i]] <- completeBinaryData(dataset)
+            if (is.null(dataset))
+                next
+            names(output)[i] <- names(l)[i]
             output[[i]] <- completeBinaryData(dataset)
         }
-        names(output) <- names(l)
     }
     return(output)
 }
@@ -152,17 +151,26 @@ completeBinaryData <- function(tbl) {
 #' @export
 #'
 getSetWithIDs <- function(tbl) {
-    valid_ranks <- c('genus', 'species', 'strain')
+
+    ## Check for taxa with NCBI IDs
     lgl_vct <- is.na(tbl$NCBI_ID) | tbl$NCBI_ID == 'unknown'
     tbl <- tbl |>
         dplyr::filter(!lgl_vct)
     if (!nrow(tbl))
         return(NULL)
-     output <- tbl |>
+
+    ## Check for taxa with valid ranks
+    valid_ranks <- c('genus', 'species', 'strain')
+     tbl <- tbl |>
         dplyr::mutate(
             Rank = taxizedb::taxid2rank(.data$NCBI_ID, db = 'ncbi')
         ) |>
-        dplyr::filter(.data$Rank %in% valid_ranks) |>
+        dplyr::filter(.data$Rank %in% valid_ranks)
+    if (!nrow(tbl))
+        return(NULL)
+
+     ## Check taxa names, resolve conflicts, normalize scores
+     output <- tbl |>
         dplyr::mutate(
             Taxon_name = taxizedb::taxid2name(.data$NCBI_ID, db = 'ncbi')
         ) |>
@@ -186,14 +194,14 @@ getSetWithIDs <- function(tbl) {
         dplyr::ungroup() |>
         dplyr::mutate(Frequency = scores2Freq(.data$Score)) |>
         dplyr::select(-.data$Parent_NCBI_ID, -.data$Total_score) |>
-        dplyr::mutate(taxid = .data$NCBI_ID)
-
-     return(output)
+        dplyr::mutate(taxid = .data$NCBI_ID) |>
         dplyr::mutate(NCBI_ID = addRankPrefix(.data$NCBI_ID, .data$Rank)) |>
-        dplyr::filter(!is.na(.data$NCBI_ID)) |>
+        # dplyr::filter(!is.na(.data$NCBI_ID)) |>
         dplyr::distinct() |>
         dplyr::arrange(.data$NCBI_ID, .data$Attribute) |>
         dplyr::relocate(tidyselect::all_of(.orderedColumns()))
+
+    return(output)
 }
 
 #' Get set without IDs
@@ -217,16 +225,17 @@ getSetWithoutIDs <- function(tbl, set_with_ids = NULL) {
     lgl_vct <- is.na(tbl$NCBI_ID) | tbl$NCBI_ID == 'unknown'
     if (!any(lgl_vct))
         return(NULL)
-    tbl |>
+
+    output <- tbl |>
         dplyr::filter(lgl_vct) |>
         dplyr::select(
             -.data$NCBI_ID, -.data$Taxon_name, -.data$Frequency
         ) |>
         dplyr::relocate(NCBI_ID = .data$Parent_NCBI_ID) |>
+        distinct() |>
         dplyr::mutate(Rank = taxizedb::taxid2rank(.data$NCBI_ID, db = 'ncbi')) |>
         dplyr::filter(Rank %in% valid_ranks) |>
         dplyr::mutate(Taxon_name = taxizedb::taxid2name(.data$NCBI_ID, db = 'ncbi')) |>
-        dplyr::distinct() |>
         dplyr::mutate(Confidence_in_curation =  conf2Fct(.data$Confidence_in_curation)) |>
         dplyr::group_by(.data$NCBI_ID) |>
         dplyr::slice_max(.data$Confidence_in_curation, n = 1, with_ties = TRUE) |>
@@ -256,6 +265,7 @@ getSetWithoutIDs <- function(tbl, set_with_ids = NULL) {
         dplyr::distinct() |>
         dplyr::arrange(.data$NCBI_ID, .data$Attribute) |>
         dplyr::relocate(tidyselect::all_of(.orderedColumns()))
+    return(output)
 }
 
 .orderedColumns <- function() {
