@@ -26,12 +26,12 @@ phys_names <- c(
 phys <- physiologies(phys_names)
 
 phys_data_ready <- vector('list', length(phys))
-myWarnings <- vector('list', length(phys))
+taxidWarnings <- vector('list', length(phys))
 for (i in seq_along(phys_data_ready)) {
     name <- names(phys)[i]
     message('Preparing ', name, '.')
     names(phys_data_ready)[i] <- name
-    names(myWarnings)[i] <- name
+    names(taxidWarnings)[i] <- name
     wngs <- list()
     suppressWarnings({
         withCallingHandlers({
@@ -40,13 +40,16 @@ for (i in seq_along(phys_data_ready)) {
                 phys_data_ready[[i]] <- dat
         },
         warning = function(w) {
-            wngs <<- c(wngs, list(w))
+            if (grepl('taxizedb', w$message)) {
+                msg <- sub('.*unrank.*: (\\d+.*)$', '\\1', w$message)
+                wngs <<- c(wngs, list(msg))
+            }
         })
     })
     if (length(wngs) > 0)
-        myWarnings[[i]] <- wngs
+        taxidWarnings[[i]] <- wngs
 }
-myWarnings <- discard(myWarnings, is.null)
+taxidWarnings <- discard(taxidWarnings, is.null)
 phys_data_ready <- list_flatten(phys_data_ready)
 
 ## Load NCBI taxonomy tree ####
@@ -108,9 +111,14 @@ for (i in seq_along(phys_data_ready)) {
         discard(~ all(is.na(.x))) |>
         bind_rows() |>
         arrange(NCBI_ID, Attribute) |>
-        filter(!NCBI_ID %in% phys_data_ready$NCBI_ID) |>
+        filter(!NCBI_ID %in% dat$NCBI_ID) |>
         # mutate(taxid = sub('^\\w__', '', NCBI_ID)) |>
         bind_rows(dat)
+
+    if (all(!new_dat$taxid %in% tip_data$taxid)) {
+        message('Not enough data for ASR. Skipping ', current_phys, '.')
+        next
+    }
 
     tip_data_annotated <- left_join(
         tip_data,
@@ -149,7 +157,6 @@ for (i in seq_along(phys_data_ready)) {
 end_time <- Sys.time()
 elapsed_time <- end_time - start_time
 print(elapsed_time)
-
 
 
 
