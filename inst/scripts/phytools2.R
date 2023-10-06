@@ -1,4 +1,6 @@
 
+
+## Load packages ####
 library(bugphyzz)
 library(taxPPro)
 library(data.tree)
@@ -32,39 +34,93 @@ for (i in seq_along(phys_data_ready)) {
     names(myWarnings)[i] <- name
     wngs <- list()
     suppressWarnings({
-        withCallingHandlers(
-            dat <- getDataReady(filterData(phys[[i]])),
-            warning = function(w) {
-                wngs <<- c(wngs, list(w))
-            }
-        )
+        withCallingHandlers({
+            dat <- getDataReady(filterData(phys[[i]]))
+            if (length(dat) > 0)
+                phys_data_ready[[i]] <- dat
+        },
+        warning = function(w) {
+            wngs <<- c(wngs, list(w))
+        })
     })
     if (length(wngs) > 0)
         myWarnings[[i]] <- wngs
 }
 myWarnings <- discard(myWarnings, is.null)
+phys_data_ready <- list_flatten(phys_data_ready)
 
-
-
-
-
-
-
-
-
-phys_data_list <- split(phys_data_ready, factor(phys_data_ready$NCBI_ID))
-
+## Load NCBI taxonomy tree ####
 data('tree_list')
 ncbi_tree <- as.Node(tree_list)
 
-
-## ------------------------------------------------------------------------------------------------------------------------
+## Load the living tree project (LTP) tree and tip data ####
 ltp <- ltp()
 tree <- reorder(ltp$tree, 'postorder')
 tip_data <- ltp$tip_data
 node_data <- ltp$node_data
 
-## ------------------------------------------------------------------------------------------------------------------------
+start_time <- Sys.time()
+output <- vector('list', length(phys_data_ready))
+for (i in seq_along(phys_data_ready)) {
+
+    ## Define some variables
+    current_phys <- names(phys_data_ready)[i]
+    names(output)[i] <- current_phys
+    dat <- phys_data_ready[[i]]
+    Attribute_group_var <- unique(dat$Attribute_group)
+    Attribute_group_var <- Attribute_group_var[!is.na(Attribute_group_var)]
+    Attribute_type_var <- unique(dat$Attribute_type)
+    Attribute_type_var <- Attribute_type_var[!is.na(Attribute_type_var)]
+
+    message('Mapping source annotations to the NCBI tree for ', current_phys, '.')
+    node_list <- split(
+        x = dat, f = factor(dat$NCBI_ID)
+    )
+
+    tim <- system.time({
+        ncbi_tree$Do(function(node) {
+            if (node$name %in% names(node_list))
+                node$attribute_tbl <- node_list[[node$name]]
+        })
+    })
+    print(tim)
+
+    message('Performing round 1 taxpool for ', current_phys, '.')
+    tim <- system.time({
+        ncbi_tree$Do(
+            function(node) {
+                taxPool(
+                    node = node,
+                    grp = Attribute_group_var,
+                    typ = Attribute_type_var)
+            },
+            traversal = 'post-order'
+        )
+    })
+    print(tim)
+
+    message('Performing round 1 inh for ', current_phys, '.')
+    tim <- system.time({
+        ncbi_tree$Do(inh1, traversal = 'pre-order')
+    })
+    print(tim)
+
+    message('Cleaning nodes for ', current_phys, '.')
+    tim <- system.time({
+        ncbi_tree$Do(cleanNode)
+    })
+    print(tim)
+}
+end_time <- Sys.time()
+elapsed_time <- end_time - start_time
+print(elapsed_time)
+
+
+
+
+
+
+
 ncbi_tree$Do(function(node) {
     if (node$name %in% names(phys_data_list)) {
         node$attribute_tbl <- phys_data_list[[node$name]]
