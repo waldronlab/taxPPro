@@ -85,7 +85,7 @@ for (i in seq_along(phys_data_ready)) {
     })
     print(tim)
 
-    message('Performing round 1 taxpool for ', current_phys, '.')
+    message('Performing round 1 of propagation for ', current_phys, '.')
     tim <- system.time({
         ncbi_tree$Do(
             function(node) {
@@ -96,20 +96,55 @@ for (i in seq_along(phys_data_ready)) {
             },
             traversal = 'post-order'
         )
-    })
-    print(tim)
-
-    message('Performing round 1 inh for ', current_phys, '.')
-    tim <- system.time({
         ncbi_tree$Do(inh1, traversal = 'pre-order')
     })
     print(tim)
+
+    new_dat <- ncbi_tree$Get(
+        'attribute_tbl', filterFun = function(node) {
+            grepl('^[gst]__', node$name)
+        }
+    ) |>
+        discard(~ all(is.na(.x))) |>
+        bind_rows() |>
+        arrange(NCBI_ID, Attribute) |>
+        filter(!NCBI_ID %in% phys_data_ready$NCBI_ID) |>
+        # mutate(taxid = sub('^\\w__', '', NCBI_ID)) |>
+        bind_rows(dat)
+
+    tip_data_annotated <- left_join(
+        tip_data,
+        select(new_dat, taxid, Attribute, Score),
+        by = 'taxid'
+    )
+
+    annotated_tips <- tip_data_annotated |>
+        select(tip_label, Attribute, Score) |>
+        filter(!is.na(Attribute)) |>
+        pivot_wider(
+            names_from = 'Attribute', values_from = 'Score', values_fill = 0
+        ) |>
+        tibble::column_to_rownames(var = 'tip_label') |>
+        as.matrix()
+
+    pruned_tree <- ape::keep.tip(tree, tip = rownames(annotated_tips))
+    pruned_tree <- reorder(pruned_tree, 'postorder')
+
+    message('Performing ASR for ', current_phys, '.')
+    tim <- system.time({
+        fit <- fitMk(
+            tree = pruned_tree, x = annotated_tips, model = 'ER',
+            pi = 'fitzjohn', lik.func = 'pruning', logscale = TRUE
+        )
+        asr <- ancr(object = fit, tips = TRUE)
+    })
 
     message('Cleaning nodes for ', current_phys, '.')
     tim <- system.time({
         ncbi_tree$Do(cleanNode)
     })
     print(tim)
+
 }
 end_time <- Sys.time()
 elapsed_time <- end_time - start_time
@@ -167,21 +202,21 @@ annotated_tips <- tip_data_annotated |>
     ) |>
     tibble::column_to_rownames(var = 'tip_label') |>
     as.matrix()
-no_annotated_tips_chr <- tip_data_annotated |>
-    filter(!tip_label %in% rownames(annotated_tips)) |>
-    pull(tip_label) |>
-    unique()
-no_annotated_tips <- matrix(
-    data = rep(rep(1/ncol(annotated_tips), ncol(annotated_tips)), length(no_annotated_tips_chr)),
-    nrow = length((no_annotated_tips_chr)),
-    byrow = TRUE,
-    dimnames = list(
-        rownames = no_annotated_tips_chr, colnames = colnames(annotated_tips)
-    )
-)
+# no_annotated_tips_chr <- tip_data_annotated |>
+#     filter(!tip_label %in% rownames(annotated_tips)) |>
+#     pull(tip_label) |>
+#     unique()
+# no_annotated_tips <- matrix(
+#     data = rep(rep(1/ncol(annotated_tips), ncol(annotated_tips)), length(no_annotated_tips_chr)),
+#     nrow = length((no_annotated_tips_chr)),
+#     byrow = TRUE,
+#     dimnames = list(
+#         rownames = no_annotated_tips_chr, colnames = colnames(annotated_tips)
+#     )
+# )
 
-input_matrix <- rbind(annotated_tips, no_annotated_tips)
-input_matrix <- input_matrix[tree$tip.label,]
+# input_matrix <- rbind(annotated_tips, no_annotated_tips)
+# input_matrix <- input_matrix[tree$tip.label,]
 
 
 ## add scode for ASR
