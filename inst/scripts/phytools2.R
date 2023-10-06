@@ -9,26 +9,44 @@ library(tidyr)
 library(ggplot2)
 library(ape)
 
-# phys_name <- 'antimicrobial resistance'
-# phys_name <- 'acetate producing'
-# phys_name <- 'aerophilicity'
-
 phys_names <- c(
-    'aerophilicity', 'acetate producing', 'antimicrobial resistance'
+    ## multistate-intersection
+    'aerophilicity',
+
+    ## multistate-union
+    'antimicrobial resistance',
+
+    ## binary
+    'acetate producing'
+
 )
+
 phys <- physiologies(phys_names)
 
-## There might be some warnings due to taxizedb. They can be ignored for now
-## This is due to changes in taxonomy, so the taxonomy might require
-## to be updated from time to time
 phys_data_ready <- vector('list', length(phys))
+myWarnings <- vector('list', length(phys))
 for (i in seq_along(phys_data_ready)) {
-    names(phys_data_ready)[i] <- names(phys)[i]
-    res <- getDataReady(filterData(phys[[i]]))
-    if (is.null(res))
-        next
-    phys_data_ready[[i]] <- res
+    name <- names(phys)[i]
+    message('Preparing ', name, '.')
+    names(phys_data_ready)[i] <- name
+    names(myWarnings)[i] <- name
+    wngs <- list()
+    suppressWarnings({
+        withCallingHandlers(
+            dat <- getDataReady(filterData(phys[[i]])),
+            warning = function(w) {
+                wngs <<- c(wngs, list(w))
+            }
+        )
+    })
+    if (length(wngs) > 0)
+        myWarnings[[i]] <- wngs
 }
+myWarnings <- discard(myWarnings, is.null)
+
+
+
+
 
 
 
