@@ -91,7 +91,7 @@ for (i in seq_along(phys_data_ready)) {
     message('Performing round 1 of propagation for ', current_phys, '.')
     tim <- system.time({
         ncbi_tree$Do(
-            function(node) {
+           function(node) {
                 taxPool(
                     node = node,
                     grp = Attribute_group_var,
