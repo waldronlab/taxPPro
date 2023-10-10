@@ -41,7 +41,7 @@ v <- sort(v)
 phys <- phys[names(v)]
 
 ## Preparing data for propagation ####
-msg <- ('Preparing data for propagation.')
+msg <- ('Preparing data for propagation...')
 log_print(msg, blank_after = TRUE)
 tim <- system.time({
     phys_data_ready <- vector('list', length(phys))
@@ -71,6 +71,7 @@ tim <- system.time({
     }
     phys_data_ready <- list_flatten(phys_data_ready)
 })
+log_print('Total time preparing data for propagation was: ')
 log_print(tim, blank_after = TRUE)
 
 taxidWarnings <- discard(taxidWarnings, is.null)
@@ -82,7 +83,7 @@ if (!is.null(taxidWarnings)) {
 
 ## Prepare tree data ####
 msg <- paste0('Preparing tree data (NCBI and LTP).')
-log_print(msg, blank_after = TRUE)
+log_print(msg)
 tim <- system.time({
     data('tree_list')
     ncbi_tree <- as.Node(tree_list)
