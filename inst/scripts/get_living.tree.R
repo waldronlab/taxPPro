@@ -103,7 +103,7 @@ tx <- paste0(taxonomic_ranks, '_taxid')
 tx[which(tx == 'superkingdom_taxid')] <- 'kingdom_taxid'
 
 mrcas <- flatten(map(tx, ~ split(tree_data, factor(tree_data[[.x]]))))
-mrcas <-map(mrcas, ~ .x[['tip_label']])
+mrcas <- map(mrcas, ~ .x[['tip_label']])
 mrcas <- map_int(mrcas, ~ getMRCA(tree, .x))
 mrcas <- mrcas[!is.na(mrcas)]
 mrcas_df <- data.frame(node = unname(mrcas), node_label = names(mrcas))
