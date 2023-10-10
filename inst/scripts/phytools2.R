@@ -1,5 +1,5 @@
 
-## Load packages ####
+## Setup ####
 library(logr)
 library(bugphyzz)
 library(taxPPro)
@@ -14,7 +14,7 @@ library(ape)
 logfile <- "log_file"
 lf <- log_open(logfile, logdir = FALSE, compact = TRUE, show_notes = FALSE)
 
-## Import physiologies
+## Import physiology data from bugphyzz ####
 phys_names <- c(
     ## multistate-intersection
     'aerophilicity',
@@ -26,72 +26,84 @@ phys_names <- c(
     'acetate producing'
 
     ## numeric/range
-    # 'growth temeperature'
+    # 'growth temperature'
 )
-
-phys <- physiologies(phys_names)
 
 msg <- paste0(
     'Importing ', length(phys_names), ' physiologies for propagation: ',
     paste0(phys_names, collapse = ', '), '.'
 )
 log_print(msg, blank_after = TRUE)
+phys <- physiologies(phys_names)
 
-phys_data_ready <- vector('list', length(phys))
-taxidWarnings <- vector('list', length(phys))
-for (i in seq_along(phys_data_ready)) {
-    name <- names(phys)[i]
-    message('Preparing ', name, '.')
-    names(phys_data_ready)[i] <- name
-    names(taxidWarnings)[i] <- name
-    wngs <- list()
-    suppressWarnings({
-        withCallingHandlers({
-            dat <- getDataReady(filterData(phys[[i]]))
-            if (length(dat) > 0)
-                phys_data_ready[[i]] <- dat
-        },
-        warning = function(w) {
-            if (grepl('taxizedb', w$message)) {
-                msg <- sub('.*unrank.*: (\\d+.*)$', '\\1', w$message)
-                wngs <<- c(wngs, list(msg))
-            }
+
+## Preparing data for propagation ####
+msg <- ('Preparing data for propagation')
+log_print(msg, blank_after = TRUE)
+tim <- system.time({
+    phys_data_ready <- vector('list', length(phys))
+    taxidWarnings <- vector('list', length(phys))
+    for (i in seq_along(phys_data_ready)) {
+        name <- names(phys)[i]
+        msg <- paste0('Preparing ', name, '.')
+        log_print(msg, blank_after = TRUE)
+        names(phys_data_ready)[i] <- name
+        names(taxidWarnings)[i] <- name
+        wngs <- list()
+        suppressWarnings({
+            withCallingHandlers({
+                dat <- getDataReady(filterData(phys[[i]]))
+                if (length(dat) > 0)
+                    phys_data_ready[[i]] <- dat
+            },
+            warning = function(w) {
+                if (grepl('taxizedb', w$message)) {
+                    msg <- sub('.*unrank.*: (\\d+.*)$', '\\1', w$message)
+                    wngs <<- c(wngs, list(msg))
+                }
+            })
         })
-    })
-    if (length(wngs) > 0)
-        taxidWarnings[[i]] <- wngs
-}
+        if (length(wngs) > 0)
+            taxidWarnings[[i]] <- wngs
+    }
+    phys_data_ready <- list_flatten(phys_data_ready)
+})
+log_print(tim, blank_after = TRUE)
+
 taxidWarnings <- discard(taxidWarnings, is.null)
 if (!is.null(taxidWarnings)) {
-    message('Some NCBI IDs (taxids) need to be updated:')
-    print(taxidWarnings)
+    msg <- 'Some NCBI IDs (taxids) need to be updated:'
+    log_print(msg, blank_after = TRUE)
+    log_print(taxidWarnings, blank_after = TRUE)
 }
-phys_data_ready <- list_flatten(phys_data_ready)
 
-## Load NCBI taxonomy tree ####
-data('tree_list')
-ncbi_tree <- as.Node(tree_list)
 
-## Load the living tree project (LTP) tree and tip data ####
-ltp <- ltp()
-tree <- reorder(ltp$tree, 'postorder')
-tip_data <- ltp$tip_data
+## Prepare trees and tip data ####
+msg <- paste0('Preparing tree data')
+log_print(msg, blank_after = TRUE)
+tim <- system.time({
+    data('tree_list')
+    ncbi_tree <- as.Node(tree_list)
 
-tx <- grep('_taxid$', colnames(tip_data), value = TRUE)
-nodes <- flatten(map(tx, ~ split(tip_data, factor(tip_data[[.x]]))))
-nodes <- map(nodes, ~ .x[['tip_label']])
-## integers are nodes in tree and names is the taxid for that node
-node_names <- map_int(nodes, ~ getMRCATaxPPro(tree, .x))
-node_names <- node_names[!is.na(node_names)]
-nodes_df <- data.frame(
-    node = unname(node_names),
-    node_label = names(node_names)
+    ltp <- ltp()
+    tree <- reorder(ltp$tree, 'postorder')
+    tip_data <- ltp$tip_data
+
+    tx <- grep('_taxid$', colnames(tip_data), value = TRUE)
+    nodes <- flatten(map(tx, ~ split(tip_data, factor(tip_data[[.x]]))))
+    nodes <- map(nodes, ~ .x[['tip_label']])
+    node_names <- map_int(nodes, ~ getMRCATaxPPro(tree, .x))
+    node_names <- node_names[!is.na(node_names)]
+    nodes_df <- data.frame(
+        node = unname(node_names),
+        node_label = names(node_names)
     ) |>
-    group_by(node) |>
-    # mutate(n_labels = length(unique(node_label))) |>
-    mutate(node_label = paste0(unique(node_label), collapse = '+')) |>
-    ungroup() |>
-    distinct()
+        group_by(node) |>
+        mutate(node_label = paste0(unique(node_label), collapse = '+')) |>
+        ungroup() |>
+        distinct()
+})
+log_print(tim, blank_after = TRUE)
 
 start_time <- Sys.time()
 output <- vector('list', length(phys_data_ready))
@@ -106,7 +118,7 @@ for (i in seq_along(phys_data_ready)) {
     Attribute_type_var <- unique(dat$Attribute_type)
     Attribute_type_var <- Attribute_type_var[!is.na(Attribute_type_var)]
 
-    ##  Mappint to NCBI tree
+    ##  Mapping to NCBI tree
     message('Mapping source annotations to the NCBI tree for ', current_phys, '.')
     node_list <- split(
         x = dat, f = factor(dat$NCBI_ID)
@@ -320,19 +332,17 @@ for (i in seq_along(phys_data_ready)) {
 
     output[[i]] <- final_result
 
-    message('Cleaning nodes for ', current_phys, '.')
+    msg <- paste0('Cleaning nodes for ', current_phys, '.')
+    log_print(msg, blank_after = TRUE)
     tim <- system.time({
         ncbi_tree$Do(cleanNode)
     })
-    print(tim)
-
-
+    log_print(tim)
 }
+
 end_time <- Sys.time()
 elapsed_time <- end_time - start_time
 print(elapsed_time)
-
-
 
 final_obj <- bind_rows(output)
 

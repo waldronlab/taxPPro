@@ -78,13 +78,6 @@ filterDataDiscrete <- function(tbl) {
     return(phys_data)
 }
 
-
-
-filterMultiStateUnion <- function() {
-
-}
-
-
 #' Get data ready for propagation
 #'
 #' @param tbl A data.frame.
@@ -428,8 +421,6 @@ inh2 <- function(node, adjF = 0.1) {
         node$attribute_tbl <- res
     }
 }
-
-
 
 #' Get Most Recent Common Ancestor
 #'
