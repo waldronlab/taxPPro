@@ -12,14 +12,13 @@ library(ape)
 
 phys_names <- c(
     ## multistate-intersection
-    'aerophilicity'
+    'aerophilicity',
 
     ## multistate-union
-    # 'antimicrobial resistance',
+    'antimicrobial resistance',
 
     ## binary
-    # 'acetate producing'
-
+    'acetate producing'
 )
 
 phys <- physiologies(phys_names)
@@ -79,12 +78,6 @@ nodes_df <- data.frame(
     mutate(node_label = paste0(unique(node_label), collapse = '+')) |>
     ungroup() |>
     distinct()
-
-
-
-
-
-
 
 start_time <- Sys.time()
 output <- vector('list', length(phys_data_ready))
@@ -308,11 +301,14 @@ for (i in seq_along(phys_data_ready)) {
     final_result <- bind_rows(list(result, add_taxa_1, add_taxa_2)) |>
         filter(Score > min_thr)
 
+    output[[i]] <- final_result
+
     message('Cleaning nodes for ', current_phys, '.')
     tim <- system.time({
         ncbi_tree$Do(cleanNode)
     })
     print(tim)
+
 
 }
 end_time <- Sys.time()
