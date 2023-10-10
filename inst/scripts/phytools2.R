@@ -115,6 +115,7 @@ log_print(msg, blank_after = TRUE)
 
 output <- vector('list', length(phys_data_ready))
 for (i in seq_along(phys_data_ready)) {
+    time1 <- system.time()
 
     ## Define variables
     current_phys <- names(phys_data_ready)[i]
@@ -338,15 +339,15 @@ for (i in seq_along(phys_data_ready)) {
 
     ## Taxonomic pooling (propagation round 3) ####
     msg <- paste0(
-        'Performing taxonomic pooling for ', current_phys,
-        '.'
+        'Performing taxonomic pooling (round 3 of propagation) for ',
+        current_phys, '.'
     )
     log_print(msg)
     tim <- system.time({
         ncbi_tree$Do(
-            function(node) {
+            function(node_var) {
                 taxPool(
-                    node = node,
+                    node = node_var,
                     grp = Attribute_group_var,
                     typ = Attribute_type_var
                 )
@@ -402,7 +403,14 @@ for (i in seq_along(phys_data_ready)) {
     })
     log_print(tim)
 
-    log_print('')
+    time2 <- system.time()
+    time3 <- time2 - time1
+    nrow_fr <- nrow(final_result)
+    msg <- paste0(
+        'Number of rows for ', current_phys, ' were' , nrow_fr , '.',
+        'It took ', time3, '.'
+    )
+    log_print(msg, blank_after = TRUE)
     log_print('', blank_after = TRUE)
 }
 end_time <- Sys.time()
