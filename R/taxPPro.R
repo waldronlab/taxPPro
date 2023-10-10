@@ -428,3 +428,22 @@ inh2 <- function(node, adjF = 0.1) {
         node$attribute_tbl <- res
     }
 }
+
+
+
+#' Get Most Recent Common Ancestor
+#'
+#' \code{getMRCATaxPPro} gets the most recent common ancestor using phytools.
+#'
+#' @param tree A phylo tree object.
+#' @param tips Tips in the phylo tree object.
+#'
+#' @return A data.frame.
+#' @export
+#'
+getMRCATaxPPro <- function(tree, tips) {
+    res <- phytools::findMRCA(tree = tree, tips = tips)
+    if (is.null(res))
+        res <- NA
+    res
+}
