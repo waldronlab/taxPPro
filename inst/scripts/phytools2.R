@@ -115,7 +115,7 @@ log_print(msg, blank_after = TRUE)
 
 output <- vector('list', length(phys_data_ready))
 for (i in seq_along(phys_data_ready)) {
-    time1 <- system.time()
+    time1 <- Sys.time()
 
     ## Define variables
     current_phys <- names(phys_data_ready)[i]
@@ -403,7 +403,7 @@ for (i in seq_along(phys_data_ready)) {
     })
     log_print(tim)
 
-    time2 <- system.time()
+    time2 <- Sys.time()
     time3 <- time2 - time1
     nrow_fr <- nrow(final_result)
     msg <- paste0(
