@@ -11,6 +11,10 @@ library(tidyr)
 library(ggplot2)
 library(ape)
 
+logfile <- "log_file"
+lf <- log_open(logfile, logdir = FALSE, compact = TRUE, show_notes = FALSE)
+
+## Import physiologies
 phys_names <- c(
     ## multistate-intersection
     'aerophilicity',
@@ -20,9 +24,18 @@ phys_names <- c(
 
     ## binary
     'acetate producing'
+
+    ## numeric/range
+    # 'growth temeperature'
 )
 
 phys <- physiologies(phys_names)
+
+msg <- paste0(
+    'Importing ', length(phys_names), ' physiologies for propagation: ',
+    paste0(phys_names, collapse = ', '), '.'
+)
+log_print(msg, blank_after = TRUE)
 
 phys_data_ready <- vector('list', length(phys))
 taxidWarnings <- vector('list', length(phys))
@@ -322,3 +335,8 @@ print(elapsed_time)
 
 
 final_obj <- bind_rows(output)
+
+si <- sessioninfo::session_info()
+log_print(si, blank_after = TRUE)
+
+log_close()
