@@ -20,7 +20,7 @@ phys_names <- c(
     'aerophilicity',
 
     ## multistate-union
-    'antimicrobial resistance',
+    # 'antimicrobial resistance',
 
     ## binary
     'acetate producing'
@@ -35,7 +35,10 @@ msg <- paste0(
 )
 log_print(msg, blank_after = TRUE)
 phys <- physiologies(phys_names)
-
+v <- map_int(phys, nrow)
+names(v) <- phys
+v <- sort(v)
+phys <- phys[names(v)]
 
 ## Preparing data for propagation ####
 msg <- ('Preparing data for propagation')
@@ -77,9 +80,8 @@ if (!is.null(taxidWarnings)) {
     log_print(taxidWarnings, blank_after = TRUE)
 }
 
-
-## Prepare trees and tip data ####
-msg <- paste0('Preparing tree data')
+## Prepare tree data ####
+msg <- paste0('Preparing tree data (NCBI and LTP)')
 log_print(msg, blank_after = TRUE)
 tim <- system.time({
     data('tree_list')
@@ -105,7 +107,12 @@ tim <- system.time({
 })
 log_print(tim, blank_after = TRUE)
 
+
+## Propagation step ####
 start_time <- Sys.time()
+msg <- paste0('Performing propagation. It started at ', start_time, '.')
+log_print(msg, blank_after = TRUE)
+
 output <- vector('list', length(phys_data_ready))
 for (i in seq_along(phys_data_ready)) {
 
@@ -118,7 +125,7 @@ for (i in seq_along(phys_data_ready)) {
     Attribute_type_var <- unique(dat$Attribute_type)
     Attribute_type_var <- Attribute_type_var[!is.na(Attribute_type_var)]
 
-    ##  Mapping to NCBI tree
+    ##  Mapping to NCBI tree ####
     message('Mapping source annotations to the NCBI tree for ', current_phys, '.')
     node_list <- split(
         x = dat, f = factor(dat$NCBI_ID)
@@ -132,8 +139,11 @@ for (i in seq_along(phys_data_ready)) {
     })
     print(tim)
 
-    ## Taxonomic pooling and inheritance (round 1)
-    message('Performing round 1 of propagation for ', current_phys, '.')
+    ## Taxonomic pooling (round 1) ####
+    msg <- paste0(
+        'Performing round 1 of taxonomic pooling for ', current_phys, '.'
+    )
+    log_print(msg, blank_after = TRUE)
     tim <- system.time({
         ncbi_tree$Do(
            function(node) {
@@ -144,9 +154,16 @@ for (i in seq_along(phys_data_ready)) {
             },
             traversal = 'post-order'
         )
+    })
+    log_print(tim)
+
+    ## Inheritance (round 1) ####
+    msg <- paste0('Performing round 1 of inheritance for ', current_phys, '.')
+    log_print(msg, blank_after = TRUE)
+    tim <- system.time({
         ncbi_tree$Do(inh1, traversal = 'pre-order')
     })
-    print(tim)
+    log_print(tim)
 
     new_dat <- ncbi_tree$Get(
         'attribute_tbl', filterFun = function(node) {
@@ -157,15 +174,17 @@ for (i in seq_along(phys_data_ready)) {
         bind_rows() |>
         arrange(NCBI_ID, Attribute) |>
         filter(!NCBI_ID %in% dat$NCBI_ID) |>
-        # mutate(taxid = sub('^\\w__', '', NCBI_ID)) |>
-        bind_rows(dat)
+        bind_rows(dat) # After this, new_data also includes dat
 
     if (all(!new_dat$taxid %in% tip_data$taxid)) {
-        message('Not enough data for ASR. Skipping ', current_phys, '.')
+        msg <- paste0(
+            'Not enough data for ASR. Skipping ', current_phys, '.'
+        )
+        log_print(msg, blank_after = TRUE)
         next
     }
 
-    ## Perform ASR with phytools
+    ## Annotate pruned tree ####
     tip_data_annotated <- left_join(
         tip_data,
         select(new_dat, taxid, Attribute, Score),
@@ -183,12 +202,8 @@ for (i in seq_along(phys_data_ready)) {
 
     pruned_tree <- ape::keep.tip(tree, tip = rownames(annotated_tips))
     pruned_tree <- reorder(pruned_tree, 'postorder')
-
     pruned_tip_data <- tip_data |>
         filter(tip_label %in% pruned_tree$tip.label)
-
-    ## Annotated the pruned tree
-
     pruned_node_data <- data.frame(
         node = length(pruned_tree$tip.label) + 1:pruned_tree$Nnode
     )
@@ -198,8 +213,6 @@ for (i in seq_along(phys_data_ready)) {
         map(~ split(pruned_tip_data, factor(pruned_tip_data[[.x]]))) |>
         flatten() |>
         map(~ .x[['tip_label']])
-
-    ## integers are nodes in tree and names is the taxid for that node
     node_names <- map_int(nodes, ~ getMRCATaxPPro(pruned_tree, .x))
     node_names <- node_names[!is.na(node_names)]
     nodes_df <- data.frame(
@@ -207,21 +220,20 @@ for (i in seq_along(phys_data_ready)) {
         node_label = names(node_names)
     ) |>
         group_by(node) |>
-        # mutate(n_labels = length(unique(node_label))) |>
         mutate(node_label = paste0(unique(node_label), collapse = '+')) |>
         ungroup() |>
         distinct() |>
         arrange(node)
-    node_data <- left_join(pruned_node_data, nodes_df, by = 'node') |>
+    pruned_node_data <- left_join(pruned_node_data, nodes_df, by = 'node') |>
         mutate(
             node_label = ifelse(
                 is.na(node_label), paste0('n', as.character(node)), node_label
             )
         )
+    pruned_tree$node.label <- pruned_node_data$node_label
 
-    pruned_tree$node.label <- node_data$node_label
-
-    message('Performing ASR for ', current_phys, '.')
+    msg <- paste0('Performing ASR for ', current_phys, '.')
+    log_print(msg, blank_after = TRUE)
     tim <- system.time({
         fit <- fitMk(
             tree = pruned_tree, x = annotated_tips, model = 'ER',
@@ -229,7 +241,7 @@ for (i in seq_along(phys_data_ready)) {
         )
         asr <- ancr(object = fit, tips = TRUE)
     })
-    print(tim)
+    log_print(tim, blank_after = TRUE)
 
     res <- asr$ace
     node_rows <- length(pruned_tree$tip.label) + 1:pruned_tree$Nnode
