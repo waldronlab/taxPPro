@@ -1,3 +1,4 @@
+## Script for bugphyzz exports
 
 ## Setup ####
 library(logr)
@@ -36,12 +37,11 @@ msg <- paste0(
 log_print(msg, blank_after = TRUE)
 phys <- physiologies(phys_names)
 v <- map_int(phys, nrow)
-names(v) <- phys
 v <- sort(v)
 phys <- phys[names(v)]
 
 ## Preparing data for propagation ####
-msg <- ('Preparing data for propagation')
+msg <- ('Preparing data for propagation.')
 log_print(msg, blank_after = TRUE)
 tim <- system.time({
     phys_data_ready <- vector('list', length(phys))
@@ -81,7 +81,7 @@ if (!is.null(taxidWarnings)) {
 }
 
 ## Prepare tree data ####
-msg <- paste0('Preparing tree data (NCBI and LTP)')
+msg <- paste0('Preparing tree data (NCBI and LTP).')
 log_print(msg, blank_after = TRUE)
 tim <- system.time({
     data('tree_list')
@@ -107,7 +107,6 @@ tim <- system.time({
 })
 log_print(tim, blank_after = TRUE)
 
-
 ## Propagation step ####
 start_time <- Sys.time()
 msg <- paste0('Performing propagation. It started at ', start_time, '.')
@@ -125,8 +124,17 @@ for (i in seq_along(phys_data_ready)) {
     Attribute_type_var <- unique(dat$Attribute_type)
     Attribute_type_var <- Attribute_type_var[!is.na(Attribute_type_var)]
 
-    ##  Mapping to NCBI tree ####
-    message('Mapping source annotations to the NCBI tree for ', current_phys, '.')
+    dat_n_tax <- length(unique(dat$NCBI_ID))
+    msg <- paste0(
+        current_phys, ' has ', dat_n_tax, 'annotations.'
+    )
+    log_print(msg, blank_after = TRUE)
+
+    ##  Mapping annotations to NCBI tree ####
+    msg <- paste0(
+        'Mapping source annotations to the NCBI tree for ', current_phys, '.'
+    )
+    log_print(msg)
     node_list <- split(
         x = dat, f = factor(dat$NCBI_ID)
     )
@@ -137,13 +145,14 @@ for (i in seq_along(phys_data_ready)) {
                 node$attribute_tbl <- node_list[[node$name]]
         })
     })
-    print(tim)
+    log_print(tim, blank_after = TRUE)
 
-    ## Taxonomic pooling (round 1) ####
+    ## Taxonomic pooling (round 1 of propagation) ####
     msg <- paste0(
-        'Performing round 1 of taxonomic pooling for ', current_phys, '.'
+        'Performing taxonomic pooling (round 1 of propagation) for ',
+        current_phys, '.'
     )
-    log_print(msg, blank_after = TRUE)
+    log_print(msg)
     tim <- system.time({
         ncbi_tree$Do(
            function(node) {
@@ -155,15 +164,18 @@ for (i in seq_along(phys_data_ready)) {
             traversal = 'post-order'
         )
     })
-    log_print(tim)
+    log_print(tim, blank_after = TRUE)
 
-    ## Inheritance (round 1) ####
-    msg <- paste0('Performing round 1 of inheritance for ', current_phys, '.')
-    log_print(msg, blank_after = TRUE)
+    ## Inheritance (round 1 of propagation) ####
+    msg <- paste0(
+        'Performing inhertiance1 (round 1 of propagation) for ',
+        current_phys, '.'
+    )
+    log_print(msg)
     tim <- system.time({
         ncbi_tree$Do(inh1, traversal = 'pre-order')
     })
-    log_print(tim)
+    log_print(tim, blank_after = TRUE)
 
     new_dat <- ncbi_tree$Get(
         'attribute_tbl', filterFun = function(node) {
@@ -174,13 +186,15 @@ for (i in seq_along(phys_data_ready)) {
         bind_rows() |>
         arrange(NCBI_ID, Attribute) |>
         filter(!NCBI_ID %in% dat$NCBI_ID) |>
-        bind_rows(dat) # After this, new_data also includes dat
+        bind_rows(dat) # After this chunk is run, new_data also includes dat
 
     if (all(!new_dat$taxid %in% tip_data$taxid)) {
         msg <- paste0(
-            'Not enough data for ASR. Skipping ', current_phys, '.'
+            'Not enough data for ASR. Skipping ASR for ', current_phys,
+            '. Stopped after the first round of propagation.'
         )
         log_print(msg, blank_after = TRUE)
+        output[[i]] <- new_dat
         next
     }
 
@@ -232,8 +246,10 @@ for (i in seq_along(phys_data_ready)) {
         )
     pruned_tree$node.label <- pruned_node_data$node_label
 
-    msg <- paste0('Performing ASR for ', current_phys, '.')
-    log_print(msg, blank_after = TRUE)
+    msg <- paste0(
+        'Performing ASR for (round 2 of propagation)', current_phys, '.'
+    )
+    log_print(msg)
     tim <- system.time({
         fit <- fitMk(
             tree = pruned_tree, x = annotated_tips, model = 'ER',
@@ -247,6 +263,7 @@ for (i in seq_along(phys_data_ready)) {
     node_rows <- length(pruned_tree$tip.label) + 1:pruned_tree$Nnode
     rownames(res)[node_rows] <- pruned_tree$node.label
 
+    ## Get annotations for nodes
     nodes_annotated <- res[which(grepl('^\\d+(\\+\\d+)*', rownames(res))),]
     new_taxa_from_nodes <- nodes_annotated |>
         as.data.frame() |>
@@ -300,8 +317,13 @@ for (i in seq_along(phys_data_ready)) {
         new_taxa_for_ncbi_tree, factor(new_taxa_for_ncbi_tree$NCBI_ID)
     )
 
-    ## Perform taxonomic pooling and inheritance (round 2)
-    message('Performing second taxPool and Inh pooling for', current_phys)
+    ## Perform taxonomic pooling and inheritance (propagation round 3)
+    ## Mapping new internal nodes to the NCBI taxonomy tree ####
+    msg <- paste0(
+        'Mapping annotations for third round of propagation for ', current_phys,
+        '.'
+    )
+    log_print(msg)
     tim <- system.time({
         ncbi_tree$Do(function(node) {
             cond1 <- node$name %in% names(new_taxa_for_ncbi_tree_list)
@@ -310,6 +332,16 @@ for (i in seq_along(phys_data_ready)) {
                 node$attribute_tbl <- new_taxa_for_ncbi_tree_list[[node$name]]
             }
         })
+    })
+    log_print(tim, blank_after = TRUE)
+
+    ## Taxonomic pooling (propagation round 3) ####
+    msg <- paste0(
+        'Performing taxonomic pooling for ', current_phys,
+        '.'
+    )
+    log_print(msg)
+    tim <- system.time({
         ncbi_tree$Do(
             function(node) {
                 taxPool(
@@ -320,10 +352,21 @@ for (i in seq_along(phys_data_ready)) {
             },
             traversal = 'post-order'
         )
+
+    })
+    log_print(tim, blank_after = TRUE)
+
+    ## Inheritance (propagation round 3) ####
+    msg <- paste0(
+        'Performing inheritance (round 3 of propagation) for ', current_phys
+    )
+    log_print(msg)
+    tim <- system.time({
         ncbi_tree$Do(inh2, traversal = 'pre-order')
     })
+    log_print(tim, blank_after = TRUE)
 
-    ## Extracting files
+    ## Extracting files ####
     result <- ncbi_tree$Get(
         attribute = 'attribute_tbl', simplify = FALSE,
         filterFun = function(node) {
@@ -333,6 +376,13 @@ for (i in seq_along(phys_data_ready)) {
         bind_rows() |>
         discard(~ all(is.na(.x)))
     min_thr <- 1 / length(unique(dat$Attribute))
+
+    msg <- paste0(
+        'Minimum threshold for positives in ', current_phys, ' was ',
+        min_thr, '.'
+    )
+    log_print(msg, blank_after = TRUE)
+
     add_taxa_1 <- dat |>
         filter(!NCBI_ID %in% unique(result$NCBI_ID)) |>
         discard(~ all(is.na(.x)))
@@ -345,20 +395,30 @@ for (i in seq_along(phys_data_ready)) {
     output[[i]] <- final_result
 
     msg <- paste0('Cleaning nodes for ', current_phys, '.')
-    log_print(msg, blank_after = TRUE)
+    log_print(msg)
     tim <- system.time({
         ncbi_tree$Do(cleanNode)
     })
     log_print(tim)
-}
 
+    log_print('')
+    log_print('', blank_after = TRUE)
+}
 end_time <- Sys.time()
 elapsed_time <- end_time - start_time
-print(elapsed_time)
 
+msg <- paste0('Total elapsed time for propagtion was', elapsed_time)
+log_print(msg, blank_after = TRUE)
+
+## Exporting annotations as a single tsv file ####
 final_obj <- bind_rows(output)
+msg <- paste0('Writing final output file.')
+log_print(msg, blank_after = TRUE)
+final_obj_fname <- paste0('bugphyzz_export_', Sys.Date(), '.tsv')
+write.table(
+    x = final_obj, file = final_obj_fname, sep = '\t', row.names = FALSE
+)
 
 si <- sessioninfo::session_info()
 log_print(si, blank_after = TRUE)
-
 log_close()
