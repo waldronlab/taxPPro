@@ -11,6 +11,7 @@ library(purrr)
 library(tidyr)
 library(ggplot2)
 library(ape)
+library(bugphyzzExports)
 
 logfile <- "log_file"
 lf <- log_open(logfile, logdir = FALSE, compact = TRUE, show_notes = FALSE)
@@ -18,16 +19,16 @@ lf <- log_open(logfile, logdir = FALSE, compact = TRUE, show_notes = FALSE)
 ## Import physiology data from bugphyzz ####
 phys_names <- c(
     ## multistate-intersection
-    'aerophilicity',
+    # 'aerophilicity',
 
     ## multistate-union
     # 'antimicrobial resistance',
 
     ## binary
-    'acetate producing'
+    # 'acetate producing',
 
     ## numeric/range
-    # 'growth temperature'
+    'growth temperature'
 )
 
 msg <- paste0(
@@ -35,10 +36,46 @@ msg <- paste0(
     paste0(phys_names, collapse = ', '), '.'
 )
 log_print(msg, blank_after = TRUE)
-phys <- physiologies(phys_names)
-v <- map_int(phys, nrow)
+bugphyzz_data <- physiologies(phys_names)
+v <- map_int(bugphyzz_data, nrow)
 v <- sort(v)
-phys <- phys[names(v)]
+bugphyz_data <- bugphyzz_data[names(v)]
+
+msg <- paste0(
+    'Seaching for attributes of type range. They will be converted to type ',
+    'multistate-intersection based on thresholds.'
+)
+log_print(msg, blank_after = TRUE)
+
+phys <- vector('list', length(bugphyzz_data))
+for (i in seq_along(phys)) {
+    at <- unique(bugphyzz_data[[i]]$Attribute_type)
+    dat_name <- names(bugphyzz_data)[i]
+    names(phys)[i] <- dat_name
+    if (at == 'range' && dat_name %in% names(THRESHOLDS())) {
+        msg <- paste0(
+            dat_name, " is of type range and we have a threshold for it.",
+            ' Converting ', dat_name, ' to multistate-intersection.'
+        )
+        log_print(msg)
+        res <- rangeToLogicalThr(bugphyzz_data[[i]], THRESHOLDS()[[dat_name]])
+        res$Attribute_type <- 'multistate-intersection'
+        phys[[i]] <- res
+
+    } else if (at == 'range' && !dat_name %in% names(THRESHOLDS())) {
+        msg <- paste0(
+            dat_name, " is of type range, but we don't have a threshold for it.",
+            " Skipping ", dat_name, '.'
+        )
+        log_print(msg)
+        next
+
+    } else {
+        phys[[i]] <- bugphyzz_data[[i]]
+
+    }
+}
+phys <- discard(phys, is.null)
 
 ## Preparing data for propagation ####
 msg <- ('Preparing data for propagation...')
