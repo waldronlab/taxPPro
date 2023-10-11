@@ -79,6 +79,7 @@ phys <- discard(phys, is.null)
 
 ## Preparing data for propagation ####
 msg <- ('Preparing data for propagation...')
+log_print('', blank_after = TRUE)
 log_print(msg, blank_after = TRUE)
 tim <- system.time({
     phys_data_ready <- vector('list', length(phys))
@@ -435,7 +436,7 @@ for (i in seq_along(phys_data_ready)) {
     final_result_size <- lobstr::obj_size(final_result)
     msg <- paste0(
         'Size of propagated data for ', current_phys, ' is ',
-        gdata::humanReadable(final_result_size, units = 'SI'), '.'
+        gdata::humanReadable(final_result_size, standard = 'SI'), '.'
     )
     log_print(msg, blank_after = TRUE)
 
@@ -476,7 +477,7 @@ final_obj_size <- lobstr::obj_size(final_obj)
 
 msg <- paste0(
     'Size of final object is ',
-    gdata::humanReadable(final_obj_size, units = 'SI')
+    gdata::humanReadable(final_obj_size, standard = 'SI')
 )
 log_print(msg, blank_after = TRUE)
 
