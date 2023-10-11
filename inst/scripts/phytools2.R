@@ -19,13 +19,13 @@ lf <- log_open(logfile, logdir = FALSE, compact = TRUE, show_notes = FALSE)
 ## Import physiology data from bugphyzz ####
 phys_names <- c(
     ## multistate-intersection
-    # 'aerophilicity',
+    'aerophilicity',
 
     ## multistate-union
     # 'antimicrobial resistance',
 
     ## binary
-    # 'acetate producing',
+    'acetate producing',
 
     ## numeric/range
     'growth temperature'
