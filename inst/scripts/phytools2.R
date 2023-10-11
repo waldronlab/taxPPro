@@ -77,11 +77,6 @@ for (i in seq_along(phys)) {
 }
 phys <- discard(phys, is.null)
 
-
-## TODO code for converting numeric/ranges to categorical
-
-
-
 ## Preparing data for propagation ####
 msg <- ('Preparing data for propagation...')
 log_print(msg, blank_after = TRUE)
