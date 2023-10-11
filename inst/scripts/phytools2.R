@@ -439,7 +439,8 @@ for (i in seq_along(phys_data_ready)) {
 
     final_result_size <- lobstr::obj_size(final_result)
     msg <- paste0(
-        'Size of propagated data for ', current_phys, ' is '
+        'Size of propagated data for ', current_phys, ' is ',
+        gdata::humanReadable(final_result_size, units = 'SI'), '.'
     )
     log_print(msg, blank_after = TRUE)
 
@@ -479,7 +480,8 @@ final_obj <- bind_rows(output)
 final_obj_size <- lobstr::obj_size(final_obj)
 
 msg <- paste0(
-    'Size of final object is ',  final_obj_size
+    'Size of final object is ',
+    gdata::humanReadable(final_obj_size, units = 'SI')
 )
 log_print(msg, blank_after = TRUE)
 
@@ -490,7 +492,7 @@ write.table(
     x = final_obj, file = final_obj_fname, sep = '\t', row.names = FALSE
 )
 
-fsize <- gdata::humanReadable(file.size(final_obj_fname))
+fsize <- gdata::humanReadable(file.size(final_obj_fname), standard = "SI")
 msg <- paste0(
     'The size of the tsv file is ', fsize, '.'
 )
