@@ -71,6 +71,7 @@ tim <- system.time({
     }
     phys_data_ready <- list_flatten(phys_data_ready)
 })
+log_print('', blank_after = TRUE)
 log_print('Total time preparing data for propagation was: ')
 log_print(tim, blank_after = TRUE)
 
@@ -407,7 +408,7 @@ for (i in seq_along(phys_data_ready)) {
     time3 <- round(difftime(time2, time1, units = 'min'))
     nrow_fr <- nrow(final_result)
     msg <- paste0(
-        'Number of rows for ', current_phys, ' were' , nrow_fr , '.',
+        'Number of rows for ', current_phys, ' were ' , nrow_fr , '.',
         'It took ', time3[[1]], ' mins.'
     )
     log_print(msg, blank_after = TRUE)
@@ -417,7 +418,8 @@ end_time <- Sys.time()
 elapsed_time <- round(difftime(end_time, start_time, units = 'min'))
 
 msg <- paste0(
-    'Total elapsed time for propagtion was ', elapsed_time[[1]], ' min.'
+    'Total elapsed time for propagtion for ', length(phys_data_ready),
+    ' physiologies was ', elapsed_time[[1]], ' min.'
 )
 log_print(msg, blank_after = TRUE)
 
