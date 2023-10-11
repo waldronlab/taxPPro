@@ -49,7 +49,7 @@ tim <- system.time({
     for (i in seq_along(phys_data_ready)) {
         name <- names(phys)[i]
         msg <- paste0('Preparing ', name, '.')
-        log_print(msg, blank_after = TRUE)
+        log_print(msg)
         names(phys_data_ready)[i] <- name
         names(taxidWarnings)[i] <- name
         wngs <- list()
@@ -128,7 +128,7 @@ for (i in seq_along(phys_data_ready)) {
 
     dat_n_tax <- length(unique(dat$NCBI_ID))
     msg <- paste0(
-        current_phys, ' has ', dat_n_tax, 'annotations.'
+        current_phys, ' has ', dat_n_tax, ' taxa.'
     )
     log_print(msg, blank_after = TRUE)
 
@@ -249,7 +249,7 @@ for (i in seq_along(phys_data_ready)) {
     pruned_tree$node.label <- pruned_node_data$node_label
 
     msg <- paste0(
-        'Performing ASR for (round 2 of propagation)', current_phys, '.'
+        'Performing ASR for (round 2 of propagation) ', current_phys, '.'
     )
     log_print(msg)
     tim <- system.time({
@@ -404,19 +404,21 @@ for (i in seq_along(phys_data_ready)) {
     log_print(tim)
 
     time2 <- Sys.time()
-    time3 <- time2 - time1
+    time3 <- round(difftime(time2, time1, units = 'min'))
     nrow_fr <- nrow(final_result)
     msg <- paste0(
         'Number of rows for ', current_phys, ' were' , nrow_fr , '.',
-        'It took ', time3, '.'
+        'It took ', time3[[1]], ' mins.'
     )
     log_print(msg, blank_after = TRUE)
     log_print('', blank_after = TRUE)
 }
 end_time <- Sys.time()
-elapsed_time <- end_time - start_time
+elapsed_time <- round(difftime(end_time, start_time, units = 'min'))
 
-msg <- paste0('Total elapsed time for propagtion was', elapsed_time)
+msg <- paste0(
+    'Total elapsed time for propagtion was ', elapsed_time[[1]], ' min.'
+)
 log_print(msg, blank_after = TRUE)
 
 ## Exporting annotations as a single tsv file ####
