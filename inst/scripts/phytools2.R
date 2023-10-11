@@ -77,6 +77,11 @@ for (i in seq_along(phys)) {
 }
 phys <- discard(phys, is.null)
 
+
+## TODO code for converting numeric/ranges to categorical
+
+
+
 ## Preparing data for propagation ####
 msg <- ('Preparing data for propagation...')
 log_print(msg, blank_after = TRUE)
@@ -432,7 +437,14 @@ for (i in seq_along(phys_data_ready)) {
     final_result <- bind_rows(list(result, add_taxa_1, add_taxa_2)) |>
         filter(Score > min_thr)
 
+    final_result_size <- lobstr::obj_size(final_result)
+    msg <- paste0(
+        'Size of propagated data for ', current_phys, ' is '
+    )
+    log_print(msg, blank_after = TRUE)
+
     output[[i]] <- final_result
+
 
     msg <- paste0('Cleaning nodes for ', current_phys, '.')
     log_print(msg)
@@ -464,12 +476,25 @@ log_print(msg, blank_after = TRUE)
 
 ## Exporting annotations as a single tsv file ####
 final_obj <- bind_rows(output)
+final_obj_size <- lobstr::obj_size(final_obj)
+
+msg <- paste0(
+    'Size of final object is ',  final_obj_size
+)
+log_print(msg, blank_after = TRUE)
+
 msg <- paste0('Writing final output file.')
 log_print(msg, blank_after = TRUE)
 final_obj_fname <- paste0('bugphyzz_export_', Sys.Date(), '.tsv')
 write.table(
     x = final_obj, file = final_obj_fname, sep = '\t', row.names = FALSE
 )
+
+fsize <- gdata::humanReadable(file.size(final_obj_fname))
+msg <- paste0(
+    'The size of the tsv file is ', fsize, '.'
+)
+log_print(msg, blank_after = TRUE)
 
 si <- sessioninfo::session_info()
 log_print(si, blank_after = TRUE)
