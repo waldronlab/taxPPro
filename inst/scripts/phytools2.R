@@ -129,7 +129,7 @@ for (i in seq_along(phys_data_ready)) {
 
     dat_n_tax <- length(unique(dat$NCBI_ID))
     msg <- paste0(
-        current_phys, ' has ', dat_n_tax, ' taxa.'
+        current_phys, ' has ', format(dat_n_tax, big.mark = ','), ' taxa.'
     )
     log_print(msg, blank_after = TRUE)
 
@@ -402,7 +402,7 @@ for (i in seq_along(phys_data_ready)) {
     tim <- system.time({
         ncbi_tree$Do(cleanNode)
     })
-    log_print(tim)
+    log_print(tim, blank_after = TRUE)
 
     time2 <- Sys.time()
     time3 <- round(difftime(time2, time1, units = 'min'))
