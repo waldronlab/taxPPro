@@ -123,6 +123,18 @@ getDataReady <- function(tbl) {
     return(output)
 }
 
+
+#' Complete binary data
+#'
+#' \code{completeBinaryData} completes Attributes and scores for binary
+#' attributes
+#'
+#' @param tbl A data.frame.
+#'
+#' @return A data.frame.
+#'
+#' @export
+#'
 completeBinaryData <- function(tbl) {
         current_attr <- unique(tbl$Attribute)
         if (length(current_attr) == 1 && grepl('--TRUE$', current_attr)) {
