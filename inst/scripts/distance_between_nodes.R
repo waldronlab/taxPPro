@@ -20,16 +20,7 @@ ncbi_tree_nodes <- data_tree$Get(
 ncbi_tree_nodes <- unname(ncbi_tree_nodes)
 
 tip_data2 <- tip_data |>
-    mutate(
-        NCBI_ID = case_when(
-            Rank == 'species' ~ paste0('s__', taxid),
-            Rank == 'strain' ~ paste0('t__', taxid),
-            TRUE ~ NA
-        )
-    ) |>
     filter(NCBI_ID %in% ncbi_tree_nodes)
-
-
 
 tim <- system.time({
     res <- cophenetic(tree)
@@ -46,8 +37,10 @@ df <- res |>
     group_by(tip1) |>
     slice_max(order_by = distance, n = 1) ## allow ties
 
+df2 <- left_join(df, tip_data,by = c('tip2' = 'tip_label'))
+
 write_tsv(
-    x = df, file = 'inst/extdata/longest_distance_between_tips.tsv'
+    x = df2, file = 'inst/extdata/longest_distance_between_tips.tsv'
 )
 
 #     res2 <- dist.nodes(tree)

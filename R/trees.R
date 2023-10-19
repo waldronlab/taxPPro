@@ -93,6 +93,17 @@ ltp <- function(remove_zero_tips = TRUE) {
     message('Dropping ', ntips3 - ntips4, ' tips because of duplicated taxids.')
     tip_data <- tip_data[tree$tip.label,]
     message('Tips remaining: ', length(tree$tip.label))
+
+    tip_data <- tip_data |>
+        dplyr::mutate(
+            NCBI_ID = dplyr::case_when(
+                .data$Rank == 'genus' ~ paste0('g__', taxid),
+                .data$Rank == 'species' ~ paste0('s__', taxid),
+                .data$Rank == 'strain' ~ paste0('t__', taxid),
+                TRUE ~ NA
+            )
+        )
+
     list(
         tree = tree, tip_data = tip_data, node_data = node_data
     )
@@ -185,7 +196,25 @@ ltp2 <- function(remove_zero_tips = TRUE) {
     )
 }
 
+#' Get distant tips
+#'
+#' \code{getDistantTips} gets furthest apart tip for every tip in the ltp tree.
+#' Furthermore, this tip's taxid is present in the ncbi_tree. Additional
+#' columns describe data in the tip2 column.
+#'
+#' @return A data.frame.
+#' @export
+#'
+getDistantTips <- function() {
+    fileName <- system.file(
+        'extdata', 'longest_distance_between_tips.tsv',
+        package = 'taxPPro', mustWork = TRUE
+    )
+    utils::read.table(
+        file = fileName, header = TRUE, sep = '\t'
+    )
 
+}
 
 
 
