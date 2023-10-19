@@ -2,3 +2,5 @@ inst/doc
 .Rproj
 .Rproj.user
 docs
+log*
+bugphyzz*tsv
