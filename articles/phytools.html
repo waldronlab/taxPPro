@@ -286,7 +286,7 @@ sources:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tip_data</span> <span class="op">&lt;-</span> <span class="va">ltp</span><span class="op">$</span><span class="va">tip_data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">tip_data</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 18325    13</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 18325    14</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="some-completeness-stats">Some completeness stats<a class="anchor" aria-label="anchor" href="#some-completeness-stats"></a>
@@ -619,7 +619,7 @@ it’s expected that most of the taxa would already be covered.</p>
 <span>    <span class="va">asr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/ancr.html" class="external-link">ancr</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">fit</span>, tips <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt; 372.972 125.209 255.067</span></span></code></pre></div>
+<span><span class="co">#&gt; 369.117 125.055 252.408</span></span></code></pre></div>
 <div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="va">asr</span><span class="op">$</span><span class="va">ace</span></span>
 <span><span class="va">node_rows</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">tree</span><span class="op">$</span><span class="va">tip.label</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span><span class="op">:</span><span class="va">tree</span><span class="op">$</span><span class="va">Nnode</span></span>
