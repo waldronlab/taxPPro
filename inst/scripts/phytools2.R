@@ -19,16 +19,16 @@ lf <- log_open(logfile, logdir = FALSE, compact = TRUE, show_notes = FALSE)
 ## Import physiology data from bugphyzz ####
 phys_names <- c(
     ## multistate-intersection
-    'aerophilicity',
+    # 'aerophilicity',
 
     ## multistate-union
     # 'antimicrobial resistance',
 
     ## binary
-    'acetate producing',
+    'acetate producing'
 
     ## numeric/range
-    'growth temperature'
+    # 'growth temperature'
 )
 
 msg <- paste0(
@@ -158,6 +158,8 @@ for (i in seq_along(phys_data_ready)) {
 
     ## Define variables
     current_phys <- names(phys_data_ready)[i]
+    current_type <- unique(phys_data_ready[[i]]$Attribute_type)
+    current_type <- current_type[!is.na(current_type)]
     names(output)[i] <- current_phys
     dat <- phys_data_ready[[i]]
     Attribute_group_var <- unique(dat$Attribute_group)
@@ -235,7 +237,7 @@ for (i in seq_along(phys_data_ready)) {
             '. Stopped after the first round of propagation.'
         )
         log_print(msg, blank_after = TRUE)
-        output[[i]] <- new_dat
+        output[[i]] <- new_dat ## get the filtered data in the output
         next
     }
 
@@ -246,6 +248,56 @@ for (i in seq_along(phys_data_ready)) {
         by = 'taxid'
     )
 
+    if (current_type %in% c('binary', 'multistate-intersection')) {
+
+        # ncbi_tree_nodes <- ncbi_tree$Get(
+        #     attribute = 'name', filterFun = function(node) {
+        #         grepl('[st]__', node$name)
+        #     }
+        # )
+        # ncbi_tree_nodes <- unname(ncbi_tree_nodes)
+        #
+        # tip_data2 <- tip_data |>
+        #    mutate(
+        #        NCBI_ID = case_when(
+        #            Rank == 'species' ~ paste0('s__', taxid),
+        #            Rank == 'strain' ~ paste0('t__', taxid),
+        #            TRUE ~ NA
+        #
+        #        )
+        #    ) |>
+        #    filter(NCBI_ID %in% ncbi_tree_nodes)
+        #
+        distFname <- system.file(
+            'extdata', 'longest_distance_between_tips.tsv',
+            package = 'taxPPro', mustWork = TRUE
+        )
+
+        distances <- read.table(
+            file = distFname, header = TRUE, sep = '\t'
+        )
+            # filter(tip2 %in% ncbi_tree_nodes)
+
+        x <- tip_data_annotated |>
+            select(tip_label, Attribute, Score) |>
+            filter(!is.na(Attribute)) |>
+            complete(tip_label, Attribute, fill = list(Score = 0))
+
+        y <- x |>
+            group_by(tip_label) |>
+            slice_max(order_by = Score, n = 1, with_ties = FALSE)
+
+        h <- y |>
+            separate(
+                col = 'Attribute', into = c('Attribute', 'Attribute_value'),
+                sep = '--'
+            ) |>
+            left_join(distances, by = c('tip_label' = 'tip1'))
+
+
+
+    }
+
     annotated_tips <- tip_data_annotated |>
         select(tip_label, Attribute, Score) |>
         filter(!is.na(Attribute)) |>
@@ -254,6 +306,18 @@ for (i in seq_along(phys_data_ready)) {
         ) |>
         tibble::column_to_rownames(var = 'tip_label') |>
         as.matrix()
+
+    no_annotated_tips <- tip_data_annotated |>
+        select(tip_label, Attribute, Score) |>
+        filter(is.na(Attribute)) |>
+        pivot_wider(
+            names_from = 'Attribute', values_from = 'Score', values_fill = 0
+        ) |>
+        tibble::column_to_rownames(var = 'tip_label') |>
+        as.matrix()
+
+
+
 
     pruned_tree <- ape::keep.tip(tree, tip = rownames(annotated_tips))
     pruned_tree <- reorder(pruned_tree, 'postorder')
