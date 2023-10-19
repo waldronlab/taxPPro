@@ -248,7 +248,7 @@ for (i in seq_along(phys_data_ready)) {
         by = 'taxid'
     )
 
-    if (current_type %in% c('binary', 'multistate-intersection')) {
+    # if (current_type %in% c('binary', 'multistate-intersection')) {
 
         # ncbi_tree_nodes <- ncbi_tree$Get(
         #     attribute = 'name', filterFun = function(node) {
@@ -268,35 +268,41 @@ for (i in seq_along(phys_data_ready)) {
         #    ) |>
         #    filter(NCBI_ID %in% ncbi_tree_nodes)
         #
-        distFname <- system.file(
-            'extdata', 'longest_distance_between_tips.tsv',
-            package = 'taxPPro', mustWork = TRUE
-        )
+        # distFname <- system.file(
+        #     'extdata', 'longest_distance_between_tips.tsv',
+        #     package = 'taxPPro', mustWork = TRUE
+        # )
 
-        distances <- read.table(
-            file = distFname, header = TRUE, sep = '\t'
-        )
+        # distances <- read.table(
+        #     file = distFname, header = TRUE, sep = '\t'
+        # )
             # filter(tip2 %in% ncbi_tree_nodes)
 
-        x <- tip_data_annotated |>
-            select(tip_label, Attribute, Score) |>
-            filter(!is.na(Attribute)) |>
-            complete(tip_label, Attribute, fill = list(Score = 0))
-
-        y <- x |>
-            group_by(tip_label) |>
-            slice_max(order_by = Score, n = 1, with_ties = FALSE)
-
-        h <- y |>
-            separate(
-                col = 'Attribute', into = c('Attribute', 'Attribute_value'),
-                sep = '--'
-            ) |>
-            left_join(distances, by = c('tip_label' = 'tip1'))
-
-
-
-    }
+    #     x <- tip_data_annotated |>
+    #         select(tip_label, Attribute, Score) |>
+    #         filter(!is.na(Attribute)) |>
+    #         complete(tip_label, Attribute, fill = list(Score = 0))
+    #
+    #     y <- x |>
+    #         group_by(tip_label) |>
+    #         slice_max(order_by = Score, n = 1, with_ties = FALSE)
+    #
+    #     h <- y |>
+    #         separate(
+    #             col = 'Attribute', into = c('Attribute', 'Attribute_value'),
+    #             sep = '--'
+    #         ) |>
+    #         left_join(distances, by = c('tip_label' = 'tip1')) |>
+    #         mutate(
+    #             tip_label = tip2,
+    #             Attribute_value = !as.logical(Attribute_value),
+    #         ) |>
+    #         select(-tip2, -distance) |>
+    #         unite(col = 'Attribute', Attribute, Attribute_value, sep = '--')
+    #
+    #
+    #
+    # }
 
     annotated_tips <- tip_data_annotated |>
         select(tip_label, Attribute, Score) |>
@@ -307,17 +313,14 @@ for (i in seq_along(phys_data_ready)) {
         tibble::column_to_rownames(var = 'tip_label') |>
         as.matrix()
 
-    no_annotated_tips <- tip_data_annotated |>
-        select(tip_label, Attribute, Score) |>
-        filter(is.na(Attribute)) |>
-        pivot_wider(
-            names_from = 'Attribute', values_from = 'Score', values_fill = 0
-        ) |>
-        tibble::column_to_rownames(var = 'tip_label') |>
-        as.matrix()
-
-
-
+    # no_annotated_tips <- tip_data_annotated |>
+    #     select(tip_label, Attribute, Score) |>
+    #     filter(is.na(Attribute)) |>
+    #     pivot_wider(
+    #         names_from = 'Attribute', values_from = 'Score', values_fill = 0
+    #     ) |>
+    #     tibble::column_to_rownames(var = 'tip_label') |>
+    #     as.matrix()
 
     pruned_tree <- ape::keep.tip(tree, tip = rownames(annotated_tips))
     pruned_tree <- reorder(pruned_tree, 'postorder')
