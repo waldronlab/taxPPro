@@ -16,6 +16,7 @@ library(bugphyzzExports)
 library(purrr)
 library(dplyr)
 library(ggplot2)
+library(tidyr)
 ```
 
 
@@ -86,8 +87,6 @@ has_id_counts <- map(filtered_data, ~ {
     bind_rows(.id = 'physiology')
 ```
 
-
-
 ```{r}
 has_id_counts |> 
     # arrange(n, has_id) |> 
@@ -105,6 +104,75 @@ has_id_counts |>
 ```
 
 Prepare data for propagation
+
+```{r, message=FALSE, warning=FALSE}
+data_ready <- map(filtered_data, getDataReady)
+data_ready <- map(data_ready, bind_rows)
+data_ready <- discard(data_ready, ~ !nrow(.x))
+```
+
+Let's check it there was actually an increase of taxa after pooling
+the taxa without IDs to the taxa with IDs.
+
+```{r}
+taxids_before <- map_int(filtered_data, ~ {
+    .x |> 
+        filter(grepl('^\\d+$', NCBI_ID)) |> 
+        pull(NCBI_ID) |> 
+        unique() |> 
+        length()
+})
+taxids_after <- map_int(data_ready, ~ length(unique(pull(.x, NCBI_ID))))
+taxids_before <- taxids_before[names(taxids_after)]
+taxids_counts <- data.frame(
+    when = c(rep('before', length(taxids_before)), rep('after', length(taxids_after))),
+    physiology = c(names(taxids_before), names(taxids_after)),
+    n = c(taxids_before, taxids_after)
+)
+```
+
+
+Plot before and after:
+
+```{r}
+taxids_counts |> 
+    mutate(when = factor(when, levels = c('before', 'after'))) |> 
+    ggplot() + 
+    geom_col(
+        aes(physiology, n, fill = when),
+        position = position_dodge(0.9)
+    ) +
+    theme_bw() +
+    scale_fill_manual(
+        values = c('dodgerblue3', 'firebrick3')
+    ) +
+    theme(
+        axis.text.x = element_text(angle = 45, hjust = 1)
+    )
+```
+
+
+
+```{r}
+taxids_increment <- taxids_counts |> 
+    pivot_wider(
+        names_from = 'when', values_from = 'n'
+    ) |> 
+    mutate(increment = after / before)
+```
+
+```{r}
+taxids_increment |> 
+    ggplot() +
+    geom_col(
+        aes(reorder(physiology, -increment), increment)
+    ) +
+    geom_hline(yintercept = 1, color = 'red') +
+    theme_bw() +
+    theme(
+        axis.text.x = element_text(angle = 45, hjust = 1)
+    )
+```
 
 
 

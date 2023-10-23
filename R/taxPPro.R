@@ -116,7 +116,7 @@ getDataReady <- function(tbl) {
                 purrr::discard(~ all(is.na(.x)))
             dataset <- dplyr::bind_rows(set_with_ids, set_without_ids)
             # output[[i]] <- completeBinaryData(dataset)
-            if (is.null(dataset))
+            if (!nrow(dataset))
                 next
             names(output)[i] <- names(l)[i]
             output[[i]] <- completeBinaryData(dataset)
