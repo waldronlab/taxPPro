@@ -1,0 +1,114 @@
+---
+title: "Stats"
+format: html
+editor: visual
+---
+
+All of the values here are after filtering the bugphyzz data with
+`taxPPro::filterData`.
+
+Load packages:
+
+```{r, message=FALSE}
+library(taxPPro)
+library(bugphyzz)
+library(bugphyzzExports)
+library(purrr)
+library(dplyr)
+library(ggplot2)
+```
+
+
+Import data:
+
+```{r, message=FALSE, warning=FALSE}
+bugphyzz_data <- physiologies()
+```
+
+
+Convert numeric data to categorical:
+
+```{r, message=FALSE}
+phys <- vector('list', length(bugphyzz_data))
+for (i in seq_along(phys)) {
+    at <- unique(bugphyzz_data[[i]]$Attribute_type)
+    dat_name <- names(bugphyzz_data)[i]
+    names(phys)[i] <- dat_name
+    if (at == 'range' && dat_name %in% names(THRESHOLDS())) {
+        msg <- paste0(
+            dat_name, " is of type range and we have a threshold for it.",
+            ' Converting ', dat_name, ' to multistate-intersection.'
+        )
+        message(msg)
+        res <- rangeToLogicalThr(bugphyzz_data[[i]], THRESHOLDS()[[dat_name]])
+        res$Attribute_type <- 'multistate-intersection'
+        phys[[i]] <- res
+
+    } else if (at == 'range' && !dat_name %in% names(THRESHOLDS())) {
+        msg <- paste0(
+            dat_name, " is of type range, but we don't have a threshold for it.",
+            " Skipping ", dat_name, '.'
+        )
+        message(msg)
+        next
+
+    } else {
+        phys[[i]] <- bugphyzz_data[[i]]
+
+    }
+}
+phys <- discard(phys, is.null)
+## halophily is lost during this process
+```
+
+Filter data:
+
+```{r, message=FALSE}
+filtered_data <- map(phys, filterData) |> 
+    discard(~ !nrow(.x))
+```
+
+## Taxa with NCBI ID and taxa without NCBI ID
+
+```{r}
+has_id_counts <- map(filtered_data, ~ {
+    .x |> 
+        mutate(NCBI_ID = stringr::str_squish(tolower(as.character(NCBI_ID)))) |> 
+        mutate(
+            has_id = case_when(
+                is.na(NCBI_ID) | NCBI_ID == 'unknown' ~ "no_id",
+                grepl('\\d+', NCBI_ID) ~ 'has_id',
+                TRUE ~ NCBI_ID
+            )
+        ) |> 
+        count(has_id)
+}) |> 
+    bind_rows(.id = 'physiology')
+```
+
+
+
+```{r}
+has_id_counts |> 
+    # arrange(n, has_id) |> 
+    # mutate(physiology = forcats::fct_inorder(physiology)) |> 
+    ggplot() +
+    geom_col(
+        aes(physiology, n, fill = has_id),
+        position = position_fill()
+    ) +
+    labs(y = '%') +
+    theme_bw() +
+    theme(
+        axis.text.x = element_text(angle = 45, hjust = 1)
+    )
+```
+
+Prepare data for propagation
+
+
+
+
+
+
+
