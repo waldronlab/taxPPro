@@ -165,7 +165,8 @@ taxids_increment <- taxids_counts |>
 taxids_increment |> 
     ggplot() +
     geom_col(
-        aes(reorder(physiology, -increment), increment)
+        aes(reorder(physiology, -increment), increment),
+        color = 'grey30', fill = 'gray90'
     ) +
     geom_hline(yintercept = 1, color = 'red') +
     theme_bw() +
