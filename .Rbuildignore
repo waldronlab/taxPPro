@@ -13,3 +13,4 @@ vignettes/.gitignore
 .git
 ^data-raw$
 ^images$
+^misc$

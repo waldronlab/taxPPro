@@ -40,8 +40,10 @@ filterDataDiscrete <- function(tbl) {
         'extdata', 'attributes.tsv', package = 'bugphyzz'
     )
     attributes <- utils::read.table(attributes_fname, sep = '\t', header = TRUE)
+    rgx <- paste0('\\b', phys_name, '\\b')
     valid_attributes <- attributes |>
-        dplyr::filter(.data$attribute_group == phys_name) |>
+        # dplyr::filter(.data$attribute_group == phys_name) |>
+        dplyr::filter(grepl(rgx, .data$attribute_group)) |>
         dplyr::pull(.data$attribute) |>
         unique()
 
@@ -114,7 +116,7 @@ getDataReady <- function(tbl) {
                 purrr::discard(~ all(is.na(.x)))
             dataset <- dplyr::bind_rows(set_with_ids, set_without_ids)
             # output[[i]] <- completeBinaryData(dataset)
-            if (is.null(dataset))
+            if (!nrow(dataset))
                 next
             names(output)[i] <- names(l)[i]
             output[[i]] <- completeBinaryData(dataset)
@@ -450,3 +452,4 @@ getMRCATaxPPro <- function(tree, tips) {
         res <- NA
     res
 }
+
