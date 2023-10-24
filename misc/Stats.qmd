@@ -218,6 +218,7 @@ dbl_counts <- dbl |>
 dbl_counts |> 
     ggplot() +
     geom_col(aes(reorder(physiology, -n_dbl_annotations), n_dbl_annotations)) +
+    labs(x = 'physiology', y = '# double annotations')  +
     theme_bw() +
     theme(
         axis.text.x = element_text(angle = 45, hjust = 1)
@@ -278,87 +279,75 @@ Proportion of tips that have annotations (before and after)
 
 ```{r}
 var1 <- map_dbl(filtered_data, ~ {
-    round(mean((ltp_tip_data$NCBI_ID %in% .x$NCBI_ID) * 100), 2)
-})
+    mean((ltp_tip_data$taxid %in% .x$NCBI_ID) * 100)
+}) |> 
+    as.data.frame() |> 
+    tibble::rownames_to_column(var = 'physiology') |> 
+    set_names(c('physiology', 'percent')) |> 
+    arrange(-percent) |> 
+    filter(percent > 0)
 ```
 
 ```{r}
-var2 <- map_dbl(my_data, ~ {
-    round(mean((ltp_tip_data$NCBI_ID %in% .x$NCBI_ID) * 100), 2)
-})
+var1 |> 
+    ggplot() +
+    geom_col(aes(reorder(physiology, -percent), percent)) +
+    labs(y = '%', x = 'Physiology') +
+    ggtitle('Percentage of tips in the LTP tree annotated with bugphyzz') +
+    theme_bw() +
+    theme(
+        axis.text.x = element_text(angle = 45, hjust = 1)
+    )
 ```
 
 
 ```{r, warning=FALSE}
-physNames <- map_int(my_data, ~ nrow(.x)) |> 
-    as.data.frame() |> 
-    tibble::rownames_to_column(var = 'physiology') |> 
-    set_names(c('physiology', 'n')) |> 
+physNames <- map_int(my_data, ~ nrow(.x)) |>
+    as.data.frame() |>
+    tibble::rownames_to_column(var = 'physiology') |>
+    set_names(c('physiology', 'n')) |>
     separate(
         col = 'physiology', into = c('physiology', 'attr_grp2'),
         sep = '_', fill = 'right'
-    ) |> 
-    group_by(physiology) |> 
-    slice_max(order_by = n, n = 5, with_ties = FALSE) |> 
-    ungroup() |> 
-    mutate(attr_grp2 = ifelse(is.na(attr_grp2), '', attr_grp2)) |> 
+    ) |>
+    group_by(physiology) |>
+    slice_max(order_by = n, n = 5, with_ties = FALSE) |>
+    ungroup() |>
+    mutate(attr_grp2 = ifelse(is.na(attr_grp2), '', attr_grp2)) |>
     unite(
         col = 'physiology', sep = '_', remove = TRUE, physiology, attr_grp2
     ) |>
-    mutate(physiology = sub('_$', '', physiology)) |> 
+    mutate(physiology = sub('_$', '', physiology)) |>
     pull(physiology)
 ```
 
 
- 
 ```{r}
-my_data_lists <- map(my_data, ~ {
-    split(.x, .x$NCBI_ID)
-})
-my_data_lists <- my_data_lists[physNames]
-length(my_data_lists)
+var2 <- map_dbl(my_data[physNames], ~ {
+    round(mean((ltp_tip_data$NCBI_ID %in% .x$NCBI_ID) * 100), 2)
+}) |> 
+    as.data.frame() |> 
+    tibble::rownames_to_column(var = 'physiology') |> 
+    set_names(c('physiology', 'percent')) |> 
+    arrange(-percent) |> 
+    filter(percent > 0)
 ```
 
-Just taxonomic pooling
 
 ```{r}
-just_taxpool <- vector('list', length(my_data_lists))
-for (i in seq_along(just_taxpool)) { currentList <- my_data_lists[[i]]
-    attributeType <- unique(currentList[[1]]$Attribute_type)
-    attributeType <- attributeType[!is.na(attributeType)]
-    
-    attributeGroup <- unique(currentList[[1]]$Attribute_group)
-    attributeGroup <- attributeType[!is.na(attributeGroup)]
-    
-    ncbi_tree$Do(function(node) {
-        if (node$name %in% names(currentList)) {
-            node$attribute_tbl <- currentList[[node$name]]
-        }
-    })
-    
-    ncbi_tree$Do(
-        fun = function(node) {
-            taxPool(node, grp = attributeGroup, typ = attributeType)
-        }, traversal = 'post-order'
+var2 |> 
+    ggplot() +
+    geom_col(aes(reorder(physiology, -percent), percent)) +
+    labs(
+        x = '%', y = 'physiology'
+    ) +
+    ggtitle(
+        'Percentage of tips in the LTP tree annotated with bugphyzz after
+        adding parents of taxa without ID in bugphyzz'
+    ) +
+    theme_bw() +
+    theme(
+        axis.text.x = element_text(angle = 45, hjust = 1)
     )
-    attrs <- ncbi_tree$Get(
-        attribute = 'attribute_tbl', 
-        filterFun = function(node) !is.null(node$attribute_tbl), 
-        simplify = FALSE
-    )
-    just_taxpool[[i]] <- bind_rows(attrs)
-}
-```
-
-Just inheritance
-
-```{r}
-
-```
-
-Taxonomic pooling and inheritance
-
-```{r}
-
 ```
 
