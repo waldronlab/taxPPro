@@ -156,16 +156,18 @@ output <- vector('list', length(phys_data_ready))
 for (i in seq_along(phys_data_ready)) {
     time1 <- Sys.time()
 
-    ## Define variables
+    ## Define variables for current physiology
     current_phys <- names(phys_data_ready)[i]
-    current_type <- unique(phys_data_ready[[i]]$Attribute_type)
-    current_type <- current_type[!is.na(current_type)]
+    current_type <- unique(phys_data_ready[[i]]$Attribute_type) |>
+        {\(y) y[!is.na(y)]}()
     names(output)[i] <- current_phys
     dat <- phys_data_ready[[i]]
-    Attribute_group_var <- unique(dat$Attribute_group)
-    Attribute_group_var <- Attribute_group_var[!is.na(Attribute_group_var)]
-    Attribute_type_var <- unique(dat$Attribute_type)
-    Attribute_type_var <- Attribute_type_var[!is.na(Attribute_type_var)]
+    Attribute_group_var <- unique(dat$Attribute_group) |>
+        {\(y) y[!is.na(y)]}()
+    Attribute_type_var <- unique(dat$Attribute_type) |>
+        {\(y) y[!is.na(y)]}()
+    current_attribute_nms <- unique(dat$Attribute) |>
+        {\(y) y[!is.na(y)]}()
 
     dat_n_tax <- length(unique(dat$NCBI_ID))
     msg <- paste0(
@@ -248,62 +250,6 @@ for (i in seq_along(phys_data_ready)) {
         by = 'taxid'
     )
 
-    # if (current_type %in% c('binary', 'multistate-intersection')) {
-
-        # ncbi_tree_nodes <- ncbi_tree$Get(
-        #     attribute = 'name', filterFun = function(node) {
-        #         grepl('[st]__', node$name)
-        #     }
-        # )
-        # ncbi_tree_nodes <- unname(ncbi_tree_nodes)
-        #
-        # tip_data2 <- tip_data |>
-        #    mutate(
-        #        NCBI_ID = case_when(
-        #            Rank == 'species' ~ paste0('s__', taxid),
-        #            Rank == 'strain' ~ paste0('t__', taxid),
-        #            TRUE ~ NA
-        #
-        #        )
-        #    ) |>
-        #    filter(NCBI_ID %in% ncbi_tree_nodes)
-        #
-        # distFname <- system.file(
-        #     'extdata', 'longest_distance_between_tips.tsv',
-        #     package = 'taxPPro', mustWork = TRUE
-        # )
-
-        # distances <- read.table(
-        #     file = distFname, header = TRUE, sep = '\t'
-        # )
-            # filter(tip2 %in% ncbi_tree_nodes)
-
-    #     x <- tip_data_annotated |>
-    #         select(tip_label, Attribute, Score) |>
-    #         filter(!is.na(Attribute)) |>
-    #         complete(tip_label, Attribute, fill = list(Score = 0))
-    #
-    #     y <- x |>
-    #         group_by(tip_label) |>
-    #         slice_max(order_by = Score, n = 1, with_ties = FALSE)
-    #
-    #     h <- y |>
-    #         separate(
-    #             col = 'Attribute', into = c('Attribute', 'Attribute_value'),
-    #             sep = '--'
-    #         ) |>
-    #         left_join(distances, by = c('tip_label' = 'tip1')) |>
-    #         mutate(
-    #             tip_label = tip2,
-    #             Attribute_value = !as.logical(Attribute_value),
-    #         ) |>
-    #         select(-tip2, -distance) |>
-    #         unite(col = 'Attribute', Attribute, Attribute_value, sep = '--')
-    #
-    #
-    #
-    # }
-
     annotated_tips <- tip_data_annotated |>
         select(tip_label, Attribute, Score) |>
         filter(!is.na(Attribute)) |>
@@ -313,46 +259,61 @@ for (i in seq_along(phys_data_ready)) {
         tibble::column_to_rownames(var = 'tip_label') |>
         as.matrix()
 
-    # no_annotated_tips <- tip_data_annotated |>
-    #     select(tip_label, Attribute, Score) |>
-    #     filter(is.na(Attribute)) |>
-    #     pivot_wider(
-    #         names_from = 'Attribute', values_from = 'Score', values_fill = 0
-    #     ) |>
-    #     tibble::column_to_rownames(var = 'tip_label') |>
-    #     as.matrix()
 
-    pruned_tree <- ape::keep.tip(tree, tip = rownames(annotated_tips))
-    pruned_tree <- reorder(pruned_tree, 'postorder')
-    pruned_tip_data <- tip_data |>
-        filter(tip_label %in% pruned_tree$tip.label)
-    pruned_node_data <- data.frame(
-        node = length(pruned_tree$tip.label) + 1:pruned_tree$Nnode
-    )
+    if (Attribute_type_var %in% c('binary', 'multistate-union')) {
+        no_annotated_tips <- tip_data |>
+            filter(!tip_label %in% rownames(annotated_tips)) |>
+            select(tip_label) |>
+            mutate(
+                Attribute = factor(
+                    current_attribute_nms[[1]], levels = current_attribute_nms
+                )
+            ) |>
+            complete(tip_label, Attribute) |>
+            mutate(Score = ifelse(grepl('--FALSE$', Attribute), 1, 0)) |>
+            pivot_wider(names_from = 'Attribute', values_from = 'Score') |>
+            tibble::column_to_rownames(var = 'tip_label') |>
+            as.matrix() |>
+            {\(y) y[,colnames(annotated_tips)]}()
+    }
 
-    tx <- grep('_taxid$', colnames(pruned_tip_data), value = TRUE)
-    nodes <- tx |>
-        map(~ split(pruned_tip_data, factor(pruned_tip_data[[.x]]))) |>
-        flatten() |>
-        map(~ .x[['tip_label']])
-    node_names <- map_int(nodes, ~ getMRCATaxPPro(pruned_tree, .x))
-    node_names <- node_names[!is.na(node_names)]
-    nodes_df <- data.frame(
-        node = unname(node_names),
-        node_label = names(node_names)
-    ) |>
-        group_by(node) |>
-        mutate(node_label = paste0(unique(node_label), collapse = '+')) |>
-        ungroup() |>
-        distinct() |>
-        arrange(node)
-    pruned_node_data <- left_join(pruned_node_data, nodes_df, by = 'node') |>
-        mutate(
-            node_label = ifelse(
-                is.na(node_label), paste0('n', as.character(node)), node_label
-            )
-        )
-    pruned_tree$node.label <- pruned_node_data$node_label
+
+    input_matrix <- rbind(annotated_tips, no_annotated_tips)
+    input_matrix <- input_matrix[tree$tip.label,]
+
+    # pruned_tree <- ape::keep.tip(tree, tip = rownames(annotated_tips))
+    # pruned_tree <- reorder(pruned_tree, 'postorder')
+    # pruned_tip_data <- tip_data |>
+    #     filter(tip_label %in% pruned_tree$tip.label)
+    # pruned_node_data <- data.frame(
+    #     node = length(pruned_tree$tip.label) + 1:pruned_tree$Nnode
+    # )
+
+    # tx <- grep('_taxid$', colnames(pruned_tip_data), value = TRUE)
+    # nodes <- tx |>
+    #     map(~ split(pruned_tip_data, factor(pruned_tip_data[[.x]]))) |>
+    #     flatten() |>
+    #     map(~ .x[['tip_label']])
+    # node_names <- map_int(nodes, ~ getMRCATaxPPro(pruned_tree, .x))
+    # node_names <- node_names[!is.na(node_names)]
+    # nodes_df <- data.frame(
+    #     node = unname(node_names),
+    #     node_label = names(node_names)
+    # ) |>
+    #     group_by(node) |>
+    #     mutate(node_label = paste0(unique(node_label), collapse = '+')) |>
+    #     ungroup() |>
+    #     distinct() |>
+    #     arrange(node)
+    # pruned_node_data <- left_join(pruned_node_data, nodes_df, by = 'node') |>
+    #     mutate(
+    #         node_label = ifelse(
+    #             is.na(node_label), paste0('n', as.character(node)), node_label
+    #         )
+    #     )
+    # pruned_tree$node.label <- pruned_node_data$node_label
+
+
 
     msg <- paste0(
         'Performing ASR for (round 2 of propagation) ', current_phys, '.'
@@ -360,7 +321,7 @@ for (i in seq_along(phys_data_ready)) {
     log_print(msg)
     tim <- system.time({
         fit <- fitMk(
-            tree = pruned_tree, x = annotated_tips, model = 'ER',
+            tree = tree, x = input_matrix, model = 'ER',
             pi = 'fitzjohn', lik.func = 'pruning', logscale = TRUE
         )
         asr <- ancr(object = fit, tips = TRUE)
@@ -368,11 +329,67 @@ for (i in seq_along(phys_data_ready)) {
     log_print(tim, blank_after = TRUE)
 
     res <- asr$ace
-    node_rows <- length(pruned_tree$tip.label) + 1:pruned_tree$Nnode
-    rownames(res)[node_rows] <- pruned_tree$node.label
+    node_rows <- length(tree$tip.label) + 1:tree$Nnode
+    rownames(res)[node_rows] <- tree$node.label
+
+
+    res_df <- res |>
+        as.data.frame() |>
+        tibble::rownames_to_column(var = 'labels')
+
+
 
     ## Get annotations for nodes
-    nodes_annotated <- res[which(grepl('^\\d+(\\+\\d+)*', rownames(res))),]
+    # nodes_annotated <- res[which(grepl('^\\d+(\\+\\d+)*', rownames(res))),]
+    nodes_annotated <- ltp$node_data
+
+
+
+
+    new_taxa_from_nodes <- nodes_annotated |>
+        mutate(Rank = taxizedb::taxid2rank(taxid)) |>
+        mutate(Rank = ifelse(Rank == 'superkingdom', 'kingdom', Rank)) |>
+        mutate(
+            NCBI_ID = case_when(
+                Rank == 'kingdom' ~ paste0('k__', taxid),
+                Rank == 'phylum' ~ paste0('p__', taxid),
+                Rank == 'class' ~ paste0('c__', taxid),
+                Rank == 'order' ~ paste0('o__', taxid),
+                Rank == 'family' ~ paste0('f__', taxid),
+                Rank == 'genus' ~ paste0('g__', taxid),
+                Rank == 'species' ~ paste0('s__', taxid),
+                Rank == 'strain' ~ paste0('t__', taxid)
+            )
+        ) |>
+        filter(
+            Rank %in% c(
+                'kingdom', 'phylum', 'class', 'order', 'family', 'genus',
+                'species', 'strain'
+            )
+        ) |>
+        mutate(Evidence = 'asr') |>
+        relocate(NCBI_ID, taxid, Taxon_name, Rank, Evidence)
+        pivot_longer(
+            cols = 7:last_col(), names_to = 'Attribute', values_to = 'Score'
+        ) |>
+        mutate(
+            Attribute_source = NA,
+            Confidence_in_curation = NA,
+            Attribute_group = Attribute_group_var,
+            Attribute_type = Attribute_type_var,
+            # taxid = sub('\\w__', '', NCBI_ID),
+            # Taxon_name = taxizedb::taxid2name(taxid, db = 'ncbi'),
+            Frequency = case_when(
+                Score == 1 ~ 'always',
+                Score > 0.9 ~ 'usually',
+                Score >= 0.5 ~ 'sometimes',
+                Score > 0 & Score < 0.5 ~ 'rarely',
+                Score == 0 ~ 'never'
+            )
+        )
+
+
+
     new_taxa_from_nodes <- nodes_annotated |>
         as.data.frame() |>
         tibble::rownames_to_column(var = 'NCBI_ID') |>
@@ -409,7 +426,7 @@ for (i in seq_along(phys_data_ready)) {
             Confidence_in_curation = NA,
             Attribute_group = Attribute_group_var,
             Attribute_type = Attribute_type_var,
-            taxid = sub('\\w__', '', NCBI_ID),
+            # taxid = sub('\\w__', '', NCBI_ID),
             Taxon_name = taxizedb::taxid2name(taxid, db = 'ncbi'),
             Frequency = case_when(
                 Score == 1 ~ 'always',
@@ -444,25 +461,25 @@ for (i in seq_along(phys_data_ready)) {
     log_print(tim, blank_after = TRUE)
 
     ## Taxonomic pooling (propagation round 3) ####
-    msg <- paste0(
-        'Performing taxonomic pooling (round 3 of propagation) for ',
-        current_phys, '.'
-    )
-    log_print(msg)
-    tim <- system.time({
-        ncbi_tree$Do(
-            function(node_var) {
-                taxPool(
-                    node = node_var,
-                    grp = Attribute_group_var,
-                    typ = Attribute_type_var
-                )
-            },
-            traversal = 'post-order'
-        )
-
-    })
-    log_print(tim, blank_after = TRUE)
+    # msg <- paste0(
+    #     'Performing taxonomic pooling (round 3 of propagation) for ',
+    #     current_phys, '.'
+    # )
+    # log_print(msg)
+    # tim <- system.time({
+    #     ncbi_tree$Do(
+    #         function(node_var) {
+    #             taxPool(
+    #                 node = node_var,
+    #                 grp = Attribute_group_var,
+    #                 typ = Attribute_type_var
+    #             )
+    #         },
+    #         traversal = 'post-order'
+    #     )
+    #
+    # })
+    # log_print(tim, blank_after = TRUE)
 
     ## Inheritance (propagation round 3) ####
     msg <- paste0(
