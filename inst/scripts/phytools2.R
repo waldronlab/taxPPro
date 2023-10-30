@@ -19,16 +19,16 @@ lf <- log_open(logfile, logdir = FALSE, compact = TRUE, show_notes = FALSE)
 ## Import physiology data from bugphyzz ####
 phys_names <- c(
     ## multistate-intersection
-    # 'aerophilicity',
+    'aerophilicity',
 
     ## multistate-union
-    # 'antimicrobial resistance',
+    'antimicrobial resistance',
 
     ## binary
-    'acetate producing'
+    'acetate producing',
 
     ## numeric/range
-    # 'growth temperature'
+    'growth temperature'
 )
 
 msg <- paste0(
@@ -276,6 +276,21 @@ for (i in seq_along(phys_data_ready)) {
             tibble::column_to_rownames(var = 'tip_label') |>
             as.matrix() |>
             {\(y) y[,colnames(annotated_tips)]}()
+    } else if (Attribute_type_var == 'multistate-intersection') {
+        no_annotated_tip_names <- tip_data |>
+            filter(!tip_label %in% rownames(annotated_tips)) |>
+            pull(tip_label)
+        fill_value <- 1 / length(current_attribute_nms)
+        vct <- rep(
+            fill_value,
+            length(no_annotated_tip_names) * length(current_attribute_nms)
+        )
+        no_annotated_tips <- matrix(
+            data = vct,
+            nrow = length(no_annotated_tip_names),
+            ncol = length(current_attribute_nms),
+            dimnames = list(no_annotated_tip_names, current_attribute_nms)
+        )
     }
 
     input_matrix <- rbind(annotated_tips, no_annotated_tips)
@@ -341,18 +356,13 @@ for (i in seq_along(phys_data_ready)) {
         filter(node_label %in% unique(res_df$node_label)) |>
         select(node_label, taxid, Taxon_name, Rank)
 
-
     nodes_annotated <- node_data_annotated |>
         left_join(res_df, by = 'node_label') |>
         # select(taxid, Taxon_name, Rank) |>
         mutate(Rank = ifelse(Rank == 'superkingdom', 'kingdom', Rank)) |>
-
-
-
-    # new_taxa_from_nodes <- nodes_annotated |>
+        # new_taxa_from_nodes <- nodes_annotated |>
         # mutate(Rank = taxizedb::taxid2rank(taxid)) |>
         # mutate(Rank = ifelse(Rank == 'superkingdom', 'kingdom', Rank)) |>
-
         mutate(
             NCBI_ID = case_when(
                 Rank == 'kingdom' ~ paste0('k__', taxid),
@@ -464,28 +474,6 @@ for (i in seq_along(phys_data_ready)) {
     })
     log_print(tim, blank_after = TRUE)
 
-    ## Taxonomic pooling (propagation round 3) ####
-    # msg <- paste0(
-    #     'Performing taxonomic pooling (round 3 of propagation) for ',
-    #     current_phys, '.'
-    # )
-    # log_print(msg)
-    # tim <- system.time({
-    #     ncbi_tree$Do(
-    #         function(node_var) {
-    #             taxPool(
-    #                 node = node_var,
-    #                 grp = Attribute_group_var,
-    #                 typ = Attribute_type_var
-    #             )
-    #         },
-    #         traversal = 'post-order'
-    #     )
-    #
-    # })
-    # log_print(tim, blank_after = TRUE)
-
-    ## Inheritance (propagation round 3) ####
     msg <- paste0(
         'Performing inheritance (round 3 of propagation) for ', current_phys
     )
