@@ -541,7 +541,8 @@ end_time <- Sys.time()
 elapsed_time <- round(difftime(end_time, start_time, units = 'min'))
 
 msg <- paste0(
-    'Propagation ended at ', end_time,
+    'Propagation ended at ', en)
+log_print(msg, blank_after =d_time,
     '. Total elapsed time for propagtion for ', length(phys_data_ready),
     ' physiologies was ', elapsed_time[[1]], ' min.'
 )
@@ -573,3 +574,4 @@ log_print(msg, blank_after = TRUE)
 si <- sessioninfo::session_info()
 log_print(si, blank_after = TRUE)
 log_close()
+
