@@ -4,9 +4,6 @@ format: html
 editor: visual
 ---
 
-All of the values here are after filtering the bugphyzz data with
-`taxPPro::filterData`.
-
 Load packages:
 
 ```{r, message=FALSE}
@@ -25,7 +22,6 @@ Import data:
 ```{r, message=FALSE, warning=FALSE}
 bugphyzz_data <- physiologies()
 ```
-
 
 Convert numeric data to categorical:
 
@@ -59,7 +55,7 @@ for (i in seq_along(phys)) {
     }
 }
 phys <- discard(phys, is.null)
-## halophily is lost during this process
+## halophily is lost during this process. No thresholds available.
 ```
 
 Filter data:
@@ -88,18 +84,57 @@ has_id_counts <- map(filtered_data, ~ {
 ```
 
 ```{r}
+v <- map_chr(filtered_data, ~ unique(pull(.x, Attribute_type)))
+at <- data.frame(
+    physiology = names(v),
+    type = v
+)
+
+chr <- has_id_counts |> 
+    pivot_wider(
+        names_from = 'has_id', values_from = 'n', values_fill = 0
+    ) |> 
+    mutate(per = no_id / has_id) |> 
+    arrange(-per, physiology) |> 
+    pull(physiology)
+
 has_id_counts |> 
-    # arrange(n, has_id) |> 
-    # mutate(physiology = forcats::fct_inorder(physiology)) |> 
+    left_join(at, by = 'physiology') |>
+    arrange(n, has_id) |>
+    mutate(physiology = forcats::fct_relevel(physiology, chr)) |> 
     ggplot() +
     geom_col(
         aes(physiology, n, fill = has_id),
         position = position_fill()
     ) +
-    labs(y = '%') +
+    facet_grid(~ type, scales = 'free_x', space = 'free_x') +
+    labs(y = 'Proportion', x = 'Physiology') +
     theme_bw() +
+    scale_fill_discrete(name = '', labels = c('Annotations with taxids',"Annotations without taxids")) +
     theme(
-        axis.text.x = element_text(angle = 45, hjust = 1)
+        axis.text.x = element_text(angle = 90, hjust = 1),
+        legend.position = 'bottom'
+    )
+```
+
+
+```{r}
+has_id_counts |> 
+    left_join(at, by = 'physiology') |>
+    arrange(n, has_id) |>
+    mutate(physiology = forcats::fct_relevel(physiology, chr)) |> 
+    ggplot() +
+    geom_col(
+        aes(physiology, n, fill = has_id),
+        position = position_stack()
+    ) +
+    facet_grid(~ type, scales = 'free_x', space = 'free_x') +
+    labs(y = '# Annotations', x = 'Physiology') +
+    theme_bw() +
+    scale_fill_discrete(name = '', labels = c('Annoations with taxids',"Annotations without taxids")) +
+    theme(
+        axis.text.x = element_text(angle = 90, hjust = 1),
+        legend.position = 'bottom'
     )
 ```
 
@@ -111,8 +146,7 @@ data_ready <- map(myData, bind_rows)
 data_ready <- discard(data_ready, ~ !nrow(.x))
 ```
 
-Let's check it there was actually an increase of taxa after pooling
-the taxa without IDs to the taxa with IDs.
+Let's check it there was actually an increase of taxa after pooling the taxa without IDs to the taxa with IDs.
 
 ```{r}
 taxids_before <- map_int(filtered_data, ~ {
@@ -131,27 +165,32 @@ taxids_counts <- data.frame(
 )
 ```
 
-
 Plot before and after:
 
 ```{r}
+order2 <- taxids_counts |> 
+    filter(when == 'before') |> 
+    arrange(-n) |> 
+    pull(physiology)
+
 taxids_counts |> 
+    left_join(at, by = 'physiology') |>
     mutate(when = factor(when, levels = c('before', 'after'))) |> 
-    ggplot() + 
+    mutate(physiology = forcats::fct_relevel(physiology, order2)) |>
+    ggplot(aes(physiology, n)) + 
     geom_col(
-        aes(physiology, n, fill = when),
-        position = position_dodge(0.9)
+        aes(fill = when), position = position_dodge(0.9)
+    ) +
+    facet_grid(~ type, scales = 'free_x', space = 'free_x') +
+    scale_fill_manual(
+        values = c('#00BFC4', '#F8766D')
     ) +
     theme_bw() +
-    scale_fill_manual(
-        values = c('dodgerblue3', 'firebrick3')
-    ) +
     theme(
-        axis.text.x = element_text(angle = 45, hjust = 1)
+        axis.text.x = element_text(angle = 90, hjust = 1)
+        # legend.position = 'bottom'
     )
 ```
-
-
 
 ```{r}
 taxids_increment <- taxids_counts |> 
@@ -175,7 +214,6 @@ taxids_increment |>
     )
 ```
 
-
 Convert data.farmes into matrices:
 
 ```{r}
@@ -193,9 +231,7 @@ my_data_mat <- map(my_data, ~ {
 })
 ```
 
-
 How many double annotations:
-
 
 ```{r}
 dbl <- map(my_data_mat, ~ {
@@ -204,7 +240,7 @@ dbl <- map(my_data_mat, ~ {
     names(v)
 }) |> 
     discard(~ !length(.x))
-``` 
+```
 
 ```{r}
 dbl_counts <- dbl |> 
@@ -225,9 +261,7 @@ dbl_counts |>
     )
 ```
 
-
-```{r}  ``` 
-
+`{r}`
 
 Import tree (ncbi and ltp)
 
@@ -238,15 +272,12 @@ ltp <- ltp()
 ltp_tip_data <- ltp$tip_data
 ```
 
-
 ```{r}
 data('tree_list')
 ncbi_tree <- as.Node(tree_list)
 ```
 
-
-Number of taxa with double annotations that are also in the 
-ltp tree:
+Number of taxa with double annotations that are also in the ltp tree:
 
 ```{r}
 dbl_in_ltp <- map_int(dbl, ~ sum(.x %in% ltp_tip_data$NCBI_ID)) |> 
@@ -255,7 +286,6 @@ dbl_in_ltp <- map_int(dbl, ~ sum(.x %in% ltp_tip_data$NCBI_ID)) |>
     set_names(c('physiology', 'n')) |> 
     filter(n > 0)
 ```
-
 
 ## Completeness and number of taxa in the different trees
 
@@ -273,7 +303,6 @@ ltp_tip_data |>
     # filter(!is.na(NCBI_ID)) |> 
     View()
 ```
-
 
 Proportion of tips that have annotations (before and after)
 
@@ -300,7 +329,6 @@ var1 |>
     )
 ```
 
-
 ```{r, warning=FALSE}
 physNames <- map_int(my_data, ~ nrow(.x)) |>
     as.data.frame() |>
@@ -321,7 +349,6 @@ physNames <- map_int(my_data, ~ nrow(.x)) |>
     pull(physiology)
 ```
 
-
 ```{r}
 var2 <- map_dbl(my_data[physNames], ~ {
     round(mean((ltp_tip_data$NCBI_ID %in% .x$NCBI_ID) * 100), 2)
@@ -332,7 +359,6 @@ var2 <- map_dbl(my_data[physNames], ~ {
     arrange(-percent) |> 
     filter(percent > 0)
 ```
-
 
 ```{r}
 var2 |> 
@@ -350,4 +376,3 @@ var2 |>
         axis.text.x = element_text(angle = 45, hjust = 1)
     )
 ```
-
