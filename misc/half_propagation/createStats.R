@@ -134,5 +134,5 @@ p1 <- ggarrange(
 
 ggsave(
     filename = 'misc/half_propagation/percent_plot.png',
-    plot = p1, width = 10, height = 9, dpi = 100, bg = 'white'
+    plot = p1, width = 10, height = 9, dpi = 150, bg = 'white'
 )
