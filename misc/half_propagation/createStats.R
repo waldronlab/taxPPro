@@ -117,7 +117,7 @@ h_data <- map(h_l, ~ {
             values = c('gray60', 'gray80')
         ) +
         labs(
-            x = 'Attribute (habitat)',
+            x = 'Attribute',
             y = 'LTP tips annotated'
         ) +
         theme_bw() +
@@ -134,5 +134,5 @@ p1 <- ggarrange(
 
 ggsave(
     filename = 'misc/half_propagation/percent_plot.png',
-    plot = p1, width = 10, height = 9, dpi = 300, bg = 'white'
+    plot = p1, width = 10, height = 9, dpi = 100, bg = 'white'
 )
