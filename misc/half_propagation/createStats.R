@@ -4,6 +4,8 @@ library(purrr)
 library(tidyr)
 library(ggplot2)
 library(ggpubr)
+library(ggtree)
+library(data.tree)
 
 ltp <- ltp()
 tip_data <- ltp$tip_data
@@ -69,7 +71,7 @@ p_data <- map(p_l, ~ {
 # habitat -----------------------------------------------------------------
 
 h <- read.table(
-    file = 'misc/half_propagation/bugphyzz_export_2023-11-08.tsv',
+    file = 'misc/half_propagation/habitat.tsv',
     header = TRUE, sep = '\t'
 ) |>
     filter(!is.na(Attribute_group) & !is.na(Attribute)) |>
@@ -136,3 +138,65 @@ ggsave(
     filename = 'misc/half_propagation/percent_plot.png',
     plot = p1, width = 10, height = 9, dpi = 150, bg = 'white'
 )
+
+
+tree <- ltp$tree
+node_data <- ltp$node_data
+tip_data <- ltp$tip_data
+data('tree_list')
+ncbi_tree <- as.Node(tree_list)
+ncbi_nodes <- ncbi_tree$Get(
+    attribute = 'name',
+    filterFun = function(node) node$name != 'ArcBac',
+    simplify = TRUE
+) |>
+    unname()
+
+ranks_var <- c('strain', 'species', 'genus', 'family', 'order', 'class', 'phylum', 'kingdom')
+ranks_ncbi <- count(data.frame(r = sub('__\\d+$', '', ncbi_nodes)), r, name = 'NCBI') |>
+    mutate(
+        Rank = case_when(
+            r == 'c' ~ 'class',
+            r == 'f' ~ 'family',
+            r == 'g' ~ 'genus',
+            r == 'k' ~ 'kingdom',
+            r == 'o' ~ 'order',
+            r == 'p' ~ 'phylum',
+            r == 's' ~ 'species',
+            r == 't' ~ 'strain'
+        )
+    ) |>
+    mutate(Rank = factor(Rank, levels = ranks_var)) |>
+    arrange(Rank) |>
+    select(-r)
+
+
+ranks <- bind_rows(select(node_data, Rank), select(tip_data, Rank))
+rownames(ranks) <- NULL
+ranks_ltp <- ranks |>
+    mutate(Rank = ifelse(Rank == 'superkingdom', 'kingdom', Rank)) |>
+    filter(Rank %in% ranks_var) |>
+    mutate(Rank = factor(Rank, levels = ranks_var)) |>
+    count(Rank, name = 'LTP') |>
+    arrange(Rank)
+
+rank_data <- full_join(ranks_ltp, ranks_ncbi, by = 'Rank')
+rank_data_long <- rank_data |>
+    pivot_longer(
+        names_to = 'tree', values_to = 'n', cols = c(LTP, NCBI)
+    )
+
+rank_data_long |>
+    ggplot(aes(Rank, n)) +
+    geom_col(aes(fill = tree), position = 'dodge') +
+    facet_wrap(.~Rank, scales = 'free', ncol = 2) +
+    # scale_y_continuous(breaks = function(x) seq(floor(min(x)), ceiling(max(x)), by = 1)) +
+    labs(
+        y = 'Number of taxids'
+    ) +
+    theme_bw() +
+    theme(
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.x = element_blank()
+    )
