@@ -1,3 +1,4 @@
+library(bugphyzz)
 library(dplyr)
 library(taxPPro)
 library(purrr)
@@ -9,39 +10,42 @@ library(data.tree)
 
 ltp <- ltp()
 tip_data <- ltp$tip_data
+node_data <- ltp$node_data
 sourceCodes <- c('exp', 'igc', 'nas', 'tas')
 
-# Physiologies ------------------------------------------------------------
-p <- read.table(
-    file = 'misc/half_propagation/no_habitat.tsv',
-    header = TRUE, sep = '\t'
-) |>
-    filter(!is.na(Attribute_group) & !is.na(Attribute)) |>
+b <- importBugphyzz() |>
     mutate(
-        data_name = case_when(
-            Attribute_type %in% c('multistate-union') ~ paste0(Attribute_group, '|', sub('--.*$', '', Attribute)),
-            TRUE ~ Attribute_group
+        NCBI_ID = case_when(
+            Rank == 'kingdom' ~ paste0('k__', NCBI_ID),
+            Rank == 'phylum' ~ paste0('p__', NCBI_ID),
+            Rank == 'class' ~ paste0('c__', NCBI_ID),
+            Rank == 'order' ~ paste0('o__', NCBI_ID),
+            Rank == 'family' ~ paste0('f__', NCBI_ID),
+            Rank == 'genus' ~ paste0('g__', NCBI_ID),
+            Rank == 'species' ~ paste0('s__', NCBI_ID),
+            Rank == 'strain' ~ paste0('t__', NCBI_ID)
         )
-
     )
 
-p_l <- split(p, p$data_name)
+source_l <- b |>
+    filter(Evidence %in% sourceCodes) |>
+    {\(y) split(y, factor(y$Attribute_group))}()
+taxPool_l <- b |>
+    filter(Evidence %in% c('tax', 'inh')) |>
+    {\(y) split(y, factor(y$Attribute_group))}()
 
+# all(names(source_l) == names(taxPool_l))
 
-p_data <- map(p_l, ~ {
-    source_data <- .x |>
-        filter(Evidence %in% sourceCodes)
-    before <- mean(tip_data$NCBI_ID %in% unique(source_data$NCBI_ID)) * 100
-    after <- mean(tip_data$NCBI_ID %in% unique(.x$NCBI_ID)) * 100
-    data.frame(
-        before = before,
-        after = after
-    )
-}) |>
+dat <- map2(
+    .x = source_l, .y = taxPool_l, .f =  ~ {
+        before <- mean(tip_data$NCBI_ID %in% unique(.x$NCBI_ID)) * 100
+        after <- mean(tip_data$NCBI_ID %in% unique(.y$NCBI_ID)) * 100
+        data.frame(before = before, after = after)
+    }
+) |>
     bind_rows(.id = 'data_name')
 
-(
-    p_p <- p_data |>
+p1 <- dat |>
         arrange(-after) |>
         mutate(data_name = forcats::fct_inorder(data_name)) |>
         pivot_longer(
@@ -55,94 +59,28 @@ p_data <- map(p_l, ~ {
             limits = c(0, 100), labels = function(x) paste0(x, "%")
         ) +
         scale_fill_manual(
-            name = 'Pooling', labels = c('Before', 'After'),
+            name = 'taxPool/inh', labels = c('Before', 'After'),
             values = c('gray60', 'gray80')
         ) +
         labs(
-            x = 'Physiology/Attribute',
+            x = 'Physiology/Attribute_group',
             y = 'LTP tips annotated'
         ) +
         theme_bw() +
         theme(
             axis.text.x = element_text(angle = 90, hjust = 1)
         )
-)
-
-# habitat -----------------------------------------------------------------
-
-h <- read.table(
-    file = 'misc/half_propagation/habitat.tsv',
-    header = TRUE, sep = '\t'
-) |>
-    filter(!is.na(Attribute_group) & !is.na(Attribute)) |>
-    mutate(
-        data_name = case_when(
-            Attribute_type %in% c('multistate-union') ~ paste0(Attribute_group, '|', sub('--.*$', '', Attribute)),
-            TRUE ~ Attribute_group
-        )
-
-    )
-
-h_l <- split(h, h$data_name)
-
-
-h_data <- map(h_l, ~ {
-    source_data <- .x |>
-        filter(Evidence %in% sourceCodes)
-    before <- mean(tip_data$NCBI_ID %in% unique(source_data$NCBI_ID)) * 100
-    after <- mean(tip_data$NCBI_ID %in% unique(.x$NCBI_ID)) * 100
-    data.frame(
-        before = before,
-        after = after
-    )
-}) |>
-    bind_rows(.id = 'data_name')
-
-(
-    h_p <- h_data |>
-        arrange(-after) |>
-        mutate(data_name = sub('^habitat\\|', '', data_name)) |>
-        mutate(data_name = forcats::fct_inorder(data_name)) |>
-        head(nrow(p_data)) |>
-        pivot_longer(
-            names_to = 'time', values_to = 'per', cols = c(before, after)
-        ) |>
-        mutate(time = factor(time, levels = c('before', 'after'))) |>
-        ggplot(mapping = aes(data_name, per)) +
-        geom_col(mapping = aes(fill = time), position = 'dodge') +
-        geom_hline(yintercept = 10, linetype = 'dotdash') +
-        scale_y_continuous(
-            limits = c(0, 100), labels = function(x) paste0(x, "%")
-        ) +
-        scale_fill_manual(
-            name = 'Pooling', labels = c('Before', 'After'),
-            values = c('gray60', 'gray80')
-        ) +
-        labs(
-            x = 'Attribute',
-            y = 'LTP tips annotated'
-        ) +
-        theme_bw() +
-        theme(
-            axis.text.x = element_text(angle = 90, hjust = 1)
-        )
-)
-
-p1 <- ggarrange(
-    p_p, h_p, nrow = 2, common.legend = TRUE, align = 'hv', legend = 'right',
-    labels = c('A)', 'B)'), hjust = 0
-
-)
 
 ggsave(
     filename = 'misc/half_propagation/percent_plot.png',
-    plot = p1, width = 10, height = 9, dpi = 150, bg = 'white'
+    plot = p1, width = 10, height = 5, dpi = 150, bg = 'white'
 )
 
 
-tree <- ltp$tree
-node_data <- ltp$node_data
-tip_data <- ltp$tip_data
+## Compare completeness between LTP and NCBI tree
+
+
+
 data('tree_list')
 ncbi_tree <- as.Node(tree_list)
 ncbi_nodes <- ncbi_tree$Get(
