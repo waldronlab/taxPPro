@@ -190,7 +190,6 @@ rank_data_long |>
     ggplot(aes(Rank, n)) +
     geom_col(aes(fill = tree), position = 'dodge') +
     facet_wrap(.~Rank, scales = 'free', ncol = 2) +
-    # scale_y_continuous(breaks = function(x) seq(floor(min(x)), ceiling(max(x)), by = 1)) +
     labs(
         y = 'Number of taxids'
     ) +
