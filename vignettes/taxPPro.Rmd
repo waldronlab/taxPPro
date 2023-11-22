@@ -1,0 +1,41 @@
+---
+title: "taxPPro"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{taxPPro}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Packages
+
+```{r setup}
+library(taxPPro)
+library(data.tree)
+```
+
+## Load NCBI tree
+
+```{r }
+data('tree_list')
+ncbi_Tree <- as.Node(tree_list)
+```
+
+## Load living tree project tree and tip and node data:
+
+```{r}
+ltp <- ltp()
+```
+
+## Session information
+
+```{r}
+sessioninfo::session_info()
+```
