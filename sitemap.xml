@@ -13,10 +13,7 @@
     <loc>https://waldronlab.io/taxPPro/articles/index.html</loc>
   </url>
   <url>
-    <loc>https://waldronlab.io/taxPPro/articles/phytools.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/articles/phytools2.html</loc>
+    <loc>https://waldronlab.io/taxPPro/articles/taxPPro.html</loc>
   </url>
   <url>
     <loc>https://waldronlab.io/taxPPro/authors.html</loc>
@@ -25,43 +22,7 @@
     <loc>https://waldronlab.io/taxPPro/index.html</loc>
   </url>
   <url>
-    <loc>https://waldronlab.io/taxPPro/reference/addAttributes.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/addAttributesLogical.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/addAttributesNumeric.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/addAttributesRange.html</loc>
-  </url>
-  <url>
     <loc>https://waldronlab.io/taxPPro/reference/addRankPrefix.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/addStrains.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/asr.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/asrUpstreamLogical.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/asrUpstreamNumeric.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/asrUpstreamRange.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/calcParentScore.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/calcParentScores.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/chooseColVal.html</loc>
   </url>
   <url>
     <loc>https://waldronlab.io/taxPPro/reference/classif2Table.html</loc>
@@ -76,9 +37,6 @@
     <loc>https://waldronlab.io/taxPPro/reference/conf2Fct.html</loc>
   </url>
   <url>
-    <loc>https://waldronlab.io/taxPPro/reference/fillNAs.html</loc>
-  </url>
-  <url>
     <loc>https://waldronlab.io/taxPPro/reference/filterData.html</loc>
   </url>
   <url>
@@ -88,34 +46,10 @@
     <loc>https://waldronlab.io/taxPPro/reference/freq2Scores.html</loc>
   </url>
   <url>
-    <loc>https://waldronlab.io/taxPPro/reference/getAgreements.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/getConflicts.html</loc>
-  </url>
-  <url>
     <loc>https://waldronlab.io/taxPPro/reference/getDataReady.html</loc>
   </url>
   <url>
-    <loc>https://waldronlab.io/taxPPro/reference/getDistantTips.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/getDoubleAnnotations.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/getDuplicates.html</loc>
-  </url>
-  <url>
     <loc>https://waldronlab.io/taxPPro/reference/getMRCATaxPPro.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/getMpaTable.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/getMpaTree.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/getNCBI.html</loc>
   </url>
   <url>
     <loc>https://waldronlab.io/taxPPro/reference/getSetWithIDs.html</loc>
@@ -127,57 +61,21 @@
     <loc>https://waldronlab.io/taxPPro/reference/index.html</loc>
   </url>
   <url>
-    <loc>https://waldronlab.io/taxPPro/reference/inh.html</loc>
-  </url>
-  <url>
     <loc>https://waldronlab.io/taxPPro/reference/inh1.html</loc>
   </url>
   <url>
     <loc>https://waldronlab.io/taxPPro/reference/inh2.html</loc>
   </url>
   <url>
-    <loc>https://waldronlab.io/taxPPro/reference/inhDownstreamLogical.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/inhDownstreamNumeric.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/inhDownstreamRange.html</loc>
-  </url>
-  <url>
     <loc>https://waldronlab.io/taxPPro/reference/ltp.html</loc>
   </url>
   <url>
-    <loc>https://waldronlab.io/taxPPro/reference/mergeOriginalAndEarlyASR.html</loc>
-  </url>
-  <url>
     <loc>https://waldronlab.io/taxPPro/reference/mpa.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/prepareDataForPropagation.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/propagate.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/removeAccessionAndGenomeID.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/removeDuplicates.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/resolveAgreements.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/resolveConflicts.html</loc>
   </url>
   <url>
     <loc>https://waldronlab.io/taxPPro/reference/scores2Freq.html</loc>
   </url>
   <url>
     <loc>https://waldronlab.io/taxPPro/reference/taxPool.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/taxname2taxid.html</loc>
   </url>
 </urlset>
