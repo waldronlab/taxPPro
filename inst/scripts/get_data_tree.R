@@ -1,3 +1,5 @@
+## Script used to generate tree_list (ncbi_tree)
+
 library(purrr)
 library(dplyr)
 library(taxPPro)
@@ -5,7 +7,6 @@ library(data.tree)
 library(tidyr)
 library(bugphyzz)
 library(treeio)
-
 
 # taxizedb::db_download_ncbi(overwrite = TRUE)
 
@@ -155,40 +156,5 @@ tree_sp <- TreeSummarizedExperiment::toTree(tbl_for_tree)
 tree_sp$node.label <- sub('^.*:', '', tree_sp$node.label)
 
 usethis::use_data(tree_list, overwrite = TRUE)
-usethis::use_data(tree_sp, overwrite = TRUE)
+## usethis::use_data(tree_sp, overwrite = TRUE)
 ## This whole procedure takes about 10 minutes (local machine).
-## This is an improvement. It took about 1 hr before.
-
-
-##
-# domain  phylum   class   order  family   genus species  strain
-#      2      82     172     352     843    4716   27495   41707
-
-
-
-# library(data.tree)
-# library(purrr)
-#
-# data(tree_list)
-# tree <- as.Node(tree_list)
-#
-#
-# ranks = c(
-#     domain = 'd__', phylum = 'p__', class = 'c__', order = 'o__',
-#     family = 'f__', genus = 'g__', species = 's__', strain = 't__'
-# )
-# output <- vector('list', length(ranks))
-# for (i in seq_along(output)) {
-#     output[[i]] <- tree$Get(function(node) {
-#         if (grepl(ranks[i], node$name))
-#             node$name
-#     })
-# }
-# names(output) <- names(ranks)
-# output <- map(output, ~ .x[!is.na(.x)])
-# map_int(output, length)
-
-
-# domain  phylum   class   order  family   genus species  strain
-#      2      82     172     352     843    4716   27529   41749
-

@@ -1,4 +1,7 @@
 #! /bin/bash
+
+# I think this is the version (2) that I need rather than download_taxids.sh
+
 # rm -rf *txt
 # RUn in terminal, not using Rstudio
 exec > >(tee log.txt) 2>&1
