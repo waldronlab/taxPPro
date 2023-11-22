@@ -3,7 +3,7 @@ pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   taxPPro: taxPPro.html
-last_built: 2023-11-22T17:14Z
+last_built: 2023-11-22T19:13Z
 urls:
   reference: https://waldronlab.io/taxPPro/reference
   article: https://waldronlab.io/taxPPro/articles
