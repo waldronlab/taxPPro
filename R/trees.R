@@ -196,31 +196,3 @@ ltp2 <- function(remove_zero_tips = TRUE) {
     )
 }
 
-#' Get distant tips
-#'
-#' \code{getDistantTips} gets furthest apart tip for every tip in the ltp tree.
-#' Furthermore, this tip's taxid is present in the ncbi_tree. Additional
-#' columns describe data in the tip2 column.
-#'
-#' @return A data.frame.
-#' @export
-#'
-getDistantTips <- function() {
-    fileName <- system.file(
-        'extdata', 'longest_distance_between_tips.tsv',
-        package = 'taxPPro', mustWork = TRUE
-    )
-    utils::read.table(
-        file = fileName, header = TRUE, sep = '\t'
-    )
-
-}
-
-
-
-
-
-
-
-
-
