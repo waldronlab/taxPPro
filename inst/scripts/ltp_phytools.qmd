@@ -1,0 +1,59 @@
+---
+title: "phytools"
+format: html
+editor: visual
+---
+
+```{r, message=FALSE}
+library(treeio)
+library(phytools)
+```
+
+
+
+
+```{r}
+allUrl <- 'https://imedea.uib-csic.es/mmg/ltp/wp-content/uploads/ltp/LTP_all_08_2023.ntree'
+tree <- read.tree(allUrl)
+tree
+```
+
+
+```{r}
+tips <- tree$tip.label
+generate_matrix <- function(N) {
+  col1 <- runif(N)
+  col2 <- runif(N)
+  col3 <- runif(N)
+  matrix <- cbind(col1, col2, col3)
+  matrix <- matrix / rowSums(matrix)
+  return(matrix)
+}
+
+N <- length(tips)
+input_matrix <- generate_matrix(N)
+
+tips <- gsub(' ', '_', tips)
+tips <- gsub('[,;:\\(\\)]', '-', tips)
+
+
+rownames(input_matrix) <- tips
+colnames(input_matrix) <- c('A', 'B', 'C')
+```
+
+
+```{r}
+fit <- fitMk(
+    tree = tree, x = input_matrix, model = 'ER',
+    pi = 'fitzjohn', lik.func = 'pruning', logscale = TRUE
+    )
+asr <- ancr(object = fit, tips = TRUE)
+```
+
+```{r}
+```
+
+
+
+
+
