@@ -15,6 +15,8 @@ if (file.exists(treeFilePath)) {
 } else {
     message("File doesn't exist. Downloading from the LTP website.")
     tree <- read.tree(treeUrl)
+    tree$tip.label <- gsub('"', '', tree$tip.label)
+    tree$tip.label <- gsub("'", '', tree$tip.label)
     tree$tip.label <- gsub(' ', '_', tree$tip.label)
     tree$tip.label <- gsub('[,;:\\(\\)]', '-', tree$tip.label)
     message("Caching file.")
@@ -26,10 +28,9 @@ if (file.exists(treeFilePath)) {
 accession_rgx <- '_-.*--_'
 accessions <- str_extract(tree$tip.label, accession_rgx) |>
     str_remove_all('[_-]')
-taxnames <- str_extract(tree$tip.label, paste0("^'.*", accession_rgx)) |>
+taxnames <- str_extract(tree$tip.label, paste0("^.*", accession_rgx)) |>
     str_remove(accession_rgx) |>
     str_remove('-$') |>
-    str_remove("^'") |>
     str_replace_all('_', ' ') |>
     str_squish()
 
@@ -79,19 +80,18 @@ new_taxonomy <- map(taxonomy, ~ {
         order_taxid, family_taxid, genus_taxid, species_taxid
     )
 
-
-
-
-
-
+# tip_data data.frame -----------------------------------------------------
 tip_data <- data.frame(
-    tip_label = tip_labels,
+    tip_label = tree$tip.label,
     accession = accessions,
     taxid = taxids,
-    taxname = taxnames
+    taxname = taxnames,
+    rank = taxizedb::taxid2rank(taxids, db = 'ncbi')
+
 ) |>
     left_join(new_taxonomy, by = 'taxid')
 
+# node_data ---------------------------------------------------------------
 getMRCA <- function(tree, tips) {
     res <- phytools::findMRCA(tree = tree, tips = tips)
     if (is.null(res))
@@ -101,8 +101,7 @@ getMRCA <- function(tree, tips) {
 
 tx <- paste0(taxonomic_ranks, '_taxid')
 tx[which(tx == 'superkingdom_taxid')] <- 'kingdom_taxid'
-
-mrcas <- flatten(map(tx, ~ split(tree_data, factor(tree_data[[.x]]))))
+mrcas <- flatten(map(tx, ~ split(tip_data, factor(tip_data[[.x]]))))
 mrcas <- map(mrcas, ~ .x[['tip_label']])
 mrcas <- map_int(mrcas, ~ getMRCA(tree, .x))
 mrcas <- mrcas[!is.na(mrcas)]
@@ -153,45 +152,49 @@ nodes_new_taxonomy <- map(nodes_taxonomy, ~ {
     discard(~ all(is.na(.x)))
 
 node_data <- left_join(nodes_with_taxid, nodes_new_taxonomy, by= 'taxid')
+node_data$rank <- taxizedb::taxid2rank(node_data$taxid, db = 'ncbi')
 
+
+node_data$NCBI_ID <- taxPPro::addRankPrefix(node_data$taxid, node_data$rank)
+tip_data$NCBI_ID <- taxPPro::addRankPrefix(tip_data$taxid, tip_data$rank)
 
 ## ape write.tree won't allow commas and spaces when writin tree name
-tree_data$tip_label <- gsub(' ', '_', tree_data$tip_label)
-tree_data$tip_label <- gsub('[,;]', '-', tree_data$tip_label)
-tree_data$tip_label <- gsub('"', '', tree_data$tip_label)
-tree_data$tip_label <- gsub("'", '', tree_data$tip_label)
-tree_data$tip_label <- gsub("\\[T\\]", '', tree_data$tip_label)
-
-tree$tip.label<- gsub(' ', '_', tree$tip.label)
-tree$tip.label <- gsub('[,;]', '-', tree$tip.label)
-tree$tip.label <- gsub('"', '', tree$tip.label)
-tree$tip.label <- gsub("'", '', tree$tip.label)
-tree$tip.label <- gsub("\\[T\\]", '', tree$tip.label)
-
-
-all(tree$tip.label %in% tree_data$tip_label)
+# tree_data$tip_label <- gsub(' ', '_', tree_data$tip_label)
+# tree_data$tip_label <- gsub('[,;]', '-', tree_data$tip_label)
+# tree_data$tip_label <- gsub('"', '', tree_data$tip_label)
+# tree_data$tip_label <- gsub("'", '', tree_data$tip_label)
+# tree_data$tip_label <- gsub("\\[T\\]", '', tree_data$tip_label)
+#
+# tree$tip.label<- gsub(' ', '_', tree$tip.label)
+# tree$tip.label <- gsub('[,;]', '-', tree$tip.label)
+# tree$tip.label <- gsub('"', '', tree$tip.label)
+# tree$tip.label <- gsub("'", '', tree$tip.label)
+# tree$tip.label <- gsub("\\[T\\]", '', tree$tip.label)
 
 
-tree_data$taxid
-tree_data$Taxon_name <- taxizedb::taxid2name(tree_data$taxid, db = 'ncbi')
-tree_data$Rank <- taxizedb::taxid2rank(tree_data$taxid, db = 'ncbi')
+all(tree$tip.label %in% tip_data$tip_label)
 
 
-node_data$taxid
+# tip_data$taxid
+tip_data$Taxon_name <- taxizedb::taxid2name(tip_data$taxid, db = 'ncbi')
+tip_data$Rank <- taxizedb::taxid2rank(tip_data$taxid, db = 'ncbi')
+
+
+# node_data$taxid
 node_data$Taxon_name <- taxizedb::taxid2name(node_data$taxid, db = 'ncbi')
 node_data$Rank <- taxizedb::taxid2rank(node_data$taxid, db = 'ncbi')
 
 # Export data -------------------------------------------------------------
-tree_fname <- file.path('inst', 'extdata', 'livingTree.newick')
+tree_fname <- file.path('inst', 'extdata', 'LTP_all_08_2023.newick')
 ape::write.tree(tree, tree_fname)
 
-tree_data_fname <- file.path('inst', 'extdata', 'livingTree_tips.tsv')
+tip_data_fname <- file.path('inst', 'extdata', 'LTP_all_08_2023.tip_data')
 write.table(
-    tree_data, tree_data_fname, sep = '\t', quote = TRUE,
+    tip_data, tip_data_fname, sep = '\t', quote = TRUE,
     row.names = FALSE
 )
 
-node_data_fname <- file.path('inst', 'extdata', 'livingTree_nodes.tsv')
+node_data_fname <- file.path('inst', 'extdata', 'LTP_all_08_2023.node_data')
 write.table(
     node_data, node_data_fname, sep = '\t', quote = TRUE,
     row.names = FALSE
