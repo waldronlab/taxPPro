@@ -5,6 +5,7 @@ library(dplyr)
 library(purrr)
 library(tidyr)
 library(stringr)
+library(phytools)
 
 sql <- '~/accessionTaxa.sql'
 treeUrl <- 'https://imedea.uib-csic.es/mmg/ltp/wp-content/uploads/ltp/LTP_all_08_2023.ntree'
@@ -183,6 +184,28 @@ tip_data$Rank <- taxizedb::taxid2rank(tip_data$taxid, db = 'ncbi')
 # node_data$taxid
 node_data$Taxon_name <- taxizedb::taxid2name(node_data$taxid, db = 'ncbi')
 node_data$Rank <- taxizedb::taxid2rank(node_data$taxid, db = 'ncbi')
+
+
+# Add genus information ---------------------------------------------------
+
+# ltp <- ltp3()
+# tree <- ltp$tree
+# tip_data <- ltp$tip_data
+# node_data <- ltp$node_data
+
+node_data_g <- node_data[which(node_data$rank == 'genus'),]$node
+names(node_data_g) <- node_data[which(node_data$rank == 'genus'),]$taxid
+names(node_data_g) <- paste0('g__', names(node_data_g))
+
+tree_extended <- tree
+system.time({
+    for (i in seq_along(node_data_g)) {
+        tree_extended <- bind.tip(
+            tree = tree_extended, edge.length = 0, where = node_data_g[i],
+            tip.label = names(node_data_g)[i]
+        )
+    }
+})
 
 # Export data -------------------------------------------------------------
 tree_fname <- file.path('inst', 'extdata', 'LTP_all_08_2023.newick')
