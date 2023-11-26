@@ -179,11 +179,13 @@ all(tree$tip.label %in% tip_data$tip_label)
 # tip_data$taxid
 tip_data$Taxon_name <- taxizedb::taxid2name(tip_data$taxid, db = 'ncbi')
 tip_data$Rank <- taxizedb::taxid2rank(tip_data$taxid, db = 'ncbi')
+tip_data$rank <- NULL
 
 
 # node_data$taxid
 node_data$Taxon_name <- taxizedb::taxid2name(node_data$taxid, db = 'ncbi')
 node_data$Rank <- taxizedb::taxid2rank(node_data$taxid, db = 'ncbi')
+node_data$rank <- NULL
 
 
 # Add genus information ---------------------------------------------------
@@ -200,6 +202,7 @@ names(node_data_g) <- paste0('g__', names(node_data_g))
 tree_extended <- tree
 system.time({
     for (i in seq_along(node_data_g)) {
+        message('Adding ', names(node_data_g)[i], '- ', i)
         tree_extended <- bind.tip(
             tree = tree_extended, edge.length = 0, where = node_data_g[i],
             tip.label = names(node_data_g)[i]
@@ -207,13 +210,48 @@ system.time({
     }
 })
 
+extra_tip_data <- data.frame(tip_label = grep('g__', tree_extended$tip.label, value = TRUE))
+extra_tip_data$accession <- NA
+extra_tip_data$taxid <- sub('g__', '', extra_tip_data$tip_label)
+extra_tip_data$NCBI_ID <- extra_tip_data$tip_label
+extra_tip_data$Rank <- 'genus'
+extra_tip_taxonomy <- taxizedb::classification(
+    x = unique(extra_tip_data$taxid), db = 'ncbi'
+)
+extra_tip_new_taxonomy <- purrr::map(extra_tip_taxonomy, ~ {
+    x <- .x
+    x
+    x <- x[which(x$rank %in% taxonomic_ranks),]
+    m <- matrix(x$id, byrow = TRUE, nrow = 1)
+    colnames(m) <- x$rank
+    d <- as.data.frame(m)
+    colnames(d) <- sub("$", "_taxid", colnames(d))
+    d
+}) |>
+    bind_rows(.id = 'taxid') |>
+    relocate(
+        taxid, kingdom_taxid = superkingdom_taxid, phylum_taxid, class_taxid,
+        order_taxid, family_taxid, genus_taxid
+    ) |>
+    discard(~ all(is.na(.x)))
+
+extra_tip_data <- left_join(extra_tip_data, extra_tip_new_taxonomy, by = 'taxid')
+extra_tip_data$Taxon_name <- taxizedb::taxid2name(extra_tip_data$taxid, db = 'ncbi')
+rownames(extra_tip_data) <- extra_tip_data$tip_label
+tip_data_extended <- bind_rows(tip_data, extra_tip_data)
+tip_data_extended <- tip_data_extended[tree_extended$tip.label,]
+
+
+# trimmed_tree <- drop.tip(phy = tree_extended, tip = extra_tip_data$tip_label)
+
+
 # Export data -------------------------------------------------------------
 tree_fname <- file.path('inst', 'extdata', 'LTP_all_08_2023.newick')
-ape::write.tree(tree, tree_fname)
+ape::write.tree(tree_extended, tree_fname)
 
 tip_data_fname <- file.path('inst', 'extdata', 'LTP_all_08_2023.tip_data')
 write.table(
-    tip_data, tip_data_fname, sep = '\t', quote = TRUE,
+    tip_data_extended, tip_data_fname, sep = '\t', quote = TRUE,
     row.names = FALSE
 )
 

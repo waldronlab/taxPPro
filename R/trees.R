@@ -203,10 +203,12 @@ ltp2 <- function(remove_zero_tips = TRUE) {
 
 #' Get living tree project (LTP) tree or data v3
 #'
-#' \code{ltp3} gets the LTP tree or data.
+#' \code{ltp3} gets the LTP tree or data. Use `ape::drop.tip` to remove
+#' tips.
 #'
 #' @return A list with a phylo (the ltp tree) and a data.frame (tip_data)
 #' objects.
+
 #' @export
 #'
 ltp3 <- function() {
@@ -224,8 +226,7 @@ ltp3 <- function() {
         file = tip_data_fname, header = TRUE, sep = '\t', row.names = NULL
     ) |>
         purrr::modify(as.character) |>
-        as.data.frame() |>
-        dplyr::select(-.data$taxname)
+        as.data.frame()
     rownames(tip_data) <- tip_data$tip_label
 
     node_data <- utils::read.table(
@@ -234,29 +235,11 @@ ltp3 <- function() {
         purrr::modify(as.character) |>
         as.data.frame()
 
-    # tip_data <- tip_data |>
-    #     dplyr::group_by(taxid) |>
-    #     dplyr::slice_head(n = 1) |>
-    #     dplyr::ungroup() |>
-    #     as.data.frame()
-    # ntips4 <- nrow(tip_data)
-    # tree <- ape::keep.tip(phy = tree, tip = tip_data$tip_label)
-    # message('Dropping ', ntips3 - ntips4, ' tips because of duplicated taxids.')
-    # tip_data <- tip_data[tree$tip.label,]
-    # message('Tips remaining: ', length(tree$tip.label))
-
-    # tip_data <- tip_data |>
-    #     dplyr::mutate(
-    #         NCBI_ID = dplyr::case_when(
-    #             .data$Rank == 'genus' ~ paste0('g__', taxid),
-    #             .data$Rank == 'species' ~ paste0('s__', taxid),
-    #             .data$Rank == 'strain' ~ paste0('t__', taxid),
-    #             TRUE ~ NA
-    #         )
-    #     )
+    genus_tips <- grep('g__', tip_data$tip_label, value = TRUE)
 
     list(
-        tree = tree, tip_data = tip_data, node_data = node_data
+        tree = tree, tip_data = tip_data, node_data = node_data,
+        genus_tips = genus_tips
     )
 }
 
