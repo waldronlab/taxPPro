@@ -66,7 +66,7 @@ taxonomy <- taxonomy[which(!map_lgl(taxonomy, ~ all(is.na(.x))))]
 taxonomic_ranks <- c(
     'superkingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species', 'strain'
 )
-new_taxonomy <- map(taxonomy, ~ {
+new_taxonomy <- purrr::map(taxonomy, ~ {
     x <- .x
     x <- x[which(x$rank %in% taxonomic_ranks),]
     m <- matrix(x$id, byrow = TRUE, nrow = 1)
@@ -91,6 +91,7 @@ tip_data <- data.frame(
 
 ) |>
     left_join(new_taxonomy, by = 'taxid')
+rownames(tip_data) <- tip_data$tip_label
 
 # node_data ---------------------------------------------------------------
 getMRCA <- function(tree, tips) {
@@ -102,8 +103,8 @@ getMRCA <- function(tree, tips) {
 
 tx <- paste0(taxonomic_ranks, '_taxid')
 tx[which(tx == 'superkingdom_taxid')] <- 'kingdom_taxid'
-mrcas <- flatten(map(tx, ~ split(tip_data, factor(tip_data[[.x]]))))
-mrcas <- map(mrcas, ~ .x[['tip_label']])
+mrcas <- flatten(purrr::map(tx, ~ split(tip_data, factor(tip_data[[.x]]))))
+mrcas <- purrr::map(mrcas, ~ .x[['tip_label']])
 mrcas <- map_int(mrcas, ~ getMRCA(tree, .x))
 mrcas <- mrcas[!is.na(mrcas)]
 mrcas_df <- data.frame(node = unname(mrcas), node_label = names(mrcas))
@@ -136,7 +137,7 @@ all(nodes_with_taxid$node_label %in% tree$node.label)
 nodes_taxonomy <- taxizedb::classification(
     x = unique(nodes_with_taxid$taxid), db = 'ncbi'
 )
-nodes_new_taxonomy <- map(nodes_taxonomy, ~ {
+nodes_new_taxonomy <- purrr::map(nodes_taxonomy, ~ {
     x <- .x
     x <- x[which(x$rank %in% taxonomic_ranks),]
     m <- matrix(x$id, byrow = TRUE, nrow = 1)
@@ -188,6 +189,15 @@ node_data$Rank <- taxizedb::taxid2rank(node_data$taxid, db = 'ncbi')
 node_data$rank <- NULL
 
 
+# Adjust tips with zero length --------------------------------------------
+
+
+## All tips are in the second column in the matrix tree$edge
+
+tree$edge.lengthtree$edge[, 2]
+pos_zero <- which((tree$edge[,2] %in% 1:Ntip(tree)) & (tree$edge.length == 0))
+tree$edge.length[pos_zero] <- tree$edge.length[pos_zero] + 1e-06
+
 # Add genus information ---------------------------------------------------
 
 # ltp <- ltp3()
@@ -195,14 +205,14 @@ node_data$rank <- NULL
 # tip_data <- ltp$tip_data
 # node_data <- ltp$node_data
 
-node_data_g <- node_data[which(node_data$rank == 'genus'),]$node
-names(node_data_g) <- node_data[which(node_data$rank == 'genus'),]$taxid
+node_data_g <- node_data[which(node_data$Rank == 'genus'),]$node
+names(node_data_g) <- node_data[which(node_data$Rank == 'genus'),]$taxid
 names(node_data_g) <- paste0('g__', names(node_data_g))
 
 tree_extended <- tree
 system.time({
     for (i in seq_along(node_data_g)) {
-        message('Adding ', names(node_data_g)[i], '- ', i)
+        message('Adding ', names(node_data_g)[i], ' - ', i, '/', length(node_data_g))
         tree_extended <- bind.tip(
             tree = tree_extended, edge.length = 0, where = node_data_g[i],
             tip.label = names(node_data_g)[i]
@@ -243,6 +253,7 @@ tip_data_extended <- tip_data_extended[tree_extended$tip.label,]
 
 
 # trimmed_tree <- drop.tip(phy = tree_extended, tip = extra_tip_data$tip_label)
+
 
 
 # Export data -------------------------------------------------------------
@@ -293,7 +304,7 @@ write.table(
 #     )
 #
 # taxonomy <- taxizedb::classification(new_tree_data$tip_label, db = 'ncbi')
-# new_taxonomy <- map(taxonomy, ~ {
+# new_taxonomy <- purrr::map(taxonomy, ~ {
 #     ranks_ <- c(
 #         'superkingdom', 'phylum', 'class', 'order', 'family', 'genus', 'species'
 #     )
@@ -348,13 +359,13 @@ write.table(
 # ) |>
 #     {\(y) sub("$", "_taxid", y)}()
 
-# mrcas <- map(taxRanks, ~ {
+# mrcas <- purrr::map(taxRanks, ~ {
 #     splitted_df <- split(ldata, factor(ldata[[.x]]))
 #     output <- map_chr(splitted_df, \(y) as.character(getMRCA(t = ltree, df = y)))
 #     return(output)
 # })
 # names(mrcas) <- taxRanks
-# mrcas <- map(mrcas, ~ {
+# mrcas <- purrr::map(mrcas, ~ {
 #     v <- .x[!is.na(.x)]
 #     df <- data.frame(names = names(v), nodes = unname(v))
 #     df |>
