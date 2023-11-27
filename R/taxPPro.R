@@ -305,7 +305,8 @@ taxPool <- function(node, grp, typ) {
             purrr::discard(is.null)
         not_all_children_tbls_are_null <- length(attribute_tbls) > 0
         node_attribute_tbl_is_null <- is.null(node$table)
-        node_is_gst <- grepl('^[gst]__', node$name)
+        # node_is_gst <- grepl('^[gst]__', node$name)
+        node_is_gst <- grepl('^[st]__', node$name)
         conds <- node_attribute_tbl_is_null &
             not_all_children_tbls_are_null &
             node_is_gst
