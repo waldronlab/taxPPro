@@ -363,11 +363,12 @@ taxPool <- function(node, grp, typ) {
 #'
 #' @param node  A node in a data.tree.
 #' @param adjF Adjustment factor for penalty. Default is 1.0.
+#' @param evidence_label A character string, either inh1 or inh2.
 #'
 #' @return A table for a node attribute.
 #' @export
 #'
-inh1 <- function(node,  adjF = 0.1) {
+inh1 <- function(node,  adjF = 0.1, evidence_label = 'inh') {
     if (node$isRoot)
         return(NULL)
     if (is.null(node$parent$attribute_tbl))
@@ -381,12 +382,27 @@ inh1 <- function(node,  adjF = 0.1) {
                 score_diff = .data$Score - .data$target_scores,
                 Score = .data$Score - adjF * .data$score_diff,
                 NCBI_ID = node$name,
-                Evidence = 'inh',
+                Evidence = evidence_label,
                 Taxon_name = node$Taxon_name,
                 Rank = node$Rank,
                 taxid = node$taxid,
             ) |>
-            dplyr::select(-.data$target_scores, -.data$score_diff)
+            dplyr::select(-.data$target_scores, -.data$score_diff) |>
+            dplyr::relocate(.data$NCBI_ID) |>
+            dplyr::mutate(
+                Attribute_source = NA,
+                Confidence_in_curation = NA,
+                taxid = node$taxid,
+                Taxon_name = node$Taxon_name,
+                Rank = node$Rank,
+                Frequency = dplyr::case_when(
+                    .data$Score == 1 ~ 'always',
+                    .data$Score > 0.9 ~ 'usually',
+                    .data$Score >= 0.5 ~ 'sometimes',
+                    .data$Score > 0 & .data$Score < 0.5 ~ 'rarely',
+                    .data$Score == 0 ~ 'never'
+                )
+            )
         node$attribute_tbl <- df
     }
 }

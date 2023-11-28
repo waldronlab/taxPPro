@@ -4,12 +4,14 @@
 \alias{inh1}
 \title{Inheritance first round}
 \usage{
-inh1(node, adjF = 0.1)
+inh1(node, adjF = 0.1, evidence_label = "inh")
 }
 \arguments{
 \item{node}{A node in a data.tree.}
 
 \item{adjF}{Adjustment factor for penalty. Default is 1.0.}
+
+\item{evidence_label}{A character string, either inh1 or inh2.}
 }
 \value{
 A table for a node attribute.
