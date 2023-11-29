@@ -8,7 +8,7 @@ library(ggpubr)
 library(ggtree)
 library(data.tree)
 
-ltp <- ltp()
+ltp <- ltp3()
 tip_data <- ltp$tip_data
 node_data <- ltp$node_data
 sourceCodes <- c('exp', 'igc', 'nas', 'tas')
@@ -38,6 +38,7 @@ taxPool_l <- b |>
 
 # all(names(source_l) == names(taxPool_l))
 
+source_l <- source_l[names(taxPool_l)]
 dat <- map2(
     .x = source_l, .y = taxPool_l, .f =  ~ {
         before <- mean(tip_data$NCBI_ID %in% unique(.x$NCBI_ID)) * 100
@@ -56,7 +57,7 @@ p1 <- dat |>
         mutate(time = factor(time, levels = c('before', 'after'))) |>
         ggplot(mapping = aes(data_name, per)) +
         geom_col(mapping = aes(fill = time), position = 'dodge') +
-        geom_hline(yintercept = 10, linetype = 'dotdash') +
+        geom_hline(yintercept = 5, linetype = 'dotdash') +
         scale_y_continuous(
             limits = c(0, 100), labels = function(x) paste0(x, "%")
         ) +
