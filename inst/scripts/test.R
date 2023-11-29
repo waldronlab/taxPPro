@@ -27,7 +27,6 @@ myFun <- function(mat, per = 0.1) {
     mat
 }
 
-
 input_mat <- myFun(original, 0.95)
 input_mat <- input_mat[tree$tip.label,]
 fit <- fitMk(tree = primate.tree, x = input_mat,
@@ -35,17 +34,3 @@ fit <- fitMk(tree = primate.tree, x = input_mat,
               lik.func = "pruning", logscale = TRUE)
 ace <- ancr(fit, tips=TRUE)
 plot(ace, args.plotTree = list(direction="upwards"))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
