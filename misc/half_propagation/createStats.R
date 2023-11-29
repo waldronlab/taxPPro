@@ -33,7 +33,7 @@ source_l <- b |>
     filter(Evidence %in% sourceCodes) |>
     {\(y) split(y, factor(y$Attribute_group))}()
 taxPool_l <- b |>
-    filter(Evidence %in% c('tax', 'inh')) |>
+    filter(Evidence %in% c(sourceCodes, c('tax', 'inh'))) |>
     {\(y) split(y, factor(y$Attribute_group))}()
 
 # all(names(source_l) == names(taxPool_l))
