@@ -1,8 +1,25 @@
+---
+title: "Effect of uncertainty in tip annotations"
+subtitle: 'Multistate-intersection'
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
 library(ape)
 library(phytools)
 library(dplyr)
 library(tidyr)
+```
 
+## Prepare data and tree
+
+```{r}
 data('primate.tree')
 data('primate.data')
 tree <- primate.tree
@@ -28,10 +45,14 @@ myFun <- function(mat, per_uncertain = 0.1) {
     mat[rows,] <- rep(1/ncol(mat), ncol(mat))
     mat
 }
+```
 
 
-# # 99% uncertainty -------------------------------------------------------
-## Extreme case with a single tip annotated
+
+
+## 99% uncertainty
+
+```{r}
 set.seed(1234)
 m99 <- myFun(original, 0.99)
 m99 <- m99[tree$tip.label,]
@@ -41,8 +62,11 @@ fit99 <- fitMk(tree = primate.tree, x = m99,
 ace99 <- ancr(fit99, tips=TRUE)
 plot(ace99, args.plotTree = list(direction="upwards"))
 title(main = '99% uncertain tips', line = -1)
+```
 
-# 95% uncertainty ---------------------------------------------------------
+## 95% uncertainty
+
+```{r}
 set.seed(1234)
 m95 <- myFun(original, 0.95)
 m95 <- m95[tree$tip.label,]
@@ -53,7 +77,11 @@ ace95 <- ancr(fit95, tips=TRUE)
 plot(ace95, args.plotTree = list(direction="upwards"))
 title(main = '95% uncertain tips', line = -1)
 
-# 75% uncertainty ---------------------------------------------------------
+```
+
+## 75% uncertainty
+
+```{r}
 set.seed(1234)
 m75 <- myFun(original, 0.75)
 m75 <- m75[tree$tip.label,]
@@ -63,11 +91,17 @@ fit75 <- fitMk(tree = primate.tree, x = m75,
 ace75 <- ancr(fit75, tips=TRUE)
 plot(ace75, args.plotTree = list(direction="upwards"))
 title(main = '75% uncertain tips', line = -1)
+```
 
-# # 0% uncertainty --------------------------------------------------------
+## No uncertainty
+```{r}
 fit <- fitMk(tree = primate.tree, x = original,
               model = "ARD", pi = "fitzjohn",
               lik.func = "pruning", logscale = TRUE)
 ace <- ancr(fit, tips=TRUE)
 plot(ace, args.plotTree = list(direction="upwards"))
 title(main = '0% uncertain tips', line = -1)
+```
+
+
+
