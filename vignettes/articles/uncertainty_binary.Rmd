@@ -49,20 +49,6 @@ myFun <- function(mat, per_uncertain = 0.1) {
     mat
 }
 
-
-myFun2 <- fucntion(mat, per_false = 0.1) {
-    ones <- which(mat[,'A', drop = TRUE] == 0)
-    zeros <- which(!mat[,'A', drop = TRUE] == 0)
-    n1s <- colSums(mat[,'A', drop = FALSE])
-    n0s <- colSums(!mat[,'A', drop = FALSE])
-    total = n1s + n0s
-    perN <- round(0.1 * total)
-    
-    
-   
-}
-
-
 ```
 
 
