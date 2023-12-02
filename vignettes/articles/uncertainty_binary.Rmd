@@ -1,5 +1,5 @@
 ---
-title: "uncertainty_binary"
+title: "Uncertainty in tips for binary attributes"
 ---
 
 ```{r, include = FALSE}
@@ -16,6 +16,13 @@ library(dplyr)
 library(tidyr)
 ```
 
+Some of the attributes in bugphyzz only have 'TRUE' annotations.
+Some other attributes have both 'TRUE' and 'FALSE' annotations.
+
+Tips that are uncertain could be treated as FALSE annotations or 
+uncertain annotations with prior probabilities (0.5 TRUE and 0.5 FALSE). A
+drawback of the later is that it could cause all annotations to have
+the same value:
 
 ```{r}
 data('primate.tree')
@@ -51,11 +58,10 @@ myFun <- function(mat, per_uncertain = 0.1) {
 
 ```
 
-
 ## 99% uncertainty
 
 ```{r}
-set.seed(123)
+set.seed(12343) 
 m99 <- myFun(original, 0.99)
 m99 <- m99[tree$tip.label,]
 fit99 <- fitMk(tree = primate.tree, x = m99,
@@ -69,7 +75,7 @@ title(main = '99% uncertain tips', line = -1)
 ## 95% uncertainty
 
 ```{r}
-set.seed(123)
+set.seed(12343) ## with this seed all values are TRUE that is what I left it here
 m95 <- myFun(original, 0.95)
 m95 <- m95[tree$tip.label,]
 fit95 <- fitMk(tree = primate.tree, x = m95,
@@ -81,12 +87,18 @@ title(main = '95% uncertain tips', line = -1)
 
 ```
 
+
 ## 75% uncertainty
 
 ```{r}
-set.seed(123)
+set.seed(12343)
 m75 <- myFun(original, 0.75)
 m75 <- m75[tree$tip.label,]
+
+pos1 <- sample(1:nrow(m75), round(nrow(m75) * 0.75), replace = FALSE)
+pos0 <- 1:nrow(m75) 1:nrow(m75)
+
+
 fit75 <- fitMk(tree = primate.tree, x = m75,
               model = "ARD", pi = "fitzjohn",
               lik.func = "pruning", logscale = TRUE)
@@ -135,7 +147,7 @@ myFun2 <- function(vct, per_ones = 0.1) {
 
 ```{r}
 x1 <- original
-set.seed(123)
+set.seed(12343)
 x1[,1] <- myFun2(x1[,1], 0.05)
 x1[,2] <- ifelse(x1[,1] == 1, 0, 1)
 
@@ -152,7 +164,7 @@ title(main = '95% imputed zeros A--FALSE', line = -1)
 
 ```{r}
 x2 <- original
-set.seed(123)
+set.seed(12343)
 x2[,1] <- myFun2(x2[,1], 0.25)
 x2[,2] <- ifelse(x2[,1] == 1, 0, 1)
 
@@ -165,17 +177,4 @@ plot(ace_x2, args.plotTree = list(direction="upwards"))
 title(main = '75% imputed zeros A--FALSE', line = -1)
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+## 
