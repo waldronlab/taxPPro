@@ -24,6 +24,9 @@ data('primate.tree')
 data('primate.data')
 tree <- primate.tree
 data <- primate.data
+data <- data[tree$tip.label,]
+rownames(data) <- paste0('taxon', 1:nrow(data))
+tree$tip.label <- paste0('taxon', 1:Ntip(tree))
 original <- data |>
     tibble::rownames_to_column(var = 'Taxa') |>
     select(Taxa, Activity_pattern) |>
@@ -47,16 +50,26 @@ myFun <- function(mat, per_uncertain = 0.1) {
 }
 ```
 
+# No uncertainty
 
+```{r}
+fit <- fitMk(tree = tree, x = original,
+              model = "ARD", pi = "fitzjohn",
+              lik.func = "pruning", logscale = TRUE)
+ace <- ancr(fit, tips=TRUE)
+plot(ace, args.plotTree = list(direction="upwards"))
+title(main = '0% uncertain tips', line = -1)
+```
 
+# Uncertaintity
 
 ## 99% uncertainty
 
 ```{r}
-set.seed(1234)
+set.seed(123)
 m99 <- myFun(original, 0.99)
 m99 <- m99[tree$tip.label,]
-fit99 <- fitMk(tree = primate.tree, x = m99,
+fit99 <- fitMk(tree = tree, x = m99,
               model = "ARD", pi = "fitzjohn",
               lik.func = "pruning", logscale = TRUE)
 ace99 <- ancr(fit99, tips=TRUE)
@@ -67,10 +80,10 @@ title(main = '99% uncertain tips', line = -1)
 ## 95% uncertainty
 
 ```{r}
-set.seed(1234)
+set.seed(123)
 m95 <- myFun(original, 0.95)
 m95 <- m95[tree$tip.label,]
-fit95 <- fitMk(tree = primate.tree, x = m95,
+fit95 <- fitMk(tree = tree, x = m95,
               model = "ARD", pi = "fitzjohn",
               lik.func = "pruning", logscale = TRUE)
 ace95 <- ancr(fit95, tips=TRUE)
@@ -79,29 +92,24 @@ title(main = '95% uncertain tips', line = -1)
 
 ```
 
-## 75% uncertainty
+## 70% uncertainty
 
 ```{r}
-set.seed(1234)
-m75 <- myFun(original, 0.75)
+set.seed(123)
+m75 <- myFun(original, 0.7)
 m75 <- m75[tree$tip.label,]
-fit75 <- fitMk(tree = primate.tree, x = m75,
+fit75 <- fitMk(tree = tree, x = m75,
               model = "ARD", pi = "fitzjohn",
               lik.func = "pruning", logscale = TRUE)
 ace75 <- ancr(fit75, tips=TRUE)
 plot(ace75, args.plotTree = list(direction="upwards"))
-title(main = '75% uncertain tips', line = -1)
+title(main = '70% uncertain tips', line = -1)
 ```
 
-## No uncertainty
+# Session information
+
 ```{r}
-fit <- fitMk(tree = primate.tree, x = original,
-              model = "ARD", pi = "fitzjohn",
-              lik.func = "pruning", logscale = TRUE)
-ace <- ancr(fit, tips=TRUE)
-plot(ace, args.plotTree = list(direction="upwards"))
-title(main = '0% uncertain tips', line = -1)
+sessioninfo::session_info()
 ```
-
 
 
