@@ -1,5 +1,8 @@
 ---
-title: "Uncertainty in tips for binary attributes"
+title: "Uncertainty in tips for binary attributes when there are only 'TRUE' annotations"
+output:
+  html_document:
+    toc: true
 ---
 
 ```{r, include = FALSE}
@@ -16,21 +19,23 @@ library(dplyr)
 library(tidyr)
 ```
 
-Some of the attributes in bugphyzz only have 'TRUE' annotations.
-Some other attributes have both 'TRUE' and 'FALSE' annotations.
+A few attributes in bugphyzz only have 'TRUE' annotations.
+Other attributes have both 'TRUE' and 'FALSE' annotations.
 
-Tips that are uncertain could be treated as FALSE annotations or 
-uncertain annotations with prior probabilities (0.5 TRUE and 0.5 FALSE). A
-drawback of the later is that it could cause all annotations to have
-the same value:
+Tips that are uncertain could be treated as FALSE annotations (imputed data) or 
+uncertain annotations with prior probabilities set to 0.5 for TRUE and 0.5 for
+FALSE. In any case, ASR is not very reliable with any of these approaches,
+especially when the percentage of tips with annotations is low.
 
 ```{r}
 data('primate.tree')
 data('primate.data')
 tree <- primate.tree
 data <- primate.data
+data <- data[tree$tip.label,]
+rownames(data) <- paste0('taxon', 1:nrow(data))
+tree$tip.label <- paste0('taxon', 1:Ntip(tree))
 original <- data |>
-    # filter(Activity_pattern == 'Diurnal') |> 
     tibble::rownames_to_column(var = 'Taxa') |>
     select(Taxa, Activity_pattern) |>
     mutate(Presence = 1) |>
@@ -55,30 +60,46 @@ myFun <- function(mat, per_uncertain = 0.1) {
     mat[rows,] <- rep(1/ncol(mat), ncol(mat))
     mat
 }
-
 ```
+
+# No uncertainty
+```{r}
+fit <- fitMk(tree = tree, x = original,
+              model = "ARD", pi = "fitzjohn",
+              lik.func = "pruning", logscale = TRUE)
+ace <- ancr(fit, tips=TRUE)
+plot(ace, args.plotTree = list(direction="upwards"))
+title(main = '0% uncertain tips', line = -1)
+```
+
+# Assigning 0.5 for TRUE and FALSE for annotations
+
+This doesn't really work when all annotations are positive
 
 ## 99% uncertainty
 
+In this case, a single annotation overrides all other annotations.
+99% of tips are uncertain (0.5 TRUE and 0.5 FALSE).
+
 ```{r}
-set.seed(12343) 
+set.seed(1234) 
 m99 <- myFun(original, 0.99)
 m99 <- m99[tree$tip.label,]
-fit99 <- fitMk(tree = primate.tree, x = m99,
+fit99 <- fitMk(tree = tree, x = m99,
               model = "ARD", pi = "fitzjohn",
               lik.func = "pruning", logscale = TRUE)
 ace99 <- ancr(fit99, tips=TRUE)
-plot(ace99, args.plotTree = list(direction="upwards"))
+plot(ace99, args.plotTree = list(direction = "upwards"))
 title(main = '99% uncertain tips', line = -1)
 ```
 
 ## 95% uncertainty
 
 ```{r}
-set.seed(12343) ## with this seed all values are TRUE that is what I left it here
+set.seed(1234) ## with this seed all values are TRUE that is what I left it here
 m95 <- myFun(original, 0.95)
 m95 <- m95[tree$tip.label,]
-fit95 <- fitMk(tree = primate.tree, x = m95,
+fit95 <- fitMk(tree = tree, x = m95,
               model = "ARD", pi = "fitzjohn",
               lik.func = "pruning", logscale = TRUE)
 ace95 <- ancr(fit95, tips=TRUE)
@@ -88,34 +109,26 @@ title(main = '95% uncertain tips', line = -1)
 ```
 
 
-## 75% uncertainty
+## 25% uncertainty
 
 ```{r}
-set.seed(12343)
-m75 <- myFun(original, 0.75)
-m75 <- m75[tree$tip.label,]
-
-pos1 <- sample(1:nrow(m75), round(nrow(m75) * 0.75), replace = FALSE)
-pos0 <- 1:nrow(m75) 1:nrow(m75)
-
-
-fit75 <- fitMk(tree = primate.tree, x = m75,
+# set.seed(1234)
+# m75 <- myFun(original, 0.75)
+# m75 <- m75[tree$tip.label,]
+pos1 <- sample(1:nrow(original), round(nrow(original) * 0.75), replace = FALSE)
+pos0.5 <- (1:nrow(original))[!1:nrow(original) %in% pos1]
+m25 <- original
+m25[] <- 0.5
+m25[pos1, 1] <- 1
+m25[pos1, 2] <- 0
+fit25 <- fitMk(tree = tree, x = m25,
               model = "ARD", pi = "fitzjohn",
               lik.func = "pruning", logscale = TRUE)
-ace75 <- ancr(fit75, tips=TRUE)
-plot(ace75, args.plotTree = list(direction="upwards"))
-title(main = '75% uncertain tips', line = -1)
+m25 <- ancr(fit25, tips=TRUE)
+plot(m25, args.plotTree = list(direction = "upwards"))
+title(main = '25% uncertain tips', line = -1)
 ```
 
-## No uncertainty
-```{r}
-fit <- fitMk(tree = primate.tree, x = original,
-              model = "ARD", pi = "fitzjohn",
-              lik.func = "pruning", logscale = TRUE)
-ace <- ancr(fit, tips=TRUE)
-plot(ace, args.plotTree = list(direction="upwards"))
-title(main = '0% uncertain tips', line = -1)
-```
 
 
 # Imputed zeros
@@ -152,7 +165,7 @@ x1[,1] <- myFun2(x1[,1], 0.05)
 x1[,2] <- ifelse(x1[,1] == 1, 0, 1)
 
 x1 <- x1[tree$tip.label,]
-fit_x1 <- fitMk(tree = primate.tree, x = x1,
+fit_x1 <- fitMk(tree = tree, x = x1,
               model = "ARD", pi = "fitzjohn",
               lik.func = "pruning", logscale = TRUE)
 ace_x1 <- ancr(fit_x1, tips=TRUE)
@@ -169,7 +182,7 @@ x2[,1] <- myFun2(x2[,1], 0.25)
 x2[,2] <- ifelse(x2[,1] == 1, 0, 1)
 
 x2 <- x2[tree$tip.label,]
-fit_x2 <- fitMk(tree = primate.tree, x = x2,
+fit_x2 <- fitMk(tree = tree, x = x2,
               model = "ARD", pi = "fitzjohn",
               lik.func = "pruning", logscale = TRUE)
 ace_x2 <- ancr(fit_x2, tips=TRUE)
@@ -177,4 +190,26 @@ plot(ace_x2, args.plotTree = list(direction="upwards"))
 title(main = '75% imputed zeros A--FALSE', line = -1)
 ```
 
-## 
+## As currently implemented
+
+Maybe just a few will have annotations above the threholds.
+I don't think we should import FALSE values since they were all inputed.
+
+```{r}
+hist(
+  ace_x2$ace[Ntip(tree) + 1:Nnode(tree), 1],
+  main = 'Scores of internal nodes TRUE', xlab = 'Score'
+  
+)
+```
+
+# Session information
+
+```{r}
+sessioninfo::session_info()
+```
+
+
+
+
+
