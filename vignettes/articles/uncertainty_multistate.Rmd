@@ -1,6 +1,5 @@
 ---
-title: "Effect of uncertainty in tip annotations"
-subtitle: 'Multistate-intersection'
+title: "Uncertainty in tips with multistate(-intersection) annotations"
 ---
 
 ```{r, include = FALSE}
@@ -11,6 +10,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
+options(rstudio.viewer.autorefresh = FALSE)
 library(ape)
 library(phytools)
 library(dplyr)
@@ -25,8 +25,6 @@ data('primate.data')
 tree <- primate.tree
 data <- primate.data
 data <- data[tree$tip.label,]
-rownames(data) <- paste0('taxon', 1:nrow(data))
-tree$tip.label <- paste0('taxon', 1:Ntip(tree))
 original <- data |>
     tibble::rownames_to_column(var = 'Taxa') |>
     select(Taxa, Activity_pattern) |>
@@ -50,6 +48,18 @@ myFun <- function(mat, per_uncertain = 0.1) {
 }
 ```
 
+
+## Some practical examples
+
+
+```{r}
+
+```
+
+
+
+
+
 # No uncertainty
 
 ```{r}
@@ -61,49 +71,57 @@ plot(ace, args.plotTree = list(direction="upwards"))
 title(main = '0% uncertain tips', line = -1)
 ```
 
-# Uncertaintity
-
-## 99% uncertainty
+## Uncertainty about 12%
 
 ```{r}
-set.seed(123)
-m99 <- myFun(original, 0.99)
-m99 <- m99[tree$tip.label,]
-fit99 <- fitMk(tree = tree, x = m99,
-              model = "ARD", pi = "fitzjohn",
-              lik.func = "pruning", logscale = TRUE)
-ace99 <- ancr(fit99, tips=TRUE)
-plot(ace99, args.plotTree = list(direction="upwards"))
-title(main = '99% uncertain tips', line = -1)
+macaca <- grep('^Macaca_', rownames(original)) # A
+galago <- grep('^Galago_', rownames(original)) # B
+eulemur <- grep('^Eulemur', rownames(original)) # C
+paste0(round((length(macaca) + length(galago) + length(eulemur)) / 90 * 100), '%')
 ```
 
-## 95% uncertainty
+
 
 ```{r}
-set.seed(123)
-m95 <- myFun(original, 0.95)
-m95 <- m95[tree$tip.label,]
-fit95 <- fitMk(tree = tree, x = m95,
+m1 <- original
+m1[] <- 1 / 3
+m1[macaca, ] <- c(rep(1,3), rep(0, 6))
+m1[galago, ] <- c(rep(0,4), rep(1, 4), rep(0, 4))
+m1[eulemur, ] <- c(rep(0,8), rep(1, 4))
+
+fit1 <- fitMk(tree = tree, x = m1,
               model = "ARD", pi = "fitzjohn",
               lik.func = "pruning", logscale = TRUE)
-ace95 <- ancr(fit95, tips=TRUE)
-plot(ace95, args.plotTree = list(direction="upwards"))
-title(main = '95% uncertain tips', line = -1)
-
+ace1 <- ancr(fit1, tips=TRUE)
+plot(ace1, args.plotTree = list(direction = "upwards"))
+title(main = '12% uncertain tips', line = -1)
 ```
 
-## 70% uncertainty
+
+Let's add some more taxa
 
 ```{r}
-set.seed(123)
-m75 <- myFun(original, 0.7)
-m75 <- m75[tree$tip.label,]
-fit75 <- fitMk(tree = tree, x = m75,
+cebus <- grep('^Cebus_', rownames(original)) # A
+microcebus <- grep('^Microcebus', rownames(original)) # B
+paste0(round((length(macaca) + length(galago) + length(eulemur) + length(cebus) + length(microcebus)) / 90 * 100), '%')
+```
+
+
+```{r}
+m2 <- original
+m2[] <- 1 / 3
+m2[macaca, ] <- c(rep(1,3), rep(0, 6))
+m2[galago, ] <- c(rep(0,4), rep(1, 4), rep(0, 4))
+m2[eulemur, ] <- c(rep(0,8), rep(1, 4))
+m2[cebus, ] <- c(rep(1,2), rep(0, 4))
+m2[microcebus, ] <- c(rep(0,2), rep(1, 2), rep(0, 2))
+
+fit2 <- fitMk(tree = tree, x = m2,
               model = "ARD", pi = "fitzjohn",
               lik.func = "pruning", logscale = TRUE)
-ace75 <- ancr(fit75, tips=TRUE)
-plot(ace75, args.plotTree = list(direction="upwards"))
-title(main = '70% uncertain tips', line = -1)
+ace2 <- ancr(fit2, tips=TRUE)
+plot(ace2, args.plotTree = list(direction = "upwards"))
+title(main = '17% uncertain tips', line = -1)
 ```
 
 # Session information
@@ -111,5 +129,4 @@ title(main = '70% uncertain tips', line = -1)
 ```{r}
 sessioninfo::session_info()
 ```
-
 

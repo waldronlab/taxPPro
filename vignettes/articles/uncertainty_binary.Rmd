@@ -1,5 +1,5 @@
 ---
-title: "Uncertainty in tips for binary attributes with 'TRUE' and 'FALSE' annotations"
+title: "Uncertainty in tips with binary attributes"
 output:
   html_document:
     toc: true
@@ -52,27 +52,6 @@ original <- data |>
     ) |> 
     as.matrix()
 colnames(original) <- c('A--TRUE', 'A--FALSE')
-
-
-# myFun <- function(mat, uncertainty = 0.7, input_value = 0) {
-#     m <- mat
-#     if (input_value == 0.5) {
-#         m[] <- input_value
-#     } else if (input_value == 0) {
-#         m[,1] <- 0
-#         m[,2] <- 1
-#     }
-#     n <- round(nrow(mat) * (1 - uncertainty))
-#     a <- round(n / 3)
-#     b <- n - a
-#     nm1 <- sample(rownames(mat), b)
-#     nm2 <- sample(rownames(mat)[!rownames(mat) %in% nm1], a)
-#     m[nm1, 1] <- 1
-#     m[nm1, 2] <- 0
-#     m[nm2, 1] <- 0
-#     m[nm2, 2] <- 1
-#     return(m)
-# }
 head(sort(table(sub('^(\\w+)_.*$', '\\1', rownames(original))), decreasing = TRUE))
 ```
 
