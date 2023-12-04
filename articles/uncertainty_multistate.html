@@ -5,13 +5,13 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Uncertainty in tips for binary attributes with 'TRUE' and 'FALSE' annotations • taxPPro</title>
+<title>Effect of uncertainty in tip annotations • taxPPro</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Uncertainty in tips for binary attributes with 'TRUE' and 'FALSE' annotations">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Effect of uncertainty in tip annotations">
 <meta property="og:description" content="taxPPro">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -81,12 +81,12 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Uncertainty in tips for binary attributes with
-‘TRUE’ and ‘FALSE’ annotations</h1>
+      <h1 data-toc-skip>Effect of uncertainty in tip annotations</h1>
+            <h3 data-toc-skip class="subtitle">Multistate-intersection</h3>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/sdgamboa/taxPPro/blob/HEAD/vignettes/articles/uncertainty_binary.Rmd" class="external-link"><code>vignettes/articles/uncertainty_binary.Rmd</code></a></small>
-      <div class="hidden name"><code>uncertainty_binary.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/sdgamboa/taxPPro/blob/HEAD/vignettes/articles/uncertainty_multistate.Rmd" class="external-link"><code>vignettes/articles/uncertainty_multistate.Rmd</code></a></small>
+      <div class="hidden name"><code>uncertainty_multistate.Rmd</code></div>
 
     </div>
 
@@ -109,21 +109,17 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span></code></pre></div>
-<p>A few attributes in bugphyzz only have ‘TRUE’ annotations. Other
-attributes have both ‘TRUE’ and ‘FALSE’ annotations.</p>
-<p>Tips that are uncertain could be treated as FALSE annotations
-(imputed data) or uncertain annotations with prior probabilities set to
-0.5 for TRUE and 0.5 for FALSE. In any case, ASR is not very reliable
-with any of these approaches, especially when the percentage of tips
-with annotations is low.</p>
+<div class="section level3">
+<h3 id="prepare-data-and-tree">Prepare data and tree<a class="anchor" aria-label="anchor" href="#prepare-data-and-tree"></a>
+</h3>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">'primate.tree'</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">'primate.data'</span><span class="op">)</span></span>
 <span><span class="va">tree</span> <span class="op">&lt;-</span> <span class="va">primate.tree</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">primate.data</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="va">tree</span><span class="op">$</span><span class="va">tip.label</span>,<span class="op">]</span></span>
-<span><span class="co"># rownames(data) &lt;- paste0('taxon', 1:nrow(data))</span></span>
-<span><span class="co"># tree$tip.label &lt;- paste0('taxon', 1:Ntip(tree))</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'taxon'</span>, <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">tree</span><span class="op">$</span><span class="va">tip.label</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'taxon'</span>, <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/pkg/ape/man/summary.phylo.html" class="external-link">Ntip</a></span><span class="op">(</span><span class="va">tree</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">original</span> <span class="op">&lt;-</span> <span class="va">data</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">rownames_to_column</a></span><span class="op">(</span>var <span class="op">=</span> <span class="st">'Taxa'</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Taxa</span>, <span class="va">Activity_pattern</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -135,41 +131,19 @@ with annotations is low.</p>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">Taxa</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html" class="external-link">column_to_rownames</a></span><span class="op">(</span>var <span class="op">=</span> <span class="st">'Taxa'</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">Diurnal</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
-<span>        not_diurnal <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">Diurnal</span> <span class="op">==</span> <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span></span>
-<span>    <span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">original</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'A--TRUE'</span>, <span class="st">'A--FALSE'</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">original</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">LETTERS</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span></span>
 <span></span>
-<span></span>
-<span><span class="co"># myFun &lt;- function(mat, uncertainty = 0.7, input_value = 0) {</span></span>
-<span><span class="co">#     m &lt;- mat</span></span>
-<span><span class="co">#     if (input_value == 0.5) {</span></span>
-<span><span class="co">#         m[] &lt;- input_value</span></span>
-<span><span class="co">#     } else if (input_value == 0) {</span></span>
-<span><span class="co">#         m[,1] &lt;- 0</span></span>
-<span><span class="co">#         m[,2] &lt;- 1</span></span>
-<span><span class="co">#     }</span></span>
-<span><span class="co">#     n &lt;- round(nrow(mat) * (1 - uncertainty))</span></span>
-<span><span class="co">#     a &lt;- round(n / 3)</span></span>
-<span><span class="co">#     b &lt;- n - a</span></span>
-<span><span class="co">#     nm1 &lt;- sample(rownames(mat), b)</span></span>
-<span><span class="co">#     nm2 &lt;- sample(rownames(mat)[!rownames(mat) %in% nm1], a)</span></span>
-<span><span class="co">#     m[nm1, 1] &lt;- 1</span></span>
-<span><span class="co">#     m[nm1, 2] &lt;- 0</span></span>
-<span><span class="co">#     m[nm2, 1] &lt;- 0</span></span>
-<span><span class="co">#     m[nm2, 2] &lt;- 1</span></span>
-<span><span class="co">#     return(m)</span></span>
-<span><span class="co"># }</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span><span class="st">'^(\\w+)_.*$'</span>, <span class="st">'\\1'</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">original</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, decreasing <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;       Eulemur        Galago        Ateles    Callithrix Cercopithecus </span></span>
-<span><span class="co">#&gt;             4             4             3             3             3 </span></span>
-<span><span class="co">#&gt;        Macaca </span></span>
-<span><span class="co">#&gt;             3</span></span></code></pre></div>
+<span><span class="va">myFun</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">mat</span>, <span class="va">per_uncertain</span> <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">n_row</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">mat</span><span class="op">)</span></span>
+<span>    <span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">n_row</span> <span class="op">*</span> <span class="va">per_uncertain</span><span class="op">)</span></span>
+<span>    <span class="va">rows</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">mat</span><span class="op">)</span>, size <span class="op">=</span> <span class="va">n</span>, replace <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span>    <span class="va">mat</span><span class="op">[</span><span class="va">rows</span>,<span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">mat</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">mat</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="va">mat</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+</div>
 <div class="section level2">
-<h2 id="original">Original<a class="anchor" aria-label="anchor" href="#original"></a>
+<h2 id="no-uncertainty">No uncertainty<a class="anchor" aria-label="anchor" href="#no-uncertainty"></a>
 </h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/fitMk.html" class="external-link">fitMk</a></span><span class="op">(</span>tree <span class="op">=</span> <span class="va">tree</span>, x <span class="op">=</span> <span class="va">original</span>,</span>
@@ -178,45 +152,56 @@ with annotations is low.</p>
 <span><span class="va">ace</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/ancr.html" class="external-link">ancr</a></span><span class="op">(</span><span class="va">fit</span>, tips<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ace</span>, args.plotTree <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>direction<span class="op">=</span><span class="st">"upwards"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/title.html" class="external-link">title</a></span><span class="op">(</span>main <span class="op">=</span> <span class="st">'0% uncertain tips'</span>, line <span class="op">=</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="uncertainty_binary_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
+<p><img src="uncertainty_multistate_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
+</div>
+<div class="section level2">
+<h2 id="uncertaintity">Uncertaintity<a class="anchor" aria-label="anchor" href="#uncertaintity"></a>
+</h2>
+<div class="section level3">
+<h3 id="uncertainty">99% uncertainty<a class="anchor" aria-label="anchor" href="#uncertainty"></a>
+</h3>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">m1</span> <span class="op">&lt;-</span> <span class="va">original</span></span>
-<span><span class="va">m1</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">'^Macaca_'</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">m1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
-<span><span class="va">m1</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">'^Macaca_'</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">m1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
-<span><span class="va">m1</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">m1</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span> <span class="op">==</span> <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="va">fit1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/fitMk.html" class="external-link">fitMk</a></span><span class="op">(</span>tree <span class="op">=</span> <span class="va">tree</span>, x <span class="op">=</span> <span class="va">m1</span>,</span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span><span class="va">m99</span> <span class="op">&lt;-</span> <span class="fu">myFun</span><span class="op">(</span><span class="va">original</span>, <span class="fl">0.99</span><span class="op">)</span></span>
+<span><span class="va">m99</span> <span class="op">&lt;-</span> <span class="va">m99</span><span class="op">[</span><span class="va">tree</span><span class="op">$</span><span class="va">tip.label</span>,<span class="op">]</span></span>
+<span><span class="va">fit99</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/fitMk.html" class="external-link">fitMk</a></span><span class="op">(</span>tree <span class="op">=</span> <span class="va">tree</span>, x <span class="op">=</span> <span class="va">m99</span>,</span>
 <span>              model <span class="op">=</span> <span class="st">"ARD"</span>, pi <span class="op">=</span> <span class="st">"fitzjohn"</span>,</span>
 <span>              lik.func <span class="op">=</span> <span class="st">"pruning"</span>, logscale <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">ace1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/ancr.html" class="external-link">ancr</a></span><span class="op">(</span><span class="va">fit1</span>, tips<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ace1</span>, args.plotTree <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>direction <span class="op">=</span> <span class="st">"upwards"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/title.html" class="external-link">title</a></span><span class="op">(</span>main <span class="op">=</span> <span class="st">'Macaca TRUE'</span>, line <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>, sub <span class="op">=</span> <span class="st">'0/1 T/F for unknowns'</span><span class="op">)</span></span></code></pre></div>
-<p><img src="uncertainty_binary_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
+<span><span class="va">ace99</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/ancr.html" class="external-link">ancr</a></span><span class="op">(</span><span class="va">fit99</span>, tips<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ace99</span>, args.plotTree <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>direction<span class="op">=</span><span class="st">"upwards"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/title.html" class="external-link">title</a></span><span class="op">(</span>main <span class="op">=</span> <span class="st">'99% uncertain tips'</span>, line <span class="op">=</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<p><img src="uncertainty_multistate_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
+</div>
+<div class="section level3">
+<h3 id="uncertainty-1">95% uncertainty<a class="anchor" aria-label="anchor" href="#uncertainty-1"></a>
+</h3>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">m2</span> <span class="op">&lt;-</span> <span class="va">original</span></span>
-<span><span class="va">m2</span><span class="op">[</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0.5</span></span>
-<span><span class="va">m2</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">'^Macaca_'</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">m2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
-<span><span class="va">m2</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">m2</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span> <span class="op">==</span> <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0.5</span><span class="op">)</span></span>
-<span><span class="va">fit2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/fitMk.html" class="external-link">fitMk</a></span><span class="op">(</span>tree <span class="op">=</span> <span class="va">tree</span>, x <span class="op">=</span> <span class="va">m2</span>,</span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span><span class="va">m95</span> <span class="op">&lt;-</span> <span class="fu">myFun</span><span class="op">(</span><span class="va">original</span>, <span class="fl">0.95</span><span class="op">)</span></span>
+<span><span class="va">m95</span> <span class="op">&lt;-</span> <span class="va">m95</span><span class="op">[</span><span class="va">tree</span><span class="op">$</span><span class="va">tip.label</span>,<span class="op">]</span></span>
+<span><span class="va">fit95</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/fitMk.html" class="external-link">fitMk</a></span><span class="op">(</span>tree <span class="op">=</span> <span class="va">tree</span>, x <span class="op">=</span> <span class="va">m95</span>,</span>
 <span>              model <span class="op">=</span> <span class="st">"ARD"</span>, pi <span class="op">=</span> <span class="st">"fitzjohn"</span>,</span>
 <span>              lik.func <span class="op">=</span> <span class="st">"pruning"</span>, logscale <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">ace2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/ancr.html" class="external-link">ancr</a></span><span class="op">(</span><span class="va">fit2</span>, tips<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ace2</span>, args.plotTree <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>direction <span class="op">=</span> <span class="st">"upwards"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/title.html" class="external-link">title</a></span><span class="op">(</span>main <span class="op">=</span> <span class="st">'Macaca TRUE'</span>, line <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>, sub <span class="op">=</span> <span class="st">'0.5 T/F for unknowns'</span><span class="op">)</span></span></code></pre></div>
-<p><img src="uncertainty_binary_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
+<span><span class="va">ace95</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/ancr.html" class="external-link">ancr</a></span><span class="op">(</span><span class="va">fit95</span>, tips<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ace95</span>, args.plotTree <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>direction<span class="op">=</span><span class="st">"upwards"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/title.html" class="external-link">title</a></span><span class="op">(</span>main <span class="op">=</span> <span class="st">'95% uncertain tips'</span>, line <span class="op">=</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<p><img src="uncertainty_multistate_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
+</div>
+<div class="section level3">
+<h3 id="uncertainty-2">70% uncertainty<a class="anchor" aria-label="anchor" href="#uncertainty-2"></a>
+</h3>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">m3</span> <span class="op">&lt;-</span> <span class="va">original</span></span>
-<span><span class="va">m3</span><span class="op">[</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0.5</span></span>
-<span><span class="va">m3</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">'^Macaca_'</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">m3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
-<span><span class="va">m3</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">'^Macaca_'</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">m3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, <span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
-<span><span class="va">m3</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">'^Galago_'</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">m3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, <span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
-<span><span class="va">m3</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">'^Galago'</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">m3</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
-<span><span class="va">fit3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/fitMk.html" class="external-link">fitMk</a></span><span class="op">(</span>tree <span class="op">=</span> <span class="va">tree</span>, x <span class="op">=</span> <span class="va">m3</span>,</span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span><span class="va">m75</span> <span class="op">&lt;-</span> <span class="fu">myFun</span><span class="op">(</span><span class="va">original</span>, <span class="fl">0.7</span><span class="op">)</span></span>
+<span><span class="va">m75</span> <span class="op">&lt;-</span> <span class="va">m75</span><span class="op">[</span><span class="va">tree</span><span class="op">$</span><span class="va">tip.label</span>,<span class="op">]</span></span>
+<span><span class="va">fit75</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/fitMk.html" class="external-link">fitMk</a></span><span class="op">(</span>tree <span class="op">=</span> <span class="va">tree</span>, x <span class="op">=</span> <span class="va">m75</span>,</span>
 <span>              model <span class="op">=</span> <span class="st">"ARD"</span>, pi <span class="op">=</span> <span class="st">"fitzjohn"</span>,</span>
 <span>              lik.func <span class="op">=</span> <span class="st">"pruning"</span>, logscale <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">ace3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/ancr.html" class="external-link">ancr</a></span><span class="op">(</span><span class="va">fit3</span>, tips<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ace3</span>, args.plotTree <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>direction <span class="op">=</span> <span class="st">"upwards"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/title.html" class="external-link">title</a></span><span class="op">(</span>main <span class="op">=</span> <span class="st">'Macaca TRUE - Galago FALSE'</span>, line <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>, sub <span class="op">=</span> <span class="st">'0.5 T/F for unknowns'</span><span class="op">)</span></span></code></pre></div>
-<p><img src="uncertainty_binary_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
+<span><span class="va">ace75</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/ancr.html" class="external-link">ancr</a></span><span class="op">(</span><span class="va">fit75</span>, tips<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ace75</span>, args.plotTree <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>direction<span class="op">=</span><span class="st">"upwards"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/title.html" class="external-link">title</a></span><span class="op">(</span>main <span class="op">=</span> <span class="st">'70% uncertain tips'</span>, line <span class="op">=</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<p><img src="uncertainty_multistate_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="session-information">Session information<a class="anchor" aria-label="anchor" href="#session-information"></a>
