@@ -114,7 +114,12 @@ multistate(-intersection) annotations</h1>
 <h3 id="prepare-data-and-tree">Prepare data and tree<a class="anchor" aria-label="anchor" href="#prepare-data-and-tree"></a>
 </h3>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">'primate.tree'</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co">## ARD with fitzjohn</span></span>
+<span><span class="co">## ER with fitzjohn</span></span>
+<span><span class="co">## ER with estimated</span></span>
+<span><span class="va">myMod</span> <span class="op">&lt;-</span> <span class="st">'ARD'</span> <span class="co"># ARD*, ER</span></span>
+<span><span class="va">myPi</span> <span class="op">&lt;-</span> <span class="st">'fitzjohn'</span> <span class="co"># fitzjohn*, equal, estimated</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">'primate.tree'</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">'primate.data'</span><span class="op">)</span></span>
 <span><span class="va">tree</span> <span class="op">&lt;-</span> <span class="va">primate.tree</span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">primate.data</span></span>
@@ -141,21 +146,17 @@ multistate(-intersection) annotations</h1>
 <span>    <span class="va">mat</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 </div>
-<div class="section level3">
-<h3 id="some-practical-examples">Some practical examples<a class="anchor" aria-label="anchor" href="#some-practical-examples"></a>
-</h3>
-</div>
 <div class="section level2">
 <h2 id="no-uncertainty">No uncertainty<a class="anchor" aria-label="anchor" href="#no-uncertainty"></a>
 </h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/fitMk.html" class="external-link">fitMk</a></span><span class="op">(</span>tree <span class="op">=</span> <span class="va">tree</span>, x <span class="op">=</span> <span class="va">original</span>,</span>
-<span>              model <span class="op">=</span> <span class="st">"ARD"</span>, pi <span class="op">=</span> <span class="st">"fitzjohn"</span>,</span>
+<span>              model <span class="op">=</span> <span class="va">myMod</span>, pi <span class="op">=</span> <span class="va">myPi</span>,</span>
 <span>              lik.func <span class="op">=</span> <span class="st">"pruning"</span>, logscale <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">ace</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/ancr.html" class="external-link">ancr</a></span><span class="op">(</span><span class="va">fit</span>, tips<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ace</span>, args.plotTree <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>direction<span class="op">=</span><span class="st">"upwards"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/title.html" class="external-link">title</a></span><span class="op">(</span>main <span class="op">=</span> <span class="st">'0% uncertain tips'</span>, line <span class="op">=</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="uncertainty_multistate_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
+<p><img src="uncertainty_multistate_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
 <div class="section level3">
 <h3 id="uncertainty-about-12">Uncertainty about 12%<a class="anchor" aria-label="anchor" href="#uncertainty-about-12"></a>
 </h3>
@@ -173,12 +174,12 @@ multistate(-intersection) annotations</h1>
 <span><span class="va">m1</span><span class="op">[</span><span class="va">eulemur</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">8</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">fit1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/fitMk.html" class="external-link">fitMk</a></span><span class="op">(</span>tree <span class="op">=</span> <span class="va">tree</span>, x <span class="op">=</span> <span class="va">m1</span>,</span>
-<span>              model <span class="op">=</span> <span class="st">"ARD"</span>, pi <span class="op">=</span> <span class="st">"fitzjohn"</span>,</span>
+<span>              model <span class="op">=</span> <span class="va">myMod</span>, pi <span class="op">=</span> <span class="va">myPi</span>,</span>
 <span>              lik.func <span class="op">=</span> <span class="st">"pruning"</span>, logscale <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">ace1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/ancr.html" class="external-link">ancr</a></span><span class="op">(</span><span class="va">fit1</span>, tips<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ace1</span>, args.plotTree <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>direction <span class="op">=</span> <span class="st">"upwards"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/title.html" class="external-link">title</a></span><span class="op">(</span>main <span class="op">=</span> <span class="st">'12% uncertain tips'</span>, line <span class="op">=</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="uncertainty_multistate_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
+<p><img src="uncertainty_multistate_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
 <p>Let’s add some more taxa</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cebus</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">'^Cebus_'</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">original</span><span class="op">)</span><span class="op">)</span> <span class="co"># A</span></span>
@@ -195,12 +196,12 @@ multistate(-intersection) annotations</h1>
 <span><span class="va">m2</span><span class="op">[</span><span class="va">microcebus</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">2</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">fit2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/fitMk.html" class="external-link">fitMk</a></span><span class="op">(</span>tree <span class="op">=</span> <span class="va">tree</span>, x <span class="op">=</span> <span class="va">m2</span>,</span>
-<span>              model <span class="op">=</span> <span class="st">"ARD"</span>, pi <span class="op">=</span> <span class="st">"fitzjohn"</span>,</span>
+<span>              model <span class="op">=</span> <span class="va">myMod</span>, pi <span class="op">=</span> <span class="va">myPi</span>,</span>
 <span>              lik.func <span class="op">=</span> <span class="st">"pruning"</span>, logscale <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">ace2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/ancr.html" class="external-link">ancr</a></span><span class="op">(</span><span class="va">fit2</span>, tips<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ace2</span>, args.plotTree <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>direction <span class="op">=</span> <span class="st">"upwards"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/title.html" class="external-link">title</a></span><span class="op">(</span>main <span class="op">=</span> <span class="st">'17% uncertain tips'</span>, line <span class="op">=</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="uncertainty_multistate_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+<p><img src="uncertainty_multistate_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
 </div>
 </div>
 <div class="section level2">
@@ -218,7 +219,7 @@ multistate(-intersection) annotations</h1>
 <span><span class="co">#&gt;  collate  en_US.UTF-8</span></span>
 <span><span class="co">#&gt;  ctype    en_US.UTF-8</span></span>
 <span><span class="co">#&gt;  tz       Etc/UTC</span></span>
-<span><span class="co">#&gt;  date     2023-12-04</span></span>
+<span><span class="co">#&gt;  date     2023-12-05</span></span>
 <span><span class="co">#&gt;  pandoc   3.1.1 @ /usr/local/bin/ (via rmarkdown)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">─ Packages ───────────────────────────────────────────────────────────────────</span></span></span>
