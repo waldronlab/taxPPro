@@ -35,6 +35,8 @@ data <- primate.data
 data <- data[tree$tip.label,]
 # rownames(data) <- paste0('taxon', 1:nrow(data))
 # tree$tip.label <- paste0('taxon', 1:Ntip(tree))
+myMod <- 'ARD' # 'ARD'
+myPi <- 'fitzjohn'
 original <- data |>
     tibble::rownames_to_column(var = 'Taxa') |>
     select(Taxa, Activity_pattern) |>
@@ -60,10 +62,10 @@ head(sort(table(sub('^(\\w+)_.*$', '\\1', rownames(original))), decreasing = TRU
 
 ```{r}
 fit <- fitMk(tree = tree, x = original,
-              model = "ARD", pi = "fitzjohn",
+              model = myMod, pi = myPi,
               lik.func = "pruning", logscale = TRUE)
-ace <- ancr(fit, tips=TRUE)
-plot(ace, args.plotTree = list(direction="upwards"))
+ace <- ancr(fit, tips = TRUE)
+plot(ace, args.plotTree = list(direction = "upwards"))
 title(main = '0% uncertain tips', line = -1)
 ```
 
@@ -74,9 +76,9 @@ m1[which(grepl('^Macaca_', rownames(m1))), 1] <- 1
 m1[which(!grepl('^Macaca_', rownames(m1))), 1] <- 0
 m1[,2] <- ifelse(m1[,1] == 1, 0, 1)
 fit1 <- fitMk(tree = tree, x = m1,
-              model = "ARD", pi = "fitzjohn",
+              model = myMod, pi = myPi,
               lik.func = "pruning", logscale = TRUE)
-ace1 <- ancr(fit1, tips=TRUE)
+ace1 <- ancr(fit1, tips = TRUE)
 plot(ace1, args.plotTree = list(direction = "upwards"))
 title(main = 'Macaca TRUE', line = -1, sub = '0/1 T/F for unknowns')
 ```
@@ -87,9 +89,9 @@ m2[] <- 0.5
 m2[which(grepl('^Macaca_', rownames(m2))), 1] <- 1
 m2[,2] <- ifelse(m2[,1] == 1, 0, 0.5)
 fit2 <- fitMk(tree = tree, x = m2,
-              model = "ARD", pi = "fitzjohn",
+              model = myMod, pi = myPi,
               lik.func = "pruning", logscale = TRUE)
-ace2 <- ancr(fit2, tips=TRUE)
+ace2 <- ancr(fit2, tips = TRUE)
 plot(ace2, args.plotTree = list(direction = "upwards"))
 title(main = 'Macaca TRUE', line = -1, sub = '0.5 T/F for unknowns')
 ```
@@ -103,9 +105,9 @@ m3[which(grepl('^Macaca_', rownames(m3))), 2] <- 0
 m3[which(grepl('^Galago_', rownames(m3))), 2] <- 1
 m3[which(grepl('^Galago', rownames(m3))), 1] <- 0
 fit3 <- fitMk(tree = tree, x = m3,
-              model = "ARD", pi = "fitzjohn",
+              model = myMod, pi = myPi,
               lik.func = "pruning", logscale = TRUE)
-ace3 <- ancr(fit3, tips=TRUE)
+ace3 <- ancr(fit3, tips = TRUE)
 plot(ace3, args.plotTree = list(direction = "upwards"))
 title(main = 'Macaca TRUE - Galago FALSE', line = -1, sub = '0.5 T/F for unknowns')
 ```

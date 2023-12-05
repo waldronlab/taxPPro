@@ -20,6 +20,11 @@ library(tidyr)
 ## Prepare data and tree
 
 ```{r}
+## ARD with fitzjohn
+## ER with fitzjohn
+## ER with estimated
+myMod <- 'ARD' # ARD*, ER
+myPi <- 'fitzjohn' # fitzjohn*, equal, estimated
 data('primate.tree')
 data('primate.data')
 tree <- primate.tree
@@ -49,22 +54,11 @@ myFun <- function(mat, per_uncertain = 0.1) {
 ```
 
 
-## Some practical examples
-
-
-```{r}
-
-```
-
-
-
-
-
 # No uncertainty
 
 ```{r}
 fit <- fitMk(tree = tree, x = original,
-              model = "ARD", pi = "fitzjohn",
+              model = myMod, pi = myPi,
               lik.func = "pruning", logscale = TRUE)
 ace <- ancr(fit, tips=TRUE)
 plot(ace, args.plotTree = list(direction="upwards"))
@@ -90,7 +84,7 @@ m1[galago, ] <- c(rep(0,4), rep(1, 4), rep(0, 4))
 m1[eulemur, ] <- c(rep(0,8), rep(1, 4))
 
 fit1 <- fitMk(tree = tree, x = m1,
-              model = "ARD", pi = "fitzjohn",
+              model = myMod, pi = myPi,
               lik.func = "pruning", logscale = TRUE)
 ace1 <- ancr(fit1, tips=TRUE)
 plot(ace1, args.plotTree = list(direction = "upwards"))
@@ -117,7 +111,7 @@ m2[cebus, ] <- c(rep(1,2), rep(0, 4))
 m2[microcebus, ] <- c(rep(0,2), rep(1, 2), rep(0, 2))
 
 fit2 <- fitMk(tree = tree, x = m2,
-              model = "ARD", pi = "fitzjohn",
+              model = myMod, pi = myPi,
               lik.func = "pruning", logscale = TRUE)
 ace2 <- ancr(fit2, tips=TRUE)
 plot(ace2, args.plotTree = list(direction = "upwards"))
