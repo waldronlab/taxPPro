@@ -147,6 +147,32 @@ ace3 <- ancr(fit3, tips=TRUE)
 plot(ace3, args.plotTree = list(direction = "upwards"))
 ```
 
+## Adding an annotation for one of the descendant species
+
+If I add an annotation for one of the descendat species of the target genus,
+the approach that I tried above still works.
+
+```{r}
+t3 <- bind.tip(tre, tip.label = 'Macaca_gn1', edge.length = 1e-06, where = macaca_mrc)
+macaca_mrc3 <- findMRCA(t3, tips = rownames(states)[macaca])
+t4 <- bind.tip(t3, tip.label = 'Macaca_gn2', edge.length = 1e-06, where = macaca_mrc3)
+m3 <- states
+m3 <- rbind(m3, matrix(c(A = 1, B = 0, C = 0), nrow = 1, byrow = TRUE))
+m3 <- rbind(m3, matrix(c(A = 0, B = 1, C = 0), nrow = 1, byrow = TRUE))
+rownames(m3)[nrow(m3) - 1] <- 'Macaca_gn1'
+rownames(m3)[nrow(m3)] <- 'Macaca_gn2'
+m3[grep('^Macaca_[^g][^n][^\\d].*', rownames(m3)),] <- rep(1 / ncol(m3), length(macaca) * 3)
+m3['Macaca_nemestrina',] <- c(0, 0, 1)
+fit3 <- fitMk(
+    tree = t4, x = m3, model = myMod, pi = myPi, lik.func = "pruning",
+    logscale = TRUE
+)
+ace3 <- ancr(fit3, tips=TRUE)
+plot(ace3, args.plotTree = list(direction = "upwards"))
+```
+
+
+
 # Session information
 
 ```{r}
