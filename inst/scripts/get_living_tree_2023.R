@@ -190,15 +190,49 @@ node_data$rank <- NULL
 
 
 # Adjust tips with zero length --------------------------------------------
-## Probably not really needed.
 ## All tips are in the second column in the matrix tree$edge
+
+## I was thinking about adding the minimun branch length to the
+## ones with zero, but this might change the result
+# tips_node_positions <- which(tree$edge[,2] %in% 1:Ntip(tree))
+# tip_branch_lenghts <- tree$edge.length[tips_node_positions]
+# min_length_for_tip <- min(tip_branch_lenghts[tip_branch_lenghts > 0])
 
 pos_zero <- which((tree$edge[,2] %in% 1:Ntip(tree)) & (tree$edge.length == 0))
 tree$edge.length[pos_zero] <- tree$edge.length[pos_zero] + 1e-06
 
 # Add genus information ---------------------------------------------------
 
-# node_data_g <- node_data[which(node_data$Rank == 'genus'),]$node
+# node_data_g <- node_data[which(node_data$Rank == 'genus'),]$node_label
+
+rl <- tip_data |>
+    filter(!is.na(genus_taxid)) |>
+    {\(y) split(y, factor(y$genus_taxid))}() |>
+    purrr::keep(~ nrow(.x) > 1)
+names(rl) <- paste0('g__', names(rl))
+tree_extended <- tree
+system.time({
+    for (i in seq_along(rl)) {
+        ## Here, I need to find the MRCA again because the node numbers change when
+        ## a new node is added to the tree
+        message('Adding ', names(rl)[i], ' - ', i, '/', length(rl))
+        myMRCA <- findMRCA(tree = tree_extended, tips = rl[[i]]$tip_label, type = 'node')
+        tree_extended <- bind.tip(
+            tree = tree_extended, edge.length = 1e-06, where = myMRCA,
+            tip.label = names(rl)[i]
+        )
+    }
+})
+
+
+## This is just a small check that the tips are being mapped to the right
+## internal node
+all_labels <- c(tree_extended$tip.label, tree_extended$node.label)
+myMRCA2 <- findMRCA(tree = tree_extended, tips = rl[[i]]$tip_label, type = 'node')
+all_labels[myMRCA2] == sub('g__', '', names(rl)[i])
+
+
+# node_data_g <- node_data[which(node_data$Rank == 'genus'),]$node_label
 # names(node_data_g) <- node_data[which(node_data$Rank == 'genus'),]$taxid
 # names(node_data_g) <- paste0('g__', names(node_data_g))
 #
@@ -207,50 +241,52 @@ tree$edge.length[pos_zero] <- tree$edge.length[pos_zero] + 1e-06
 #     for (i in seq_along(node_data_g)) {
 #         message('Adding ', names(node_data_g)[i], ' - ', i, '/', length(node_data_g))
 #         tree_extended <- bind.tip(
-#             tree = tree_extended, edge.length = 0, where = node_data_g[i],
+#             tree = tree_extended, edge.length = 1e-06, where = node_data_g[i],
 #             tip.label = names(node_data_g)[i]
 #         )
 #     }
 # })
-#
-# extra_tip_data <- data.frame(tip_label = grep('g__', tree_extended$tip.label, value = TRUE))
-# extra_tip_data$accession <- NA
-# extra_tip_data$taxid <- sub('g__', '', extra_tip_data$tip_label)
-# extra_tip_data$NCBI_ID <- extra_tip_data$tip_label
-# extra_tip_data$Rank <- 'genus'
-# extra_tip_taxonomy <- taxizedb::classification(
-#     x = unique(extra_tip_data$taxid), db = 'ncbi'
-# )
-# extra_tip_new_taxonomy <- purrr::map(extra_tip_taxonomy, ~ {
-#     x <- .x
-#     x
-#     x <- x[which(x$rank %in% taxonomic_ranks),]
-#     m <- matrix(x$id, byrow = TRUE, nrow = 1)
-#     colnames(m) <- x$rank
-#     d <- as.data.frame(m)
-#     colnames(d) <- sub("$", "_taxid", colnames(d))
-#     d
-# }) |>
-#     bind_rows(.id = 'taxid') |>
-#     relocate(
-#         taxid, kingdom_taxid = superkingdom_taxid, phylum_taxid, class_taxid,
-#         order_taxid, family_taxid, genus_taxid
-#     ) |>
-#     discard(~ all(is.na(.x)))
-#
-# extra_tip_data <- left_join(extra_tip_data, extra_tip_new_taxonomy, by = 'taxid')
-# extra_tip_data$Taxon_name <- taxizedb::taxid2name(extra_tip_data$taxid, db = 'ncbi')
-# rownames(extra_tip_data) <- extra_tip_data$tip_label
-# tip_data_extended <- bind_rows(tip_data, extra_tip_data)
-# tip_data_extended <- tip_data_extended[tree_extended$tip.label,]
+
+extra_tip_data <- data.frame(tip_label = grep('g__', tree_extended$tip.label, value = TRUE))
+extra_tip_data$accession <- NA
+extra_tip_data$taxid <- sub('g__', '', extra_tip_data$tip_label)
+extra_tip_data$NCBI_ID <- extra_tip_data$tip_label
+extra_tip_data$Rank <- 'genus'
+extra_tip_taxonomy <- taxizedb::classification(
+    x = unique(extra_tip_data$taxid), db = 'ncbi'
+)
+extra_tip_new_taxonomy <- purrr::map(extra_tip_taxonomy, ~ {
+    x <- .x
+    x
+    x <- x[which(x$rank %in% taxonomic_ranks),]
+    m <- matrix(x$id, byrow = TRUE, nrow = 1)
+    colnames(m) <- x$rank
+    d <- as.data.frame(m)
+    colnames(d) <- sub("$", "_taxid", colnames(d))
+    d
+}) |>
+    bind_rows(.id = 'taxid') |>
+    relocate(
+        taxid, kingdom_taxid = superkingdom_taxid, phylum_taxid, class_taxid,
+        order_taxid, family_taxid, genus_taxid
+    ) |>
+    discard(~ all(is.na(.x)))
+
+extra_tip_data <- left_join(extra_tip_data, extra_tip_new_taxonomy, by = 'taxid')
+extra_tip_data$Taxon_name <- taxizedb::taxid2name(extra_tip_data$taxid, db = 'ncbi')
+rownames(extra_tip_data) <- extra_tip_data$tip_label
+tip_data_extended <- bind_rows(tip_data, extra_tip_data)
+tip_data_extended <- tip_data_extended[tree_extended$tip.label,]
 
 # Export data -------------------------------------------------------------
 tree_fname <- file.path('inst', 'extdata', 'LTP_all_08_2023.newick')
-ape::write.tree(tree, tree_fname)
+# ape::write.tree(tree, tree_fname)
+ape::write.tree(tree_extended, tree_fname)
 
 tip_data_fname <- file.path('inst', 'extdata', 'LTP_all_08_2023.tip_data')
 write.table(
-    tip_data, tip_data_fname, sep = '\t', quote = TRUE,
+    # tip_data, tip_data_fname, sep = '\t', quote = TRUE,
+    tip_data_extended, tip_data_fname, sep = '\t', quote = TRUE,
     row.names = FALSE
 )
 
