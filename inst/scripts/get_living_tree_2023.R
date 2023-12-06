@@ -188,23 +188,22 @@ node_data$Taxon_name <- taxizedb::taxid2name(node_data$taxid, db = 'ncbi')
 node_data$Rank <- taxizedb::taxid2rank(node_data$taxid, db = 'ncbi')
 node_data$rank <- NULL
 
-
 # Adjust tips with zero length --------------------------------------------
 ## All tips are in the second column in the matrix tree$edge
 
-## I was thinking about adding the minimun branch length to the
+## I was thinking about adding the minimum branch length to the
 ## ones with zero, but this might change the result
 # tips_node_positions <- which(tree$edge[,2] %in% 1:Ntip(tree))
-# tip_branch_lenghts <- tree$edge.length[tips_node_positions]
-# min_length_for_tip <- min(tip_branch_lenghts[tip_branch_lenghts > 0])
+# tip_branch_lengths <- tree$edge.length[tips_node_positions]
+# min_length_for_tip <- min(tip_branch_lengths[tip_branch_lengths > 0])
+# max_length_for_tip <- max(tip_branch_lengths)
 
 pos_zero <- which((tree$edge[,2] %in% 1:Ntip(tree)) & (tree$edge.length == 0))
-tree$edge.length[pos_zero] <- tree$edge.length[pos_zero] + 1e-06
+tree$edge.length[pos_zero] <- tree$edge.length[pos_zero] + 1e-05
 
 # Add genus information ---------------------------------------------------
 
 # node_data_g <- node_data[which(node_data$Rank == 'genus'),]$node_label
-
 rl <- tip_data |>
     filter(!is.na(genus_taxid)) |>
     {\(y) split(y, factor(y$genus_taxid))}() |>
@@ -224,13 +223,11 @@ system.time({
     }
 })
 
-
 ## This is just a small check that the tips are being mapped to the right
 ## internal node
 all_labels <- c(tree_extended$tip.label, tree_extended$node.label)
 myMRCA2 <- findMRCA(tree = tree_extended, tips = rl[[i]]$tip_label, type = 'node')
 all_labels[myMRCA2] == sub('g__', '', names(rl)[i])
-
 
 # node_data_g <- node_data[which(node_data$Rank == 'genus'),]$node_label
 # names(node_data_g) <- node_data[which(node_data$Rank == 'genus'),]$taxid
