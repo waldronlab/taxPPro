@@ -206,28 +206,44 @@ tree$edge.length[pos_zero] <- tree$edge.length[pos_zero] + 1e-05
 # node_data_g <- node_data[which(node_data$Rank == 'genus'),]$node_label
 rl <- tip_data |>
     filter(!is.na(genus_taxid)) |>
-    {\(y) split(y, factor(y$genus_taxid))}() |>
-    purrr::keep(~ nrow(.x) > 1)
+    {\(y) split(y, factor(y$genus_taxid))}()
 names(rl) <- paste0('g__', names(rl))
 tree_extended <- tree
+## The next step took about 25 minutes
 system.time({
     for (i in seq_along(rl)) {
-        ## Here, I need to find the MRCA again because the node numbers change when
-        ## a new node is added to the tree
-        message('Adding ', names(rl)[i], ' - ', i, '/', length(rl))
-        myMRCA <- findMRCA(tree = tree_extended, tips = rl[[i]]$tip_label, type = 'node')
-        tree_extended <- bind.tip(
-            tree = tree_extended, edge.length = 1e-06, where = myMRCA,
-            tip.label = names(rl)[i]
-        )
+        myTips <- rl[[i]]$tip_label
+        message('Adding ', names(rl)[i], ' - ', i, '/', length(rl), '. This one contains ', length(myTips), ' tip(s).')
+        if (length(myTips) == 1) {
+            ## It the tip is alone, just add another tip with the genus.
+            ## This creates a new internal node with the same edge length, and two child tips with branch length of 0
+            tip_number <- which(tree_extended$tip.label == myTips)
+            tree_extended <- bind.tip(
+                tree = tree_extended, tip.label = names(rl)[i],
+                edge.length = 0, ## This really doesn't matter. edge.length is always 0 when adding a tip to a tip. That's why I need to add lengths of 1e-06 a few lines below.
+                where = tip_number
+            )
+            tn1 <- which(tree_extended$tip.label == myTips) ## tip and node numbers change when binding a tip
+            tn2 <- which(tree_extended$tip.label == names(rl)[i])
+            tree_extended$edge.length[which(tree_extended$edge[,2] == tn1)] <- 1e-06
+            tree_extended$edge.length[which(tree_extended$edge[,2] == tn2)] <- 1e-06
+        } else {
+            ## Here, I need to find the MRCA again because the node numbers change when
+            ## a new node is added to the tree
+            myMRCA <- findMRCA(tree = tree_extended, tips = myTips, type = 'node')
+            tree_extended <- bind.tip(
+                tree = tree_extended, edge.length = 1e-06, where = myMRCA,
+                tip.label = names(rl)[i]
+            )
+        }
     }
 })
 
 ## This is just a small check that the tips are being mapped to the right
 ## internal node
 all_labels <- c(tree_extended$tip.label, tree_extended$node.label)
-myMRCA2 <- findMRCA(tree = tree_extended, tips = rl[[i]]$tip_label, type = 'node')
-all_labels[myMRCA2] == sub('g__', '', names(rl)[i])
+myMRCA2 <- findMRCA(tree = tree_extended, tips = rl[[3711]]$tip_label, type = 'node')
+all_labels[myMRCA2] == sub('g__', '', names(rl)[3711])
 
 # node_data_g <- node_data[which(node_data$Rank == 'genus'),]$node_label
 # names(node_data_g) <- node_data[which(node_data$Rank == 'genus'),]$taxid
