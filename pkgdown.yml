@@ -2,11 +2,12 @@ pandoc: 3.1.1
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
+  add_singletons: add_singletons.html
   internal_nodes: internal_nodes.html
   uncertainty_binary: uncertainty_binary.html
   uncertainty_multistate: uncertainty_multistate.html
   taxPPro: taxPPro.html
-last_built: 2023-12-06T16:08Z
+last_built: 2023-12-06T19:43Z
 urls:
   reference: https://waldronlab.io/taxPPro/reference
   article: https://waldronlab.io/taxPPro/articles
