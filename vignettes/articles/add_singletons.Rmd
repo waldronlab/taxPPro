@@ -1,0 +1,116 @@
+---
+title: "add_singletons"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(phytools)
+library(dplyr)
+library(tidyr)
+library(tibble)
+library(purrr)
+```
+
+```{r}
+data('primate.tree')
+data('primate.data')
+tre <- primate.tree
+dat <- primate.data
+states_original <- dat |> 
+    rownames_to_column(var = 'tip_label') |> 
+    select(tip_label, Activity_pattern) |> 
+    mutate(presence = 1) |> 
+    pivot_wider(
+        names_from = 'Activity_pattern', values_from = 'presence', values_fill = 0
+    ) |> 
+    column_to_rownames(var = 'tip_label') |> 
+    set_names(c('A', 'B', 'C')) |> 
+    as.matrix()
+```
+
+
+```{r}
+tip_number <- which(tre$tip.label == 'Galagoides_demidoff')
+x <- bind.tip(tree = tre, tip.label = 'test', edge.length = 1000, where = tip_number)
+```
+
+```{r}
+tip_number <- which(x$tip.label == 'Galagoides_demidoff')
+tip_number2 <- which(x$tip.label == 'test')
+```
+
+
+```{r}
+x$edge[which(x$edge[,2] == tip_number),]
+```
+
+```{r}
+x$edge[which(x$edge[,2] == tip_number2),]
+```
+
+```{r}
+x$edge.length[which(x$edge[,2] == tip_number)] <- 1e-06
+```
+
+```{r}
+x$edge.length[which(x$edge[,2] == tip_number2)] <- 1e-06
+```
+
+```{r}
+x$edge.length
+```
+
+
+
+
+## Ancestral state reconstruction
+
+```{r}
+m <- states_original
+m[] <- 1 / ncol(m)
+# m['Galagoides_demidoff', ] <- c(A = 1, B = 0, C = 0)
+m <- rbind(m, c(A = 0, B = 0, C = 1))
+rownames(m)[nrow(m)] <- 'test'
+
+macaca <- grep('^Macaca_', rownames(m)) # ?
+galago <- grep('^Galago_', rownames(m)) # B
+eulemur <- grep('^Eulemur', rownames(m)) # C
+
+m[macaca, ] <- c(rep(1,3), rep(0, 6))
+m[galago, ] <- c(rep(0,4), rep(1, 4), rep(0, 4))
+m[eulemur, ] <- c(rep(0,8), rep(1, 4))
+
+
+```
+
+
+
+
+
+
+
+```{r}
+myMod <- 'ARD'
+myPi <- 'fitzjohn'
+fit <- fitMk(
+    tree = x, x = m, model = myMod, pi = myPi, lik.func = "pruning",
+    logscale = TRUE
+)
+ace <- ancr(fit, tips=TRUE)
+plot(ace, args.plotTree = list(direction = "upwards"))
+```
+
+## Session information
+
+
+```{r}
+sessioninfo::session_info()
+```
+
+
