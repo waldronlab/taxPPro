@@ -259,8 +259,8 @@ all_labels[myMRCA2] == sub('g__', '', names(rl)[3711])
 # })
 
 extra_tip_data <- data.frame(tip_label = grep('g__', tree_extended$tip.label, value = TRUE))
-extra_tip_data$accession <- NA
-extra_tip_data$taxid <- sub('g__', '', extra_tip_data$tip_label)
+extra_tip_data$accession <- NA # just create an explicit column with NAs for combining later with tip_data
+extra_tip_data$taxid <- sub('^g__', '', extra_tip_data$tip_label)
 extra_tip_data$NCBI_ID <- extra_tip_data$tip_label
 extra_tip_data$Rank <- 'genus'
 extra_tip_taxonomy <- taxizedb::classification(

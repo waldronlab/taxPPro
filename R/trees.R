@@ -235,23 +235,16 @@ ltp3 <- function() {
         purrr::modify(as.character) |>
         as.data.frame()
 
-    genus_tips <- grep('g__', tip_data$tip_label, value = TRUE)
+    gn_tips <- grep('g__', tip_data$tip_label, value = TRUE)
+
+    all_nodes <- c(
+        tree$tip.label,
+        grep('^n\\d(\\+\\d)*',tree$node.label, value = TRUE, invert = TRUE)
+    ) |>
+        {\(y) y[y != 'NA']}()
 
     list(
         tree = tree, tip_data = tip_data, node_data = node_data,
-        genus_tips = genus_tips
+        gn_tips = gn_tips, all_nodes = all_nodes
     )
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
