@@ -1,4 +1,5 @@
 
+# Setup -------------------------------------------------------------------
 library(ape)
 library(taxonomizr)
 library(dplyr)
@@ -7,6 +8,8 @@ library(tidyr)
 library(stringr)
 library(phytools)
 
+## The file accessionTaxa.sql was downloaded with taxonomizr
+## The file is kind of large, so better to downloaded just one time
 sql <- '~/accessionTaxa.sql'
 treeUrl <- 'https://imedea.uib-csic.es/mmg/ltp/wp-content/uploads/ltp/LTP_all_08_2023.ntree'
 treeFilePath <- file.path('inst', 'extdata', 'LTP_all_08_2023.ntree')
@@ -24,27 +27,36 @@ if (file.exists(treeFilePath)) {
     write.tree(tree, treeFilePath)
 }
 
-
 # Accession to taxids -----------------------------------------------------
 accession_rgx <- '_-.*--_'
-accessions <- str_extract(tree$tip.label, accession_rgx) |>
+accessions <- tree$tip.label |>
+    str_extract(accession_rgx) |>
     str_remove_all('[_-]')
-taxnames <- str_extract(tree$tip.label, paste0("^.*", accession_rgx)) |>
+taxnames <- tree$tip.label |>
+    str_extract(paste0("^.*", accession_rgx)) |>
     str_remove(accession_rgx) |>
     str_remove('-$') |>
     str_replace_all('_', ' ') |>
     str_squish()
+taxids <- accessionToTaxa(accessions, sql, version = 'base') # base doesn't include decimal version
 
-taxids <- accessionToTaxa(
-    accessions = accessions, sqlFile = sql, version = 'base'
-)
+# Complete missing taxa ---------------------------------------------------
 missing_taxa <- taxnames[which(is.na(taxids))]
+## Below, the two only cases that need to be updated manually
 missing_taxa[which(missing_taxa == 'Micromonospora okii')] <- 'Micromonospora sp. TP-A0468'
 missing_taxa[which(missing_taxa == 'Sala cibi')] <- 'Salella cibi'
 not_missing_anymore_taxa <- taxizedb::name2taxid(missing_taxa, db = 'ncbi')
 taxids[which(is.na(taxids))] <- not_missing_anymore_taxa
 
+# Get full taxonomy -------------------------------------------------------
+## beware of the unique function call here
+## which might cause lenght of taxonomy and taxids to not match
+## This is solved with left_join when needed
 taxonomy <- taxizedb::classification(unique(taxids), db = 'ncbi')
+
+## Even when taxids are valid, some of them might need to be updated
+## when using taxizedb instead of taxize.
+## taxizedb stores the most current file in the cache
 missing_taxonomy_positions <- which(map_lgl(taxonomy, ~ all(is.na(.x))))
 not_missing_anymore_taxonomy <- taxize::classification(
     names(missing_taxonomy_positions), db =  'ncbi'
@@ -52,9 +64,7 @@ not_missing_anymore_taxonomy <- taxize::classification(
 chr_vct <- map_chr(not_missing_anymore_taxonomy, ~ tail(.x$id, 1))
 for (i in seq_along(chr_vct)) {
     pos <- which(taxids == names(chr_vct[i]))
-    message(
-        'Replacing ', unique(taxids[pos]), ' with ', chr_vct[i]
-    )
+    message('Replacing ', unique(taxids[pos]), ' with ', chr_vct[i])
     taxids[pos] <- chr_vct[i]
 }
 
@@ -101,9 +111,11 @@ getMRCA <- function(tree, tips) {
     res
 }
 
-tx <- paste0(taxonomic_ranks, '_taxid')
-tx[which(tx == 'superkingdom_taxid')] <- 'kingdom_taxid'
-mrcas <- flatten(purrr::map(tx, ~ split(tip_data, factor(tip_data[[.x]]))))
+ranks_ids <- paste0(taxonomic_ranks, '_taxid')
+ranks_ids[which(ranks_ids == 'superkingdom_taxid')] <- 'kingdom_taxid'
+
+## TODO I'm currently in this line. Check node data.
+mrcas <- flatten(purrr::map(ranks_ids, ~ split(tip_data, factor(tip_data[[.x]]))))
 mrcas <- purrr::map(mrcas, ~ .x[['tip_label']])
 mrcas <- map_int(mrcas, ~ getMRCA(tree, .x))
 mrcas <- mrcas[!is.na(mrcas)]
@@ -156,34 +168,18 @@ nodes_new_taxonomy <- purrr::map(nodes_taxonomy, ~ {
 node_data <- left_join(nodes_with_taxid, nodes_new_taxonomy, by= 'taxid')
 node_data$rank <- taxizedb::taxid2rank(node_data$taxid, db = 'ncbi')
 
-
+# Small adjustments -------------------------------------------------------
 node_data$NCBI_ID <- taxPPro::addRankPrefix(node_data$taxid, node_data$rank)
 tip_data$NCBI_ID <- taxPPro::addRankPrefix(tip_data$taxid, tip_data$rank)
 
-## ape write.tree won't allow commas and spaces when writin tree name
-# tree_data$tip_label <- gsub(' ', '_', tree_data$tip_label)
-# tree_data$tip_label <- gsub('[,;]', '-', tree_data$tip_label)
-# tree_data$tip_label <- gsub('"', '', tree_data$tip_label)
-# tree_data$tip_label <- gsub("'", '', tree_data$tip_label)
-# tree_data$tip_label <- gsub("\\[T\\]", '', tree_data$tip_label)
-#
-# tree$tip.label<- gsub(' ', '_', tree$tip.label)
-# tree$tip.label <- gsub('[,;]', '-', tree$tip.label)
-# tree$tip.label <- gsub('"', '', tree$tip.label)
-# tree$tip.label <- gsub("'", '', tree$tip.label)
-# tree$tip.label <- gsub("\\[T\\]", '', tree$tip.label)
-
-
+## A small check
 all(tree$tip.label %in% tip_data$tip_label)
 
-
-# tip_data$taxid
+## It's better to update taxon name and rank here
 tip_data$Taxon_name <- taxizedb::taxid2name(tip_data$taxid, db = 'ncbi')
 tip_data$Rank <- taxizedb::taxid2rank(tip_data$taxid, db = 'ncbi')
 tip_data$rank <- NULL
 
-
-# node_data$taxid
 node_data$Taxon_name <- taxizedb::taxid2name(node_data$taxid, db = 'ncbi')
 node_data$Rank <- taxizedb::taxid2rank(node_data$taxid, db = 'ncbi')
 node_data$rank <- NULL
