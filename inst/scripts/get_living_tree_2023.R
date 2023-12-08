@@ -113,14 +113,16 @@ getMRCA <- function(tree, tips) {
 
 ranks_ids <- paste0(taxonomic_ranks, '_taxid')
 ranks_ids[which(ranks_ids == 'superkingdom_taxid')] <- 'kingdom_taxid'
+ranks_ids <- ranks_ids[!ranks_ids %in% c('species_taxid', 'strain_taxid')]
 
-## TODO I'm currently in this line. Check node data.
-mrcas <- flatten(purrr::map(ranks_ids, ~ split(tip_data, factor(tip_data[[.x]]))))
-mrcas <- purrr::map(mrcas, ~ .x[['tip_label']])
-mrcas <- map_int(mrcas, ~ getMRCA(tree, .x))
-mrcas <- mrcas[!is.na(mrcas)]
-mrcas_df <- data.frame(node = unname(mrcas), node_label = names(mrcas))
-mrcas_df <- mrcas_df |>
+mrcas_df <- tip_data |>
+    select(-species_taxid, -strain_taxid) |> # only do this for genus and above
+    {\(y) purrr::map(ranks_ids, ~ split(y, factor(y[[.x]])))}() |>
+    flatten() |>
+    purrr::map(~ .x[['tip_label']]) |>
+    map_int(~ getMRCA(tree, .x)) |>
+    {\(y) y[!is.na(y)]}() |>
+    {\(y) data.frame(node = unname(y), node_label = names(y))}() |>
     group_by(node) |>
     mutate(n_labels = length(unique(node_label))) |>
     mutate(node_label = paste0(unique(node_label), collapse = '+')) |>
@@ -161,7 +163,7 @@ nodes_new_taxonomy <- purrr::map(nodes_taxonomy, ~ {
     bind_rows(.id = 'taxid') |>
     relocate(
         taxid, kingdom_taxid = superkingdom_taxid, phylum_taxid, class_taxid,
-        order_taxid, family_taxid, genus_taxid, species_taxid
+        order_taxid, family_taxid, genus_taxid
     ) |>
     discard(~ all(is.na(.x)))
 
