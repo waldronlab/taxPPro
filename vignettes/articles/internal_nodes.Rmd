@@ -172,6 +172,61 @@ plot(ace3, args.plotTree = list(direction = "upwards"))
 ```
 
 
+A single value
+
+```{r}
+mat <- matrix(rep(0, (Ntip(t3) * 2)), ncol = 2)
+colnames(mat) <- LETTERS[1:2]
+rownames(mat) <- t3$tip.label
+
+mat[] <- 0.5
+mat[grep('Macaca_gn1', rownames(mat)),] <- c(1, 0)
+
+
+fitX <- fitMk(
+    tree = t3, x = mat, model = myMod, pi = myPi, lik.func = "pruning",
+    logscale = TRUE
+)
+aceX <- ancr(fitX, tips=TRUE)
+plot(aceX, args.plotTree = list(direction = "upwards"))
+```
+
+
+```{r}
+mat2 <- matrix(rep(0, (Ntip(t3) * 2)), ncol = 2)
+colnames(mat2) <- LETTERS[1:2]
+rownames(mat2) <- t3$tip.label
+
+mat2[,1] <- 0
+mat2[,2] <- 1
+mat2[grep('Macaca_gn1', rownames(mat2)),] <- c(1, 0)
+mat2[grep('Cercopithecus_petaurista', rownames(mat2)),] <- c(1, 0)
+
+
+fitY <- fitMk(
+    tree = t3, x = mat2, model = 'ER', pi = myPi, lik.func = "pruning",
+    logscale = TRUE
+)
+aceY <- ancr(fitY, tips=TRUE)
+plot(aceY, args.plotTree = list(direction = "upwards"))
+```
+
+
+```{r}
+mat2 <- matrix(rep(0, (Ntip(t3) * 2)), ncol = 2)
+colnames(mat2) <- LETTERS[1:2]
+rownames(mat2) <- t3$tip.label
+mat2[] <- 0.5
+mat2[grep('Macaca_gn1', rownames(mat2)),] <- c(1, 0)
+mat2[grep('Cercopithecus_petaurista', rownames(mat2)),] <- c(0, 1)
+
+fitY <- fitMk(
+    tree = t3, x = mat2, model = 'ARD', pi = myPi, lik.func = "pruning",
+    logscale = TRUE
+)
+aceY <- ancr(fitY, tips=TRUE)
+plot(aceY, args.plotTree = list(direction = "upwards"))
+```
 
 # Session information
 
