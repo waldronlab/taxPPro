@@ -130,7 +130,7 @@ myFun <- function(x, adjF = 0.1) {
 
 #' Clean node
 #'
-#' {cleanNode} deletes the `attribute_tbl` slot in a data.tree node.
+#' \code{cleanNode} deletes the `attribute_tbl` slot in a data.tree node.
 #'
 #' @param node A node in a data.tree object.
 #'
@@ -140,3 +140,20 @@ myFun <- function(x, adjF = 0.1) {
 cleanNode <- function(node) {
     node$attribute_tbl <- NULL
 }
+
+#' Round up to nearest decimal
+#'
+#' \code{roundDec} rounds up to next decimal. Meant to be used for
+#' establishing a threhold for filtering attributes.
+#' @param A character vector (of attributes).
+#' @return A double.
+#' @export
+#'
+roundDec <- function(x) {
+    n <- x |>
+        unique() |>
+        {\(y) y[!is.na(y)]}() |>
+        length()
+    ceiling(((1 / n) + 1e-06) * 10) / 10
+}
+
