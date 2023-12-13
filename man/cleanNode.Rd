@@ -13,5 +13,5 @@ cleanNode(node)
 NULL (assigned to the node)
 }
 \description{
-{cleanNode} deletes the `attribute_tbl` slot in a data.tree node.
+\code{cleanNode} deletes the `attribute_tbl` slot in a data.tree node.
 }
