@@ -31,7 +31,7 @@ ncbi_Tree <- as.Node(tree_list)
 ## Load living tree project tree and tip and node data:
 
 ```{r}
-ltp <- ltp3()
+ltp <- ltp()
 ```
 
 ## Session information
