@@ -2,18 +2,16 @@
 % Please edit documentation in R/trees.R
 \name{ltp}
 \alias{ltp}
-\title{Get living tree project (LTP) tree or data}
+\title{Get living tree project (LTP) tree and data}
 \usage{
-ltp(remove_zero_tips = TRUE)
-}
-\arguments{
-\item{remove_zero_tips}{Remove or not tips with zero branch lengths.
-These tips could cause trouble.}
+ltp()
 }
 \value{
-A list with a phylo (the ltp tree) and a data.frame (tip_data)
-objects.
+A list with a the LTP tree (phylo), tips and node data (data.frames),
+and the names of the genera added to the original tree (character vector).
+.
 }
 \description{
-\code{ltp} gets the LTP tree or data.
+\code{ltp} Imports a modified version fo the phylogenetic tree of the
+Living Tree Project.
 }
