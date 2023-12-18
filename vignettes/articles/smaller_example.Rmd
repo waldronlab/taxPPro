@@ -46,7 +46,7 @@ plotT <- function(tree, ace, input_tips, model = '', pi = '') {
     
     title <- paste0(
         'Model transition rates: ', model,
-        '\nRood prior: ', pi
+        '\nRoot prior: ', pi
     )
     df <- as.data.frame(ace$ace)
     knownNode <- which(rownames(df) %in% input_tips)
@@ -82,11 +82,11 @@ plotList <- vector('list', length(models) * length(pis))
 n <- 1
 for (i in seq_along(models)) {
     for (j in seq_along(pis)) {
-        fit <- fitMk(tree = randomTree, x = mat, model = models[i], pi = pis[i])
+        fit <- fitMk(tree = randomTree, x = mat, model = models[i], pi = pis[j])
         ace <- ancr(fit, tips = TRUE)
         plotList[[n]] <- plotT(
             randomTree, ace = ace, input_tips = 't1',
-            model = models[i], pi = pis[i]
+            model = models[i], pi = pis[j]
         )
         n <- n + 1
     }
