@@ -22,7 +22,8 @@ Suggests:
     gtable,
     ggtree,
     ggpubr,
-    reshape2
+    reshape2,
+    ggimage
 Imports:
     ape,
     BiocFileCache,
