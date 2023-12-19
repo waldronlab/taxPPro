@@ -8,13 +8,9 @@ library(purrr)
 library(tidyr)
 library(ggplot2)
 
-
-
-
 n <- getMRCA( phy = tree, tip = c('g__620', 'g__620'))
 all_labels <- c(tree$tip.label, tree$node.label)
 all_labels[n]
-
 
 ## Tree data ####
 ltp <- ltp()
