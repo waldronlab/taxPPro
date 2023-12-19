@@ -1,0 +1,109 @@
+---
+title: "Examples with a single annotation"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, message=FALSE}
+library(phytools)
+library(ggplot2)
+library(ggtree)
+library(ggpubr)
+library(gtable)
+```
+
+## Create input tree and matrix
+
+In this case, assigng a probability of 1 to A--TRUE and 0 to A--FALSE for
+the t1 tip.
+
+```{r}
+randomTree <- rtree(5, rooted = TRUE)
+mat <- matrix(
+    data = rep(0.5, 10), ncol = 2, dimnames = list(
+        rownames = paste0('t', 1:5), colnames = c('A--TRUE', 'A--FALSE')
+    )
+)
+mat[1,] <- c(1, 0)
+mat
+```
+
+
+## Function for plotting
+
+```{r}
+plotT <- function(tree, ace, input_tips, model = '', pi = '') {
+    model <- dplyr::case_when(
+        model == 'ER' ~ 'equal rates',
+        model == 'ARD' ~ 'all rates different',
+        model == 'SYM' ~ 'symmetrical rates'
+    )
+    
+    title <- paste0(
+        'Model transition rates: ', model,
+        '\nRoot prior: ', pi
+    )
+    df <- as.data.frame(ace$ace)
+    knownNode <- which(rownames(df) %in% input_tips)
+    df$nodetip <- as.character(1:nrow(df))
+    pieList <- vector('list', nrow(df)) 
+    for (i in seq_along(pieList)) {
+        names(pieList)[i] <- i
+        dat <- reshape2::melt(df[i,], id.vars = 'nodetip')
+        colnames(dat)[which(colnames(dat) == 'variable')] <- 'state'
+        pieList[[i]] <- ggplot(dat, aes(y = value, fill = state, x="")) +
+            geom_col() +
+            coord_polar("y", start=0) +
+            theme_void()
+    }
+    leg1 <- gtable_filter(ggplot_gtable(ggplot_build(pieList[[1]])), "guide-box") 
+    pieList <- lapply(pieList, function(x) x + theme(legend.position = 'none'))
+    p <- ggtree(tree) +
+        geom_highlight(node = knownNode, fill = "steelblue", alpha = 0.5) +
+        geom_inset(insets = pieList, width = 0.1, height = 0.1) +
+        geom_tiplab(offset = 0.05) +
+        labs(title = title) +
+        annotation_custom(grob = leg1, xmin = 1, xmax = 2, ymin = 1, ymax = 1)
+    p
+}
+``` 
+
+## Run ASR for different models and prior root probabilities
+
+```{r}
+models <- c('ER', 'ARD', 'SYM')
+pis <- c('fitzjohn', 'equal', 'estimated')
+plotList <- vector('list', length(models) * length(pis))
+n <- 1
+for (i in seq_along(models)) {
+    for (j in seq_along(pis)) {
+        fit <- fitMk(tree = randomTree, x = mat, model = models[i], pi = pis[j])
+        ace <- ancr(fit, tips = TRUE)
+        plotList[[n]] <- plotT(
+            randomTree, ace = ace, input_tips = 't1',
+            model = models[i], pi = pis[j]
+        )
+        n <- n + 1
+    }
+}
+
+```
+
+## Print plots
+
+```{r, fig.width=15, fig.height=10}
+mergedPlot <- ggarrange(plotlist = plotList, ncol = 3, nrow = 3)
+mergedPlot
+```
+
+## Session info
+
+```{r}
+sessioninfo::session_info()
+```
+

@@ -14,7 +14,7 @@ name: pkgdown
 jobs:
   pkgdown:
     runs-on: ubuntu-latest
-    container: bioconductor/bioconductor_docker:devel
+    container: bioconductor/bioconductor_docker:RELEASE_3_18
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
@@ -35,7 +35,7 @@ jobs:
       - name: Install package
         run: R CMD INSTALL .
 
-      - name: Build site 
+      - name: Build site
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
         shell: Rscript {0}
 
