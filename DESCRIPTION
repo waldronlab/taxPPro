@@ -21,7 +21,8 @@ Suggests:
     ggplot2,
     gtable,
     ggtree,
-    ggpubr
+    ggpubr,
+    reshape2
 Imports:
     ape,
     BiocFileCache,
