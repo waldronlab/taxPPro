@@ -4,10 +4,11 @@ pkgdown_sha: ~
 articles:
   add_singletons: add_singletons.html
   internal_nodes: internal_nodes.html
+  smaller_example: smaller_example.html
   uncertainty_binary: uncertainty_binary.html
   uncertainty_multistate: uncertainty_multistate.html
   taxPPro: taxPPro.html
-last_built: 2023-12-14T21:04Z
+last_built: 2023-12-19T05:26Z
 urls:
   reference: https://waldronlab.io/taxPPro/reference
   article: https://waldronlab.io/taxPPro/articles
