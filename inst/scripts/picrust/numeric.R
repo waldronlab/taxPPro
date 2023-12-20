@@ -1,54 +1,3 @@
-library(taxPPro)
-library(ape)
-
-ltp <- ltp()
-tree <- ltp$tree
-tip_data <- ltp$tip_data
-node_data <- ltp$node_data
-gn_tips <- ltp$gn_tips
-
-gt <- physiologies('growth temperature')[[1]]
-
-modifyNumeric <- function(x) {
-    x |>
-        dplyr::filter(!is.na(.data$NCBI_ID) | !.data$NCBI_ID == 'unkown') |>
-        dplyr::filter(!is.na(.data$Attribute_value_min)) |>
-        dplyr::filter(!is.na(.data$Attribute_value_max)) |>
-        dplyr::filter(!is.infinite(abs(.data$Attribute_value_min))) |>
-        dplyr::filter(!is.infinite(abs(.data$Attribute_value_max))) |>
-        dplyr::group_by(.data$NCBI_ID) |>
-        dplyr::slice_max(
-           .data$Confidence_in_curation, n = 1, with_ties = FALSE
-        ) |>
-        dplyr::mutate(
-            Attribute_value = mean(.data$Attribute_value_min, .data$Attribute_value_max)
-        ) |>
-        dplyr::ungroup() |>
-        dplyr::select(-.data$Attribute_value_min, -.data$Attribute_value_max) |>
-        dplyr::distinct()
-}
-
-dat <- modifyNumeric(gt)
-dat <- dat[dat$NCBI_ID %in% tip_data$taxid,]
-valuesDat <- left_join(tip_data, dat, by = c('taxid' = 'NCBI_ID')) |>
-    select(tip_label, Attribute_value) |>
-    filter(!is.na(Attribute_value))
-colnames(valuesDat) <- c('taxa', 'trait1')
-
-write.table(
-    x = valuesDat, file = 'inst/scripts/picrust/trait.tab', sep = '\t',
-    quote = FALSE, row.names = FALSE
-)
-
-
-
-
-
-
-
-
-
-
 
 library(taxPPro)
 library(dplyr)
@@ -60,9 +9,9 @@ library(purrr)
 library(tidyr)
 library(ggplot2)
 
-n <- getMRCA( phy = tree, tip = c('g__620', 'g__620'))
-all_labels <- c(tree$tip.label, tree$node.label)
-all_labels[n]
+# n <- getMRCA( phy = tree, tip = c('g__620', 'g__620'))
+# all_labels <- c(tree$tip.label, tree$node.label)
+# all_labels[n]
 
 ## Tree data ####
 ltp <- ltp()
@@ -107,11 +56,16 @@ mean(dat$NCBI_ID %in% tip_data$taxid) * 100
 mean(tip_data$taxid %in% dat$NCBI_ID) * 100
 
 dat <- dat[dat$NCBI_ID %in% tip_data$taxid,]
+tip_data_annotated <- left_join(tip_data, dat, by = c('taxid' = 'NCBI_ID')) |>
+    select(tip_label, Attribute_value)
 
-values <- dat$Attribute_value
-names(values) <- dat$NCBI_ID
+allTips <- tip_data_annotated$Attribute_value
+names(allTips) <- tip_data_annotated$tip_label
+
+values <- allTips[!is.na(allTips)]
 
 ## Create train and test sets ####
+set.seed(1234)
 foldN <- cvFolds(n = length(values), K = 10)
 testSets <- vector('list', 10)
 trainSets <- vector('list', 10)
@@ -127,36 +81,31 @@ for (i in 1:10) {
 hsp <- vector('list', 10)
 for (i in seq_along(trainSets)) {
     names(hsp)[i] <- names(trainSets)[i]
-    dat_subset <- dat[dat$NCBI_ID %in% names(trainSets[[i]]),]
-    annotated_tips <- left_join(
-        tip_data, dat_subset, by = c('taxid' = 'NCBI_ID')
-    )
-    tip_values <- annotated_tips$Attribute_value
-    names(tip_values) <- annotated_tips$tip_label
-    tip_values <- tip_values[tree$tip.label]
-    # res <- hsp_squared_change_parsimony(
-    #     tree = tree, tip_states = tip_values, weighted = TRUE,
-    #     check_input = TRUE
-    # )
-    res <- hsp_independent_contrasts(
-        tree = tree, tip_states = tip_values, weighted = TRUE,
+
+    x <- testSets[[i]]
+    x[!is.na(x)] <- NA
+    y <- trainSets[[i]]
+    z = c(x, y)
+    a = allTips[!names(allTips) %in% names(z)]
+    input_vector <- c(z, a)
+    input_vector <- input_vector[tree$tip.label]
+
+    res <- hsp_squared_change_parsimony(
+        tree = tree, tip_states = input_vector, weighted = TRUE,
         check_input = TRUE
     )
 
     statesDF <- data.frame(
-        label = c(tree$tip.label, tree$node.label),
-        value = res$states
-    ) |>
-        filter(label != 'NA') |> # NAs were introduced as character strings
-        filter(!grepl('^n\\d+$', label)) |>
-        left_join(label_data, by = 'label') |>
-        filter(!label %in% ltp$gn_tips) # remove genus tips to avoid duplicated, they are already in the internal nodes
+        label = tree$tip.label,
+        value = res$states[1:Ntip(tree)]
+    )
 
     states <- statesDF$value
-    names(states) <- statesDF$taxid
+    names(states) <- statesDF$label
 
-    commonNames <- intersect(names(states), names(testSets[[i]]))
-    hsp[[i]] <- states[commonNames]
+    # commonNames <- intersect(names(states), names(testSets[[i]]))
+    # hsp[[i]] <- states[commonNames]
+    hsp[[i]] <- states[names(testSets[[i]])]
 }
 
 ## Calculate metrics
@@ -175,15 +124,19 @@ metrics <- map2(hsp, testSets, ~ {
     mape <- mean(abs((actual_values - predicted_values) / actual_values)) * 100
 
     evaluation_results <- data.frame(
-        Metric = c("MSE", "RMSE", "MAE", "R_squared", "MAPE"),
-        Value = c(mse, rmse, mae, r_squared, mape)
+        # Metric = c("MSE", "RMSE", "MAE", "R_squared", "MAPE"),
+        Metric = c("MSE", "RMSE", "R_squared"),
+        Value = c(mse, rmse, r_squared)
+        # Value = c(mse, rmse, mae, r_squared, mape)
     )
 
     return(evaluation_results)
 }) |>
-    bind_rows(.id = 'Fold') |>
-    pivot_wider(
-        names_from = 'Metric', values_from = 'Value'
+    bind_rows() |>
+    group_by(Metric) |>
+    summarise(
+        mean = mean(Value, na.rm = TRUE),
+        sd = sd(Value, na.rm = TRUE)
     )
 
 plotList <- map2(hsp, testSets, ~ {
@@ -193,8 +146,17 @@ plotList <- map2(hsp, testSets, ~ {
         geom_point()
 })
 
-ggpubr::ggarrange(plotlist = plotList, ncol = 2, nrow = 5)
+p <- ggpubr::ggarrange(plotlist = plotList, ncol = 5, nrow = 2)
 
-tbls <- map2(hsp, testSets, ~ {
-    data.frame(hsp = .x, test = .y)
-})
+
+write.table(x = metrics, 'inst/scripts/castor_gt.tsv', sep = '\t', quote = FALSE, row.names = FALSE)
+
+ggsave('inst/scripts/castor_gt.png', width = 12, height = 4)
+
+
+
+
+
+
+
+
