@@ -8,7 +8,7 @@
 #' @export
 #'
 filterData <- function(tbl) {
-    types <- bugphyzz:::..DISCRETE_ATTRIBUTE_TYPES()
+    types <- bugphyzz:::.DISCRETE_ATTRIBUTE_TYPES()
     attr_type <- unique(tbl$Attribute_type)
     if (attr_type %in% types){
         output <- filterDataDiscrete(tbl)
