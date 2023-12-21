@@ -18,7 +18,12 @@ Suggests:
     rmarkdown,
     tibble,
     sessioninfo,
-    ggplot2
+    ggplot2,
+    gtable,
+    ggtree,
+    ggpubr,
+    reshape2,
+    ggimage
 Imports:
     ape,
     BiocFileCache,
