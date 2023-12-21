@@ -91,9 +91,16 @@ for (i in seq_along(trainSets)) {
     input_vector <- input_vector[tree$tip.label]
 
     res <- hsp_squared_change_parsimony(
+        ## slightly better results than hsp_independent_contrasts
+        ## for growth temp
         tree = tree, tip_states = input_vector, weighted = TRUE,
         check_input = TRUE
     )
+
+    # res <- hsp_independent_contrasts( # pic in ape::ace ?
+    #     tree = tree, tip_states = input_vector, weighted = TRUE,
+    #     check_input = TRUE
+    # )
 
     statesDF <- data.frame(
         label = tree$tip.label,
