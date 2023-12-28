@@ -248,6 +248,12 @@ node_data_extended$node <- match(node_data$node_label, tree_extended$node.label)
 sum(tree_extended$node.label[node_data_extended$node - Ntip(tree_extended)] == 'NA')
 tree_extended$node.label[23504 - Ntip(tree_extended)] == '2157'
 
+## note that node_data_extended, only contains data about genera with
+## two or more tips, i.e. I could get a MRCA. The rest are only tips.
+## It's probably better to filter out genera from node_data when
+## importing with the ltp function and use only the tips for managing
+## genus information.
+
 # Export data -------------------------------------------------------------
 tree_fname <- file.path('inst', 'extdata', 'LTP_all_08_2023.newick')
 # ape::write.tree(tree, tree_fname)
