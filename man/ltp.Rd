@@ -4,7 +4,11 @@
 \alias{ltp}
 \title{Get living tree project (LTP) tree and data}
 \usage{
-ltp()
+ltp(remove_gn_nodes = TRUE)
+}
+\arguments{
+\item{remove_gn_nodes}{Remove rows from node_data with genus taxids.
+Default is TRUE, which removes them. These are already in tip_data.}
 }
 \value{
 A list with a the LTP tree (phylo), tips and node data (data.frames),

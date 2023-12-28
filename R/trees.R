@@ -38,12 +38,15 @@ mpa <- function(x = 'tree') {
 #' \code{ltp} Imports a modified version fo the phylogenetic tree of the
 #' Living Tree Project.
 #'
+#' @param remove_gn_nodes Remove rows from node_data with genus taxids.
+#' Default is TRUE, which removes them. These are already in tip_data.
+#'
 #' @return A list with a the LTP tree (phylo), tips and node data (data.frames),
 #' and the names of the genera added to the original tree (character vector).
 #' .
 #' @export
 #'
-ltp <- function() {
+ltp <- function(remove_gn_nodes = TRUE) {
     tree_fname <- system.file(
         'extdata', 'LTP_all_08_2023.newick', package = 'taxPPro'
     )
@@ -69,14 +72,14 @@ ltp <- function() {
 
     gn_tips <- grep('g__', tip_data$tip_label, value = TRUE)
 
-    all_nodes <- c(
-        tree$tip.label,
-        grep('^n\\d(\\+\\d)*',tree$node.label, value = TRUE, invert = TRUE)
-    ) |>
-        {\(y) y[y != 'NA']}()
+    if (remove_gn_nodes) {
+        node_data <- node_data |>
+            dplyr::filter(Rank != 'genus') |>
+            purrr::discard(~all(is.na(.x)))
+    }
 
     list(
         tree = tree, tip_data = tip_data, node_data = node_data,
-        gn_tips = gn_tips, all_nodes = all_nodes
+        gn_tips = gn_tips
     )
 }
