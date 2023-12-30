@@ -96,8 +96,8 @@ tip_data <- data.frame(
     accession = accessions,
     taxid = taxids
 ) |>
-    mutate(Taxon_name = taxizedb::taxid2name(tip_data$taxid, db = 'ncbi')) |>
-    mutate(Rank = taxizedb::taxid2rank(tip_data$taxid, db = 'ncbi')) |>
+    mutate(Taxon_name = taxizedb::taxid2name(taxid, db = 'ncbi')) |>
+    mutate(Rank = taxizedb::taxid2rank(taxid, db = 'ncbi')) |>
     mutate(NCBI_ID = taxPPro::addRankPrefix(taxid, Rank)) |>
     left_join(new_taxonomy, by = 'taxid')
 rownames(tip_data) <- tip_data$tip_label
@@ -127,7 +127,7 @@ mrcas_df <- tip_data |>
     mutate(node_label = paste0(unique(node_label), collapse = '+')) |>
     ungroup() |>
     distinct() |>
-    arrange(mrcas_df)
+    arrange(node)
 tree$node.label <- mrcas_df$node_label[match(Ntip(tree) + 1:Nnode(tree), mrcas_df$node)]
 
 nodes_taxonomy <- taxizedb::classification(
@@ -203,8 +203,8 @@ system.time({
 ## This is just a small check that the tips are being mapped to the right
 ## internal node
 all_labels <- c(tree_extended$tip.label, tree_extended$node.label)
-myMRCA2 <- findMRCA(tree = tree_extended, tips = genus_list[[3711]]$tip_label, type = 'node')
-all_labels[myMRCA2] == sub('g__', '', names(genus_list)[3711])
+myMRCA2 <- findMRCA(tree = tree_extended, tips = genus_list[[3709]]$tip_label, type = 'node')
+all_labels[myMRCA2] == sub('g__', '', names(genus_list)[3709])
 
 extra_tip_data <- data.frame(
     tip_label = grep('g__', tree_extended$tip.label, value = TRUE)

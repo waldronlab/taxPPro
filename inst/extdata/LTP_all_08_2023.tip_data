@@ -144,8 +144,7 @@
 "g__3026546"	NA	"3026546"	"Duffyella"	"genus"	"g__3026546"	"2"	"1224"	"1236"	"91347"	"1903409"	"3026546"	NA	NA
 "Mixta_calida-_-GQ367478--_1400/07_T"	"GQ367478"	"665913"	"Mixta calida"	"species"	"s__665913"	"2"	"1224"	"1236"	"91347"	"1903409"	"2100764"	"665913"	NA
 "Mixta_gaviniae-_-GQ367483--_A18/07_T"	"GQ367483"	"665914"	"Mixta gaviniae"	"species"	"s__665914"	"2"	"1224"	"1236"	"91347"	"1903409"	"2100764"	"665914"	NA
-"Pantoea_piersonii-_-MG923525--_IIIF1SW-P2_T"	"MG923525"	"2364647"	"Kalamiella piersonii"	"species"	"s__2364647"	"2"	"1224"	"1236"	"91347"	"1903409"	"2662752"	"2364647"	NA
-"g__2662752"	NA	"2662752"	"Kalamiella"	"genus"	"g__2662752"	"2"	"1224"	"1236"	"91347"	"1903409"	"2662752"	NA	NA
+"Pantoea_piersonii-_-MG923525--_IIIF1SW-P2_T"	"MG923525"	"2364647"	"Pantoea piersonii"	"species"	"s__2364647"	"2"	"1224"	"1236"	"91347"	"1903409"	"53335"	"2364647"	NA
 "Erwinia_phyllosphaerae-_-MZ457073--_CMYE1_T"	"MZ457073"	"2853256"	"Erwinia phyllosphaerae"	"species"	"s__2853256"	"2"	"1224"	"1236"	"91347"	"1903409"	"551"	"2853256"	NA
 "Winslowiella_iniecta-_-KM870781--_B120_T"	"KM870781"	"1560201"	"Erwinia iniecta"	"species"	"s__1560201"	"2"	"1224"	"1236"	"91347"	"1903409"	"551"	"1560201"	NA
 "Winslowiella_toletana-_-FR870447--_CECT_5263_T"	"FR870447"	"92490"	"Erwinia toletana"	"species"	"s__92490"	"2"	"1224"	"1236"	"91347"	"1903409"	"551"	"92490"	NA
@@ -2238,7 +2237,7 @@
 "Halopseudomonas_pachastrellae-_-AB125366--_KMM_330_T"	"AB125366"	"254161"	"Halopseudomonas pachastrellae"	"species"	"s__254161"	"2"	"1224"	"1236"	"72274"	"135621"	"2901189"	"254161"	NA
 "Halopseudomonas_aestusnigri-_-HG004394--_CCUG_64165_T"	"HG004394"	"857252"	"Halopseudomonas aestusnigri"	"species"	"s__857252"	"2"	"1224"	"1236"	"72274"	"135621"	"2901189"	"857252"	NA
 "Halopseudomonas_oceani-_-KT449732--_DSM_100277_T"	"KT449732"	"1708783"	"Halopseudomonas oceani"	"species"	"s__1708783"	"2"	"1224"	"1236"	"72274"	"135621"	"2901189"	"1708783"	NA
-"Halopseudomonas_phragmitis-_-MF372122--_S-6-2_T"	"MF372122"	"1931241"	"Pseudomonas phragmitis"	"species"	"s__1931241"	"2"	"1224"	"1236"	"72274"	"135621"	"286"	"1931241"	NA
+"Halopseudomonas_phragmitis-_-MF372122--_S-6-2_T"	"MF372122"	"1931241"	"Halopseudomonas phragmitis"	"species"	"s__1931241"	"2"	"1224"	"1236"	"72274"	"135621"	"2901189"	"1931241"	NA
 "Halopseudomonas_salegens-_-LT629787--_CECT_8338_wT"	"LT629787"	"1434072"	"Halopseudomonas salegens"	"species"	"s__1434072"	"2"	"1224"	"1236"	"72274"	"135621"	"2901189"	"1434072"	NA
 "Thiopseudomonas_denitrificans-_-KJ567598--_X2_T"	"KJ567598"	"1501432"	"Thiopseudomonas denitrificans"	"species"	"s__1501432"	"2"	"1224"	"1236"	"72274"	"135621"	"1654787"	"1501432"	NA
 "Ventosimonas_gracilis-_-KT258896--_CV58_T"	"KT258896"	"1680762"	"Ventosimonas gracilis"	"species"	"s__1680762"	"2"	"1224"	"1236"	"72274"	"1827282"	"1827307"	"1680762"	NA
@@ -4031,7 +4030,7 @@
 "Burkholderia_savannae-_-CP013417--_MSMB0266T"	"CP013417"	"1637837"	"Burkholderia savannae"	"species"	"s__1637837"	"2"	"1224"	"28216"	"80840"	"119060"	"32008"	"1637837"	NA
 "Burkholderia_mayonis-_-CP013386--_BDU6T"	"CP013386"	"1385591"	"Burkholderia mayonis"	"species"	"s__1385591"	"2"	"1224"	"28216"	"80840"	"119060"	"32008"	"1385591"	NA
 "Burkholderia_thailandensis-_-U91838--_E264_T"	"U91838"	"271848"	"Burkholderia thailandensis E264"	"strain"	"t__271848"	"2"	"1224"	"28216"	"80840"	"119060"	"32008"	"57975"	"271848"
-"Burkholderia_humptydooensis-_-CP013380--_MSMB43_T"	"CP013380"	"1740162"	"Burkholderia sp. Bp5365"	"species"	"s__1740162"	"2"	"1224"	"28216"	"80840"	"119060"	"32008"	"1740162"	NA
+"Burkholderia_humptydooensis-_-CP013380--_MSMB43_T"	"CP013380"	"430531"	"Burkholderia humptydooensis"	"species"	"s__430531"	NA	NA	NA	NA	NA	NA	NA	NA
 "Burkholderia_mallei-_-AF110188--_ATCC_23344_T"	"AF110188"	"13373"	"Burkholderia mallei"	"species"	"s__13373"	"2"	"1224"	"28216"	"80840"	"119060"	"32008"	"13373"	NA
 "Burkholderia_pseudomallei-_-DQ108392--_ATCC_23343_T"	"DQ108392"	"28450"	"Burkholderia pseudomallei"	"species"	"s__28450"	"2"	"1224"	"28216"	"80840"	"119060"	"32008"	"28450"	NA
 "Burkholderia_singularis-_-LK023501--_LMG_28154_T"	"LK023501"	"1503053"	"Burkholderia singularis"	"species"	"s__1503053"	"2"	"1224"	"28216"	"80840"	"119060"	"32008"	"1503053"	NA
@@ -5032,7 +5031,7 @@
 "g__315422"	NA	"315422"	"Palleronia"	"genus"	"g__315422"	"2"	"1224"	"28211"	"204455"	"2854170"	"315422"	NA	NA
 "g__2083206"	NA	"2083206"	"Tritonibacter"	"genus"	"g__2083206"	"2"	"1224"	"28211"	"204455"	"31989"	"2083206"	NA	NA
 "g__1434029"	NA	"1434029"	"Pelagimonas"	"genus"	"g__1434029"	"2"	"1224"	"28211"	"204455"	"2854170"	"1434029"	NA	NA
-"g__335927"	NA	"335927"	"Thalassobius"	"genus"	"g__335927"	"2"	"1224"	"28211"	"204455"	"2854170"	"335927"	NA	NA
+"g__335927"	NA	"335927"	"Thalassovita"	"genus"	"g__335927"	"2"	"1224"	"28211"	"204455"	"2854170"	"335927"	NA	NA
 "g__263377"	NA	"263377"	"Salipiger"	"genus"	"g__263377"	"2"	"1224"	"28211"	"204455"	"2854170"	"263377"	NA	NA
 "g__1679449"	NA	"1679449"	"Pseudooceanicola"	"genus"	"g__1679449"	"2"	"1224"	"28211"	"204455"	"31989"	"1679449"	NA	NA
 "g__481178"	NA	"481178"	"Seohaeicola"	"genus"	"g__481178"	"2"	"1224"	"28211"	"204455"	"2854170"	"481178"	NA	NA
@@ -5098,18 +5097,18 @@
 "g__1686374"	NA	"1686374"	"Pseudooctadecabacter"	"genus"	"g__1686374"	"2"	"1224"	"28211"	"204455"	"31989"	"1686374"	NA	NA
 "Planktomarina_temperata-_-GQ369962--_RCA23_T"	"GQ369962"	"666509"	"Planktomarina temperata RCA23"	"strain"	"t__666509"	"2"	"1224"	"28211"	"204455"	"31989"	"1284657"	"1284658"	"666509"
 "g__1284657"	NA	"1284657"	"Planktomarina"	"genus"	"g__1284657"	"2"	"1224"	"28211"	"204455"	"31989"	"1284657"	NA	NA
-"Thalassobius_mangrovi-_-MN880433--_GS-10_T"	"MN880433"	"2692236"	"Thalassobius mangrovi"	"species"	"s__2692236"	"2"	"1224"	"28211"	"204455"	"2854170"	"335927"	"2692236"	NA
-"Thalassobius_aquimarinus-_-LC595118--_KMM_8518_source__________/type_materialtype_strain_of_Thalassobius_aquimarinusT"	"LC595118"	"2785917"	"Thalassobius aquimarinus"	"species"	"s__2785917"	"2"	"1224"	"28211"	"204455"	"2854170"	"335927"	"2785917"	NA
-"Thalassobius_gelatinovorus-_-CYSA01000015--_CECT_4357_T"	"CYSA01000015"	"53501"	"Thalassobius gelatinovorus"	"species"	"s__53501"	"2"	"1224"	"28211"	"204455"	"2854170"	"335927"	"53501"	NA
-"Thalassobius_autumnalis-_-CYSB01000000--_CECT_5118_T"	"CYSB01000000"	"2072972"	"Thalassobius autumnalis"	"species"	"s__2072972"	"2"	"1224"	"28211"	"204455"	"2854170"	"335927"	"2072972"	NA
-"Thalassobius_mediterraneus-_-AJ878874--_CECT_5383_=_XSM19_T"	"AJ878874"	"340021"	"Thalassobius mediterraneus"	"species"	"s__340021"	"2"	"1224"	"28211"	"204455"	"2854170"	"335927"	"340021"	NA
+"Thalassobius_mangrovi-_-MN880433--_GS-10_T"	"MN880433"	"2692236"	"Thalassovita mangrovi"	"species"	"s__2692236"	"2"	"1224"	"28211"	"204455"	"2854170"	"335927"	"2692236"	NA
+"Thalassobius_aquimarinus-_-LC595118--_KMM_8518_source__________/type_materialtype_strain_of_Thalassobius_aquimarinusT"	"LC595118"	"2785917"	"Thalassovita aquimarina"	"species"	"s__2785917"	"2"	"1224"	"28211"	"204455"	"2854170"	"335927"	"2785917"	NA
+"Thalassobius_gelatinovorus-_-CYSA01000015--_CECT_4357_T"	"CYSA01000015"	"53501"	"Thalassovita gelatinovora"	"species"	"s__53501"	"2"	"1224"	"28211"	"204455"	"2854170"	"335927"	"53501"	NA
+"Thalassobius_autumnalis-_-CYSB01000000--_CECT_5118_T"	"CYSB01000000"	"2072972"	"Thalassovita autumnalis"	"species"	"s__2072972"	"2"	"1224"	"28211"	"204455"	"2854170"	"335927"	"2072972"	NA
+"Thalassobius_mediterraneus-_-AJ878874--_CECT_5383_=_XSM19_T"	"AJ878874"	"340021"	"Thalassovita mediterranea"	"species"	"s__340021"	"2"	"1224"	"28211"	"204455"	"2854170"	"335927"	"340021"	NA
 "Shimia_aestuarii-_-AY442178--_JC2049_T"	"AY442178"	"254406"	"Shimia aestuarii"	"species"	"s__254406"	"2"	"1224"	"28211"	"204455"	"2854170"	"573139"	"254406"	NA
 "Shimia_aquaeponti-_-KJ729030--_GJSW-22_T"	"KJ729030"	"1510456"	"Shimia aquaeponti"	"species"	"s__1510456"	"2"	"1224"	"28211"	"204455"	"2854170"	"573139"	"1510456"	NA
 "Thalassobius_abyssi-_-LC057677--_JAMH043_T"	"LC057677"	"1662395"	"Shimia abyssi"	"species"	"s__1662395"	"2"	"1224"	"28211"	"204455"	"2854170"	"573139"	"1662395"	NA
 "Shimia_sediminis-_-MH086000--_ZQ172_T"	"MH086000"	"2497945"	"Shimia sediminis"	"species"	"s__2497945"	"2"	"1224"	"28211"	"204455"	"2854170"	"573139"	"2497945"	NA
 "Shimia_biformata-_-KC169813--_CC-AMW-C_T"	"KC169813"	"1294299"	"Shimia biformata"	"species"	"s__1294299"	"2"	"1224"	"28211"	"204455"	"2854170"	"573139"	"1294299"	NA
 "Shimia_sagamensis-_-LC008540--_JAMH_011_T"	"LC008540"	"1566352"	"Shimia sagamensis"	"species"	"s__1566352"	"2"	"1224"	"28211"	"204455"	"2854170"	"573139"	"1566352"	NA
-"Thalassobius_litorarius-_-KP410684--_MME-075_T"	"KP410684"	"1663020"	"Thalassobius litorarius"	"species"	"s__1663020"	"2"	"1224"	"28211"	"204455"	"2854170"	"335927"	"1663020"	NA
+"Thalassobius_litorarius-_-KP410684--_MME-075_T"	"KP410684"	"1663020"	"Thalassovita litoraria"	"species"	"s__1663020"	"2"	"1224"	"28211"	"204455"	"2854170"	"335927"	"1663020"	NA
 "g__302485"	NA	"302485"	"Phaeobacter"	"genus"	"g__302485"	"2"	"1224"	"28211"	"204455"	"2854170"	"302485"	NA	NA
 "g__191028"	NA	"191028"	"Leisingera"	"genus"	"g__191028"	"2"	"1224"	"28211"	"204455"	"2854170"	"191028"	NA	NA
 "Phaeobacter_piscinae-_-AJ536669--_27-4_T"	"AJ536669"	"1580596"	"Phaeobacter piscinae"	"species"	"s__1580596"	"2"	"1224"	"28211"	"204455"	"2854170"	"302485"	"1580596"	NA
@@ -5187,14 +5186,14 @@
 "Shimia_isoporae-_-FJ976449--_SW6_T"	"FJ976449"	"647720"	"Shimia isoporae"	"species"	"s__647720"	"2"	"1224"	"28211"	"204455"	"2854170"	"573139"	"647720"	NA
 "Shimia_marina-_-CYPW01000031--_CECT_7688_T"	"CYPW01000031"	"321267"	"Shimia marina"	"species"	"s__321267"	"2"	"1224"	"28211"	"204455"	"2854170"	"573139"	"321267"	NA
 "g__2211636"	NA	"2211636"	"Cognatiyoonia"	"genus"	"g__2211636"	"2"	"1224"	"28211"	"204455"	"31989"	"2211636"	NA	NA
-"g__245186"	NA	"245186"	"Loktanella"	"genus"	"g__245186"	"2"	"1224"	"28211"	"204455"	"2854170"	"245186"	NA	NA
 "g__2211641"	NA	"2211641"	"Yoonia"	"genus"	"g__2211641"	"2"	"1224"	"28211"	"204455"	"31989"	"2211641"	NA	NA
 "Yoonia_sediminilitoris-_-KC311338--_D1-W3_T"	"KC311338"	"1286148"	"Yoonia sediminilitoris"	"species"	"s__1286148"	"2"	"1224"	"28211"	"204455"	"31989"	"2211641"	"1286148"	NA
 "Yoonia_rosea-_-AY682199--_Fg36_T"	"AY682199"	"287098"	"Yoonia rosea"	"species"	"s__287098"	"2"	"1224"	"28211"	"204455"	"31989"	"2211641"	"287098"	NA
 "Yoonia_maricola-_-EF202613--_DSW-18_T"	"EF202613"	"420999"	"Yoonia maricola"	"species"	"s__420999"	"2"	"1224"	"28211"	"204455"	"31989"	"2211641"	"420999"	NA
-"Yoonia_acticola-_-KY817315--_OISW-6_T"	"KY817315"	"1972512"	"Loktanella acticola"	"species"	"s__1972512"	"2"	"1224"	"28211"	"204455"	"2854170"	"245186"	"1972512"	NA
+"Yoonia_acticola-_-KY817315--_OISW-6_T"	"KY817315"	"1972512"	"Yoonia acticola"	"species"	"s__1972512"	"2"	"1224"	"28211"	"204455"	"31989"	"2211641"	"1972512"	NA
 "Yoonia_maritima-_-AB894236--_KMM_9530_T"	"AB894236"	"1435347"	"Yoonia maritima"	"species"	"s__1435347"	"2"	"1224"	"28211"	"204455"	"31989"	"2211641"	"1435347"	NA
 "Yoonia_tamlensis-_-DQ533556--_SSW-35_T"	"DQ533556"	"390270"	"Yoonia tamlensis"	"species"	"s__390270"	"2"	"1224"	"28211"	"204455"	"31989"	"2211641"	"390270"	NA
+"g__245186"	NA	"245186"	"Loktanella"	"genus"	"g__245186"	"2"	"1224"	"28211"	"204455"	"2854170"	"245186"	NA	NA
 "Loktanella_atrilutea-_-AB246747--_IG8_-=_IAM_15450-_=_NCIMB_14280-_T"	"AB246747"	"366533"	"Loktanella atrilutea"	"species"	"s__366533"	"2"	"1224"	"28211"	"204455"	"2854170"	"245186"	"366533"	NA
 "Loktanella_salsilacus-_-AJ440997--_LMG_21507_T"	"AJ440997"	"195913"	"Loktanella salsilacus"	"species"	"s__195913"	"2"	"1224"	"28211"	"204455"	"2854170"	"245186"	"195913"	NA
 "Loktanella_gaetbuli-_-MN872422--_TSTF-M6T"	"MN872422"	"2881335"	"Loktanella gaetbuli"	"species"	"s__2881335"	"2"	"1224"	"28211"	"204455"	"2854170"	"245186"	"2881335"	NA
@@ -5247,7 +5246,7 @@
 "g__2855478"	NA	"2855478"	"Salibaculum"	"genus"	"g__2855478"	"2"	"1224"	"28211"	"204455"	"2854170"	"2855478"	NA	NA
 "Salibaculum_griseiflavum-_-KY062763--_WDS4C29_T"	"KY062763"	"1914409"	"Salibaculum griseiflavum"	"species"	"s__1914409"	"2"	"1224"	"28211"	"204455"	"2854170"	"2855478"	"1914409"	NA
 "Salibaculum_halophilum-_-KY062762--_WDS1C4_T"	"KY062762"	"1914408"	"Salibaculum halophilum"	"species"	"s__1914408"	"2"	"1224"	"28211"	"204455"	"2854170"	"2855478"	"1914408"	NA
-"Thalassobius_litoralis-_-AB627076--_KU5D5_T"	"AB627076"	"1010611"	"Thalassobius litoralis"	"species"	"s__1010611"	"2"	"1224"	"28211"	"204455"	"2854170"	"335927"	"1010611"	NA
+"Thalassobius_litoralis-_-AB627076--_KU5D5_T"	"AB627076"	"1010611"	"Thalassovita litoralis"	"species"	"s__1010611"	"2"	"1224"	"28211"	"204455"	"2854170"	"335927"	"1010611"	NA
 "Lutimaribacter_pacificus-_-DQ659449--_W11-2B_T"	"DQ659449"	"391948"	"Lutimaribacter pacificus"	"species"	"s__391948"	"2"	"1224"	"28211"	"204455"	"2854170"	"490828"	"391948"	NA
 "Lutimaribacter_saemankumensis-_-EU336981--_SMK-117_T"	"EU336981"	"490829"	"Lutimaribacter saemankumensis"	"species"	"s__490829"	"2"	"1224"	"28211"	"204455"	"2854170"	"490828"	"490829"	NA
 "Lutimaribacter_marinistellae-_-KT944033--_SF-12_T"	"KT944033"	"1820329"	"Lutimaribacter marinistellae"	"species"	"s__1820329"	"2"	"1224"	"28211"	"204455"	"2854170"	"490828"	"1820329"	NA
@@ -5288,8 +5287,8 @@
 "Salipiger_pallidus-_-KU315483--_DCSW07_T"	"KU315483"	"1775170"	"Salipiger pallidus"	"species"	"s__1775170"	"2"	"1224"	"28211"	"204455"	"2854170"	"263377"	"1775170"	NA
 "Litorisediminicola_beolgyonensis-_-JQ807220--_BB-MW24_T"	"JQ807220"	"1173614"	"Litorisediminicola beolgyonensis"	"species"	"s__1173614"	"2"	"1224"	"28211"	"204455"	"31989"	"1523153"	"1173614"	NA
 "g__1523153"	NA	"1523153"	"Litorisediminicola"	"genus"	"g__1523153"	"2"	"1224"	"28211"	"204455"	"31989"	"1523153"	NA	NA
-"Salipiger_pacificus-_-AJ877265--_DX5-10_T"	"AJ877265"	"311180"	"Yangia pacifica"	"species"	"s__311180"	"2"	"1224"	"28211"	"204455"	"2854170"	"2919626"	"311180"	NA
-"g__2919626"	NA	"2919626"	"Yangia"	"genus"	"g__2919626"	"2"	"1224"	"28211"	"204455"	"2854170"	"2919626"	NA	NA
+"Salipiger_pacificus-_-AJ877265--_DX5-10_T"	"AJ877265"	"311180"	"Alloyangia pacifica"	"species"	"s__311180"	"2"	"1224"	"28211"	"204455"	"2854170"	"2919626"	"311180"	NA
+"g__2919626"	NA	"2919626"	"Alloyangia"	"genus"	"g__2919626"	"2"	"1224"	"28211"	"204455"	"2854170"	"2919626"	NA	NA
 "Salipiger_mangrovisoli-_-MW186827--_6D45A_T"	"MW186827"	"2865933"	"Salipiger mangrovisoli"	"species"	"s__2865933"	"2"	"1224"	"28211"	"204455"	"2854170"	"263377"	"2865933"	NA
 "Sediminimonas_qiaohouensis-_-AUIJ01000020--_DSM_21189_T"	"AUIJ01000020"	"1123247"	"Sediminimonas qiaohouensis DSM 21189"	"strain"	"t__1123247"	"2"	"1224"	"28211"	"204455"	"2854170"	"659427"	"552061"	"1123247"
 "g__659427"	NA	"659427"	"Sediminimonas"	"genus"	"g__659427"	"2"	"1224"	"28211"	"204455"	"2854170"	"659427"	NA	NA
@@ -5393,8 +5392,7 @@
 "Tropicimonas_aquimaris-_-HQ340608--_DPG-21_T"	"HQ340608"	"914152"	"Tropicimonas aquimaris"	"species"	"s__914152"	"2"	"1224"	"28211"	"204455"	"2854170"	"599652"	"914152"	NA
 "Tropicimonas_sediminicola-_-JF748735--_M97_T"	"JF748735"	"1031541"	"Tropicimonas sediminicola"	"species"	"s__1031541"	"2"	"1224"	"28211"	"204455"	"2854170"	"599652"	"1031541"	NA
 "Tropicimonas_isoalkanivorans-_-AB302379--_B51_T"	"AB302379"	"441112"	"Tropicimonas isoalkanivorans"	"species"	"s__441112"	"2"	"1224"	"28211"	"204455"	"2854170"	"599652"	"441112"	NA
-"Palleronia_aestuarii-_-FJ230842--_Y26_T"	"FJ230842"	"568105"	"Hwanghaeicola aestuarii"	"species"	"s__568105"	"2"	"1224"	"28211"	"204455"	"2854170"	"1400058"	"568105"	NA
-"g__1400058"	NA	"1400058"	"Hwanghaeicola"	"genus"	"g__1400058"	"2"	"1224"	"28211"	"204455"	"2854170"	"1400058"	NA	NA
+"Palleronia_aestuarii-_-FJ230842--_Y26_T"	"FJ230842"	"568105"	"Palleronia aestuarii"	"species"	"s__568105"	"2"	"1224"	"28211"	"204455"	"2854170"	"315422"	"568105"	NA
 "Tropicimonas_arenosa-_-KU719510--_CAU_1062_T"	"KU719510"	"1854710"	"Tropicimonas arenosa"	"species"	"s__1854710"	"2"	"1224"	"28211"	"204455"	"2854170"	"599652"	"1854710"	NA
 "Roseibacterium_elongatum-_-CP004372--_DFL-43_wl?_n_wlDSM_19469_T"	"CP004372"	"1294273"	"Roseibacterium elongatum DSM 19469"	"strain"	"t__1294273"	"2"	"1224"	"28211"	"204455"	"2854170"	"159345"	"159346"	"1294273"
 "Dinoroseobacter_shibae-_-CP000830--_DFL_12_T"	"CP000830"	"398580"	"Dinoroseobacter shibae DFL 12 = DSM 16493"	"strain"	"t__398580"	"2"	"1224"	"28211"	"204455"	"2854170"	"309512"	"215813"	"398580"
@@ -5429,9 +5427,9 @@
 "Rhodovulum_aestuarii-_-LN866627--_JA924_T"	"LN866627"	"1671555"	"Rhodovulum aestuarii"	"species"	"s__1671555"	"2"	"1224"	"28211"	"204455"	"31989"	"34008"	"1671555"	NA
 "Rhodovulum_mangrovi-_-HG529993--_AK41_T"	"HG529993"	"1406880"	"Rhodovulum mangrovi"	"species"	"s__1406880"	"2"	"1224"	"28211"	"204455"	"31989"	"34008"	"1406880"	NA
 "Actibacterium_ureilyticum-_-KP162062--_LS-811_T"	"KP162062"	"1590614"	"Actibacterium ureilyticum"	"species"	"s__1590614"	"2"	"1224"	"28211"	"204455"	"2854170"	"1433986"	"1590614"	NA
-"g__387095"	NA	"387095"	"Maribius"	"genus"	"g__387095"	"2"	"1224"	"28211"	"204455"	"2854170"	"387095"	NA	NA
 "Palleronia_pelagia-_-DQ514326--_B5-6_T"	"DQ514326"	"387096"	"Maribius pelagius"	"species"	"s__387096"	"2"	"1224"	"28211"	"204455"	"2854170"	"387095"	"387096"	NA
-"Palleronia_salina-_-AY906863--_CL-SP27_T"	"AY906863"	"313368"	"Maribius salinus"	"species"	"s__313368"	"2"	"1224"	"28211"	"204455"	"2854170"	"387095"	"313368"	NA
+"g__387095"	NA	"387095"	"Maribius"	"genus"	"g__387095"	"2"	"1224"	"28211"	"204455"	"2854170"	"387095"	NA	NA
+"Palleronia_salina-_-AY906863--_CL-SP27_T"	"AY906863"	"313368"	"Palleronia salina"	"species"	"s__313368"	"2"	"1224"	"28211"	"204455"	"2854170"	"315422"	"313368"	NA
 "Palleronia_pontilimi-_-LT797154--_GH1-23_T"	"LT797154"	"1964209"	"Palleronia pontilimi"	"species"	"s__1964209"	"2"	"1224"	"28211"	"204455"	"2854170"	"315422"	"1964209"	NA
 "Palleronia_rufa-_-JQEY01000001--_MOLA_401_T"	"JQEY01000001"	"1530186"	"Palleronia rufa"	"species"	"s__1530186"	"2"	"1224"	"28211"	"204455"	"2854170"	"315422"	"1530186"	NA
 "Pseudomaribius_aestuariivivens-_-MG322243--_DBTF-15_T"	"MG322243"	"2050951"	"Pseudomaribius aestuariivivens"	"species"	"s__2050951"	"2"	"1224"	"28211"	"204455"	"31989"	"2109369"	"2050951"	NA
@@ -5491,7 +5489,7 @@
 "Pukyongiella_litopenaei-_-MG889583--_SH-1_T"	"MG889583"	"2605946"	"Pukyongiella litopenaei"	"species"	"s__2605946"	"2"	"1224"	"28211"	"204455"	"31989"	"2831925"	"2605946"	NA
 "g__2831925"	NA	"2831925"	"Pukyongiella"	"genus"	"g__2831925"	"2"	"1224"	"28211"	"204455"	"31989"	"2831925"	NA	NA
 "Primorskyibacter_marinus-_-KY086433--_PX7_T"	"KY086433"	"1977320"	"Primorskyibacter marinus"	"species"	"s__1977320"	"2"	"1224"	"28211"	"204455"	"2854170"	"1068904"	"1977320"	NA
-"Thalassobius_taeanensis-_-GQ232737--_G4_T"	"GQ232737"	"657014"	"Thalassobius taeanensis"	"species"	"s__657014"	"2"	"1224"	"28211"	"204455"	"2854170"	"335927"	"657014"	NA
+"Thalassobius_taeanensis-_-GQ232737--_G4_T"	"GQ232737"	"657014"	"Thalassovita taeanensis"	"species"	"s__657014"	"2"	"1224"	"28211"	"204455"	"2854170"	"335927"	"657014"	NA
 "Primorskyibacter_aestuariivivens-_-KX578605--_OITF-36_T"	"KX578605"	"1888912"	"Primorskyibacter aestuariivivens"	"species"	"s__1888912"	"2"	"1224"	"28211"	"204455"	"2854170"	"1068904"	"1888912"	NA
 "Primorskyibacter_sedentarius-_-AB550558--_KMM_9018_T"	"AB550558"	"745311"	"Primorskyibacter sedentarius"	"species"	"s__745311"	"2"	"1224"	"28211"	"204455"	"2854170"	"1068904"	"745311"	NA
 "Pseudoprimorskyibacter_insulae-_-KR818861--_SSK3-2_T"	"KR818861"	"1695997"	"Pseudoprimorskyibacter insulae"	"species"	"s__1695997"	"2"	"1224"	"28211"	"204455"	"31989"	"2846763"	"1695997"	NA
@@ -5959,7 +5957,7 @@
 "Asticcacaulis_machinosus-_-OQ130454--_LKC15W_/type_materialtype_strain_of_Asticcacaulis_machinosusT"	"OQ130454"	"1872648"	"Asticcacaulis sp."	"species"	"s__1872648"	"2"	"1224"	"28211"	"204458"	"76892"	"76890"	"1872648"	NA
 "Asticcacaulis_endophyticus-_-KF551184--_ZFGT-14_T"	"KF551184"	"1395890"	"Asticcacaulis endophyticus"	"species"	"s__1395890"	"2"	"1224"	"28211"	"204458"	"76892"	"76890"	"1395890"	NA
 "Asticcacaulis_benevestitus-_-AM087199--_Z-0023_T"	"AM087199"	"347481"	"Asticcacaulis benevestitus"	"species"	"s__347481"	"2"	"1224"	"28211"	"204458"	"76892"	"76890"	"347481"	NA
-"Asticcacaulis_biprosthecium-_-ADUH01000274--_C19_T"	"ADUH01000274"	"715226"	"Asticcacaulis biprosthecum C19"	"strain"	"t__715226"	"2"	"1224"	"28211"	"204458"	"76892"	"76890"	"76891"	"715226"
+"Asticcacaulis_biprosthecium-_-ADUH01000274--_C19_T"	"ADUH01000274"	"715226"	"Asticcacaulis biprosthecium C19"	"strain"	"t__715226"	"2"	"1224"	"28211"	"204458"	"76892"	"76890"	"76891"	"715226"
 "Asticcacaulis_taihuensis-_-AY500141--_T3-B7_T"	"AY500141"	"260084"	"Asticcacaulis taihuensis"	"species"	"s__260084"	"2"	"1224"	"28211"	"204458"	"76892"	"76890"	"260084"	NA
 "Asticcacaulis_solisilvae-_-JX144961--_CGM1-3EN_T"	"JX144961"	"1217274"	"Asticcacaulis solisilvae"	"species"	"s__1217274"	"2"	"1224"	"28211"	"204458"	"76892"	"76890"	"1217274"	NA
 "g__75"	NA	"75"	"Caulobacter"	"genus"	"g__75"	"2"	"1224"	"28211"	"204458"	"76892"	"75"	NA	NA
@@ -7198,7 +7196,6 @@
 "g__1648508"	NA	"1648508"	"Ciceribacter"	"genus"	"g__1648508"	"2"	"1224"	"28211"	"356"	"82115"	"1648508"	NA	NA
 "g__1612611"	NA	"1612611"	"Pararhizobium"	"genus"	"g__1612611"	"2"	"1224"	"28211"	"356"	"82115"	"1612611"	NA	NA
 "g__78526"	NA	"78526"	"Allorhizobium"	"genus"	"g__78526"	"2"	"1224"	"28211"	"356"	"82115"	"78526"	NA	NA
-"g__357"	NA	"357"	"Agrobacterium"	"genus"	"g__357"	"2"	"1224"	"28211"	"356"	"82115"	"357"	NA	NA
 "g__1525371"	NA	"1525371"	"Neorhizobium"	"genus"	"g__1525371"	"2"	"1224"	"28211"	"356"	"82115"	"1525371"	NA	NA
 "Rhizobium_anhuiense-_-KF111868--_CCBAU_23252_T"	"KF111868"	"1184720"	"Rhizobium anhuiense"	"species"	"s__1184720"	"2"	"1224"	"28211"	"356"	"82115"	"379"	"1184720"	NA
 "Rhizobium_leguminosarum-_-JQ085246--_USDA_2370_T"	"JQ085246"	"754774"	"Rhizobium leguminosarum bv. viciae USDA 2370"	"strain"	"t__754774"	"2"	"1224"	"28211"	"356"	"82115"	"379"	"384"	"754774"
@@ -7233,7 +7230,7 @@
 "Rhizobium_multihospitium-_-EF035074--_CCBAU_83401_T"	"EF035074"	"410764"	"Rhizobium multihospitium"	"species"	"s__410764"	"2"	"1224"	"28211"	"356"	"82115"	"379"	"410764"	NA
 "Rhizobium_leucaenae-_-X67234--_LMG_9517_T"	"X67234"	"1041147"	"Rhizobium leucaenae USDA 9039"	"strain"	"t__1041147"	"2"	"1224"	"28211"	"356"	"82115"	"379"	"29450"	"1041147"
 "Rhizobium_calliandrae-_-JX855162--_CCGE524_T"	"JX855162"	"1312182"	"Rhizobium calliandrae"	"species"	"s__1312182"	"2"	"1224"	"28211"	"356"	"82115"	"379"	"1312182"	NA
-"Rhizobium_rhizogenes-_-D14501--_IFO_13257_T"	"D14501"	"359"	"Agrobacterium rhizogenes"	"species"	"s__359"	"2"	"1224"	"28211"	"356"	"82115"	"357"	"359"	NA
+"Rhizobium_rhizogenes-_-D14501--_IFO_13257_T"	"D14501"	"359"	"Rhizobium rhizogenes"	"species"	"s__359"	"2"	"1224"	"28211"	"356"	"82115"	"379"	"359"	NA
 "Rhizobium_lusitanum-_-AY738130--_P1-7_T"	"AY738130"	"293958"	"Rhizobium lusitanum"	"species"	"s__293958"	"2"	"1224"	"28211"	"356"	"82115"	"379"	"293958"	NA
 "Rhizobium_mayense-_-JX855172--_CCGE526_T"	"JX855172"	"1312184"	"Rhizobium mayense"	"species"	"s__1312184"	"2"	"1224"	"28211"	"356"	"82115"	"379"	"1312184"	NA
 "Rhizobium_jaguaris-_-JX855169--_CCGE525_T"	"JX855169"	"1312183"	"Rhizobium jaguaris"	"species"	"s__1312183"	"2"	"1224"	"28211"	"356"	"82115"	"379"	"1312183"	NA
@@ -7361,6 +7358,7 @@
 "Pararhizobium_haloflavum-_-KX889310--_XC0140_T"	"KX889310"	"2037914"	"Pararhizobium haloflavum"	"species"	"s__2037914"	"2"	"1224"	"28211"	"356"	"82115"	"1612611"	"2037914"	NA
 "Georhizobium_profundi-_-MG822857--_WS11_T"	"MG822857"	"2341112"	"Georhizobium profundi"	"species"	"s__2341112"	"2"	"1224"	"28211"	"356"	"82115"	"2661800"	"2341112"	NA
 "g__2661800"	NA	"2661800"	"Georhizobium"	"genus"	"g__2661800"	"2"	"1224"	"28211"	"356"	"82115"	"2661800"	NA	NA
+"g__357"	NA	"357"	"Agrobacterium"	"genus"	"g__357"	"2"	"1224"	"28211"	"356"	"82115"	"357"	NA	NA
 "Agrobacterium_skierniewicense-_-HQ823551--_Ch11_T"	"HQ823551"	"1368417"	"Rhizobium skierniewicense Ch11"	"strain"	"t__1368417"	"2"	"1224"	"28211"	"356"	"82115"	"379"	"984260"	"1368417"
 "Agrobacterium_rubi-_-AB680385--_NBRC_13261_T"	"AB680385"	"28099"	"Agrobacterium rubi"	"species"	"s__28099"	"2"	"1224"	"28211"	"356"	"82115"	"357"	"28099"	NA
 "Agrobacterium_rosae-_-MF443188--_NCPPB_1650_T"	"MF443188"	"361"	"Agrobacterium sp."	"species"	"s__361"	"2"	"1224"	"28211"	"356"	"82115"	"357"	"361"	NA
@@ -7393,7 +7391,7 @@
 "Allorhizobium_sonneratiae-_-MZ817998--_BGMRC0089_T"	"MZ817998"	"2934936"	"Allorhizobium sonneratiae"	"species"	"s__2934936"	"2"	"1224"	"28211"	"356"	"82115"	"78526"	"2934936"	NA
 "Allorhizobium_oryziradicis-_-KX129901--_N19_T"	"KX129901"	"1867956"	"Rhizobium oryziradicis"	"species"	"s__1867956"	"2"	"1224"	"28211"	"356"	"82115"	"379"	"1867956"	NA
 "Allorhizobium_terrae-_-KU248159--_CC-HIH110_T"	"KU248159"	"1848972"	"Allorhizobium terrae"	"species"	"s__1848972"	"2"	"1224"	"28211"	"356"	"82115"	"78526"	"1848972"	NA
-"Allorhizobium_taibaishanense-_-HM776997--_CCNWSX_0483_T"	"HM776997"	"1368428"	"Rhizobium taibaishanense CCNWSX 0483"	"strain"	"t__1368428"	"2"	"1224"	"28211"	"356"	"82115"	"78526"	"887144"	"1368428"
+"Allorhizobium_taibaishanense-_-HM776997--_CCNWSX_0483_T"	"HM776997"	"1368428"	"Allorhizobium taibaishanense CCNWSX 0483"	"strain"	"t__1368428"	"2"	"1224"	"28211"	"356"	"82115"	"78526"	"887144"	"1368428"
 "Rhizobium_aggregatum-_-X73041--_IFAM_1003_T"	"X73041"	"1368425"	"Peteryoungia aggregata LMG 23059"	"strain"	"t__1368425"	"2"	"1224"	"28211"	"356"	"82115"	"2853332"	"34013"	"1368425"
 "Rhizobium_populi-_-KC609734--_K-38_T"	"KC609734"	"1312132"	"Rhizobium populi"	"species"	"s__1312132"	"2"	"1224"	"28211"	"356"	"82115"	"379"	"1312132"	NA
 "Mycoplana_azooxidifex-_-LN832063--_Po_20/26_T"	"LN832063"	"1636188"	"Mycoplana azooxidifex"	"species"	"s__1636188"	"2"	"1224"	"28211"	"356"	"82115"	"13159"	"1636188"	NA
@@ -7406,7 +7404,7 @@
 "Ensifer_fredii-_-X67231--_LMG_6217_T"	"X67231"	"380"	"Sinorhizobium fredii"	"species"	"s__380"	"2"	"1224"	"28211"	"356"	"82115"	"28105"	"380"	NA
 "Ensifer_kummerowiae-_-AY034028--_CCBAU_71714_T"	"AY034028"	"158892"	"Sinorhizobium kummerowiae"	"species"	"s__158892"	"2"	"1224"	"28211"	"356"	"82115"	"28105"	"158892"	NA
 "Ensifer_glycinis-_-KJ556384--_CCBAU_23380_T"	"KJ556384"	"1472378"	"Sinorhizobium glycinis"	"species"	"s__1472378"	"2"	"1224"	"28211"	"356"	"82115"	"28105"	"1472378"	NA
-"Ensifer_sojae-_-GU593061--_CCBAU_05684_T"	"GU593061"	"716928"	"Ensifer sojae CCBAU 05684"	"strain"	"t__716928"	"2"	"1224"	"28211"	"356"	"82115"	"28105"	"716925"	"716928"
+"Ensifer_sojae-_-GU593061--_CCBAU_05684_T"	"GU593061"	"716928"	"Sinorhizobium sojae CCBAU 05684"	"strain"	"t__716928"	"2"	"1224"	"28211"	"356"	"82115"	"28105"	"716925"	"716928"
 "Ensifer_saheli-_-X68390--_LMG_7837_T"	"X68390"	"36856"	"Sinorhizobium saheli"	"species"	"s__36856"	"2"	"1224"	"28211"	"356"	"82115"	"28105"	"36856"	NA
 "Ensifer_shofinae-_-KX247539--_CCBAU_251167_T"	"KX247539"	"1850094"	"Sinorhizobium shofinae"	"species"	"s__1850094"	"2"	"1224"	"28211"	"356"	"82115"	"28105"	"1850094"	NA
 "Ensifer_meliloti-_-D14509--_IAM_12611_T"	"D14509"	"382"	"Sinorhizobium meliloti"	"species"	"s__382"	"2"	"1224"	"28211"	"356"	"82115"	"28105"	"382"	NA
@@ -7524,7 +7522,7 @@
 "Bartonella_callosciuri-_-AB602530--_BR11-1_T"	"AB602530"	"686223"	"Bartonella callosciuri"	"species"	"s__686223"	"2"	"1224"	"28211"	"356"	"772"	"773"	"686223"	NA
 "Bartonella_quintana-_-M11927--_Fuller_T"	"M11927"	"803"	"Bartonella quintana"	"species"	"s__803"	"2"	"1224"	"28211"	"356"	"772"	"773"	"803"	NA
 "Bartonella_coopersplainsensis-_-EU111759--_AUST/NH20_T"	"EU111759"	"481137"	"Bartonella coopersplainsensis"	"species"	"s__481137"	"2"	"1224"	"28211"	"356"	"772"	"773"	"481137"	NA
-"Bartonella_refiksaydamii-_-LR736793--_B191_T"	"LR736793"	"2654951"	"Bartonella sp. B191"	"species"	"s__2654951"	"2"	"1224"	"28211"	"356"	"772"	"773"	"2654951"	NA
+"Bartonella_refiksaydamii-_-LR736793--_B191_T"	"LR736793"	"2654951"	"Bartonella refiksaydamii"	"species"	"s__2654951"	"2"	"1224"	"28211"	"356"	"772"	"773"	"2654951"	NA
 "Bartonella_bacilliformis-_-CP014012--_ATCC_35685D-5_n_T"	"CP014012"	"774"	"Bartonella bacilliformis"	"species"	"s__774"	"2"	"1224"	"28211"	"356"	"772"	"773"	"774"	NA
 "Bartonella_ancashensis-_-KP720643--_20.00_T"	"KP720643"	"1318743"	"Bartonella ancashensis"	"species"	"s__1318743"	"2"	"1224"	"28211"	"356"	"772"	"773"	"1318743"	NA
 "Bartonella_rochalimae-_-DQ683196--_BMGH_T"	"DQ683196"	"685782"	"Bartonella rochalimae ATCC BAA-1498"	"strain"	"t__685782"	"2"	"1224"	"28211"	"356"	"772"	"773"	"395923"	"685782"
@@ -7826,7 +7824,7 @@
 "Ehrlichia_chaffeensis-_-CP000236--_Arkansas_T"	"CP000236"	"205920"	"Ehrlichia chaffeensis str. Arkansas"	"strain"	"t__205920"	"2"	"1224"	"28211"	"766"	"942"	"943"	"945"	"205920"
 "Ehrlichia_muris_subsp._muris-_-CP006917--_AS145_n_T"	"CP006917"	"1423892"	"Ehrlichia muris AS145"	"strain"	"t__1423892"	"2"	"1224"	"28211"	"766"	"942"	"943"	"35795"	"1423892"
 "Ehrlichia_muris_subsp._eauclairensis-_-HM543745--_AS145_T"	"HM543745"	"2020671"	"Ehrlichia muris subsp. eauclairensis"	"subspecies"	NA	"2"	"1224"	"28211"	"766"	"942"	"943"	"35795"	NA
-"Ehrlichia_japonica-_-CP007474--_HFT"	"CP007474"	"391036"	"Ehrlichia sp. HF"	"species"	"s__391036"	"2"	"1224"	"28211"	"766"	"942"	"943"	"391036"	NA
+"Ehrlichia_japonica-_-CP007474--_HFT"	"CP007474"	"391036"	"Ehrlichia japonica"	"species"	"s__391036"	"2"	"1224"	"28211"	"766"	"942"	"943"	"391036"	NA
 "Ehrlichia_ewingii-_-M73227--_Stillwater_T"	"M73227"	"947"	"Ehrlichia ewingii"	"species"	"s__947"	"2"	"1224"	"28211"	"766"	"942"	"943"	"947"	NA
 "Ehrlichia_ruminantium-_-X61659--_T"	"X61659"	"779"	"Ehrlichia ruminantium"	"species"	"s__779"	"2"	"1224"	"28211"	"766"	"942"	"943"	"779"	NA
 "g__768"	NA	"768"	"Anaplasma"	"genus"	"g__768"	"2"	"1224"	"28211"	"766"	"942"	"768"	NA	NA
@@ -10168,17 +10166,17 @@
 "Exiguobacterium_qingdaonense-_-MW478903--_s82T"	"MW478903"	"2751251"	"Exiguobacterium qingdaonense"	"species"	"s__2751251"	"2"	"1239"	"91061"	"1385"	NA	"33986"	"2751251"	NA
 "Exiguobacterium_aestuarii-_-AY594264--_TF-16_T"	"AY594264"	"273527"	"Exiguobacterium aestuarii"	"species"	"s__273527"	"2"	"1239"	"91061"	"1385"	NA	"33986"	"273527"	NA
 "Exiguobacterium_flavidum-_-MH375463--_HF60_T"	"MH375463"	"44751"	"Exiguobacterium sp."	"species"	"s__44751"	"2"	"1239"	"91061"	"1385"	NA	"33986"	"44751"	NA
-"g__1378"	NA	"1378"	"Gemella"	"genus"	"g__1378"	"2"	"1239"	"91061"	"1385"	NA	"1378"	NA	NA
-"Gemella_haemolysans-_-L14326--_ATCC_10379_T"	"L14326"	"546270"	"Gemella haemolysans ATCC 10379"	"strain"	"t__546270"	"2"	"1239"	"91061"	"1385"	NA	"1378"	"1379"	"546270"
-"Gemella_parahaemolysans-_-HM103931--_NTUH_1465_T"	"HM103931"	"1179782"	"Gemella parahaemolysans"	"species"	"s__1179782"	"2"	"1239"	"91061"	"1385"	NA	"1378"	"1179782"	NA
-"Gemella_taiwanensis-_-HM103934--_NTUH_5572_T"	"HM103934"	"1179787"	"Gemella taiwanensis"	"species"	"s__1179787"	"2"	"1239"	"91061"	"1385"	NA	"1378"	"1179787"	NA
-"Gemella_morbillorum-_-L14327--_ATCC_27824_LTP__T"	"L14327"	"29391"	"Gemella morbillorum"	"species"	"s__29391"	"2"	"1239"	"91061"	"1385"	NA	"1378"	"29391"	NA
-"Gemella_sanguinis-_-Y13364--_2045-94_T"	"Y13364"	"84135"	"Gemella sanguinis"	"species"	"s__84135"	"2"	"1239"	"91061"	"1385"	NA	"1378"	"84135"	NA
-"Gemella_bergeri-_-Y13365--_617-93_T"	"Y13365"	"84136"	"Gemella bergeri"	"species"	"s__84136"	"2"	"1239"	"91061"	"1385"	NA	"1378"	"84136"	NA
-"Gemella_massiliensis-_-LT628479--_Marseille-P3249T"	"LT628479"	"1909670"	"Gemella massiliensis"	"species"	"s__1909670"	"2"	"1239"	"91061"	"1385"	NA	"1378"	"1909670"	NA
-"Gemella_cuniculi-_-AJ251987--_M60449/99/1_T_T"	"AJ251987"	"1121914"	"Gemella cuniculi DSM 15828"	"strain"	"t__1121914"	"2"	"1239"	"91061"	"1385"	NA	"1378"	"150240"	"1121914"
-"Gemella_asaccharolytica-_-EU427463--_WAL_1945J_T"	"EU427463"	"502393"	"Gemella asaccharolytica"	"species"	"s__502393"	"2"	"1239"	"91061"	"1385"	NA	"1378"	"502393"	NA
-"Gemella_palaticanis-_-Y17280--_M663-98-1_T"	"Y17280"	"81950"	"Gemella palaticanis"	"species"	"s__81950"	"2"	"1239"	"91061"	"1385"	NA	"1378"	"81950"	NA
+"g__1378"	NA	"1378"	"Gemella"	"genus"	"g__1378"	"2"	"1239"	"91061"	"1385"	"539738"	"1378"	NA	NA
+"Gemella_haemolysans-_-L14326--_ATCC_10379_T"	"L14326"	"546270"	"Gemella haemolysans ATCC 10379"	"strain"	"t__546270"	"2"	"1239"	"91061"	"1385"	"539738"	"1378"	"1379"	"546270"
+"Gemella_parahaemolysans-_-HM103931--_NTUH_1465_T"	"HM103931"	"1179782"	"Gemella parahaemolysans"	"species"	"s__1179782"	"2"	"1239"	"91061"	"1385"	"539738"	"1378"	"1179782"	NA
+"Gemella_taiwanensis-_-HM103934--_NTUH_5572_T"	"HM103934"	"1179787"	"Gemella taiwanensis"	"species"	"s__1179787"	"2"	"1239"	"91061"	"1385"	"539738"	"1378"	"1179787"	NA
+"Gemella_morbillorum-_-L14327--_ATCC_27824_LTP__T"	"L14327"	"29391"	"Gemella morbillorum"	"species"	"s__29391"	"2"	"1239"	"91061"	"1385"	"539738"	"1378"	"29391"	NA
+"Gemella_sanguinis-_-Y13364--_2045-94_T"	"Y13364"	"84135"	"Gemella sanguinis"	"species"	"s__84135"	"2"	"1239"	"91061"	"1385"	"539738"	"1378"	"84135"	NA
+"Gemella_bergeri-_-Y13365--_617-93_T"	"Y13365"	"84136"	"Gemella bergeri"	"species"	"s__84136"	"2"	"1239"	"91061"	"1385"	"539738"	"1378"	"84136"	NA
+"Gemella_massiliensis-_-LT628479--_Marseille-P3249T"	"LT628479"	"1909670"	"Gemella massiliensis"	"species"	"s__1909670"	"2"	"1239"	"91061"	"1385"	"539738"	"1378"	"1909670"	NA
+"Gemella_cuniculi-_-AJ251987--_M60449/99/1_T_T"	"AJ251987"	"1121914"	"Gemella cuniculi DSM 15828"	"strain"	"t__1121914"	"2"	"1239"	"91061"	"1385"	"539738"	"1378"	"150240"	"1121914"
+"Gemella_asaccharolytica-_-EU427463--_WAL_1945J_T"	"EU427463"	"502393"	"Gemella asaccharolytica"	"species"	"s__502393"	"2"	"1239"	"91061"	"1385"	"539738"	"1378"	"502393"	NA
+"Gemella_palaticanis-_-Y17280--_M663-98-1_T"	"Y17280"	"81950"	"Gemella palaticanis"	"species"	"s__81950"	"2"	"1239"	"91061"	"1385"	"539738"	"1378"	"81950"	NA
 "Priestia_koreensis-_-AY667496--_BR030_T"	"AY667496"	"284581"	"Priestia koreensis"	"species"	"s__284581"	"2"	"1239"	"91061"	"1385"	"186817"	"2800373"	"284581"	NA
 "g__2837504"	NA	"2837504"	"Heyndrickxia"	"genus"	"g__2837504"	"2"	"1239"	"91061"	"1385"	"186817"	"2837504"	NA	NA
 "g__2675233"	NA	"2675233"	"Metabacillus"	"genus"	"g__2675233"	"2"	"1239"	"91061"	"1385"	"186817"	"2675233"	NA	NA
@@ -11457,6 +11455,7 @@
 "Allobacillus_salarius-_-LC215448--_SKP4-8_T"	"LC215448"	"1955272"	"Allobacillus salarius"	"species"	"s__1955272"	"2"	"1239"	"91061"	"1385"	"186817"	"1400133"	"1955272"	NA
 "Allobacillus_saliphilus-_-LC215449--_SKP8-2_T"	"LC215449"	"2912308"	"Allobacillus saliphilus"	"species"	"s__2912308"	"2"	"1239"	"91061"	"1385"	"186817"	"1400133"	"2912308"	NA
 "Allobacillus_halotolerans-_-FJ347755--_B3A_T"	"FJ347755"	"570278"	"Allobacillus halotolerans"	"species"	"s__570278"	"2"	"1239"	"91061"	"1385"	"186817"	"1400133"	"570278"	NA
+"g__2893050"	NA	"2893050"	"Alkalihalobacterium"	"genus"	"g__2893050"	"2"	"1239"	"91061"	"1385"	"186817"	"2893050"	NA	NA
 "g__2675234"	NA	"2675234"	"Alkalihalobacillus"	"genus"	"g__2675234"	"2"	"1239"	"91061"	"1385"	"186817"	"2675234"	NA	NA
 "g__704093"	NA	"704093"	"Anaerobacillus"	"genus"	"g__704093"	"2"	"1239"	"91061"	"1385"	"186817"	"704093"	NA	NA
 "Anaerobacillus_alkalilacustris-_-DQ675454--_Z-0521_T"	"DQ675454"	"393763"	"Anaerobacillus alkalilacustris"	"species"	"s__393763"	"2"	"1239"	"91061"	"1385"	"186817"	"704093"	"393763"	NA
@@ -11465,7 +11464,6 @@
 "Anaerobacillus_arseniciselenatis-_-AJ865469--_DSM_15340_T"	"AJ865469"	"85682"	"Anaerobacillus arseniciselenatis"	"species"	"s__85682"	"2"	"1239"	"91061"	"1385"	"186817"	"704093"	"85682"	NA
 "Anaerobacillus_isosaccharinicus-_-KJ852652--_NB2006_T"	"KJ852652"	"1532552"	"Anaerobacillus isosaccharinicus"	"species"	"s__1532552"	"2"	"1239"	"91061"	"1385"	"186817"	"704093"	"1532552"	NA
 "Anaerobacillus_alkaliphilus-_-LN610499--_B16-10_T"	"LN610499"	"1548597"	"Anaerobacillus alkaliphilus"	"species"	"s__1548597"	"2"	"1239"	"91061"	"1385"	"186817"	"704093"	"1548597"	NA
-"g__2893050"	NA	"2893050"	"Alkalihalobacterium"	"genus"	"g__2893050"	"2"	"1239"	"91061"	"1385"	"186817"	"2893050"	NA	NA
 "Alkalihalobacterium_alkalinitrilicum-_-EF422411--_ANL-iso4_T"	"EF422411"	"427920"	"Alkalihalobacterium alkalinitrilicum"	"species"	"s__427920"	"2"	"1239"	"91061"	"1385"	"186817"	"2893050"	"427920"	NA
 "Alkalihalobacterium_elongatum-_-KX171019--_MEB199T"	"KX171019"	"2675466"	"Alkalihalobacterium elongatum"	"species"	"s__2675466"	"2"	"1239"	"91061"	"1385"	"186817"	"2893050"	"2675466"	NA
 "Polygonibacillus_indicireducens-_-LC054224--_In2-9_T"	"LC054224"	"1652101"	"Polygonibacillus indicireducens"	"species"	"s__1652101"	"2"	"1239"	"91061"	"1385"	"186817"	"1890224"	"1652101"	NA
@@ -11495,19 +11493,19 @@
 "g__2893056"	NA	"2893056"	"Halalkalibacter"	"genus"	"g__2893056"	"2"	"1239"	"91061"	"1385"	"186817"	"2893056"	NA	NA
 "Halalkalibacter_krulwichiae-_-AB086897--_AM31D_T"	"AB086897"	"199441"	"Halalkalibacter krulwichiae"	"species"	"s__199441"	"2"	"1239"	"91061"	"1385"	"186817"	"2893056"	"199441"	NA
 "Halalkalibacter_wakoensis-_-AB043851--_N-1_T"	"AB043851"	"127891"	"Halalkalibacter wakoensis"	"species"	"s__127891"	"2"	"1239"	"91061"	"1385"	"186817"	"2893056"	"127891"	NA
-"Halalkalibacter_okhensis-_-DQ026060--_Kh10-101_T"	"DQ026060"	"333138"	"Alkalihalobacillus okhensis"	"species"	"s__333138"	"2"	"1239"	"91061"	"1385"	"186817"	"2675234"	"333138"	NA
+"Halalkalibacter_okhensis-_-DQ026060--_Kh10-101_T"	"DQ026060"	"333138"	"Halalkalibacter okhensis"	"species"	"s__333138"	"2"	"1239"	"91061"	"1385"	"186817"	"2893056"	"333138"	NA
 "Bacillus_alkalicellulosilyticus-_-KY640613--_FJAT-44921T"	"KY640613"	"1912214"	"Bacillus alkalicellulosilyticus"	"species"	"s__1912214"	"2"	"1239"	"91061"	"1385"	"186817"	"1386"	"1912214"	NA
 "Halalkalibacter_akibai-_-AB043858--_1139_T"	"AB043858"	"1411"	"Halalkalibacter akibai"	"species"	"s__1411"	"2"	"1239"	"91061"	"1385"	"186817"	"2893056"	"1411"	NA
 "Halalkalibacter_alkalisediminis-_-AJ606037--_K1-25__T"	"AJ606037"	"935616"	"Halalkalibacter alkalisediminis"	"species"	"s__935616"	"2"	"1239"	"91061"	"1385"	"186817"	"2893056"	"935616"	NA
 "Halalkalibacter_kiskunsagensis-_-LN610501--_B16-24_T"	"LN610501"	"1548599"	"Halalkalibacter kiskunsagensis"	"species"	"s__1548599"	"2"	"1239"	"91061"	"1385"	"186817"	"2893056"	"1548599"	NA
 "Bacillus_suaedaesalsae-_-MW291641--_YZJH907-2_T"	"MW291641"	"2822140"	"Bacillus suaedae"	"species"	"s__2822140"	"2"	"1239"	"91061"	"1385"	"186817"	"1386"	"2822140"	NA
-"Halalkalibacter_hemicellulosilyticus-_-AB043846--_C-11_T"	"AB043846"	"127886"	"Alkalihalobacillus hemicellulosilyticus"	"species"	"s__127886"	"2"	"1239"	"91061"	"1385"	"186817"	"2675234"	"127886"	NA
+"Halalkalibacter_hemicellulosilyticus-_-AB043846--_C-11_T"	"AB043846"	"127886"	"Halalkalibacter hemicellulosilyticus"	"species"	"s__127886"	"2"	"1239"	"91061"	"1385"	"186817"	"2893056"	"127886"	NA
 "Halalkalibacter_oceani-_-KR611043--_SW109_T"	"KR611043"	"1653776"	"Halalkalibacter oceani"	"species"	"s__1653776"	"2"	"1239"	"91061"	"1385"	"186817"	"2893056"	"1653776"	NA
 "Alkalihalobacillus_trypoxylicola-_-AB681895--_NBRC_102646_T"	"AB681895"	"519424"	"Alkalihalobacillus trypoxylicola"	"species"	"s__519424"	"2"	"1239"	"91061"	"1385"	"186817"	"2675234"	"519424"	NA
 "Alkalihalobacillus_pseudalcaliphilus-_-X76449--_DSM_8725_LTP__T"	"X76449"	"79884"	"Alkalihalobacillus pseudalcaliphilus"	"species"	"s__79884"	"2"	"1239"	"91061"	"1385"	"186817"	"2675234"	"79884"	NA
 "Alkalihalobacillus_alcalophilus-_-X76436--_DSM_485_LTP__T"	"X76436"	"1218173"	"Alkalihalobacillus alcalophilus ATCC 27647 = CGMCC 1.3604"	"strain"	"t__1218173"	"2"	"1239"	"91061"	"1385"	"186817"	"2675234"	"1445"	"1218173"
 "Alkalihalobacillus_alkalilacus-_-LT844663--_AK73_T"	"LT844663"	"1983720"	"Alkalihalobacillus alkalilacus"	"species"	"s__1983720"	"2"	"1239"	"91061"	"1385"	"186817"	"2675234"	"1983720"	NA
-"Alkalihalobacterium_bogoriense-_-AY376312--_LBB3_T"	"AY376312"	"246272"	"Alkalihalobacillus bogoriensis"	"species"	"s__246272"	"2"	"1239"	"91061"	"1385"	"186817"	"2675234"	"246272"	NA
+"Alkalihalobacterium_bogoriense-_-AY376312--_LBB3_T"	"AY376312"	"246272"	"Alkalihalobacterium bogoriense"	"species"	"s__246272"	"2"	"1239"	"91061"	"1385"	"186817"	"2893050"	"246272"	NA
 "Halalkalibacter_urbisdiaboli-_-KY612314--_FJAT-45385_T"	"KY612314"	"1960589"	"Halalkalibacter urbisdiaboli"	"species"	"s__1960589"	"2"	"1239"	"91061"	"1385"	"186817"	"2893056"	"1960589"	NA
 "Halalkalibacter_nanhaiisediminis-_-GQ292773--_NH3_T"	"GQ292773"	"688079"	"Halalkalibacter nanhaiisediminis"	"species"	"s__688079"	"2"	"1239"	"91061"	"1385"	"186817"	"2893056"	"688079"	NA
 "Fermentibacillus_polygoni-_-LC054227--_IEB3_T"	"LC054227"	"1652104"	"Fermentibacillus polygoni"	"species"	"s__1652104"	"2"	"1239"	"91061"	"1385"	"186817"	"1817571"	"1652104"	NA
@@ -11515,7 +11513,7 @@
 "g__2893060"	NA	"2893060"	"Alkalihalophilus"	"genus"	"g__2893060"	"2"	"1239"	"91061"	"1385"	"186817"	"2893060"	NA	NA
 "Alkalihalophilus_pseudofirmus-_-X76439--_DSM_8715_LTP__T"	"X76439"	"79885"	"Alkalihalophilus pseudofirmus"	"species"	"s__79885"	"2"	"1239"	"91061"	"1385"	"186817"	"2893060"	"79885"	NA
 "Alkalihalophilus_marmarensis-_-EU621902--_GMBE72_T"	"EU621902"	"1188261"	"Alkalihalophilus marmarensis DSM 21297"	"strain"	"t__1188261"	"2"	"1239"	"91061"	"1385"	"186817"	"2893060"	"521377"	"1188261"
-"Alkalihalophilus_lindianensis-_-KP954690--_12-3_T"	"KP954690"	"1630542"	"Alkalihalobacillus lindianensis"	"species"	"s__1630542"	"2"	"1239"	"91061"	"1385"	"186817"	"2675234"	"1630542"	NA
+"Alkalihalophilus_lindianensis-_-KP954690--_12-3_T"	"KP954690"	"1630542"	"Alkalihalophilus lindianensis"	"species"	"s__1630542"	"2"	"1239"	"91061"	"1385"	"186817"	"2893060"	"1630542"	NA
 "g__2893055"	NA	"2893055"	"Halalkalibacterium (ex Joshi et al. 2022)"	"genus"	"g__2893055"	"2"	"1239"	"91061"	"1385"	"186817"	"2893055"	NA	NA
 "Halalkalibacterium_ligniniphilum-_-JQ044788--_L1_T"	"JQ044788"	"1134413"	"Halalkalibacterium ligniniphilum"	"species"	"s__1134413"	"2"	"1239"	"91061"	"1385"	"186817"	"2893055"	"1134413"	NA
 "Paralkalibacillus_indicireducens-_-LC197841--_M3-6_T"	"LC197841"	"1920268"	"Paralkalibacillus indicireducens"	"species"	"s__1920268"	"2"	"1239"	"91061"	"1385"	"186817"	"2038691"	"1920268"	NA
@@ -12154,7 +12152,8 @@
 "g__1903506"	NA	"1903506"	"Drancourtella"	"genus"	"g__1903506"	"2"	"1239"	"186801"	"186802"	"216572"	"1903506"	NA	NA
 "Sellimonas_catena-_-LC735994--_12EGH17T"	"LC735994"	"2994035"	"Sellimonas catena"	"species"	"s__2994035"	"2"	"1239"	"186801"	"186802"	"186803"	"1769710"	"2994035"	NA
 "Dorea_acetigenes-_-JAOQJU000000000--_Sanger_03_T"	"JAOQJU000000000"	"2981787"	"Dorea acetigenes"	"species"	"s__2981787"	"2"	"1239"	"186801"	"186802"	"186803"	"189330"	"2981787"	NA
-"Sellimonas_monacensis-_-MN055941--_ClaCZ80_T"	"MN055941"	"2779351"	"Sellimonas monacensis"	"species"	"s__2779351"	"2"	"1239"	"186801"	"186802"	"186803"	"1769710"	"2779351"	NA
+"Sellimonas_monacensis-_-MN055941--_ClaCZ80_T"	"MN055941"	"2779351"	"Claveliimonas monacensis"	"species"	"s__2779351"	"2"	"1239"	"186801"	"186802"	"186803"	"3076670"	"2779351"	NA
+"g__3076670"	NA	"3076670"	"Claveliimonas"	"genus"	"g__3076670"	"2"	"1239"	"186801"	"186802"	"186803"	"3076670"	NA	NA
 "Merdimonas_faecis-_-KP966093--_BR31_T"	"KP966093"	"1653435"	"Merdimonas faecis"	"species"	"s__1653435"	"2"	"1239"	"186801"	"186802"	"186803"	"2023266"	"1653435"	NA
 "g__2023266"	NA	"2023266"	"Merdimonas"	"genus"	"g__2023266"	"2"	"1239"	"186801"	"186802"	"186803"	"2023266"	NA	NA
 "Coprococcus_comes-_-ABVR01000038--_ATCC_27758_T"	"ABVR01000038"	"470146"	"Coprococcus comes ATCC 27758"	"strain"	"t__470146"	"2"	"1239"	"186801"	"186802"	"186803"	"33042"	"410072"	"470146"
@@ -12202,7 +12201,7 @@
 "Blautia_argi-_-KX025138--_N6H1-15_T"	"KX025138"	"1912897"	"Blautia argi"	"species"	"s__1912897"	"2"	"1239"	"186801"	"186802"	"186803"	"572511"	"1912897"	NA
 "Blautia_hansenii-_-CP022413--_DSM_20583_n_T"	"CP022413"	"537007"	"Blautia hansenii DSM 20583"	"strain"	"t__537007"	"2"	"1239"	"186801"	"186802"	"186803"	"572511"	"1322"	"537007"
 "Blautia_wexlerae-_-EF036467--_WAL_14507_T"	"EF036467"	"1121115"	"Blautia wexlerae DSM 19850"	"strain"	"t__1121115"	"2"	"1239"	"186801"	"186802"	"186803"	"572511"	"418240"	"1121115"
-"Blautia_luti-_-AB691576--_DSM_14534_T"	"AB691576"	"649762"	"Blautia luti DSM 14534"	"strain"	"t__649762"	"2"	"1239"	"186801"	"186802"	"186803"	"572511"	"89014"	"649762"
+"Blautia_luti-_-AB691576--_DSM_14534_T"	"AB691576"	"649762"	"Blautia luti DSM 14534 = JCM 17040"	"strain"	"t__649762"	"2"	"1239"	"186801"	"186802"	"186803"	"572511"	"89014"	"649762"
 "Blautia_hydrogenotrophica-_-ACBZ01000217--_DSM_10507_T"	"ACBZ01000217"	"476272"	"Blautia hydrogenotrophica DSM 10507"	"strain"	"t__476272"	"2"	"1239"	"186801"	"186802"	"186803"	"572511"	"53443"	"476272"
 "Oliverpabstia_intestinalis-_-MN537507--_DSM_106162_T"	"MN537507"	"2606633"	"Oliverpabstia intestinalis"	"species"	"s__2606633"	"2"	"1239"	"186801"	"186802"	"186803"	"2815777"	"2606633"	NA
 "g__2815777"	NA	"2815777"	"Oliverpabstia"	"genus"	"g__2815777"	"2"	"1239"	"186801"	"186802"	"186803"	"2815777"	NA	NA
@@ -12418,7 +12417,7 @@
 "Anaerobutyricum_soehngenii-_-AJ270490--_L2-7_T"	"AJ270490"	"105843"	"Anaerobutyricum soehngenii"	"species"	"s__105843"	"2"	"1239"	"186801"	"186802"	"186803"	"2569097"	"105843"	NA
 "Anaerobutyricum_hallii-_-L34621--_ATCC_27751_T"	"L34621"	"39488"	"Anaerobutyricum hallii"	"species"	"s__39488"	"2"	"1239"	"186801"	"186802"	"186803"	"2569097"	"39488"	NA
 "Coprococcus_ammoniilyticus-_-JAOQJS000000000--_H1_22_T"	"JAOQJS000000000"	"2981785"	"Coprococcus ammoniilyticus"	"species"	"s__2981785"	"2"	"1239"	"186801"	"186802"	"186803"	"33042"	"2981785"	NA
-"Coprococcus_hominis-_-MT905185--_NSJ-10_T"	"MT905185"	"2763039"	"Coprococcus hominis"	"species"	"s__2763039"	"2"	"1239"	"186801"	"186802"	"186803"	"33042"	"2763039"	NA
+"Coprococcus_hominis-_-MT905185--_NSJ-10_T"	"MT905185"	"2763039"	"Coprococcus hominis (ex Liu et al. 2022)"	"species"	"s__2763039"	"2"	"1239"	"186801"	"186802"	"186803"	"33042"	"2763039"	NA
 "Coprococcus_eutactus-_-EF031543--_ATCC_27759_T"	"EF031543"	"33043"	"Coprococcus eutactus"	"species"	"s__33043"	"2"	"1239"	"186801"	"186802"	"186803"	"33042"	"33043"	NA
 "Eubacterium_ruminantium-_-AB008552--_GA195_T"	"AB008552"	"42322"	"Eubacterium ruminantium"	"species"	"s__42322"	"2"	"1239"	"186801"	"186802"	"186806"	"1730"	"42322"	NA
 "g__698776"	NA	"698776"	"Cellulosilyticum"	"genus"	"g__698776"	"2"	"1239"	"186801"	"186802"	"3018741"	"698776"	NA	NA
@@ -16780,7 +16779,7 @@
 "Streptomyces_virens-_-DQ442554--_NRRL_B-24331T_T"	"DQ442554"	"285572"	"Streptomyces virens"	"species"	"s__285572"	"2"	"201174"	"1760"	"85011"	"2062"	"1883"	"285572"	NA
 "Streptomyces_calvus-_-AB184329--_NBRC_13200_T"	"AB184329"	"67282"	"Streptomyces calvus"	"species"	"s__67282"	"2"	"201174"	"1760"	"85011"	"2062"	"1883"	"67282"	NA
 "Streptomyces_glaucus-_-AB184665--_NBRC_15417_T"	"AB184665"	"284029"	"Streptomyces glaucus"	"species"	"s__284029"	"2"	"201174"	"1760"	"85011"	"2062"	"1883"	"284029"	NA
-"Streptomyces_griseostramineus-_-AB184140--_NBRC_12781_T"	"AB184140"	"66898"	"Streptomyces griseostramineus"	"species"	"s__66898"	"2"	"201174"	"1760"	"85011"	"2062"	"1883"	"66898"	NA
+"Streptomyces_griseostramineus-_-AB184140--_NBRC_12781_T"	"AB184140"	"66895"	"Streptomyces griseomycini"	"species"	"s__66895"	"2"	"201174"	"1760"	"85011"	"2062"	"1883"	"66895"	NA
 "Streptomyces_graminearus-_-AJ781333--_LMG_19904_T"	"AJ781333"	"284030"	"Streptomyces graminearus"	"species"	"s__284030"	"2"	"201174"	"1760"	"85011"	"2062"	"1883"	"284030"	NA
 "Streptomyces_griseomycini-_-AB184137--_NBRC_12778_T"	"AB184137"	"66895"	"Streptomyces griseomycini"	"species"	"s__66895"	"2"	"201174"	"1760"	"85011"	"2062"	"1883"	"66895"	NA
 "Streptomyces_thermospinosisporus-_-AF333113--_AT10_T"	"AF333113"	"161482"	"Streptomyces thermospinosisporus"	"species"	"s__161482"	"2"	"201174"	"1760"	"85011"	"2062"	"1883"	"161482"	NA
@@ -17389,11 +17388,11 @@
 "Clavibacter_zhangzhiyongii-_-MW042407--_DM1_T"	"MW042407"	"2768071"	"Clavibacter zhangzhiyongii"	"species"	"s__2768071"	"2"	"201174"	"1760"	"85006"	"85023"	"1573"	"2768071"	NA
 "Clavibacter_insidiosus-_-U09761--_LMG_3663__T"	"U09761"	"33014"	"Clavibacter michiganensis subsp. insidiosus"	"subspecies"	NA	"2"	"201174"	"1760"	"85006"	"85023"	"1573"	"28447"	NA
 "Clavibacter_phaseoli-_-HE608962--_LPPA_982_T"	"HE608962"	"1734031"	"Clavibacter phaseoli"	"species"	"s__1734031"	"2"	"201174"	"1760"	"85006"	"85023"	"1573"	"1734031"	NA
-"Clavibacter_nebraskensis-_-HE614873--_NCPPB_2581_T"	"HE614873"	"1097677"	"Clavibacter michiganensis subsp. nebraskensis NCPPB 2581"	"strain"	"t__1097677"	"2"	"201174"	"1760"	"85006"	"85023"	"1573"	"28447"	"1097677"
+"Clavibacter_nebraskensis-_-HE614873--_NCPPB_2581_T"	"HE614873"	"1097677"	"Clavibacter nebraskensis NCPPB 2581"	"strain"	"t__1097677"	"2"	"201174"	"1760"	"85006"	"85023"	"1573"	"31963"	"1097677"
 "Clavibacter_michiganensis_subsp._chilensis-_-KF663872--_ZUM3936_T"	"KF663872"	"1734031"	"Clavibacter phaseoli"	"species"	"s__1734031"	"2"	"201174"	"1760"	"85006"	"85023"	"1573"	"1734031"	NA
 "Clavibacter_californiensis-_-KF663871--_C55_T"	"KF663871"	"1401995"	"Clavibacter californiensis"	"species"	"s__1401995"	"2"	"201174"	"1760"	"85006"	"85023"	"1573"	"1401995"	NA
 "Clavibacter_sepedonicus-_-AM849034--_ATCC33113_T"	"AM849034"	"31964"	"Clavibacter michiganensis subsp. sepedonicus"	"subspecies"	NA	"2"	"201174"	"1760"	"85006"	"85023"	"1573"	"28447"	NA
-"Clavibacter_capsici-_-CP012573--_PF008_T"	"CP012573"	"1874630"	"Clavibacter michiganensis subsp. capsici"	"subspecies"	NA	"2"	"201174"	"1760"	"85006"	"85023"	"1573"	"28447"	NA
+"Clavibacter_capsici-_-CP012573--_PF008_T"	"CP012573"	"1874630"	"Clavibacter capsici"	"species"	"s__1874630"	"2"	"201174"	"1760"	"85006"	"85023"	"1573"	"1874630"	NA
 "Planctomonas_psychrotolerans-_-KU051697--_J5903_T"	"KU051697"	"2528712"	"Planctomonas psychrotolerans"	"species"	"s__2528712"	"2"	"201174"	"1760"	"85006"	"85023"	"2729624"	"2528712"	NA
 "g__2729624"	NA	"2729624"	"Planctomonas"	"genus"	"g__2729624"	"2"	"201174"	"1760"	"85006"	"85023"	"2729624"	NA	NA
 "Planctomonas_deserti-_-MH287062--_13S1-3_T"	"MH287062"	"1873462"	"Microbacteriaceae bacterium"	"species"	"s__1873462"	"2"	"201174"	"1760"	"85006"	"85023"	NA	"1873462"	NA
@@ -18295,7 +18294,7 @@
 "Actinomyces_viscosus-_-AB538436--_JCM_8353_T"	"AB538436"	"1656"	"Actinomyces viscosus"	"species"	"s__1656"	"2"	"201174"	"1760"	"2037"	"2049"	"1654"	"1656"	NA
 "Actinomyces_oris-_-AB545935--_JCM_16131_T"	"AB545935"	"544580"	"Actinomyces oris"	"species"	"s__544580"	"2"	"201174"	"1760"	"2037"	"2049"	"1654"	"544580"	NA
 "Actinomyces_bowdenii-_-AJ234039--_M1956/95/1_T"	"AJ234039"	"131109"	"Actinomyces bowdenii"	"species"	"s__131109"	"2"	"201174"	"1760"	"2037"	"2049"	"1654"	"131109"	NA
-"Actinomyces_capricornis-_-AP025017--_MAS-1_T"	"AP025017"	"2755559"	"Actinomyces sp. MAS-1"	"species"	"s__2755559"	"2"	"201174"	"1760"	"2037"	"2049"	"1654"	"2755559"	NA
+"Actinomyces_capricornis-_-AP025017--_MAS-1_T"	"AP025017"	"2755559"	"Actinomyces capricornis"	"species"	"s__2755559"	"2"	"201174"	"1760"	"2037"	"2049"	"1654"	"2755559"	NA
 "Actinomyces_trachealis-_-MT894139--_zg-993_T"	"MT894139"	"2763540"	"Actinomyces trachealis"	"species"	"s__2763540"	"2"	"201174"	"1760"	"2037"	"2049"	"1654"	"2763540"	NA
 "Actinomyces_weissii-_-FN552454--_2298_T"	"FN552454"	"675090"	"Actinomyces weissii"	"species"	"s__675090"	"2"	"201174"	"1760"	"2037"	"2049"	"1654"	"675090"	NA
 "Actinomyces_bovis-_-X81061--_NCTC_11535_T"	"X81061"	"1658"	"Actinomyces bovis"	"species"	"s__1658"	"2"	"201174"	"1760"	"2037"	"2049"	"1654"	"1658"	NA
@@ -20667,12 +20666,12 @@
 "Hoylesella_shahii-_-AB108825--_JCM_12083_T"	"AB108825"	"228603"	"Hoylesella shahii"	"species"	"s__228603"	"2"	"976"	"200643"	"171549"	"171552"	"2974257"	"228603"	NA
 "Palleniella_intestinalis-_-JABKKG010000000--_PINTT"	"JABKKG010000000"	"2736291"	"Palleniella intestinalis"	"species"	"s__2736291"	"2"	"976"	"200643"	"171549"	"171552"	"2974369"	"2736291"	NA
 "g__2974369"	NA	"2974369"	"Palleniella"	"genus"	"g__2974369"	"2"	"976"	"200643"	"171549"	"171552"	"2974369"	NA	NA
-"Hoylesella_saccharolytica-_-AB616135--_JCM_17484_T"	"AB616135"	"1236516"	"Prevotella saccharolytica JCM 17484"	"strain"	"t__1236516"	"2"	"976"	"200643"	"171549"	"171552"	"2974257"	"633701"	"1236516"
-"Hoylesella_marshii-_-AEEI01000070--_DSM_16973_T"	"AEEI01000070"	"862515"	"Prevotella marshii DSM 16973 = JCM 13450"	"strain"	"t__862515"	"2"	"976"	"200643"	"171549"	"171552"	"2974257"	"189722"	"862515"
-"Hoylesella_oralis-_-AEPE02000001--_ATCC_33269_T"	"AEPE02000001"	"873533"	"Prevotella oralis ATCC 33269"	"strain"	"t__873533"	"2"	"976"	"200643"	"171549"	"171552"	"2974257"	"28134"	"873533"
+"Hoylesella_saccharolytica-_-AB616135--_JCM_17484_T"	"AB616135"	"1236516"	"Hoylesella saccharolytica JCM 17484"	"strain"	"t__1236516"	"2"	"976"	"200643"	"171549"	"171552"	"2974257"	"633701"	"1236516"
+"Hoylesella_marshii-_-AEEI01000070--_DSM_16973_T"	"AEEI01000070"	"862515"	"Hoylesella marshii DSM 16973 = JCM 13450"	"strain"	"t__862515"	"2"	"976"	"200643"	"171549"	"171552"	"2974257"	"189722"	"862515"
+"Hoylesella_oralis-_-AEPE02000001--_ATCC_33269_T"	"AEPE02000001"	"873533"	"Hoylesella oralis ATCC 33269"	"strain"	"t__873533"	"2"	"976"	"200643"	"171549"	"171552"	"2974257"	"28134"	"873533"
 "Prevotella_phocaeensis-_-LN998069--_SN19_T"	"LN998069"	"1776388"	"Prevotella phocaeensis"	"species"	"s__1776388"	"2"	"976"	"200643"	"171549"	"171552"	"838"	"1776388"	NA
 "Hoylesella_buccalis-_-AB547676--_JCM_12246_T"	"AB547676"	"28127"	"Hoylesella buccalis"	"species"	"s__28127"	"2"	"976"	"200643"	"171549"	"171552"	"2974257"	"28127"	NA
-"Hoylesella_timonensis-_-AB547706--_JCM_15640_T"	"AB547706"	"1122992"	"Prevotella timonensis 4401737 = DSM 22865 = JCM 15640"	"strain"	"t__1122992"	"2"	"976"	"200643"	"171549"	"171552"	"2974257"	"386414"	"1122992"
+"Hoylesella_timonensis-_-AB547706--_JCM_15640_T"	"AB547706"	"1122992"	"Hoylesella timonensis 4401737 = DSM 22865 = JCM 15640"	"strain"	"t__1122992"	"2"	"976"	"200643"	"171549"	"171552"	"2974257"	"386414"	"1122992"
 "Hoylesella_enoeca-_-AJ005635--_ATCC_51261_T"	"AJ005635"	"76123"	"Hoylesella enoeca"	"species"	"s__76123"	"2"	"976"	"200643"	"171549"	"171552"	"2974257"	"76123"	NA
 "Hoylesella_pleuritidis-_-AB278593--_JCM_14110_T"	"AB278593"	"407975"	"Hoylesella pleuritidis"	"species"	"s__407975"	"2"	"976"	"200643"	"171549"	"171552"	"2974257"	"407975"	NA
 "Prevotella_merdae-_-LT984637--_Marseille-P4119T"	"LT984637"	"2079531"	"Prevotella merdae"	"species"	"s__2079531"	"2"	"976"	"200643"	"171549"	"171552"	"838"	"2079531"	NA
@@ -20747,7 +20746,7 @@
 "Bacteroides_faecalis-_-MK207058--_KGMB02408_T"	"MK207058"	"2447885"	"Bacteroides faecalis"	"species"	"s__2447885"	"2"	"976"	"200643"	"171549"	"815"	"816"	"2447885"	NA
 "Bacteroides_faecium-_-MN853409--_CBA7301T"	"MN853409"	"2715212"	"Bacteroides faecium"	"species"	"s__2715212"	"2"	"976"	"200643"	"171549"	"815"	"816"	"2715212"	NA
 "Bacteroides_fragilis-_-CR626927--_NCTC_9343_LTP__T"	"CR626927"	"272559"	"Bacteroides fragilis NCTC 9343"	"strain"	"t__272559"	"2"	"976"	"200643"	"171549"	"815"	"816"	"817"	"272559"
-"Bacteroides_hominis-_-MT905160--_NSJ-2_T"	"MT905160"	"2763023"	"Bacteroides hominis"	"species"	"s__2763023"	"2"	"976"	"200643"	"171549"	"815"	"816"	"2763023"	NA
+"Bacteroides_hominis-_-MT905160--_NSJ-2_T"	"MT905160"	"2763023"	"Bacteroides hominis (ex Liu et al. 2022)"	"species"	"s__2763023"	"2"	"976"	"200643"	"171549"	"815"	"816"	"2763023"	NA
 "Bacteroides_salyersiae-_-AQHX01000008--_DSM_18765_T"	"AQHX01000008"	"1121101"	"Bacteroides salyersiae WAL 10018 = DSM 18765 = JCM 12988"	"strain"	"t__1121101"	"2"	"976"	"200643"	"171549"	"815"	"816"	"291644"	"1121101"
 "Bacteroides_nordii-_-EU136693--_JCM12987_T"	"EU136693"	"1203608"	"Bacteroides nordii WAL 11050 = JCM 12987"	"strain"	"t__1203608"	"2"	"976"	"200643"	"171549"	"815"	"816"	"291645"	"1203608"
 "Bacteroides_graminisolvens-_-AB547643--_JCM_15093_T"	"AB547643"	"477666"	"Bacteroides graminisolvens"	"species"	"s__477666"	"2"	"976"	"200643"	"171549"	"815"	"816"	"477666"	NA
@@ -22004,7 +22003,7 @@
 "Hymenobacter_elongatus-_-GQ454797--_VUG-A112_T"	"GQ454797"	"877208"	"Hymenobacter elongatus"	"species"	"s__877208"	"2"	"976"	"768503"	"768507"	"1853232"	"89966"	"877208"	NA
 "Hymenobacter_chitinivorans-_-Y18837--_Txc1_T"	"Y18837"	"89969"	"Hymenobacter chitinivorans"	"species"	"s__89969"	"2"	"976"	"768503"	"768507"	"1853232"	"89966"	"89969"	NA
 "Hymenobacter_metallicola-_-MH229470--_9PBR-1_T"	"MH229470"	"2563114"	"Hymenobacter metallicola"	"species"	"s__2563114"	"2"	"976"	"768503"	"768507"	"1853232"	"89966"	"2563114"	NA
-"Hymenobacter_lutimineralis-_-VTHL01000001--_KIGAM108T"	"VTHL01000001"	"2606448"	"Hymenobacter sp. KIGAM108"	"species"	"s__2606448"	"2"	"976"	"768503"	"768507"	"1853232"	"89966"	"2606448"	NA
+"Hymenobacter_lutimineralis-_-VTHL01000001--_KIGAM108T"	"VTHL01000001"	"2606448"	"Hymenobacter lutimineralis"	"species"	"s__2606448"	"2"	"976"	"768503"	"768507"	"1853232"	"89966"	"2606448"	NA
 "Hymenobacter_roseosalivarius-_-Y18833--_AA718_T"	"Y18833"	"645990"	"Hymenobacter roseosalivarius DSM 11622"	"strain"	"t__645990"	"2"	"976"	"768503"	"768507"	"1853232"	"89966"	"89967"	"645990"
 "Hymenobacter_roseus-_-HG965772--_JC245_T"	"HG965772"	"1480696"	"Hymenobacter roseus"	"species"	"s__1480696"	"2"	"976"	"768503"	"768507"	"1853232"	"89966"	"1480696"	NA
 "Hymenobacter_qilianensis-_-KF723715--_DK6-37_T"	"KF723715"	"1385715"	"Hymenobacter qilianensis"	"species"	"s__1385715"	"2"	"976"	"768503"	"768507"	"1853232"	"89966"	"1385715"	NA
@@ -22324,7 +22323,7 @@
 "Borrelia_japonica-_-L40597--_HO14_T"	"L40597"	"34095"	"Borreliella japonica"	"species"	"s__34095"	"2"	"203691"	"203692"	"136"	"1643685"	"64895"	"34095"	NA
 "Borrelia_sinica-_-AB022101--_CMN3_T"	"AB022101"	"87162"	"Borreliella sinica"	"species"	"s__87162"	"2"	"203691"	"203692"	"136"	"1643685"	"64895"	"87162"	NA
 "Borrelia_garinii_subsp._garini-_-D67018--_20047_T"	"D67018"	"29519"	"Borreliella garinii"	"species"	"s__29519"	"2"	"203691"	"203692"	"136"	"1643685"	"64895"	"29519"	NA
-"Borrelia_garinii_subsp._bavariensis-_-AB035385--_PBi_T"	"AB035385"	"290434"	"Borrelia garinii subsp. bavariensis PBi"	"strain"	"t__290434"	"2"	"203691"	"203692"	"136"	"1643685"	"64895"	"664662"	"290434"
+"Borrelia_garinii_subsp._bavariensis-_-AB035385--_PBi_T"	"AB035385"	"290434"	"Borreliella bavariensis PBi"	"strain"	"t__290434"	"2"	"203691"	"203692"	"136"	"1643685"	"64895"	"664662"	"290434"
 "Borrelia_lusitaniae-_-X98228--_Poti_B2_T"	"X98228"	"139"	"Borreliella burgdorferi"	"species"	"s__139"	"2"	"203691"	"203692"	"136"	"1643685"	"64895"	"139"	NA
 "Borrelia_maritima-_-MN095518--_CA690_T"	"MN095518"	"2761123"	"Borrelia maritima"	"species"	"s__2761123"	"2"	"203691"	"203692"	"136"	"1643685"	"138"	"2761123"	NA
 "Borrelia_afzelii-_-FR733687--_DSM10508_T"	"FR733687"	"29518"	"Borreliella afzelii"	"species"	"s__29518"	"2"	"203691"	"203692"	"136"	"1643685"	"64895"	"29518"	NA
@@ -22711,7 +22710,7 @@
 "Natrinema_gelatinilyticum-_-MW326087--_BND6_/type_materialtype_strain_of_Natrinema_gelatinilyticumT"	"MW326087"	"2961571"	"Natrinema gelatinilyticum"	"species"	"s__2961571"	"2157"	"28890"	"183963"	"1644060"	"1644061"	"88723"	"2961571"	NA
 "Natrinema_halophilum-_-KT363840--_YPL8_T"	"KT363840"	"1699371"	"Natrinema halophilum"	"species"	"s__1699371"	"2157"	"28890"	"183963"	"1644060"	"1644061"	"88723"	"1699371"	NA
 "Natrinema_marinu-_-MW774386--_DT87_/type_materialtype_strain_of_Natrinema_marinumT"	"MW774386"	"2961598"	"Natrinema marinum"	"species"	"s__2961598"	"2157"	"28890"	"183963"	"1644060"	"1644061"	"88723"	"2961598"	NA
-"Natrinema_limicola-_-DQ367241--_AX-7_T"	"DQ367241"	"1230457"	"Haloterrigena limicola JCM 13563"	"strain"	"t__1230457"	"2157"	"28890"	"183963"	"1644060"	"1644061"	"88723"	"370323"	"1230457"
+"Natrinema_limicola-_-DQ367241--_AX-7_T"	"DQ367241"	"1230457"	"Natrinema limicola JCM 13563"	"strain"	"t__1230457"	"2157"	"28890"	"183963"	"1644060"	"1644061"	"88723"	"370323"	"1230457"
 "Natrinema_hispanicum-_-AB663443--_DSM_18328_T"	"AB663443"	"392421"	"Natrinema hispanicum"	"species"	"s__392421"	"2157"	"28890"	"183963"	"1644060"	"1644061"	"88723"	"392421"	NA
 "g__353799"	NA	"353799"	"Halostagnicola"	"genus"	"g__353799"	"2157"	"28890"	"183963"	"1644060"	"1644061"	"353799"	NA	NA
 "Halostagnicola_larsenii-_-CP007055--_XH-48_n_T"	"CP007055"	"797299"	"Halostagnicola larsenii XH-48"	"strain"	"t__797299"	"2157"	"28890"	"183963"	"1644060"	"1644061"	"353799"	"353800"	"797299"
@@ -23031,8 +23030,7 @@
 "Haloarcula_amylolytica-_-DQ826513--_BD-3_T"	"DQ826513"	"396317"	"Haloarcula amylolytica"	"species"	"s__396317"	"2157"	"28890"	"183963"	"2235"	"1963268"	"2237"	"396317"	NA
 "Haloarcula_japonica-_-EF645685--_JCM7785_T"	"EF645685"	"29282"	"Haloarcula japonica"	"species"	"s__29282"	"2157"	"28890"	"183963"	"2235"	"1963268"	"2237"	"29282"	NA
 "Haloarcula_salaria-_-FJ429317--_HST01-2R_T"	"FJ429317"	"575195"	"Haloarcula salaria"	"species"	"s__575195"	"2157"	"28890"	"183963"	"2235"	"1963268"	"2237"	"575195"	NA
-"Halomicrobium_urmianum-_-KM596805--_DC8_T"	"KM596805"	"1586233"	"Halosiccatus urmianus"	"species"	"s__1586233"	"2157"	"28890"	"183963"	"2235"	"1963268"	"1763447"	"1586233"	NA
-"g__1763447"	NA	"1763447"	"Halosiccatus"	"genus"	"g__1763447"	"2157"	"28890"	"183963"	"2235"	"1963268"	"1763447"	NA	NA
+"Halomicrobium_urmianum-_-KM596805--_DC8_T"	"KM596805"	"1586233"	"Halomicrobium urmianum"	"species"	"s__1586233"	"2157"	"28890"	"183963"	"2235"	"1963268"	"203135"	"1586233"	NA
 "Halapricum_desulfuricans-_-CP064788r2--_HSR12-2T"	"CP064788r2"	"2841257"	"Halapricum desulfuricans"	"species"	"s__2841257"	"2157"	"28890"	"183963"	"2235"	"1963268"	"1542963"	"2841257"	NA
 "Halomicrobium_salinisoli-_-MZ798429--_LT50T"	"MZ798429"	"2878391"	"Halomicrobium salinisoli"	"species"	"s__2878391"	"2157"	"28890"	"183963"	"2235"	"1963268"	"203135"	"2878391"	NA
 "Halomicroarcula_limicola-_-JQ237128--_YGHS32_T"	"JQ237128"	"1429915"	"Halomicroarcula limicola"	"species"	"s__1429915"	"2157"	"28890"	"183963"	"2235"	"1963268"	"1427149"	"1429915"	NA
