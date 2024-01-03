@@ -23,13 +23,17 @@ In this case, assigng a probability of 1 to A--TRUE and 0 to A--FALSE for
 the t1 tip.
 
 ```{r}
-randomTree <- rtree(5, rooted = TRUE)
+set.seed(1234)
+randomTree <- rtree(7, rooted = TRUE)
 mat <- matrix(
-    data = rep(0.5, 10), ncol = 2, dimnames = list(
-        rownames = paste0('t', 1:5), colnames = c('A--TRUE', 'A--FALSE')
+    data = rep(0.5, Ntip(randomTree) * 2), ncol = 2, dimnames = list(
+        rownames = paste0('t', 1:Ntip(randomTree)), colnames = c('A--TRUE', 'A--FALSE')
     )
 )
-mat[1,] <- c(1, 0)
+annotated_tips <- c('t3', 't2')
+for (i in seq_along(annotated_tips)) {
+    mat[annotated_tips[i], ] <- c(1, 0)
+}
 mat
 ```
 
@@ -85,13 +89,12 @@ for (i in seq_along(models)) {
         fit <- fitMk(tree = randomTree, x = mat, model = models[i], pi = pis[j])
         ace <- ancr(fit, tips = TRUE)
         plotList[[n]] <- plotT(
-            randomTree, ace = ace, input_tips = 't1',
+            randomTree, ace = ace, input_tips = annotated_tips,
             model = models[i], pi = pis[j]
         )
         n <- n + 1
     }
 }
-
 ```
 
 ## Print plots
