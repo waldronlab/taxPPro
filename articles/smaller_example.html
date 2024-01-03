@@ -120,19 +120,23 @@ for the t1 tip.</p>
 <span>    <span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">annotated_tips</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'t3'</span>, <span class="st">'t2'</span><span class="op">)</span></span>
-<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">annotated_tips</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="va">mat</span><span class="op">[</span><span class="va">annotated_tips</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">randomTree</span><span class="op">$</span><span class="va">tip.label</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">randomTree</span><span class="op">$</span><span class="va">tip.label</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">annotated_tips</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="va">mat</span><span class="op">[</span><span class="va">randomTree</span><span class="op">$</span><span class="va">tip.label</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span></span>
+<span>    <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>        <span class="va">mat</span><span class="op">[</span><span class="va">randomTree</span><span class="op">$</span><span class="va">tip.label</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
 <span><span class="op">}</span></span>
 <span><span class="va">mat</span></span>
 <span><span class="co">#&gt;         colnames</span></span>
 <span><span class="co">#&gt; rownames A--TRUE A--FALSE</span></span>
-<span><span class="co">#&gt;       t1     0.5      0.5</span></span>
-<span><span class="co">#&gt;       t2     1.0      0.0</span></span>
-<span><span class="co">#&gt;       t3     1.0      0.0</span></span>
-<span><span class="co">#&gt;       t4     0.5      0.5</span></span>
-<span><span class="co">#&gt;       t5     0.5      0.5</span></span>
-<span><span class="co">#&gt;       t6     0.5      0.5</span></span>
-<span><span class="co">#&gt;       t7     0.5      0.5</span></span></code></pre></div>
+<span><span class="co">#&gt;       t1       0        1</span></span>
+<span><span class="co">#&gt;       t2       1        0</span></span>
+<span><span class="co">#&gt;       t3       1        0</span></span>
+<span><span class="co">#&gt;       t4       0        1</span></span>
+<span><span class="co">#&gt;       t5       0        1</span></span>
+<span><span class="co">#&gt;       t6       0        1</span></span>
+<span><span class="co">#&gt;       t7       0        1</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="function-for-plotting">Function for plotting<a class="anchor" aria-label="anchor" href="#function-for-plotting"></a>
@@ -195,17 +199,17 @@ for the t1 tip.</p>
 <span><span class="co">#&gt; Using pi estimated from the stationary distribution of Q assuming a flat prior.</span></span>
 <span><span class="co">#&gt; pi =</span></span>
 <span><span class="co">#&gt;  A--TRUE A--FALSE </span></span>
-<span><span class="co">#&gt; 0.999934 0.000066 </span></span>
+<span><span class="co">#&gt;      0.5      0.5 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Using pi estimated from the stationary distribution of Q assuming a flat prior.</span></span>
 <span><span class="co">#&gt; pi =</span></span>
 <span><span class="co">#&gt;  A--TRUE A--FALSE </span></span>
-<span><span class="co">#&gt; 0.999934 0.000066 </span></span>
+<span><span class="co">#&gt; 0.253468 0.746532 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Using pi estimated from the stationary distribution of Q assuming a flat prior.</span></span>
 <span><span class="co">#&gt; pi =</span></span>
 <span><span class="co">#&gt;  A--TRUE A--FALSE </span></span>
-<span><span class="co">#&gt; 0.999934 0.000066</span></span></code></pre></div>
+<span><span class="co">#&gt;      0.5      0.5</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="print-plots">Print plots<a class="anchor" aria-label="anchor" href="#print-plots"></a>
@@ -216,9 +220,56 @@ for the t1 tip.</p>
 <p><img src="smaller_example_files/figure-html/unnamed-chunk-5-1.png" width="1440"></p>
 </div>
 <div class="section level2">
-<h2 id="session-info">Session info<a class="anchor" aria-label="anchor" href="#session-info"></a>
+<h2 id="examle-2">Examle 2<a class="anchor" aria-label="anchor" href="#examle-2"></a>
 </h2>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">annotated_tips</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'t1'</span>, <span class="st">'t5'</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">randomTree</span><span class="op">$</span><span class="va">tip.label</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">randomTree</span><span class="op">$</span><span class="va">tip.label</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">annotated_tips</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="va">mat</span><span class="op">[</span><span class="va">randomTree</span><span class="op">$</span><span class="va">tip.label</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span></span>
+<span>    <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>        <span class="va">mat</span><span class="op">[</span><span class="va">randomTree</span><span class="op">$</span><span class="va">tip.label</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">models</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'ER'</span>, <span class="st">'ARD'</span>, <span class="st">'SYM'</span><span class="op">)</span></span>
+<span><span class="va">pis</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'fitzjohn'</span>, <span class="st">'equal'</span>, <span class="st">'estimated'</span><span class="op">)</span></span>
+<span><span class="va">plotList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">vector</a></span><span class="op">(</span><span class="st">'list'</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">models</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">pis</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">models</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw">for</span> <span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">pis</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/fitMk.html" class="external-link">fitMk</a></span><span class="op">(</span>tree <span class="op">=</span> <span class="va">randomTree</span>, x <span class="op">=</span> <span class="va">mat</span>, model <span class="op">=</span> <span class="va">models</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, pi <span class="op">=</span> <span class="va">pis</span><span class="op">[</span><span class="va">j</span><span class="op">]</span><span class="op">)</span></span>
+<span>        <span class="va">ace</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/ancr.html" class="external-link">ancr</a></span><span class="op">(</span><span class="va">fit</span>, tips <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>        <span class="va">plotList</span><span class="op">[[</span><span class="va">n</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">plotT</span><span class="op">(</span></span>
+<span>            <span class="va">randomTree</span>, ace <span class="op">=</span> <span class="va">ace</span>, input_tips <span class="op">=</span> <span class="va">annotated_tips</span>,</span>
+<span>            model <span class="op">=</span> <span class="va">models</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, pi <span class="op">=</span> <span class="va">pis</span><span class="op">[</span><span class="va">j</span><span class="op">]</span></span>
+<span>        <span class="op">)</span></span>
+<span>        <span class="va">n</span> <span class="op">&lt;-</span> <span class="va">n</span> <span class="op">+</span> <span class="fl">1</span></span>
+<span>    <span class="op">}</span></span>
+<span><span class="op">}</span></span>
+<span><span class="co">#&gt; Using pi estimated from the stationary distribution of Q assuming a flat prior.</span></span>
+<span><span class="co">#&gt; pi =</span></span>
+<span><span class="co">#&gt;  A--TRUE A--FALSE </span></span>
+<span><span class="co">#&gt;      0.5      0.5 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Using pi estimated from the stationary distribution of Q assuming a flat prior.</span></span>
+<span><span class="co">#&gt; pi =</span></span>
+<span><span class="co">#&gt;  A--TRUE A--FALSE </span></span>
+<span><span class="co">#&gt; 0.285714 0.714286 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Using pi estimated from the stationary distribution of Q assuming a flat prior.</span></span>
+<span><span class="co">#&gt; pi =</span></span>
+<span><span class="co">#&gt;  A--TRUE A--FALSE </span></span>
+<span><span class="co">#&gt;      0.5      0.5</span></span>
+<span><span class="va">mergedPlot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rpkgs.datanovia.com/ggpubr/reference/ggarrange.html" class="external-link">ggarrange</a></span><span class="op">(</span>plotlist <span class="op">=</span> <span class="va">plotList</span>, ncol <span class="op">=</span> <span class="fl">3</span>, nrow <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mergedPlot</span></span></code></pre></div>
+<p><img src="smaller_example_files/figure-html/unnamed-chunk-7-1.png" width="1440"></p>
+</div>
+<div class="section level2">
+<h2 id="session-info">Session info<a class="anchor" aria-label="anchor" href="#session-info"></a>
+</h2>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">sessioninfo</span><span class="fu">::</span><span class="fu"><a href="https://r-lib.github.io/sessioninfo/reference/session_info.html" class="external-link">session_info</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">─ Session info ───────────────────────────────────────────────────────────────</span></span></span>
 <span><span class="co">#&gt;  <span style="color: #555555; font-style: italic;">setting </span> <span style="color: #555555; font-style: italic;">value</span></span></span>
