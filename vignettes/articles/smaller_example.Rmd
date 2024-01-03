@@ -31,8 +31,12 @@ mat <- matrix(
     )
 )
 annotated_tips <- c('t3', 't2')
-for (i in seq_along(annotated_tips)) {
-    mat[annotated_tips[i], ] <- c(1, 0)
+for (i in seq_along(randomTree$tip.label)) {
+    if (randomTree$tip.label[i] %in% annotated_tips) {
+        mat[randomTree$tip.label[i], ] <- c(1, 0)
+    } else {
+        mat[randomTree$tip.label[i], ] <- c(0, 1)
+    }
 }
 mat
 ```
@@ -103,6 +107,45 @@ for (i in seq_along(models)) {
 mergedPlot <- ggarrange(plotlist = plotList, ncol = 3, nrow = 3)
 mergedPlot
 ```
+
+
+
+## Examle 2
+
+```{r}
+annotated_tips <- c('t1', 't5')
+for (i in seq_along(randomTree$tip.label)) {
+    if (randomTree$tip.label[i] %in% annotated_tips) {
+        mat[randomTree$tip.label[i], ] <- c(1, 0)
+    } else {
+        mat[randomTree$tip.label[i], ] <- c(0, 1)
+    }
+}
+
+models <- c('ER', 'ARD', 'SYM')
+pis <- c('fitzjohn', 'equal', 'estimated')
+plotList <- vector('list', length(models) * length(pis))
+n <- 1
+for (i in seq_along(models)) {
+    for (j in seq_along(pis)) {
+        fit <- fitMk(tree = randomTree, x = mat, model = models[i], pi = pis[j])
+        ace <- ancr(fit, tips = TRUE)
+        plotList[[n]] <- plotT(
+            randomTree, ace = ace, input_tips = annotated_tips,
+            model = models[i], pi = pis[j]
+        )
+        n <- n + 1
+    }
+}
+mergedPlot <- ggarrange(plotlist = plotList, ncol = 3, nrow = 3)
+
+```
+
+
+```{r, fig.width=15, fig.height=10}
+mergedPlot
+```
+
 
 ## Session info
 
