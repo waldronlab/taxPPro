@@ -1,0 +1,63 @@
+---
+title: "weighted Nearest Sequenced Taxon Index (wNSTI)"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, message = FALSE}
+library(taxPPro)
+library(castor)
+library(ggplot2)
+```
+
+
+## Import tree
+
+```{r}
+ltp <- ltp()
+tree <- ltp$tree
+```
+
+## Create two sets of known tip labels
+
+```{r}
+known_x <- sample(tree$tip.label, 10)
+known_y <- sample(tree$tip.label, 2000)
+```
+
+## Get NSTI values
+
+```{r}
+nsti_x <- getNsti(tree = tree, annotated_tip_labels = known_x)
+nsti_y <- getNsti(tree = tree, annotated_tip_labels = known_y)
+```
+
+## Plot a couple of histograms
+
+```{r}
+nsti_x |> 
+    ggplot(aes(nsti)) +
+    geom_histogram(binwidth = 0.1, fill = 'gray70', color = 'black') +
+    theme_bw()
+```
+
+```{r}
+nsti_y |> 
+    ggplot(aes(nsti)) +
+    geom_histogram(binwidth = 0.1, fill = 'gray70', color = 'black') +
+    theme_bw()
+```
+
+## Comments
+
+## System information
+
+```{r}
+sessioninfo::session_info()
+```
+
