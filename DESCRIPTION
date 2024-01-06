@@ -40,7 +40,8 @@ Imports:
     forcats,
     bugphyzz,
     phytools,
-    tidyr
+    tidyr,
+    castor
 VignetteBuilder: knitr
 URL: https://github.com/sdgamboa/taxPPro
 BugReports: https://github.com/sdgamboa/taxPPro/issues/
