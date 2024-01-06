@@ -19,6 +19,9 @@
     <loc>https://waldronlab.io/taxPPro/articles/internal_nodes.html</loc>
   </url>
   <url>
+    <loc>https://waldronlab.io/taxPPro/articles/nsti.html</loc>
+  </url>
+  <url>
     <loc>https://waldronlab.io/taxPPro/articles/smaller_example.html</loc>
   </url>
   <url>
@@ -65,6 +68,9 @@
   </url>
   <url>
     <loc>https://waldronlab.io/taxPPro/reference/getMRCATaxPPro.html</loc>
+  </url>
+  <url>
+    <loc>https://waldronlab.io/taxPPro/reference/getNsti.html</loc>
   </url>
   <url>
     <loc>https://waldronlab.io/taxPPro/reference/getSetWithIDs.html</loc>

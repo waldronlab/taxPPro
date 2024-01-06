@@ -5,13 +5,13 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>taxPPro • taxPPro</title>
+<title>weighted Nearest Sequenced Taxon Index (wNSTI) • taxPPro</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="taxPPro">
+<script src="../pkgdown.js"></script><meta property="og:title" content="weighted Nearest Sequenced Taxon Index (wNSTI)">
 <meta property="og:description" content="taxPPro">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -93,40 +93,66 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>taxPPro</h1>
+      <h1 data-toc-skip>weighted Nearest Sequenced Taxon Index
+(wNSTI)</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/sdgamboa/taxPPro/blob/HEAD/vignettes/taxPPro.Rmd" class="external-link"><code>vignettes/taxPPro.Rmd</code></a></small>
-      <div class="hidden name"><code>taxPPro.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/sdgamboa/taxPPro/blob/HEAD/vignettes/articles/nsti.Rmd" class="external-link"><code>vignettes/articles/nsti.Rmd</code></a></small>
+      <div class="hidden name"><code>nsti.Rmd</code></div>
 
     </div>
 
     
     
-<div class="section level2">
-<h2 id="packages">Packages<a class="anchor" aria-label="anchor" href="#packages"></a>
-</h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/sdgamboa/taxPPro" class="external-link">taxPPro</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/gluc/data.tree" class="external-link">data.tree</a></span><span class="op">)</span></span></code></pre></div>
-</div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">castor</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></code></pre></div>
 <div class="section level2">
-<h2 id="load-ncbi-tree">Load NCBI tree<a class="anchor" aria-label="anchor" href="#load-ncbi-tree"></a>
+<h2 id="import-tree">Import tree<a class="anchor" aria-label="anchor" href="#import-tree"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">'tree_list'</span><span class="op">)</span></span>
-<span><span class="va">ncbi_Tree</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.tree/man/as.Node.html" class="external-link">as.Node</a></span><span class="op">(</span><span class="va">tree_list</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">ltp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ltp.html">ltp</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">tree</span> <span class="op">&lt;-</span> <span class="va">ltp</span><span class="op">$</span><span class="va">tree</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="load-living-tree-project-tree-and-tip-and-node-data">Load living tree project tree and tip and node data:<a class="anchor" aria-label="anchor" href="#load-living-tree-project-tree-and-tip-and-node-data"></a>
+<h2 id="create-two-sets-of-known-tip-labels">Create two sets of known tip labels<a class="anchor" aria-label="anchor" href="#create-two-sets-of-known-tip-labels"></a>
 </h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ltp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ltp.html">ltp</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">known_x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">tree</span><span class="op">$</span><span class="va">tip.label</span>, <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="va">known_y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">tree</span><span class="op">$</span><span class="va">tip.label</span>, <span class="fl">2000</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="session-information">Session information<a class="anchor" aria-label="anchor" href="#session-information"></a>
+<h2 id="get-nsti-values">Get NSTI values<a class="anchor" aria-label="anchor" href="#get-nsti-values"></a>
 </h2>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">nsti_x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getNsti.html">getNsti</a></span><span class="op">(</span>tree <span class="op">=</span> <span class="va">tree</span>, annotated_tip_labels <span class="op">=</span> <span class="va">known_x</span><span class="op">)</span></span>
+<span><span class="va">nsti_y</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getNsti.html">getNsti</a></span><span class="op">(</span>tree <span class="op">=</span> <span class="va">tree</span>, annotated_tip_labels <span class="op">=</span> <span class="va">known_y</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="plot-a-couple-of-histograms">Plot a couple of histograms<a class="anchor" aria-label="anchor" href="#plot-a-couple-of-histograms"></a>
+</h2>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">nsti_x</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">nsti</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html" class="external-link">geom_histogram</a></span><span class="op">(</span>binwidth <span class="op">=</span> <span class="fl">0.1</span>, fill <span class="op">=</span> <span class="st">'gray70'</span>, color <span class="op">=</span> <span class="st">'black'</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="nsti_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">nsti_y</span> <span class="op">|&gt;</span> </span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">nsti</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html" class="external-link">geom_histogram</a></span><span class="op">(</span>binwidth <span class="op">=</span> <span class="fl">0.1</span>, fill <span class="op">=</span> <span class="st">'gray70'</span>, color <span class="op">=</span> <span class="st">'black'</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="nsti_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
+</div>
+<div class="section level2">
+<h2 id="comments">Comments<a class="anchor" aria-label="anchor" href="#comments"></a>
+</h2>
+</div>
+<div class="section level2">
+<h2 id="system-information">System information<a class="anchor" aria-label="anchor" href="#system-information"></a>
+</h2>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">sessioninfo</span><span class="fu">::</span><span class="fu"><a href="https://r-lib.github.io/sessioninfo/reference/session_info.html" class="external-link">session_info</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">─ Session info ───────────────────────────────────────────────────────────────</span></span></span>
 <span><span class="co">#&gt;  <span style="color: #555555; font-style: italic;">setting </span> <span style="color: #555555; font-style: italic;">value</span></span></span>
@@ -146,25 +172,34 @@
 <span><span class="co">#&gt;  ape           5.7-1   <span style="color: #555555;">2023-03-13</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  bslib         0.6.1   <span style="color: #555555;">2023-11-28</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  cachem        1.0.8   <span style="color: #555555;">2023-05-01</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  castor      * 1.7.11  <span style="color: #555555;">2023-08-17</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  cli           3.6.2   <span style="color: #555555;">2023-12-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  data.tree   * 1.1.0   <span style="color: #555555;">2023-11-12</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  colorspace    2.1-0   <span style="color: #555555;">2023-01-23</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  desc          1.4.3   <span style="color: #555555;">2023-12-10</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  digest        0.6.33  <span style="color: #555555;">2023-07-07</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  dplyr         1.1.4   <span style="color: #555555;">2023-11-17</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  evaluate      0.23    <span style="color: #555555;">2023-11-01</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  fansi         1.0.6   <span style="color: #555555;">2023-12-08</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  farver        2.1.1   <span style="color: #555555;">2022-07-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  fastmap       1.1.1   <span style="color: #555555;">2023-02-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  fs            1.6.3   <span style="color: #555555;">2023-07-20</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  generics      0.1.3   <span style="color: #555555;">2022-07-05</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  ggplot2     * 3.4.4   <span style="color: #555555;">2023-10-12</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  glue          1.6.2   <span style="color: #555555;">2022-02-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  gtable        0.3.4   <span style="color: #555555;">2023-08-21</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  highr         0.10    <span style="color: #555555;">2022-12-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  htmltools     0.5.7   <span style="color: #555555;">2023-11-03</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  jquerylib     0.1.4   <span style="color: #555555;">2021-04-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  jsonlite      1.8.8   <span style="color: #555555;">2023-12-04</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  knitr         1.45    <span style="color: #555555;">2023-10-30</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  labeling      0.4.3   <span style="color: #555555;">2023-08-29</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  lattice       0.22-5  <span style="color: #555555;">2023-10-24</span> <span style="color: #555555;">[2]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  lifecycle     1.0.4   <span style="color: #555555;">2023-11-07</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  magrittr      2.0.3   <span style="color: #555555;">2022-03-30</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  Matrix        1.6-1.1 <span style="color: #555555;">2023-09-18</span> <span style="color: #555555;">[2]</span> <span style="color: #555555;">CRAN (R 4.3.2)</span></span></span>
 <span><span class="co">#&gt;  memoise       2.0.1   <span style="color: #555555;">2021-11-26</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  munsell       0.5.0   <span style="color: #555555;">2018-06-12</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  naturalsort   0.1.3   <span style="color: #555555;">2016-08-30</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  nlme          3.1-163 <span style="color: #555555;">2023-08-09</span> <span style="color: #555555;">[2]</span> <span style="color: #555555;">CRAN (R 4.3.2)</span></span></span>
 <span><span class="co">#&gt;  pillar        1.9.0   <span style="color: #555555;">2023-03-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  pkgconfig     2.0.3   <span style="color: #555555;">2019-09-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
@@ -172,10 +207,12 @@
 <span><span class="co">#&gt;  purrr         1.0.2   <span style="color: #555555;">2023-08-10</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  R6            2.5.1   <span style="color: #555555;">2021-08-19</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  ragg          1.2.6   <span style="color: #555555;">2023-10-10</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
-<span><span class="co">#&gt;  Rcpp          1.0.11  <span style="color: #555555;">2023-07-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  Rcpp        * 1.0.11  <span style="color: #555555;">2023-07-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  rlang         1.1.2   <span style="color: #555555;">2023-11-04</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  rmarkdown     2.25    <span style="color: #555555;">2023-09-18</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  RSpectra      0.16-1  <span style="color: #555555;">2022-04-24</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  sass          0.4.8   <span style="color: #555555;">2023-12-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  scales        1.3.0   <span style="color: #555555;">2023-11-28</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  sessioninfo   1.2.2   <span style="color: #555555;">2021-12-06</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  stringi       1.8.3   <span style="color: #555555;">2023-12-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  stringr       1.5.1   <span style="color: #555555;">2023-11-14</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
@@ -186,6 +223,7 @@
 <span><span class="co">#&gt;  tidyselect    1.2.0   <span style="color: #555555;">2022-10-10</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  utf8          1.2.4   <span style="color: #555555;">2023-10-22</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  vctrs         0.6.5   <span style="color: #555555;">2023-12-01</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
+<span><span class="co">#&gt;  withr         2.5.2   <span style="color: #555555;">2023-10-30</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  xfun          0.41    <span style="color: #555555;">2023-11-01</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt;  yaml          2.3.8   <span style="color: #555555;">2023-12-11</span> <span style="color: #555555;">[1]</span> <span style="color: #BB00BB; font-weight: bold;">RSPM (R 4.3.0)</span></span></span>
 <span><span class="co">#&gt; </span></span>
