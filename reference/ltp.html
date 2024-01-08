@@ -80,7 +80,7 @@ Living Tree Project.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ltp</span><span class="op">(</span>remove_gn_nodes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">ltp</span><span class="op">(</span>remove_gn_nodes <span class="op">=</span> <span class="cn">TRUE</span>, node_names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -88,6 +88,11 @@ Living Tree Project.</p>
     <dl><dt>remove_gn_nodes</dt>
 <dd><p>Remove rows from node_data with genus taxids.
 Default is TRUE, which removes them. These are already in tip_data.</p></dd>
+
+
+<dt>node_names</dt>
+<dd><p>Add names to unnamed nodes (n + node number).
+This will only be in the tree (not in node_data).</p></dd>
 
 </dl></div>
     <div id="value">
