@@ -8,14 +8,70 @@
 #' @export
 #'
 filterData <- function(tbl) {
-    types <- bugphyzz:::.DISCRETE_ATTRIBUTE_TYPES()
+    discrete_types <- c("binary", "multistate-intersection", "mltistate-union")
     attr_type <- unique(tbl$Attribute_type)
-    if (attr_type %in% types){
+    if (attr_type %in% discrete_types){
         output <- filterDataDiscrete(tbl)
+    } else if (attr_type == "range") {
+        output <- filterDataNumeric(tbl)
+
     } else {
         output <- NULL
     }
     return(output)
+}
+
+#' Filter data of numeric attributes
+#'
+#' \code{filterDataNumeric} filters data that could be used for propagation
+#' of numeric attributes. Attribute type is numeric because all numeric
+#' attributes are converted to range when they're imported with the physiologies
+#' function.
+#'
+#' @param tbl A data.frame imported with \code{bugphyzz::physiologies}
+#'
+#' @return A data.frame.
+#' @export
+#'
+filterDataNumeric <- function(tbl) {
+    select_cols <- c(
+        'NCBI_ID', 'Taxon_name', 'Parent_NCBI_ID',
+        'Attribute_value_min', 'Attribute_value_max',
+        'Attribute_source', 'Confidence_in_curation',
+        'Frequency', 'Score', 'Evidence',
+        'Attribute_type', 'Attribute_group'
+    )
+    filtered_tbl <- tbl |>
+        # dplyr::filter(!is.na(.data$NCBI_ID) | !.data$NCBI_ID == 'unkown') |>
+        dplyr::filter(!is.na(.data$Attribute_value_min)) |>
+        dplyr::filter(!is.na(.data$Attribute_value_max)) |>
+        dplyr::filter(!is.infinite(abs(.data$Attribute_value_min))) |>
+        dplyr::filter(!is.infinite(abs(.data$Attribute_value_max))) |>
+        # dplyr::mutate(Rank = taxizedb::taxid2rank(NCBI_ID, db = 'ncbi')) |>
+        # dplyr::mutate(Taxon_name = taxizedb::taxid2name(NCBI_ID, db = 'ncbi')) |>
+        # dplyr::mutate(NCBI_ID = addRankPrefix(NCBI_ID, Rank)) |>
+        # dplyr::filter(!is.na(Rank) & !is.na(Taxon_name) & !is.na(NCBI_ID))
+        # dplyr::filter(!is.na(Rank) & !is.na(Taxon_name)) |>
+        # dplyr::filter(!is.na(Parent_NCBI_ID)) |>
+        dplyr::filter(
+            !((is.na(.data$NCBI_ID) | .data$NCBI_ID == 'unknown') & is.na(.data$Parent_NCBI_ID))
+        ) |>
+        dplyr::filter(!is.na(.data$Attribute_source), !is.na(.data$Frequency)) |>
+        dplyr::mutate(Score = freq2Scores(.data$Frequency)) |>
+        dplyr::select(tidyselect::all_of(select_cols)) |>
+        dplyr::distinct()
+
+    n_rows_dropped <- nrow(tbl) - nrow(filtered_tbl)
+
+    if (!nrow(filtered_tbl)) {
+        message(
+            "Not enough data. Dropping :",
+            format(n_rows_dropped, big.mark = ","), " rows."
+        )
+        return(NULL)
+    }
+    message(format(n_rows_dropped, big.mark = ','), ' rows were dropped.')
+    return(filtered_tbl)
 }
 
 #' Filter attributes with discrete type
@@ -105,6 +161,14 @@ getDataReady <- function(tbl) {
         output <- dataset |>
             tidyr::complete(NCBI_ID, Attribute, fill = list(Score = 0)) |>
             dplyr::arrange(NCBI_ID, Attribute)
+    } else if (attr_type == 'range') { # al numeric are converted to range when imported with the physiologies function
+        set_with_ids <- getSetWithIDs(tbl) |>
+            purrr::discard(~ all(is.na(.x)))
+        set_without_ids <- getSetWithoutIDs(tbl, set_with_ids = set_with_ids) |>
+            purrr::discard(~ all(is.na(.x)))
+        dataset <- dplyr::bind_rows(set_with_ids, set_without_ids)
+        output <- dataset |>
+            dplyr::arrange(NCBI_ID)
     } else if (attr_type == 'multistate-union') {
         tbl$Attribute_group_2 <- sub('--(TRUE|FALSE)', '', tbl$Attribute)
         l <- split(tbl, factor(tbl$Attribute_group_2))
@@ -124,7 +188,6 @@ getDataReady <- function(tbl) {
     }
     return(output)
 }
-
 
 #' Complete binary data
 #'
@@ -177,36 +240,62 @@ getSetWithIDs <- function(tbl) {
         return(NULL)
 
      ## Check taxa names, resolve conflicts, normalize scores
-     output <- tbl |>
-        dplyr::mutate(
-            Taxon_name = taxizedb::taxid2name(.data$NCBI_ID, db = 'ncbi')
-        ) |>
-        dplyr::distinct() |>
-        dplyr::mutate(
-            Confidence_in_curation =  conf2Fct(.data$Confidence_in_curation)
-        ) |>
-        dplyr::group_by(.data$NCBI_ID) |>
-        dplyr::slice_max(
-            .data$Confidence_in_curation, n = 1, with_ties = TRUE
-        ) |>
-        dplyr::ungroup() |>
-        dplyr::group_by(.data$NCBI_ID, .data$Attribute) |>
-        dplyr::slice_max(.data$Attribute_source, n = 1, with_ties = FALSE) |>
-        dplyr::ungroup() |>
-        dplyr::group_by(.data$NCBI_ID) |>
-        dplyr::mutate(
-            Total_score = sum(.data$Score),
-            Score = .data$Score / .data$Total_score
-        ) |>
-        dplyr::ungroup() |>
-        dplyr::mutate(Frequency = scores2Freq(.data$Score)) |>
-        dplyr::select(-.data$Parent_NCBI_ID, -.data$Total_score) |>
-        dplyr::mutate(taxid = .data$NCBI_ID) |>
-        dplyr::mutate(NCBI_ID = addRankPrefix(.data$NCBI_ID, .data$Rank)) |>
-        # dplyr::filter(!is.na(.data$NCBI_ID)) |>
-        dplyr::distinct() |>
-        dplyr::arrange(.data$NCBI_ID, .data$Attribute) |>
-        dplyr::relocate(tidyselect::all_of(.orderedColumns()))
+     if (unique(tbl$Attribute_type) == "range") {
+        output <- tbl |>
+            dplyr::mutate(
+                Taxon_name = taxizedb::taxid2name(.data$NCBI_ID, db = 'ncbi')
+            ) |>
+            dplyr::distinct() |>
+            dplyr::mutate(
+                Confidence_in_curation =  conf2Fct(.data$Confidence_in_curation)
+            ) |>
+            dplyr::group_by(.data$NCBI_ID) |>
+            dplyr::slice_max(
+                .data$Confidence_in_curation, n = 1, with_ties = FALSE
+            ) |>
+            dplyr::mutate(
+                Attribute_value = mean(.data$Attribute_value_min, .data$Attribute_value_max)
+            ) |>
+            dplyr::ungroup() |>
+            dplyr::select(-Attribute_value_min, -Attribute_value_max) |>
+            dplyr::distinct() |>
+            dplyr::select(-.data$Parent_NCBI_ID) |>
+            dplyr::mutate(taxid = .data$NCBI_ID) |>
+            dplyr::mutate(NCBI_ID = addRankPrefix(.data$NCBI_ID, .data$Rank)) |>
+            dplyr::filter(!is.na(.data$NCBI_ID)) |>
+            dplyr::distinct()
+            # dplyr::relocate(tidyselect::all_of(.orderedColumns()))
+     } else {
+        output <- tbl |>
+            dplyr::mutate(
+                Taxon_name = taxizedb::taxid2name(.data$NCBI_ID, db = 'ncbi')
+            ) |>
+            dplyr::distinct() |>
+            dplyr::mutate(
+                Confidence_in_curation =  conf2Fct(.data$Confidence_in_curation)
+            ) |>
+            dplyr::group_by(.data$NCBI_ID) |>
+            dplyr::slice_max(
+                .data$Confidence_in_curation, n = 1, with_ties = TRUE
+            ) |>
+            dplyr::ungroup() |>
+            dplyr::group_by(.data$NCBI_ID, .data$Attribute) |>
+            dplyr::slice_max(.data$Attribute_source, n = 1, with_ties = FALSE) |>
+            dplyr::ungroup() |>
+            dplyr::group_by(.data$NCBI_ID) |>
+            dplyr::mutate(
+                Total_score = sum(.data$Score),
+                Score = .data$Score / .data$Total_score
+            ) |>
+            dplyr::ungroup() |>
+            dplyr::mutate(Frequency = scores2Freq(.data$Score)) |>
+            dplyr::select(-.data$Parent_NCBI_ID, -.data$Total_score) |>
+            dplyr::mutate(taxid = .data$NCBI_ID) |>
+            dplyr::mutate(NCBI_ID = addRankPrefix(.data$NCBI_ID, .data$Rank)) |>
+            dplyr::filter(!is.na(.data$NCBI_ID)) |>
+            dplyr::distinct() |>
+            dplyr::relocate(tidyselect::all_of(.orderedColumns()))
+     }
 
     return(output)
 }
@@ -233,45 +322,82 @@ getSetWithoutIDs <- function(tbl, set_with_ids = NULL) {
     if (!any(lgl_vct))
         return(NULL)
 
-    output <- tbl |>
-        dplyr::filter(lgl_vct) |>
-        dplyr::select(
-            -.data$NCBI_ID, -.data$Taxon_name, -.data$Frequency
-        ) |>
-        dplyr::relocate(NCBI_ID = .data$Parent_NCBI_ID) |>
-        distinct() |>
-        dplyr::mutate(Rank = taxizedb::taxid2rank(.data$NCBI_ID, db = 'ncbi')) |>
-        dplyr::filter(Rank %in% valid_ranks) |>
-        dplyr::mutate(Taxon_name = taxizedb::taxid2name(.data$NCBI_ID, db = 'ncbi')) |>
-        dplyr::mutate(Confidence_in_curation =  conf2Fct(.data$Confidence_in_curation)) |>
-        dplyr::group_by(.data$NCBI_ID) |>
-        dplyr::slice_max(.data$Confidence_in_curation, n = 1, with_ties = TRUE) |>
-        dplyr::ungroup() |>
-        dplyr::group_by(.data$NCBI_ID, .data$Attribute) |>
-        dplyr::slice_max(.data$Attribute_source, n = 1, with_ties = FALSE) |>
-        dplyr::ungroup() |>
-        dplyr::group_by(.data$NCBI_ID) |>
-        dplyr::mutate(
-            Total_score = sum(.data$Score),
-            Score = .data$Score / .data$Total_score
-        ) |>
-        dplyr::mutate(Frequency = scores2Freq(.data$Score)) |>
-        dplyr::mutate(
-            Evidence = 'tax',
-            Attribute_group = attribute_group_var,
-            Attribute_type = attribute_type_var,
-            Attribute_source = NA,
-            Confidence_in_curation = NA
-        ) |>
-        dplyr::ungroup() |>
-        dplyr::select(-.data$Total_score) |>
-        dplyr::mutate(taxid = .data$NCBI_ID) |>
-        dplyr::mutate(NCBI_ID = addRankPrefix(.data$NCBI_ID, .data$Rank)) |>
-        dplyr::filter(!is.na(.data$NCBI_ID)) |>
-        dplyr::filter(!.data$NCBI_ID %in% unique(set_with_ids$NCBI_ID)) |>
-        dplyr::distinct() |>
-        dplyr::arrange(.data$NCBI_ID, .data$Attribute) |>
-        dplyr::relocate(tidyselect::all_of(.orderedColumns()))
+    if (unique(tbl$Attribute_type == "range")) {
+        output <- tbl |>
+            dplyr::filter(lgl_vct) |>
+            dplyr::select(
+                -.data$NCBI_ID, -.data$Taxon_name, -.data$Frequency
+            ) |>
+            dplyr::relocate(NCBI_ID = .data$Parent_NCBI_ID) |>
+            dplyr::distinct() |>
+            dplyr::mutate(Rank = taxizedb::taxid2rank(.data$NCBI_ID, db = 'ncbi')) |>
+            dplyr::filter(Rank %in% valid_ranks) |>
+            dplyr::mutate(Taxon_name = taxizedb::taxid2name(.data$NCBI_ID, db = 'ncbi')) |>
+            dplyr::mutate(Confidence_in_curation =  conf2Fct(.data$Confidence_in_curation)) |>
+            dplyr::group_by(.data$NCBI_ID) |>
+            dplyr::slice_max(.data$Confidence_in_curation, n = 1, with_ties = FALSE) |>
+            dplyr::mutate(
+                Attribute_value = mean(.data$Attribute_value_min, .data$Attribute_value_max)
+            ) |>
+            dplyr::ungroup() |>
+            dplyr::select(-Attribute_value_min, -Attribute_value_max) |>
+            dplyr::distinct() |>
+            dplyr::mutate(Frequency = scores2Freq(.data$Score)) |>
+            dplyr::mutate(
+                Evidence = 'tax',
+                Attribute_group = attribute_group_var,
+                Attribute_type = attribute_type_var,
+                Attribute_source = NA,
+                Confidence_in_curation = NA
+            ) |>
+            dplyr::mutate(taxid = .data$NCBI_ID) |>
+            dplyr::mutate(NCBI_ID = addRankPrefix(.data$NCBI_ID, .data$Rank)) |>
+            dplyr::filter(!is.na(.data$NCBI_ID)) |>
+            dplyr::filter(!.data$NCBI_ID %in% unique(set_with_ids$NCBI_ID)) |>
+            dplyr::distinct() |>
+            dplyr::arrange(.data$NCBI_ID)
+            # dplyr::relocate(tidyselect::all_of(.orderedColumns()))
+    } else {
+        output <- tbl |>
+            dplyr::filter(lgl_vct) |>
+            dplyr::select(
+                -.data$NCBI_ID, -.data$Taxon_name, -.data$Frequency
+            ) |>
+            dplyr::relocate(NCBI_ID = .data$Parent_NCBI_ID) |>
+            dplyr::distinct() |>
+            dplyr::mutate(Rank = taxizedb::taxid2rank(.data$NCBI_ID, db = 'ncbi')) |>
+            dplyr::filter(Rank %in% valid_ranks) |>
+            dplyr::mutate(Taxon_name = taxizedb::taxid2name(.data$NCBI_ID, db = 'ncbi')) |>
+            dplyr::mutate(Confidence_in_curation =  conf2Fct(.data$Confidence_in_curation)) |>
+            dplyr::group_by(.data$NCBI_ID) |>
+            dplyr::slice_max(.data$Confidence_in_curation, n = 1, with_ties = TRUE) |>
+            dplyr::ungroup() |>
+            dplyr::group_by(.data$NCBI_ID, .data$Attribute) |>
+            dplyr::slice_max(.data$Attribute_source, n = 1, with_ties = FALSE) |>
+            dplyr::ungroup() |>
+            dplyr::group_by(.data$NCBI_ID) |>
+            dplyr::mutate(
+                Total_score = sum(.data$Score),
+                Score = .data$Score / .data$Total_score
+            ) |>
+            dplyr::mutate(Frequency = scores2Freq(.data$Score)) |>
+            dplyr::mutate(
+                Evidence = 'tax',
+                Attribute_group = attribute_group_var,
+                Attribute_type = attribute_type_var,
+                Attribute_source = NA,
+                Confidence_in_curation = NA
+            ) |>
+            dplyr::ungroup() |>
+            dplyr::select(-.data$Total_score) |>
+            dplyr::mutate(taxid = .data$NCBI_ID) |>
+            dplyr::mutate(NCBI_ID = addRankPrefix(.data$NCBI_ID, .data$Rank)) |>
+            dplyr::filter(!is.na(.data$NCBI_ID)) |>
+            dplyr::filter(!.data$NCBI_ID %in% unique(set_with_ids$NCBI_ID)) |>
+            dplyr::distinct() |>
+            dplyr::arrange(.data$NCBI_ID, .data$Attribute) |>
+            dplyr::relocate(tidyselect::all_of(.orderedColumns()))
+    }
     return(output)
 }
 
