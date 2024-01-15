@@ -144,7 +144,9 @@ filterDataDiscrete <- function(tbl) {
 #' @export
 #'
 getDataReady <- function(tbl) {
-    if (!nrow(tbl) || is.null(tbl))
+    if (is.null(tbl))
+        return(NULL
+    if (!nrow(tbl))
         return(NULL)
     attr_type <- unique(tbl$Attribute_type)
     if (attr_type == 'binary') {
