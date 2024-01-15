@@ -144,10 +144,14 @@ filterDataDiscrete <- function(tbl) {
 #' @export
 #'
 getDataReady <- function(tbl) {
-    if (is.null(tbl))
-        return(NULL
-    if (!nrow(tbl))
+    if (is.null(tbl)) {
         return(NULL)
+    }
+
+    if (!nrow(tbl)) {
+        return(NULL)
+    }
+
     attr_type <- unique(tbl$Attribute_type)
     if (attr_type == 'binary') {
         set_with_ids <- getSetWithIDs(tbl) |>
