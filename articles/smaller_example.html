@@ -109,14 +109,15 @@
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://www.amazon.com/Integration-Manipulation-Visualization-Phylogenetic-Computational-ebook/dp/B0B5NLZR1Z/" class="external-link">ggtree</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rpkgs.datanovia.com/ggpubr/" class="external-link">ggpubr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gtable.r-lib.org" class="external-link">gtable</a></span><span class="op">)</span></span></code></pre></div>
-<div class="section level2">
-<h2 id="create-input-tree-and-matrix">Create input tree and matrix<a class="anchor" aria-label="anchor" href="#create-input-tree-and-matrix"></a>
-</h2>
+<div class="section level3">
+<h3 id="create-input-tree-and-matrix">Create input tree and matrix<a class="anchor" aria-label="anchor" href="#create-input-tree-and-matrix"></a>
+</h3>
 <p>In this case, assigng a probability of 1 to A–TRUE and 0 to A–FALSE
 for the t1 tip.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span></span>
 <span><span class="va">randomTree</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ape/man/rtree.html" class="external-link">rtree</a></span><span class="op">(</span><span class="fl">7</span>, rooted <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
 <span><span class="va">mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span>
 <span>    data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fu"><a href="https://rdrr.io/pkg/ape/man/summary.phylo.html" class="external-link">Ntip</a></span><span class="op">(</span><span class="va">randomTree</span><span class="op">)</span> <span class="op">*</span> <span class="fl">2</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">2</span>, dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>        rownames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'t'</span>, <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/pkg/ape/man/summary.phylo.html" class="external-link">Ntip</a></span><span class="op">(</span><span class="va">randomTree</span><span class="op">)</span><span class="op">)</span>, colnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'A--TRUE'</span>, <span class="st">'A--FALSE'</span><span class="op">)</span></span>
@@ -141,9 +142,9 @@ for the t1 tip.</p>
 <span><span class="co">#&gt;       t6       0        1</span></span>
 <span><span class="co">#&gt;       t7       0        1</span></span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="function-for-plotting">Function for plotting<a class="anchor" aria-label="anchor" href="#function-for-plotting"></a>
-</h2>
+<div class="section level3">
+<h3 id="function-for-plotting">Function for plotting<a class="anchor" aria-label="anchor" href="#function-for-plotting"></a>
+</h3>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plotT</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">tree</span>, <span class="va">ace</span>, <span class="va">input_tips</span>, <span class="va">model</span> <span class="op">=</span> <span class="st">''</span>, <span class="va">pi</span> <span class="op">=</span> <span class="st">''</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
@@ -180,9 +181,9 @@ for the t1 tip.</p>
 <span>    <span class="va">p</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="run-asr-for-different-models-and-prior-root-probabilities">Run ASR for different models and prior root probabilities<a class="anchor" aria-label="anchor" href="#run-asr-for-different-models-and-prior-root-probabilities"></a>
-</h2>
+<div class="section level3">
+<h3 id="run-asr-for-different-models-and-prior-root-probabilities">Run ASR for different models and prior root probabilities<a class="anchor" aria-label="anchor" href="#run-asr-for-different-models-and-prior-root-probabilities"></a>
+</h3>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">models</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'ER'</span>, <span class="st">'ARD'</span>, <span class="st">'SYM'</span><span class="op">)</span></span>
 <span><span class="va">pis</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'fitzjohn'</span>, <span class="st">'equal'</span>, <span class="st">'estimated'</span><span class="op">)</span></span>
@@ -214,17 +215,17 @@ for the t1 tip.</p>
 <span><span class="co">#&gt;  A--TRUE A--FALSE </span></span>
 <span><span class="co">#&gt;      0.5      0.5</span></span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="print-plots">Print plots<a class="anchor" aria-label="anchor" href="#print-plots"></a>
-</h2>
+<div class="section level3">
+<h3 id="print-plots">Print plots<a class="anchor" aria-label="anchor" href="#print-plots"></a>
+</h3>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mergedPlot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rpkgs.datanovia.com/ggpubr/reference/ggarrange.html" class="external-link">ggarrange</a></span><span class="op">(</span>plotlist <span class="op">=</span> <span class="va">plotList</span>, ncol <span class="op">=</span> <span class="fl">3</span>, nrow <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="va">mergedPlot</span></span></code></pre></div>
 <p><img src="smaller_example_files/figure-html/unnamed-chunk-5-1.png" width="1440"></p>
 </div>
-<div class="section level2">
-<h2 id="examle-2">Examle 2<a class="anchor" aria-label="anchor" href="#examle-2"></a>
-</h2>
+<div class="section level3">
+<h3 id="examle-2">Examle 2<a class="anchor" aria-label="anchor" href="#examle-2"></a>
+</h3>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">annotated_tips</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'t1'</span>, <span class="st">'t5'</span><span class="op">)</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">randomTree</span><span class="op">$</span><span class="va">tip.label</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
@@ -270,9 +271,188 @@ for the t1 tip.</p>
 <p><img src="smaller_example_files/figure-html/unnamed-chunk-7-1.png" width="1440"></p>
 </div>
 <div class="section level2">
-<h2 id="session-info">Session info<a class="anchor" aria-label="anchor" href="#session-info"></a>
+<h2 id="example-2">Example 2<a class="anchor" aria-label="anchor" href="#example-2"></a>
 </h2>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fu"><a href="https://rdrr.io/pkg/ape/man/summary.phylo.html" class="external-link">Ntip</a></span><span class="op">(</span><span class="va">randomTree</span><span class="op">)</span> <span class="op">*</span> <span class="fl">2</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">2</span>, dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>        rownames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'t'</span>, <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/pkg/ape/man/summary.phylo.html" class="external-link">Ntip</a></span><span class="op">(</span><span class="va">randomTree</span><span class="op">)</span><span class="op">)</span>, colnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'A--TRUE'</span>, <span class="st">'A--FALSE'</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">annotated_tips</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'t3'</span>, <span class="st">'t2'</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">randomTree</span><span class="op">$</span><span class="va">tip.label</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">randomTree</span><span class="op">$</span><span class="va">tip.label</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">annotated_tips</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="va">mat</span><span class="op">[</span><span class="va">randomTree</span><span class="op">$</span><span class="va">tip.label</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">mat</span></span>
+<span><span class="co">#&gt;         colnames</span></span>
+<span><span class="co">#&gt; rownames A--TRUE A--FALSE</span></span>
+<span><span class="co">#&gt;       t1     0.5      0.5</span></span>
+<span><span class="co">#&gt;       t2     1.0      0.0</span></span>
+<span><span class="co">#&gt;       t3     1.0      0.0</span></span>
+<span><span class="co">#&gt;       t4     0.5      0.5</span></span>
+<span><span class="co">#&gt;       t5     0.5      0.5</span></span>
+<span><span class="co">#&gt;       t6     0.5      0.5</span></span>
+<span><span class="co">#&gt;       t7     0.5      0.5</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">models</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'ER'</span>, <span class="st">'ARD'</span>, <span class="st">'SYM'</span><span class="op">)</span></span>
+<span><span class="va">pis</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'fitzjohn'</span>, <span class="st">'equal'</span>, <span class="st">'estimated'</span><span class="op">)</span></span>
+<span><span class="va">plotList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">vector</a></span><span class="op">(</span><span class="st">'list'</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">models</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">pis</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">models</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw">for</span> <span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">pis</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/fitMk.html" class="external-link">fitMk</a></span><span class="op">(</span>tree <span class="op">=</span> <span class="va">randomTree</span>, x <span class="op">=</span> <span class="va">mat</span>, model <span class="op">=</span> <span class="va">models</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, pi <span class="op">=</span> <span class="va">pis</span><span class="op">[</span><span class="va">j</span><span class="op">]</span><span class="op">)</span></span>
+<span>        <span class="va">ace</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/ancr.html" class="external-link">ancr</a></span><span class="op">(</span><span class="va">fit</span>, tips <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>        <span class="va">plotList</span><span class="op">[[</span><span class="va">n</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">plotT</span><span class="op">(</span></span>
+<span>            <span class="va">randomTree</span>, ace <span class="op">=</span> <span class="va">ace</span>, input_tips <span class="op">=</span> <span class="va">annotated_tips</span>,</span>
+<span>            model <span class="op">=</span> <span class="va">models</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, pi <span class="op">=</span> <span class="va">pis</span><span class="op">[</span><span class="va">j</span><span class="op">]</span></span>
+<span>        <span class="op">)</span></span>
+<span>        <span class="va">n</span> <span class="op">&lt;-</span> <span class="va">n</span> <span class="op">+</span> <span class="fl">1</span></span>
+<span>    <span class="op">}</span></span>
+<span><span class="op">}</span></span>
+<span><span class="co">#&gt; Using pi estimated from the stationary distribution of Q assuming a flat prior.</span></span>
+<span><span class="co">#&gt; pi =</span></span>
+<span><span class="co">#&gt;  A--TRUE A--FALSE </span></span>
+<span><span class="co">#&gt; 0.999934 0.000066 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Using pi estimated from the stationary distribution of Q assuming a flat prior.</span></span>
+<span><span class="co">#&gt; pi =</span></span>
+<span><span class="co">#&gt;  A--TRUE A--FALSE </span></span>
+<span><span class="co">#&gt; 0.999934 0.000066 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Using pi estimated from the stationary distribution of Q assuming a flat prior.</span></span>
+<span><span class="co">#&gt; pi =</span></span>
+<span><span class="co">#&gt;  A--TRUE A--FALSE </span></span>
+<span><span class="co">#&gt; 0.999934 0.000066</span></span>
+<span><span class="va">mergedPlot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rpkgs.datanovia.com/ggpubr/reference/ggarrange.html" class="external-link">ggarrange</a></span><span class="op">(</span>plotlist <span class="op">=</span> <span class="va">plotList</span>, ncol <span class="op">=</span> <span class="fl">3</span>, nrow <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="va">mergedPlot</span></span></code></pre></div>
+<p><img src="smaller_example_files/figure-html/unnamed-chunk-9-1.png" width="1440"></p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fu"><a href="https://rdrr.io/pkg/ape/man/summary.phylo.html" class="external-link">Ntip</a></span><span class="op">(</span><span class="va">randomTree</span><span class="op">)</span> <span class="op">*</span> <span class="fl">2</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">2</span>, dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>        rownames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'t'</span>, <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/pkg/ape/man/summary.phylo.html" class="external-link">Ntip</a></span><span class="op">(</span><span class="va">randomTree</span><span class="op">)</span><span class="op">)</span>, colnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'A--TRUE'</span>, <span class="st">'A--FALSE'</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">annotated_tips</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'t1'</span>, <span class="st">'t5'</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">randomTree</span><span class="op">$</span><span class="va">tip.label</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">randomTree</span><span class="op">$</span><span class="va">tip.label</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">annotated_tips</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="va">mat</span><span class="op">[</span><span class="va">randomTree</span><span class="op">$</span><span class="va">tip.label</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">mat</span></span>
+<span><span class="co">#&gt;         colnames</span></span>
+<span><span class="co">#&gt; rownames A--TRUE A--FALSE</span></span>
+<span><span class="co">#&gt;       t1     1.0      0.0</span></span>
+<span><span class="co">#&gt;       t2     0.5      0.5</span></span>
+<span><span class="co">#&gt;       t3     0.5      0.5</span></span>
+<span><span class="co">#&gt;       t4     0.5      0.5</span></span>
+<span><span class="co">#&gt;       t5     1.0      0.0</span></span>
+<span><span class="co">#&gt;       t6     0.5      0.5</span></span>
+<span><span class="co">#&gt;       t7     0.5      0.5</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">models</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'ER'</span>, <span class="st">'ARD'</span>, <span class="st">'SYM'</span><span class="op">)</span></span>
+<span><span class="va">pis</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'fitzjohn'</span>, <span class="st">'equal'</span>, <span class="st">'estimated'</span><span class="op">)</span></span>
+<span><span class="va">plotList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">vector</a></span><span class="op">(</span><span class="st">'list'</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">models</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">pis</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">models</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw">for</span> <span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">pis</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/fitMk.html" class="external-link">fitMk</a></span><span class="op">(</span>tree <span class="op">=</span> <span class="va">randomTree</span>, x <span class="op">=</span> <span class="va">mat</span>, model <span class="op">=</span> <span class="va">models</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, pi <span class="op">=</span> <span class="va">pis</span><span class="op">[</span><span class="va">j</span><span class="op">]</span><span class="op">)</span></span>
+<span>        <span class="va">ace</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/ancr.html" class="external-link">ancr</a></span><span class="op">(</span><span class="va">fit</span>, tips <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>        <span class="va">plotList</span><span class="op">[[</span><span class="va">n</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">plotT</span><span class="op">(</span></span>
+<span>            <span class="va">randomTree</span>, ace <span class="op">=</span> <span class="va">ace</span>, input_tips <span class="op">=</span> <span class="va">annotated_tips</span>,</span>
+<span>            model <span class="op">=</span> <span class="va">models</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, pi <span class="op">=</span> <span class="va">pis</span><span class="op">[</span><span class="va">j</span><span class="op">]</span></span>
+<span>        <span class="op">)</span></span>
+<span>        <span class="va">n</span> <span class="op">&lt;-</span> <span class="va">n</span> <span class="op">+</span> <span class="fl">1</span></span>
+<span>    <span class="op">}</span></span>
+<span><span class="op">}</span></span>
+<span><span class="co">#&gt; Using pi estimated from the stationary distribution of Q assuming a flat prior.</span></span>
+<span><span class="co">#&gt; pi =</span></span>
+<span><span class="co">#&gt;  A--TRUE A--FALSE </span></span>
+<span><span class="co">#&gt; 0.999934 0.000066 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Using pi estimated from the stationary distribution of Q assuming a flat prior.</span></span>
+<span><span class="co">#&gt; pi =</span></span>
+<span><span class="co">#&gt;  A--TRUE A--FALSE </span></span>
+<span><span class="co">#&gt; 0.999934 0.000066 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Using pi estimated from the stationary distribution of Q assuming a flat prior.</span></span>
+<span><span class="co">#&gt; pi =</span></span>
+<span><span class="co">#&gt;  A--TRUE A--FALSE </span></span>
+<span><span class="co">#&gt; 0.999934 0.000066</span></span>
+<span><span class="va">mergedPlot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rpkgs.datanovia.com/ggpubr/reference/ggarrange.html" class="external-link">ggarrange</a></span><span class="op">(</span>plotlist <span class="op">=</span> <span class="va">plotList</span>, ncol <span class="op">=</span> <span class="fl">3</span>, nrow <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mergedPlot</span></span></code></pre></div>
+<p><img src="smaller_example_files/figure-html/unnamed-chunk-12-1.png" width="1440"></p>
+</div>
+<div class="section level2">
+<h2 id="example-3">Example 3<a class="anchor" aria-label="anchor" href="#example-3"></a>
+</h2>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fu"><a href="https://rdrr.io/pkg/ape/man/summary.phylo.html" class="external-link">Ntip</a></span><span class="op">(</span><span class="va">randomTree</span><span class="op">)</span> <span class="op">*</span> <span class="fl">2</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">2</span>, dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>        rownames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">'t'</span>, <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/pkg/ape/man/summary.phylo.html" class="external-link">Ntip</a></span><span class="op">(</span><span class="va">randomTree</span><span class="op">)</span><span class="op">)</span>, colnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'A--TRUE'</span>, <span class="st">'A--FALSE'</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">annotated_tips</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'t1'</span>, <span class="st">'t5'</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">randomTree</span><span class="op">$</span><span class="va">tip.label</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">randomTree</span><span class="op">$</span><span class="va">tip.label</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">annotated_tips</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="va">mat</span><span class="op">[</span><span class="va">randomTree</span><span class="op">$</span><span class="va">tip.label</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span></span>
+<span>    <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>        <span class="va">mat</span><span class="op">[</span><span class="va">randomTree</span><span class="op">$</span><span class="va">tip.label</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">mat</span><span class="op">[</span><span class="st">"t4"</span>,<span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.5</span><span class="op">)</span></span>
+<span><span class="va">mat</span><span class="op">[</span><span class="st">"t7"</span>,<span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.5</span><span class="op">)</span></span>
+<span><span class="va">mat</span><span class="op">[</span><span class="st">"t2"</span>,<span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.5</span><span class="op">)</span></span>
+<span><span class="va">mat</span></span>
+<span><span class="co">#&gt;         colnames</span></span>
+<span><span class="co">#&gt; rownames A--TRUE A--FALSE</span></span>
+<span><span class="co">#&gt;       t1     1.0      0.0</span></span>
+<span><span class="co">#&gt;       t2     0.5      0.5</span></span>
+<span><span class="co">#&gt;       t3     0.0      1.0</span></span>
+<span><span class="co">#&gt;       t4     0.5      0.5</span></span>
+<span><span class="co">#&gt;       t5     1.0      0.0</span></span>
+<span><span class="co">#&gt;       t6     0.0      1.0</span></span>
+<span><span class="co">#&gt;       t7     0.5      0.5</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">models</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'ER'</span>, <span class="st">'ARD'</span>, <span class="st">'SYM'</span><span class="op">)</span></span>
+<span><span class="va">pis</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'fitzjohn'</span>, <span class="st">'equal'</span>, <span class="st">'estimated'</span><span class="op">)</span></span>
+<span><span class="va">plotList</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">vector</a></span><span class="op">(</span><span class="st">'list'</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">models</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">pis</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">models</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw">for</span> <span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">pis</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/fitMk.html" class="external-link">fitMk</a></span><span class="op">(</span>tree <span class="op">=</span> <span class="va">randomTree</span>, x <span class="op">=</span> <span class="va">mat</span>, model <span class="op">=</span> <span class="va">models</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, pi <span class="op">=</span> <span class="va">pis</span><span class="op">[</span><span class="va">j</span><span class="op">]</span><span class="op">)</span></span>
+<span>        <span class="va">ace</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/phytools/man/ancr.html" class="external-link">ancr</a></span><span class="op">(</span><span class="va">fit</span>, tips <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>        <span class="va">plotList</span><span class="op">[[</span><span class="va">n</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">plotT</span><span class="op">(</span></span>
+<span>            <span class="va">randomTree</span>, ace <span class="op">=</span> <span class="va">ace</span>, input_tips <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"t1"</span>, <span class="st">"t5"</span>, <span class="st">"t3"</span>, <span class="st">"t6"</span><span class="op">)</span>,</span>
+<span>            model <span class="op">=</span> <span class="va">models</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, pi <span class="op">=</span> <span class="va">pis</span><span class="op">[</span><span class="va">j</span><span class="op">]</span></span>
+<span>        <span class="op">)</span></span>
+<span>        <span class="va">n</span> <span class="op">&lt;-</span> <span class="va">n</span> <span class="op">+</span> <span class="fl">1</span></span>
+<span>    <span class="op">}</span></span>
+<span><span class="op">}</span></span>
+<span><span class="co">#&gt; Using pi estimated from the stationary distribution of Q assuming a flat prior.</span></span>
+<span><span class="co">#&gt; pi =</span></span>
+<span><span class="co">#&gt;  A--TRUE A--FALSE </span></span>
+<span><span class="co">#&gt;      0.5      0.5 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Using pi estimated from the stationary distribution of Q assuming a flat prior.</span></span>
+<span><span class="co">#&gt; pi =</span></span>
+<span><span class="co">#&gt;  A--TRUE A--FALSE </span></span>
+<span><span class="co">#&gt; 0.999934 0.000066 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Using pi estimated from the stationary distribution of Q assuming a flat prior.</span></span>
+<span><span class="co">#&gt; pi =</span></span>
+<span><span class="co">#&gt;  A--TRUE A--FALSE </span></span>
+<span><span class="co">#&gt;      0.5      0.5</span></span>
+<span><span class="va">mergedPlot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rpkgs.datanovia.com/ggpubr/reference/ggarrange.html" class="external-link">ggarrange</a></span><span class="op">(</span>plotlist <span class="op">=</span> <span class="va">plotList</span>, ncol <span class="op">=</span> <span class="fl">3</span>, nrow <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mergedPlot</span></span></code></pre></div>
+<p><img src="smaller_example_files/figure-html/unnamed-chunk-15-1.png" width="1440"></p>
+<div class="section level3">
+<h3 id="session-info">Session info<a class="anchor" aria-label="anchor" href="#session-info"></a>
+</h3>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">sessioninfo</span><span class="fu">::</span><span class="fu"><a href="https://r-lib.github.io/sessioninfo/reference/session_info.html" class="external-link">session_info</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">─ Session info ───────────────────────────────────────────────────────────────</span></span></span>
 <span><span class="co">#&gt;  <span style="color: #555555; font-style: italic;">setting </span> <span style="color: #555555; font-style: italic;">value</span></span></span>
@@ -390,6 +570,7 @@ for the t1 tip.</p>
 <span><span class="co">#&gt; <span style="color: #555555;"> [2] /usr/local/lib/R/library</span></span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB; font-weight: bold;">──────────────────────────────────────────────────────────────────────────────</span></span></span></code></pre></div>
+</div>
 </div>
   </div>
 
