@@ -144,12 +144,16 @@ filterDataDiscrete <- function(tbl) {
 #' @export
 #'
 getDataReady <- function(tbl) {
+    if (!nrow(tbl) || is.null(tbl))
+        return(NULL)
     attr_type <- unique(tbl$Attribute_type)
     if (attr_type == 'binary') {
         set_with_ids <- getSetWithIDs(tbl) |>
                 purrr::discard(~ all(is.na(.x)))
         set_without_ids <- getSetWithoutIDs(tbl, set_with_ids) |>
                 purrr::discard(~ all(is.na(.x)))
+        if (is.null(set_with_ids) && is.null(set_without_ids))
+            return(NULL)
         dataset <- dplyr::bind_rows(set_with_ids, set_without_ids)
         output <- completeBinaryData(dataset)
     } else if (attr_type == 'multistate-intersection') {
@@ -157,6 +161,8 @@ getDataReady <- function(tbl) {
                 purrr::discard(~ all(is.na(.x)))
         set_without_ids <- getSetWithoutIDs(tbl, set_with_ids = set_with_ids) |>
                 purrr::discard(~ all(is.na(.x)))
+        if (is.null(set_with_ids) && is.null(set_without_ids))
+            return(NULL)
         dataset <- dplyr::bind_rows(set_with_ids, set_without_ids)
         output <- dataset |>
             tidyr::complete(NCBI_ID, Attribute, fill = list(Score = 0)) |>
@@ -166,6 +172,8 @@ getDataReady <- function(tbl) {
             purrr::discard(~ all(is.na(.x)))
         set_without_ids <- getSetWithoutIDs(tbl, set_with_ids = set_with_ids) |>
             purrr::discard(~ all(is.na(.x)))
+        if (is.null(set_with_ids) && is.null(set_without_ids))
+            return(NULL)
         dataset <- dplyr::bind_rows(set_with_ids, set_without_ids)
         output <- dataset |>
             dplyr::arrange(NCBI_ID)
