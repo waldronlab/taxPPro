@@ -173,7 +173,7 @@ getDataReady <- function(tbl) {
         output <- dataset |>
             tidyr::complete(NCBI_ID, Attribute, fill = list(Score = 0)) |>
             dplyr::arrange(NCBI_ID, Attribute)
-    } else if (attr_type == 'range') { # al numeric are converted to range when imported with the physiologies function
+    } else if (attr_type == 'range') { # all numeric are converted to range when imported with the physiologies function
         set_with_ids <- getSetWithIDs(tbl) |>
             purrr::discard(~ all(is.na(.x)))
         set_without_ids <- getSetWithoutIDs(tbl, set_with_ids = set_with_ids) |>
@@ -265,11 +265,12 @@ getSetWithIDs <- function(tbl) {
             ) |>
             dplyr::group_by(.data$NCBI_ID) |>
             dplyr::slice_max(
-                .data$Confidence_in_curation, n = 1, with_ties = FALSE
+                .data$Confidence_in_curation, n = 1, with_ties = TRUE
             ) |>
             dplyr::mutate(
                 Attribute_value = mean(.data$Attribute_value_min, .data$Attribute_value_max)
             ) |>
+            dplyr::mutate(Attribute_value = mean(Attribute_value)) |>
             dplyr::ungroup() |>
             dplyr::select(-Attribute_value_min, -Attribute_value_max) |>
             dplyr::distinct() |>
