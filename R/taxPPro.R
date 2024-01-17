@@ -271,6 +271,9 @@ getSetWithIDs <- function(tbl) {
                 Attribute_value = mean(cbind(.data$Attribute_value_min, .data$Attribute_value_max))
             ) |>
             # dplyr::mutate(Attribute_value = mean(Attribute_value)) |>
+            dplyr::slice_max(
+                .data$Confidence_in_curation, n = 1, with_ties = FALSE
+            ) |>
             dplyr::ungroup() |>
             dplyr::select(-Attribute_value_min, -Attribute_value_max) |>
             dplyr::distinct() |>
@@ -355,6 +358,9 @@ getSetWithoutIDs <- function(tbl, set_with_ids = NULL) {
                 Attribute_value = mean(cbind(.data$Attribute_value_min, .data$Attribute_value_max))
             ) |>
             # dplyr::mutate(Attribute_value = mean(Attribute_value)) |>
+            dplyr::slice_max(
+                .data$Confidence_in_curation, n = 1, with_ties = FALSE
+            ) |>
             dplyr::ungroup() |>
             dplyr::select(-Attribute_value_min, -Attribute_value_max) |>
             dplyr::distinct() |>
