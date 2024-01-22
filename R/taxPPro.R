@@ -381,6 +381,7 @@ getSetWithoutIDs <- function(tbl, set_with_ids = NULL) {
             # dplyr::relocate(tidyselect::all_of(.orderedColumns()))
     } else {
         output <- tbl |>
+            dplyr::filter(lgl_vct) |>
             dplyr::select(
                 -.data$NCBI_ID, -.data$Frequency
             ) |>
