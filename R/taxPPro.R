@@ -373,27 +373,32 @@ getSetWithoutIDs <- function(tbl, set_with_ids = NULL) {
             # dplyr::relocate(tidyselect::all_of(.orderedColumns()))
     } else {
         output <- tbl |>
-            dplyr::filter(lgl_vct) |>
             dplyr::select(
-                -.data$NCBI_ID, -.data$Taxon_name, -.data$Frequency
+                -.data$NCBI_ID, -.data$Frequency
             ) |>
             dplyr::relocate(NCBI_ID = .data$Parent_NCBI_ID) |>
             dplyr::distinct() |>
             dplyr::mutate(Rank = taxizedb::taxid2rank(.data$NCBI_ID, db = 'ncbi')) |>
             dplyr::filter(Rank %in% valid_ranks) |>
-            dplyr::mutate(Taxon_name = taxizedb::taxid2name(.data$NCBI_ID, db = 'ncbi')) |>
             dplyr::mutate(Confidence_in_curation =  conf2Fct(.data$Confidence_in_curation)) |>
             dplyr::group_by(.data$NCBI_ID) |>
             dplyr::slice_max(.data$Confidence_in_curation, n = 1, with_ties = TRUE) |>
             dplyr::ungroup() |>
             dplyr::group_by(.data$NCBI_ID, .data$Attribute) |>
-            dplyr::slice_max(.data$Attribute_source, n = 1, with_ties = FALSE) |>
+            dplyr::slice_max(.data$Attribute_source, n = 1, with_ties = TRUE) |>
             dplyr::ungroup() |>
             dplyr::group_by(.data$NCBI_ID) |>
             dplyr::mutate(
                 Total_score = sum(.data$Score),
                 Score = .data$Score / .data$Total_score
             ) |>
+            dplyr::ungroup() |>
+            dplyr::group_by(.data$NCBI_ID, .data$Attribute) |>
+            dplyr::mutate(Score = sum(.data$Score, na.rm = TRUE)) |>
+            dplyr::ungroup() |>
+            dplyr::select(-.data$Taxon_name) |>
+            dplyr::distinct() |>
+            dplyr::mutate(Taxon_name = taxizedb::taxid2name(.data$NCBI_ID, db = 'ncbi')) |>
             dplyr::mutate(Frequency = scores2Freq(.data$Score)) |>
             dplyr::mutate(
                 Evidence = 'tax',
