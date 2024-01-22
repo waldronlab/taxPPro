@@ -1,0 +1,66 @@
+---
+title: "Example numeric"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, message=FALSE}
+library(taxPPro)
+library(ape)
+library(phytools)
+library(castor)
+library(ggtree)
+```
+
+```{r}
+set.seed(1234)
+tree <- rtree(n = 7, rooted = TRUE)
+tree$node.label <- paste0("n", Ntip(tree) + 1:Nnode(tree))
+plot(tree)
+```
+## Numeric
+
+```{r}
+states <- c(t1 = 37, t2 = NA, t3 = NA, t4 = NA, t5 = 10, t6 = 80, t7 = NA)
+states <- states[match(tree$tip.label, names(states))]
+res <- hsp_squared_change_parsimony(
+    tree = tree, tip_states = states, check_input = FALSE, weighted = TRUE 
+)
+pred <- res$states
+names(pred) <- c(tree$tip.label, tree$node.label)
+```
+
+
+```{r}
+tip_data <- data.frame(
+    label = names(pred),
+    value = floor(pred)
+)
+p <- ggtree(tree) %<+% tip_data
+p +
+    geom_tiplab() +
+    geom_nodelab(nudge_x = -0.07, nudge_y = 0.15) +
+    geom_label(aes(label = value), nudge_x = 0.11)
+```
+
+
+```{r}
+pruned_tree <- keep.tip(tree, c("t1", "t5", "t6"))
+plot(pruned_tree)
+```
+
+```{r}
+ace(x = c(t5 = 10, t1 = 37, t6 = 80 ), phy = pruned_tree)$ace
+```
+
+
+## Session info
+
+```{r}
+sessioninfo::session_info()
+```
