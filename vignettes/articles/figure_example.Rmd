@@ -15,6 +15,7 @@ library(ape)
 library(phytools)
 library(castor)
 library(ggtree)
+library(dplyr)
 ```
 
 ```{r}
@@ -25,9 +26,57 @@ plot(tree)
 ```
 ## Numeric
 
+
 ```{r}
 states <- c(t1 = 37, t2 = NA, t3 = NA, t4 = NA, t5 = 10, t6 = 80, t7 = NA)
 states <- states[match(tree$tip.label, names(states))]
+tip_data_1 <- data.frame(
+    label = tree$tip.label,
+    value = states, 
+    color = "annotated tip"
+    
+)
+p <- ggtree(tree) %<+% tip_data_1
+p +
+    geom_tiplab() +
+    geom_nodelab(nudge_x = -0.07, nudge_y = 0.15) +
+    geom_label(aes(label = value, fill = color), nudge_x = 0.11, na.rm = TRUE, alpha = 0.5) +
+    scale_fill_manual(values = "red", breaks = "annotated tip")
+```
+
+
+```{r}
+pruned_states <- states[!is.na(states)]
+pruned_tree <- keep.tip(tree, tip = names(pruned_states))
+pruned_tip_data <- data.frame(
+    label = names(pruned_states),
+    value = pruned_states, 
+    color = "annotated tip"
+)
+pruned_asr <- asr_squared_change_parsimony(
+    tree = pruned_tree, tip_states = pruned_states, check_input = FALSE
+)$ancestral_states
+
+pruned_node_data <- data.frame(
+    label = tree$node.label,
+    value = round(pruned_asr),
+    color = "ASR node"
+)
+
+pruned_tree_data <- rbind(pruned_tip_data, pruned_node_data)
+
+pruned_p <- ggtree(pruned_tree) %<+% pruned_tree_data
+pruned_p +
+    geom_tiplab() +
+    geom_nodelab(nudge_x = -0.07, nudge_y = 0.15) +
+    geom_label(aes(label = value, fill = color), nudge_x = 0.11, na.rm = TRUE, alpha = 0.5) +
+    scale_fill_manual(
+        values = c("red", "blue"), breaks = c("annotated tip", "ASR node")
+    )
+
+```
+
+```{r}
 res <- hsp_squared_change_parsimony(
     tree = tree, tip_states = states, check_input = FALSE, weighted = TRUE 
 )
@@ -35,19 +84,27 @@ pred <- res$states
 names(pred) <- c(tree$tip.label, tree$node.label)
 ```
 
-
 ```{r}
-tip_data <- data.frame(
+pred_tree_data <- data.frame(
     label = names(pred),
     value = floor(pred)
-)
-p <- ggtree(tree) %<+% tip_data
+    ) |> 
+        mutate(
+            color = case_when(
+                label %in% names(states[!is.na(states)]) ~ "annotated tip",
+                label %in% pruned_tree$node.label ~ "ASR node",
+                TRUE ~ "predicted tip/node"
+            )
+        )
+p <- ggtree(tree) %<+% pred_tree_data
 p +
     geom_tiplab() +
     geom_nodelab(nudge_x = -0.07, nudge_y = 0.15) +
-    geom_label(aes(label = value), nudge_x = 0.11)
+    geom_label(aes(label = value, fill = color), nudge_x = 0.12, alpha = 0.5) +
+    scale_fill_manual(
+        values = c("red", "blue", "yellow"), breaks = c("annotated tip", "ASR node", "predicted tip/node")
+    )
 ```
-
 
 ```{r}
 pruned_tree <- keep.tip(tree, c("t1", "t5", "t6"))
