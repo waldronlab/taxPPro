@@ -12,7 +12,7 @@ RoxygenNote: 7.3.0
 Depends:
     R (>= 4.2)
 Remotes:
-    waldronlab/bugphyzz
+    waldronlab/bugphyzz@sdgamboa/release18
 Suggests: 
     knitr,
     rmarkdown,
