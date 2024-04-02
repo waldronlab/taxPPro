@@ -1,16 +1,25 @@
 Package: taxPPro
 Type: Package
-Title: Taxonomic and phylogenetic propagation
-Version: 0.1.0
-Author: Samuel Gamboa
-Maintainer: Samuel Gamboa <Samuel.Gamboa.Tuz@gmail.com>
-Description: Propagation of annotations for Bugphyz.
-License: MIT + file LICENSE
+Title: Taxonomic and phylogenetic propagation for bugphyzz
+Version: 0.99.0
+Authors@R:
+    c(
+        person(
+            given = "Samuel",
+            family = "Gamboa",
+            role = c("aut", "cre"),
+            email = "Samuel.Gamboa.Tuz@gmail.com",
+            comment = c(ORCID = "0000-0002-6863-7943")
+        )
+    )
+Description: Propagation of annotations for bugphyzz using ASR.
+License: Artistic-2.0
 Encoding: UTF-8
 LazyData: false 
-RoxygenNote: 7.3.0
+RoxygenNote: 7.3.1
+VignetteBuilder: knitr
 Depends:
-    R (>= 4.2)
+    R (>= 4.3)
 Remotes:
     waldronlab/bugphyzz@sdgamboa/release18
 Suggests: 
@@ -42,6 +51,5 @@ Imports:
     phytools,
     tidyr,
     castor
-VignetteBuilder: knitr
 URL: https://github.com/sdgamboa/taxPPro
 BugReports: https://github.com/sdgamboa/taxPPro/issues/
