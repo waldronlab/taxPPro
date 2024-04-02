@@ -2,7 +2,7 @@
 % Please edit documentation in R/taxPPro.R
 \name{filterDataNumeric}
 \alias{filterDataNumeric}
-\title{Filter data of numeric attributes}
+\title{Filter data with numeric attributes}
 \usage{
 filterDataNumeric(tbl)
 }
@@ -14,7 +14,7 @@ A data.frame.
 }
 \description{
 \code{filterDataNumeric} filters data that could be used for propagation
-of numeric attributes. Attribute type is numeric because all numeric
-attributes are converted to range when they're imported with the physiologies
-function.
+of numeric attributes. These are labeled as "range" when being imported
+with the \code{physiologies function}. It also creates a Score column
+based on the Frequency column.
 }

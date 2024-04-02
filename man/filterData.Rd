@@ -10,8 +10,9 @@ filterData(tbl)
 \item{tbl}{A data.frame.}
 }
 \value{
-A data.frame
+A data.frame.
 }
 \description{
-\code{filterData}
+\code{filterData} is the first step in the propagation process.
+It ensures that only data that can be used for propagation is retained.
 }

@@ -2,16 +2,18 @@
 % Please edit documentation in R/taxPPro.R
 \name{filterDataDiscrete}
 \alias{filterDataDiscrete}
-\title{Filter attributes with discrete type}
+\title{Filter data with discrete attributes}
 \usage{
 filterDataDiscrete(tbl)
 }
 \arguments{
-\item{tbl}{A data.frame.}
+\item{tbl}{A data.frame imported with \code{bugphyzz::physiologies}}
 }
 \value{
 A data.frame.
 }
 \description{
-\code{filterDataDiscrete} filters discrete data.
+\code{filterDataDiscrete} filters data that could be used for propagation
+of discrete attributes. It also creates a Scores column based on
+the Frequency column.
 }
