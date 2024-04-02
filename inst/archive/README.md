@@ -1,3 +1,8 @@
+
+
+All of this data is relate to creating the data.tree file and
+calculating completeness. However, this was no longer used for ASR, etc.
+
 These datasets were downloaded on Jan 23, 2023
 
 The source link is: https://www.ncbi.nlm.nih.gov/Taxonomy/taxonomyhome.html/index.cgi?chapter=statistics&period=&from=&to=
