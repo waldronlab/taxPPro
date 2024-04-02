@@ -150,9 +150,6 @@ mergedPlot
 
 
 
-
-# Example 2
-
 ```{r}
 mat <- matrix(
     data = rep(0.5, Ntip(randomTree) * 2), ncol = 2, dimnames = list(
