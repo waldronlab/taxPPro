@@ -1,10 +1,11 @@
 #' Filter data
 #'
-#' \code{filterData}
+#' \code{filterData} is the first step in the propagation process.
+#' It ensures that only data that can be used for propagation is retained.
 #'
 #' @param tbl A data.frame.
 #'
-#' @return A data.frame
+#' @return A data.frame.
 #' @export
 #'
 filterData <- function(tbl) {
@@ -14,19 +15,17 @@ filterData <- function(tbl) {
         output <- filterDataDiscrete(tbl)
     } else if (attr_type == "range") {
         output <- filterDataNumeric(tbl)
-
     } else {
         output <- NULL
     }
     return(output)
 }
 
-#' Filter data of numeric attributes
+#' Filter data with numeric attributes
 #'
 #' \code{filterDataNumeric} filters data that could be used for propagation
-#' of numeric attributes. Attribute type is numeric because all numeric
-#' attributes are converted to range when they're imported with the physiologies
-#' function.
+#' of numeric attributes. These are labeled as "range" when being imported
+#' with the \code{physiologies function}.
 #'
 #' @param tbl A data.frame imported with \code{bugphyzz::physiologies}
 #'
@@ -42,20 +41,20 @@ filterDataNumeric <- function(tbl) {
         'Attribute_type', 'Attribute_group'
     )
     filtered_tbl <- tbl |>
-        # dplyr::filter(!is.na(.data$NCBI_ID) | !.data$NCBI_ID == 'unkown') |>
+        ## Attribute_value_min and Attribute_value_max are the same when
+        ## only one temperature is annotated. So neither columns should be
+        ## NA.
         dplyr::filter(!is.na(.data$Attribute_value_min)) |>
         dplyr::filter(!is.na(.data$Attribute_value_max)) |>
         dplyr::filter(!is.infinite(abs(.data$Attribute_value_min))) |>
         dplyr::filter(!is.infinite(abs(.data$Attribute_value_max))) |>
-        # dplyr::mutate(Rank = taxizedb::taxid2rank(NCBI_ID, db = 'ncbi')) |>
-        # dplyr::mutate(Taxon_name = taxizedb::taxid2name(NCBI_ID, db = 'ncbi')) |>
-        # dplyr::mutate(NCBI_ID = addRankPrefix(NCBI_ID, Rank)) |>
-        # dplyr::filter(!is.na(Rank) & !is.na(Taxon_name) & !is.na(NCBI_ID))
-        # dplyr::filter(!is.na(Rank) & !is.na(Taxon_name)) |>
-        # dplyr::filter(!is.na(Parent_NCBI_ID)) |>
         dplyr::filter(
+            ## We need NCBI ID data. If not available, we need the NCBI ID of
+            ## the immediate parent. If this is not available then the entry
+            ## is dropped.
             !((is.na(.data$NCBI_ID) | .data$NCBI_ID == 'unknown') & is.na(.data$Parent_NCBI_ID))
         ) |>
+        ## We need a source and a frequency
         dplyr::filter(!is.na(.data$Attribute_source), !is.na(.data$Frequency)) |>
         dplyr::mutate(Score = freq2Scores(.data$Frequency)) |>
         dplyr::select(tidyselect::all_of(select_cols)) |>
@@ -74,11 +73,12 @@ filterDataNumeric <- function(tbl) {
     return(filtered_tbl)
 }
 
-#' Filter attributes with discrete type
+#' Filter data with discrete attributes
 #'
-#' \code{filterDataDiscrete} filters discrete data.
+#' \code{filterDataDiscrete} filters data that could be used for propagation
+#' of discrete attributes.
 #'
-#' @param tbl A data.frame.
+#' @param tbl A data.frame imported with \code{bugphyzz::physiologies}
 #'
 #' @return A data.frame.
 #' @export
@@ -95,10 +95,11 @@ filterDataDiscrete <- function(tbl) {
     attributes_fname <- system.file(
         'extdata', 'attributes.tsv', package = 'bugphyzz'
     )
+
+    ## This ensures that only valid attributes are imported
     attributes <- utils::read.table(attributes_fname, sep = '\t', header = TRUE)
     rgx <- paste0('\\b', phys_name, '\\b')
     valid_attributes <- attributes |>
-        # dplyr::filter(.data$attribute_group == phys_name) |>
         dplyr::filter(grepl(rgx, .data$attribute_group)) |>
         dplyr::pull(.data$attribute) |>
         unique()
@@ -108,6 +109,17 @@ filterDataDiscrete <- function(tbl) {
     tbl <- tbl |>
         dplyr::filter(!is.na(.data$Attribute)) |>
         dplyr::filter(!is.na(.data$Attribute_value))
+
+    allAttrs <- unique(tbl$Attribute)
+    invalid_attrs <- allAttrs[which(!allAttrs %in% valid_attributes)]
+
+    if (length(invalid_attrs) > 0) {
+        invalid_attrs <- paste0(invalid_attrs, collapse = "---")
+        wng_msg <- paste0(
+            "Invalid attributes in ", phys_name, ": ", invalid_attrs
+        )
+        warning(wng_msg, call. = FALSE)
+    }
 
     attr_type <- unique(tbl$Attribute_type)
     if (attr_type == 'multistate-intersection') {
@@ -193,7 +205,6 @@ getDataReady <- function(tbl) {
             set_without_ids <- getSetWithoutIDs(l[[i]], set_with_ids) |>
                 purrr::discard(~ all(is.na(.x)))
             dataset <- dplyr::bind_rows(set_with_ids, set_without_ids)
-            # output[[i]] <- completeBinaryData(dataset)
             if (!nrow(dataset))
                 next
             names(output)[i] <- names(l)[i]
@@ -623,4 +634,3 @@ getMRCATaxPPro <- function(tree, tips) {
         res <- NA
     res
 }
-
