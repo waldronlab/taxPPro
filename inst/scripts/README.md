@@ -46,8 +46,6 @@ Archaea[SubTree] NOT uncultured[prop] AND ("above species level"[prop] OR specif
 ################################################################################
 ################################################################################
 
-
-
 echo 
 fnamekey=include_all # needs update
 query='[SubTree]' # needs update
