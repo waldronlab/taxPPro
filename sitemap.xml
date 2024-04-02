@@ -4,12 +4,6 @@
     <loc>https://waldronlab.io/taxPPro/404.html</loc>
   </url>
   <url>
-    <loc>https://waldronlab.io/taxPPro/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/LICENSE.html</loc>
-  </url>
-  <url>
     <loc>https://waldronlab.io/taxPPro/articles/add_singletons.html</loc>
   </url>
   <url>
@@ -49,9 +43,6 @@
     <loc>https://waldronlab.io/taxPPro/reference/classif2Table.html</loc>
   </url>
   <url>
-    <loc>https://waldronlab.io/taxPPro/reference/cleanNode.html</loc>
-  </url>
-  <url>
     <loc>https://waldronlab.io/taxPPro/reference/completeBinaryData.html</loc>
   </url>
   <url>
@@ -73,9 +64,6 @@
     <loc>https://waldronlab.io/taxPPro/reference/getDataReady.html</loc>
   </url>
   <url>
-    <loc>https://waldronlab.io/taxPPro/reference/getMRCATaxPPro.html</loc>
-  </url>
-  <url>
     <loc>https://waldronlab.io/taxPPro/reference/getNsti.html</loc>
   </url>
   <url>
@@ -88,24 +76,12 @@
     <loc>https://waldronlab.io/taxPPro/reference/index.html</loc>
   </url>
   <url>
-    <loc>https://waldronlab.io/taxPPro/reference/inh1.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/inh2.html</loc>
-  </url>
-  <url>
     <loc>https://waldronlab.io/taxPPro/reference/ltp.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/mpa.html</loc>
   </url>
   <url>
     <loc>https://waldronlab.io/taxPPro/reference/roundDec.html</loc>
   </url>
   <url>
     <loc>https://waldronlab.io/taxPPro/reference/scores2Freq.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/taxPool.html</loc>
   </url>
 </urlset>
