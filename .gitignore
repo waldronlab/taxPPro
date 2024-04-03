@@ -5,3 +5,4 @@ docs
 log*
 bugphyzz*tsv
 inst/picrust/venv
+.Rhistory
