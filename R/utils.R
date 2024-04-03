@@ -20,6 +20,30 @@ freq2Scores <- function(x) {
   )
 }
 
+#' Frequency to scores 2
+#'
+#' \code{freq2Scores} converts the keywords in the "Frequency"
+#' column of a bugphyzz dataset into numeric scores, which are interpreted
+#' as probabilities. This v2 should be used after performing ASR in
+#' numeric attributes.
+#'
+#' @param x A character vector.
+#'
+#' @return A numeric vector.
+#'
+#' @export
+#'
+freq2Scores2 <- function(x) {
+  x <- tolower(x)
+  dplyr::case_when(
+    x == 'always' ~ 1,
+    x == 'usually' ~ 0.9,
+    x == 'sometimes' ~ 0.5,
+    x == 'rarely' ~ 0.1,
+    x == "never" ~ 0
+  )
+}
+
 #' Scores to frequency
 #'
 #' \code{scores2Freq} converts numeric scores, stored in the "Score" column in
