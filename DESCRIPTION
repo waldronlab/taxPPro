@@ -1,7 +1,7 @@
 Package: taxPPro
 Type: Package
 Title: Taxonomic and phylogenetic propagation for bugphyzz
-Version: 0.99.0
+Version: 0.99.1
 Authors@R:
     c(
         person(

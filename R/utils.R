@@ -159,3 +159,23 @@ roundDec <- function(x) {
     ceiling(((1 / n) + 1e-06) * 10) / 10
 }
 
+
+#' NSTI to Frequency
+#'
+#' \code{nsti2Freq} converts nsti values to frequencuy keywords.
+#'
+#' @param x A numeric vectir of nsti values
+#'
+#' @return A character vector of frequency keywords.
+#' @export
+#'
+nsti2Freq <- function(x) {
+    dplyr::case_when(
+        is.na(x) ~ NA,
+        x == 0 ~ "always",
+        x > 0 & x <= 0.05 ~ "usually",
+        x > 0.05 & x <= 0.15 ~ "sometimes",
+        x > 0.15 & x <= 0.2 ~ "rarely",
+        x > 0.2 ~ "never"
+    )
+}
