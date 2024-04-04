@@ -79,9 +79,26 @@ getNsti <- function(tree, annotated_tip_labels) {
     res <- castor::find_nearest_tips(
         tree = tree, target_tips = known_tips_index
     )
-    data.frame(
-        tip_label = tree$tip.label[unknown_tips_index],
+    nsti_tips <- data.frame(
+        label = tree$tip.label[unknown_tips_index],
         nsti = res$nearest_distance_per_tip[unknown_tips_index]
     )
+    nsti_nodes <- data.frame(
+        label = tree$node.label,
+        nsti = res$nearest_distance_per_node
+    )
+    dplyr::bind_rows(nsti_tips, nsti_nodes)
 }
+
+# getNsti <- function(tree, annotated_tip_labels) {
+#     unknown_tips_index <- which(!tree$tip.label %in% annotated_tip_labels)
+#     known_tips_index <- which(tree$tip.label %in% annotated_tip_labels)
+#     res <- castor::find_nearest_tips(
+#         tree = tree, target_tips = known_tips_index
+#     )
+#     data.frame(
+#         tip_label = tree$tip.label[unknown_tips_index],
+#         nsti = res$nearest_distance_per_tip[unknown_tips_index]
+#     )
+# }
 
