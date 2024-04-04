@@ -4,12 +4,15 @@
 \alias{getNsti}
 \title{Get NSTI}
 \usage{
-getNsti(tree, annotated_tip_labels)
+getNsti(tree, annotated_tip_labels, nodes)
 }
 \arguments{
 \item{tree}{A phylo object}
 
 \item{annotated_tip_labels}{A character vector with the names of the tips}
+
+\item{nodes}{A character vector with the names of nodes in the tree
+that are annotated.}
 }
 \value{
 A data.frame with two columns: tip_label and nsti.

@@ -69,11 +69,13 @@ ltp <- function(remove_gn_nodes = TRUE, node_names = TRUE) {
 #'
 #' @param tree A phylo object
 #' @param annotated_tip_labels A character vector with the names of the tips
+#' @param nodes A character vector with the names of nodes in the tree
+#' that are annotated.
 #'
 #' @return A data.frame with two columns: tip_label and nsti.
 #' @export
 #'
-getNsti <- function(tree, annotated_tip_labels) {
+getNsti <- function(tree, annotated_tip_labels, nodes) {
     unknown_tips_index <- which(!tree$tip.label %in% annotated_tip_labels)
     known_tips_index <- which(tree$tip.label %in% annotated_tip_labels)
     res <- castor::find_nearest_tips(
@@ -86,7 +88,8 @@ getNsti <- function(tree, annotated_tip_labels) {
     nsti_nodes <- data.frame(
         label = tree$node.label,
         nsti = res$nearest_distance_per_node
-    )
+    ) |>
+        dplyr::filter(label %in% nodes)
     dplyr::bind_rows(nsti_tips, nsti_nodes)
 }
 
