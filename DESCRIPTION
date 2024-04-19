@@ -21,7 +21,7 @@ VignetteBuilder: knitr
 Depends:
     R (>= 4.3)
 Remotes:
-    waldronlab/bugphyzz@sdgamboa/release18
+    waldronlab/bugphyzz@sdgamboa-bpscores
 Suggests: 
     knitr,
     rmarkdown,
