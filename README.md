@@ -15,3 +15,4 @@ if (!require("BiocManager", quietly = TRUE))
 BiocManager::install('waldronlab/taxPPro')
 ```
 
+Version 1_0_0 was used for the first relase of bugphyzz
