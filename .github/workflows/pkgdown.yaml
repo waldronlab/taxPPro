@@ -14,7 +14,7 @@ name: pkgdown
 jobs:
   pkgdown:
     runs-on: ubuntu-latest
-    container: bioconductor/bioconductor_docker
+    container: bioconductor/bioconductor_docker:RELEASE_3_19
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
