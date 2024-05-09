@@ -32,6 +32,7 @@ Suggests:
     ggtree,
     ggpubr,
     reshape2,
+    bugphyzz,
     ggimage
 Imports:
     ape,
@@ -47,7 +48,6 @@ Imports:
     data.tree,
     mclust,
     forcats,
-    bugphyzz,
     phytools,
     tidyr,
     castor
