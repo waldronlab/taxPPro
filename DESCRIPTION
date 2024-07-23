@@ -1,7 +1,7 @@
 Package: taxPPro
 Type: Package
 Title: Taxonomic and phylogenetic propagation for bugphyzz
-Version: 0.99.2
+Version: 1.0.0
 Authors@R:
     c(
         person(
@@ -21,7 +21,7 @@ VignetteBuilder: knitr
 Depends:
     R (>= 4.3)
 Remotes:
-    waldronlab/bugphyzz@sdgamboa/release18
+    waldronlab/bugphyzz
 Suggests: 
     knitr,
     rmarkdown,
@@ -32,6 +32,7 @@ Suggests:
     ggtree,
     ggpubr,
     reshape2,
+    bugphyzz,
     ggimage
 Imports:
     ape,
@@ -47,7 +48,6 @@ Imports:
     data.tree,
     mclust,
     forcats,
-    bugphyzz,
     phytools,
     tidyr,
     castor

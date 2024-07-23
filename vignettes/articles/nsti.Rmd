@@ -33,8 +33,9 @@ known_y <- sample(tree$tip.label, 2000)
 ## Get NSTI values
 
 ```{r}
-nsti_x <- getNsti(tree = tree, annotated_tip_labels = known_x)
-nsti_y <- getNsti(tree = tree, annotated_tip_labels = known_y)
+nodes_with_taxid <- grep("^n", tree$node.label, value = TRUE, invert = TRUE)
+nsti_x <- getNsti(tree = tree, annotated_tip_labels = known_x, nodes = nodes_with_taxid)
+nsti_y <- getNsti(tree = tree, annotated_tip_labels = known_y, nodes = nodes_with_taxid)
 ```
 
 ## Plot a couple of histograms
