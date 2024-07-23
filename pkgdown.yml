@@ -1,17 +1,16 @@
-pandoc: 3.1.13
-pkgdown: 2.0.9
+pandoc: '3.2'
+pkgdown: 2.1.0
 pkgdown_sha: ~
 articles:
-  add_singletons: add_singletons.html
-  figure_example: figure_example.html
-  internal_nodes: internal_nodes.html
-  nsti: nsti.html
-  smaller_example: smaller_example.html
+  articles/add_singletons: add_singletons.html
+  articles/figure_example: figure_example.html
+  articles/internal_nodes: internal_nodes.html
+  articles/nsti: nsti.html
+  articles/smaller_example: smaller_example.html
   taxPPro: taxPPro.html
-  uncertainty_binary: uncertainty_binary.html
-  uncertainty_multistate: uncertainty_multistate.html
-last_built: 2024-05-09T15:31Z
+  articles/uncertainty_binary: uncertainty_binary.html
+  articles/uncertainty_multistate: uncertainty_multistate.html
+last_built: 2024-07-23T20:08Z
 urls:
   reference: https://waldronlab.io/taxPPro/reference
   article: https://waldronlab.io/taxPPro/articles
-

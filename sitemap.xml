@@ -1,96 +1,34 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://waldronlab.io/taxPPro/404.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/articles/add_singletons.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/articles/figure_example.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/articles/internal_nodes.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/articles/nsti.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/articles/smaller_example.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/articles/taxPPro.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/articles/uncertainty_binary.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/articles/uncertainty_multistate.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/index.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/addRankPrefix.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/classif2Table.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/completeBinaryData.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/conf2Fct.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/filterData.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/filterDataDiscrete.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/filterDataNumeric.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/freq2Scores.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/freq2Scores2.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/getDataReady.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/getNsti.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/getSetWithIDs.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/getSetWithoutIDs.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/ltp.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/nsti2Freq.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/roundDec.html</loc>
-  </url>
-  <url>
-    <loc>https://waldronlab.io/taxPPro/reference/scores2Freq.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://waldronlab.io/taxPPro/404.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/articles/add_singletons.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/articles/figure_example.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/articles/index.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/articles/internal_nodes.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/articles/nsti.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/articles/smaller_example.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/articles/taxPPro.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/articles/uncertainty_binary.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/articles/uncertainty_multistate.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/authors.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/index.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/news/index.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/reference/addRankPrefix.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/reference/classif2Table.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/reference/completeBinaryData.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/reference/conf2Fct.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/reference/filterData.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/reference/filterDataDiscrete.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/reference/filterDataNumeric.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/reference/freq2Scores.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/reference/freq2Scores2.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/reference/getDataReady.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/reference/getNsti.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/reference/getSetWithIDs.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/reference/getSetWithoutIDs.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/reference/index.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/reference/ltp.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/reference/nsti2Freq.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/reference/roundDec.html</loc></url>
+<url><loc>https://waldronlab.io/taxPPro/reference/scores2Freq.html</loc></url>
 </urlset>
+
