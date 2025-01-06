@@ -51,5 +51,5 @@ Imports:
     phytools,
     tidyr,
     castor
-URL: https://github.com/sdgamboa/taxPPro
-BugReports: https://github.com/sdgamboa/taxPPro/issues/
+URL: https://github.com/waldronlab/taxPPro
+BugReports: https://github.com/waldronlab/taxPPro/issues/
