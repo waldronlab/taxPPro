@@ -1,7 +1,7 @@
 Package: taxPPro
 Type: Package
 Title: Taxonomic and phylogenetic propagation for bugphyzz
-Version: 1.0.0
+Version: 1.0.1
 Authors@R:
     c(
         person(
@@ -50,6 +50,7 @@ Imports:
     forcats,
     phytools,
     tidyr,
-    castor
+    castor,
+    taxizedb
 URL: https://github.com/waldronlab/taxPPro
 BugReports: https://github.com/waldronlab/taxPPro/issues/
