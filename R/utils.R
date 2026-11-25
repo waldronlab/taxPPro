@@ -84,11 +84,11 @@ conf2Fct <- function(x) {
 #'
 #' \code{sourcePriority} ranks source names for the choice between sources
 #' of the same confidence that have a value for the same taxon. The order
-#' is the `Priority` column of bugphyzz's `attribute_sources.tsv` (order
+#' is the \code{Priority} column of bugphyzz's \code{attribute_sources.tsv} (order
 #' within a confidence level, 1 first); the row with the lowest rank is
 #' kept. Sources that share a priority, or have none, are ordered among
 #' themselves with the alphabetically last name first, after all sources
-#' that have one. Without a `Priority` column (bugphyzz < 1.9.2) this is
+#' that have one. Without a \code{Priority} column (bugphyzz < 1.9.2) this is
 #' the former rule: the alphabetically last name.
 #'
 #' @param x A character vector of source names (Attribute_source).
