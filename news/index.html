@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">taxPPro</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.2</span>
       </span>
     </div>
 
@@ -75,9 +75,13 @@
   <div class="col-md-9 contents">
     <div class="page-header">
       <h1 data-toc-skip>Changelog <small></small></h1>
-      <small>Source: <a href="https://github.com/waldronlab/taxPPro/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/waldronlab/taxPPro/blob/source-priority/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="1.0.2" id="taxppro-102">taxPPro 1.0.2<a class="anchor" aria-label="anchor" href="#taxppro-102"></a></h2>
+<ul><li>When sources of the same confidence have a value for a taxon, <code><a href="../reference/getSetWithIDs.html">getSetWithIDs()</a></code> and <code><a href="../reference/getSetWithoutIDs.html">getSetWithoutIDs()</a></code> keep the source that comes first in the <code>Priority</code> column of bugphyzz’s <code>attribute_sources.tsv</code> (bugphyzz &gt;= 1.9.2), through the new <code><a href="../reference/sourcePriority.html">sourcePriority()</a></code>, in place of the alphabetically last source name (waldronlab/bugphyzzExports#66). Numeric attributes are not affected.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="1.0.0" id="taxppro-100">taxPPro 1.0.0<a class="anchor" aria-label="anchor" href="#taxppro-100"></a></h2>
 <ul><li>This first version was used for the v1.0.0 relase of bugphyzzExports.</li>
