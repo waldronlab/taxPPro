@@ -309,9 +309,13 @@ getSetWithIDs <- function(tbl) {
                 .data$Confidence_in_curation, n = 1, with_ties = TRUE
             ) |>
             dplyr::ungroup() |>
+            dplyr::mutate(
+                Source_priority = sourcePriority(.data$Attribute_source)
+            ) |>
             dplyr::group_by(.data$NCBI_ID, .data$Attribute) |>
-            dplyr::slice_max(.data$Attribute_source, n = 1, with_ties = FALSE) |>
+            dplyr::slice_min(.data$Source_priority, n = 1, with_ties = FALSE) |>
             dplyr::ungroup() |>
+            dplyr::select(-"Source_priority") |>
             dplyr::group_by(.data$NCBI_ID) |>
             dplyr::mutate(
                 Total_score = sum(.data$Score),
@@ -404,9 +408,13 @@ getSetWithoutIDs <- function(tbl, set_with_ids = NULL) {
             dplyr::group_by(.data$NCBI_ID) |>
             dplyr::slice_max(.data$Confidence_in_curation, n = 1, with_ties = TRUE) |>
             dplyr::ungroup() |>
+            dplyr::mutate(
+                Source_priority = sourcePriority(.data$Attribute_source)
+            ) |>
             dplyr::group_by(.data$NCBI_ID, .data$Attribute) |>
-            dplyr::slice_max(.data$Attribute_source, n = 1, with_ties = TRUE) |>
+            dplyr::slice_min(.data$Source_priority, n = 1, with_ties = TRUE) |>
             dplyr::ungroup() |>
+            dplyr::select(-"Source_priority") |>
             dplyr::group_by(.data$NCBI_ID) |>
             dplyr::mutate(
                 Total_score = sum(.data$Score),
