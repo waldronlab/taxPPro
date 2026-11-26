@@ -80,6 +80,51 @@ conf2Fct <- function(x) {
     factor(x, levels = c('low', 'medium', 'high'), ordered = TRUE)
 }
 
+#' Priority of bugphyzz sources
+#'
+#' \code{sourcePriority} ranks source names for the choice between sources
+#' of the same confidence that have a value for the same taxon. The order
+#' is the \code{Priority} column of bugphyzz's \code{attribute_sources.tsv} (order
+#' within a confidence level, 1 first); the row with the lowest rank is
+#' kept. Sources that share a priority, or have none, are ordered among
+#' themselves with the alphabetically last name first, after all sources
+#' that have one. Without a \code{Priority} column (bugphyzz < 1.9.2) this is
+#' the former rule: the alphabetically last name.
+#'
+#' @param x A character vector of source names (Attribute_source).
+#' @param priorities A data.frame with columns Attribute_source and
+#' Priority. Default: read from the installed bugphyzz package.
+#'
+#' @return A numeric vector, lowest for the preferred source.
+#'
+#' @export
+#'
+sourcePriority <- function(x, priorities = .bugphyzzPriorities()) {
+    p <- rep(Inf, length(x))
+    if (!is.null(priorities)) {
+        p <- priorities$Priority[match(x, priorities$Attribute_source)]
+        p[is.na(p)] <- Inf
+    }
+    ## rank by priority, then by name, last name first
+    lvls <- unique(x[order(p, -xtfrm(x))])
+    as.numeric(match(x, lvls))
+}
+
+.bugphyzzPriorities <- function() {
+    fpath <- system.file(
+        'extdata', 'attribute_sources.tsv', package = 'bugphyzz'
+    )
+    if (!nzchar(fpath))
+        return(NULL)
+    tbl <- utils::read.table(
+        file = fpath, header = TRUE, sep = '\t', quote = '',
+        check.names = FALSE, comment.char = ''
+    )
+    if (!'Priority' %in% colnames(tbl))
+        return(NULL)
+    tbl[, c('Attribute_source', 'Priority')]
+}
+
 #' Add rank prefix to NCBI_ID
 #'
 #' \code{addRankPrefix} adds a prefix (`'[kpcofgst]__'`) to an NCBI ID (taxid)
