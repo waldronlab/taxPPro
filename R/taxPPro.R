@@ -9,7 +9,7 @@
 #' @export
 #'
 filterData <- function(tbl) {
-    discrete_types <- c("binary", "multistate-intersection", "mltistate-union")
+    discrete_types <- c("binary", "multistate-intersection", "multistate-union")
     attr_type <- unique(tbl$Attribute_type)
     if (attr_type %in% discrete_types){
         output <- filterDataDiscrete(tbl)
